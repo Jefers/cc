@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services | Coach Christian</title>
+  <style>
+    /* Same CSS as index.html */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f9f9f9; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+    button, .button {
+      background-color: #ffcc00;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover, .button:hover { background-color: #e6b800; }
+    .fixed-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      z-index: 1000;
+    }
+    .header-left { display: flex; align-items: center; }
+    .logo {
+      width: 40px;
+      height: 40px;
+      background-color: #ddd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+    .site-title { font-size: 18px; font-weight: bold; color: #333; }
+    .hamburger { font-size: 24px; cursor: pointer; }
+    .content { padding-top: 70px; }
+    section { padding: 20px; max-width: 600px; margin: auto; }
+    .section { background: #fff8dc; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+    .img-placeholder {
+      background-color: #ddd;
+      width: 100%;
+      height: 150px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 16px;
+    }
+    .center-button { display: flex; justify-content: center; margin: 20px 0; }
+    .services-list { display: flex; flex-direction: column; gap: 20px; }
+    .service-item { background: #fff3b0; border-radius: 8px; padding: 15px; }
+    .service-item .price { font-weight: bold; margin: 10px 0; }
+    footer {
+      text-align: center;
+      font-size: 14px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Header -->
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">Logo</div>
+      <div class="site-title">CoachChristian</div>
+    </div>
+    <a href="menu.html" class="hamburger">&#9776;</a>
+  </header>
+  <div class="content">
+    <section class="section">
+      <h2>My Services</h2>
+      <div class="img-placeholder">
+        <!-- <img src="services-banner.jpg" alt="Services Banner"> -->
+        Picture Placeholder
+      </div>
+      <div class="center-button">
+        <a href="mailto:dummy@coachchristian.xyz" class="button">Book your free consultation</a>
+      </div>
+      <p style="text-align: center; margin-top:10px;">Free</p>
+      <p>
+        Achieve your fitness goals with personalized training and nutritional guidance. I focus on delivering tangible results through a balanced approach.
+      </p>
+      <div class="center-button">
+        <button onclick="alert('Book now clicked')">Book Now</button>
+      </div>
+      <div class="services-list">
+        <!-- Service 1 -->
+        <div class="service-item">
+          <div class="img-placeholder">
+            <!-- <img src="service1.jpg" alt="Personalised Training Programme"> -->
+            Image Placeholder
+          </div>
+          <p><strong>Personalised Training Programme</strong></p>
+          <p class="price">£50</p>
+          <p>A tailored training plan designed to meet your unique fitness goals.</p>
+          <div class="center-button">
+            <button onclick="alert('Book now clicked')">Book Now</button>
+          </div>
+        </div>
+        <!-- Service 2 -->
+        <div class="service-item">
+          <div class="img-placeholder">
+            <!-- <img src="service2.jpg" alt="1 to 1 Personal Training"> -->
+            Image Placeholder
+          </div>
+          <p><strong>1 to 1 Personal Training</strong></p>
+          <p class="price">£50 per hour</p>
+          <p>Receive focused, one-on-one coaching to maximize your potential.</p>
+          <div class="center-button">
+            <button onclick="alert('Book now clicked')">Book Now</button>
+          </div>
+        </div>
+        <!-- Service 3 -->
+        <div class="service-item">
+          <div class="img-placeholder">
+            <!-- <img src="service3.jpg" alt="Online Coaching"> -->
+            Image Placeholder
+          </div>
+          <p><strong>Online Coaching</strong></p>
+          <p class="price">From £70 per month</p>
+          <p>Access expert guidance remotely with personalized online support.</p>
+          <div class="center-button">
+            <button onclick="alert('Book now clicked')">Book Now</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <p><strong>Coach Christian</strong></p>
+      <p>Location: 123 Fitness St, Healthy City, UK</p>
+      <p>
+        Contact me: <a href="mailto:info@coachchristian.xyz">info@coachchristian.xyz</a> | <a href="tel:+441234567890">+44 123 456 7890</a>
+      </p>
+      <p><a href="hyrox_training_guide.html">Hyrox Training Guide</a></p>
+    </footer>
+  </div>
+</body>
+</html>

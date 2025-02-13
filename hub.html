@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Hub | Coach Christian</title>
+  <style>
+    /* Same Global Styles */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f9f9f9; color: #333; line-height: 1.6; }
+    .container { max-width: 600px; margin: 100px auto 20px; padding: 20px; }
+    .center { text-align: center; }
+    .button {
+      background-color: #ffcc00;
+      color: #333;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="hub-content" style="display: none;">
+    <h1 class="center">Client Hub</h1>
+    <p>Welcome to the Client Hub! This area contains exclusive content for clients. More content will be added here.</p>
+  </div>
+  <script>
+    // Simple authentication using a prompt.
+    var accessCode = prompt("Please enter your client access code:");
+    // For demo purposes, the access code is "client123"
+    if(accessCode === "client123"){
+      document.getElementById("hub-content").style.display = "block";
+    } else {
+      alert("Incorrect access code. Redirecting to the menu.");
+      window.location.href = "menu.html";
+    }
+  </script>
+</body>
+</html>
