@@ -1,37 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Menu | Coach Christian</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    /* Global Resets & Base Styles */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
-      line-height: 1.6;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-    /* Container */
-    .container {
+    /* Specific styling for menu links */
+    .menu-container {
       max-width: 600px;
       margin: 100px auto 20px;
       padding: 20px;
     }
-    /* Menu Links */
     .menu-link {
       display: block;
-      background-color: #ffcc00;
-      color: #333;
+      background-color: var(--primary-color);
+      color: var(--text-color);
       font-size: 24px;
       text-align: center;
       padding: 15px;
@@ -40,12 +24,12 @@
       transition: background-color 0.3s ease;
     }
     .menu-link:hover {
-      background-color: #e6b800;
+      background-color: var(--hover-color);
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="menu-container">
     <a class="menu-link" href="index.html">Home</a>
     <a class="menu-link" href="services.html">Services</a>
     <a class="menu-link" href="about.html">About</a>

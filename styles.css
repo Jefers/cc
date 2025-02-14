@@ -1,0 +1,273 @@
+/* styles.css */
+
+/* CSS Variables for easy customization */
+:root {
+  --primary-color: #ffcc00;
+  --hover-color: #e6b800;
+  --background-color: #f9f9f9;
+  --text-color: #333;
+  --accent-color: #fff8dc;
+  --testimonial-bg: #fff3b0;
+}
+
+/* Global Resets & Base Styles */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Button Styles with hover and press effects */
+button, .button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+button:hover, .button:hover {
+  background-color: var(--hover-color);
+}
+
+button:active, .button:active {
+  transform: scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Fixed Header */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  background-color: #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  /* Uncomment and replace with actual logo image:
+     background-image: url('logo.png');
+     background-size: cover;
+  */
+}
+
+.site-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.hamburger {
+  font-size: 24px;
+  cursor: pointer;
+  /* Alternatively, use an image:
+     background-image: url('hamburger.png');
+     background-size: cover;
+     width: 30px;
+     height: 30px;
+  */
+}
+
+/* Content Offset for Fixed Header */
+.content {
+  padding-top: 70px;
+}
+
+/* Banner Section */
+.banner {
+  position: relative;
+  height: 250px;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.banner::after {
+  content: "Background Image Placeholder";
+  position: absolute;
+  color: #666;
+  font-size: 18px;
+  /* Uncomment and replace with background image:
+     background-image: url('banner-bg.jpg');
+  */
+}
+
+.banner-text {
+  position: relative;
+  color: rgba(255,255,255,0.9);
+  font-size: 24px;
+  text-align: center;
+  line-height: 1.8;
+  background: rgba(0,0,0,0.5);
+  padding: 15px 25px;
+  border-radius: 5px;
+}
+
+/* Section Styles */
+section {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.section {
+  background: var(--accent-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+/* Image Placeholder */
+.img-placeholder {
+  background-color: #ddd;
+  width: 100%;
+  height: 200px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 16px;
+  /* Uncomment and replace with actual image:
+     background-image: url('placeholder.jpg');
+     background-size: cover;
+  */
+}
+
+/* Testimonials */
+.testimonials {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.testimonial {
+  background: var(--testimonial-bg);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.testimonial-placeholder {
+  background-color: #ddd;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  /* Uncomment and replace with actual testimonial image:
+     background-image: url('client1.jpg');
+     background-size: cover;
+  */
+}
+
+/* Services List */
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.service-item {
+  background: var(--testimonial-bg);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.service-item .price {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+/* Instagram Grid */
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.instagram-grid div {
+  background-color: #ddd;
+  width: 100%;
+  padding-bottom: 100%;
+  position: relative;
+}
+
+.instagram-grid div span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666;
+  font-size: 14px;
+}
+
+/* Contact Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input, textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Center Action Buttons */
+.center-button {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  font-size: 14px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+  margin-top: 20px;
+}
