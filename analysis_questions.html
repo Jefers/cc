@@ -8,6 +8,8 @@
   <style>
     /* Additional styling specific to the analysis form */
     .question-block {
+      border: 1px solid grey;
+      padding: 10px;
       margin-bottom: 20px;
     }
     .question-block label {
@@ -21,6 +23,32 @@
       border-radius: 5px;
       padding: 8px;
       font-size: 16px;
+      resize: none;
+      transition: height 0.2s ease;
+    }
+    .save-send-button {
+      display: none; /* Shown only when content is changed */
+      margin-top: 10px;
+    }
+    /* Big "Send All Answers" button styling */
+    .send-all-button {
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      border: none;
+      padding: 15px 25px;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      width: 100%;
+      transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .send-all-button:hover {
+      background-color: var(--hover-color);
+    }
+    .send-all-button:active {
+      transform: scale(0.98);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
   </style>
 </head>
@@ -40,64 +68,72 @@
   <div class="content">
     <section class="section">
       <h2>Key Analysis Questions</h2>
-      <p>Please fill in your answers below. You can save each answer individually; your response will be stored in a cookie (so you can return later) and an email (to <em>placeholder@example.com</em>) will be triggered for each saved answer.</p>
+      <p>
+        Please fill in your answers below. Each response will be saved in a cookie and sent via email to 
+        <strong>cell.genus3u@icloud.com</strong> when you click "Save &amp; Send". You can also send all answers at once using the button below.
+      </p>
+      
+      <!-- Big Send All button -->
+      <div class="center-button">
+        <button class="send-all-button" type="button" onclick="sendAllAnswers()">Send All Answers</button>
+      </div>
       
       <!-- Current Client Acquisition Section -->
       <h3>Current Client Acquisition</h3>
       
       <div class="question-block">
         <label for="acq1">What's your current split between local and online clients?</label>
-        <textarea id="acq1" rows="3"></textarea>
+        <textarea id="acq1" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq1', 'Current Client Acquisition: Client Split')">Save &amp; Send</button>
+          <button id="btn_acq1" class="save-send-button" type="button" onclick="saveAndSend('acq1', 'Current Client Acquisition: Client Split')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="acq2">How do most clients currently find you?</label>
-        <textarea id="acq2" rows="3"></textarea>
+        <textarea id="acq2" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq2', 'Current Client Acquisition: Client Source')">Save &amp; Send</button>
+          <button id="btn_acq2" class="save-send-button" type="button" onclick="saveAndSend('acq2', 'Current Client Acquisition: Client Source')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="acq3">What's your conversion rate from initial contact to paying client?</label>
-        <textarea id="acq3" rows="3"></textarea>
+        <textarea id="acq3" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq3', 'Current Client Acquisition: Conversion Rate')">Save &amp; Send</button>
+          <button id="btn_acq3" class="save-send-button" type="button" onclick="saveAndSend('acq3', 'Current Client Acquisition: Conversion Rate')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="acq4">What's your average client lifetime value?</label>
-        <textarea id="acq4" rows="3"></textarea>
+        <textarea id="acq4" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq4', 'Current Client Acquisition: Lifetime Value')">Save &amp; Send</button>
+          <button id="btn_acq4" class="save-send-button" type="button" onclick="saveAndSend('acq4', 'Current Client Acquisition: Lifetime Value')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="acq5">Which Instagram content drives the most engagement and leads?</label>
-        <textarea id="acq5" rows="3"></textarea>
+        <textarea id="acq5" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq5', 'Current Client Acquisition: Instagram Engagement')">Save &amp; Send</button>
+          <button id="btn_acq5" class="save-send-button" type="button" onclick="saveAndSend('acq5', 'Current Client Acquisition: Instagram Engagement')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="acq6">What's your typical response time to new inquiries?</label>
-        <textarea id="acq6" rows="3"></textarea>
+        <textarea id="acq6" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq6', 'Current Client Acquisition: Response Time')">Save &amp; Send</button>
+          <button id="btn_acq6" class="save-send-button" type="button" onclick="saveAndSend('acq6', 'Current Client Acquisition: Response Time')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="acq7">How do you currently qualify potential clients?</label>
-        <textarea id="acq7" rows="3"></textarea>
+        <textarea id="acq7" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('acq7', 'Current Client Acquisition: Qualifying Clients')">Save &amp; Send</button>
+          <button id="btn_acq7" class="save-send-button" type="button" onclick="saveAndSend('acq7', 'Current Client Acquisition: Qualifying Clients')">Save &amp; Send</button>
         </div>
       </div>
       
@@ -106,57 +142,57 @@
       
       <div class="question-block">
         <label for="cm1">What's your current onboarding process step by step?</label>
-        <textarea id="cm1" rows="3"></textarea>
+        <textarea id="cm1" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm1', 'Client Management: Onboarding Process')">Save &amp; Send</button>
+          <button id="btn_cm1" class="save-send-button" type="button" onclick="saveAndSend('cm1', 'Client Management: Onboarding Process')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="cm2">How do you track client progress and goals?</label>
-        <textarea id="cm2" rows="3"></textarea>
+        <textarea id="cm2" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm2', 'Client Management: Tracking Progress')">Save &amp; Send</button>
+          <button id="btn_cm2" class="save-send-button" type="button" onclick="saveAndSend('cm2', 'Client Management: Tracking Progress')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="cm3">How do you communicate with clients (platforms, frequency)?</label>
-        <textarea id="cm3" rows="3"></textarea>
+        <textarea id="cm3" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm3', 'Client Management: Communication')">Save &amp; Send</button>
+          <button id="btn_cm3" class="save-send-button" type="button" onclick="saveAndSend('cm3', 'Client Management: Communication')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="cm4">What documentation do clients need to provide?</label>
-        <textarea id="cm4" rows="3"></textarea>
+        <textarea id="cm4" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm4', 'Client Management: Documentation')">Save &amp; Send</button>
+          <button id="btn_cm4" class="save-send-button" type="button" onclick="saveAndSend('cm4', 'Client Management: Documentation')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="cm5">How do you handle payments and billing?</label>
-        <textarea id="cm5" rows="3"></textarea>
+        <textarea id="cm5" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm5', 'Client Management: Payments and Billing')">Save &amp; Send</button>
+          <button id="btn_cm5" class="save-send-button" type="button" onclick="saveAndSend('cm5', 'Client Management: Payments and Billing')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="cm6">What's your current client capacity?</label>
-        <textarea id="cm6" rows="3"></textarea>
+        <textarea id="cm6" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm6', 'Client Management: Client Capacity')">Save &amp; Send</button>
+          <button id="btn_cm6" class="save-send-button" type="button" onclick="saveAndSend('cm6', 'Client Management: Client Capacity')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="cm7">What tasks take up most of your time?</label>
-        <textarea id="cm7" rows="3"></textarea>
+        <textarea id="cm7" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('cm7', 'Client Management: Time-Consuming Tasks')">Save &amp; Send</button>
+          <button id="btn_cm7" class="save-send-button" type="button" onclick="saveAndSend('cm7', 'Client Management: Time-Consuming Tasks')">Save &amp; Send</button>
         </div>
       </div>
       
@@ -165,41 +201,41 @@
       
       <div class="question-block">
         <label for="ps1">What different service packages do you offer?</label>
-        <textarea id="ps1" rows="3"></textarea>
+        <textarea id="ps1" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('ps1', 'Program Structure: Service Packages')">Save &amp; Send</button>
+          <button id="btn_ps1" class="save-send-button" type="button" onclick="saveAndSend('ps1', 'Program Structure: Service Packages')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="ps2">How do you customize programs for individuals?</label>
-        <textarea id="ps2" rows="3"></textarea>
+        <textarea id="ps2" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('ps2', 'Program Structure: Customization')">Save &amp; Send</button>
+          <button id="btn_ps2" class="save-send-button" type="button" onclick="saveAndSend('ps2', 'Program Structure: Customization')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="ps3">What's your process for adjusting programs based on progress?</label>
-        <textarea id="ps3" rows="3"></textarea>
+        <textarea id="ps3" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('ps3', 'Program Structure: Adjusting Programs')">Save &amp; Send</button>
+          <button id="btn_ps3" class="save-send-button" type="button" onclick="saveAndSend('ps3', 'Program Structure: Adjusting Programs')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="ps4">How do you currently deliver workout and nutrition plans?</label>
-        <textarea id="ps4" rows="3"></textarea>
+        <textarea id="ps4" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('ps4', 'Program Structure: Delivery of Plans')">Save &amp; Send</button>
+          <button id="btn_ps4" class="save-send-button" type="button" onclick="saveAndSend('ps4', 'Program Structure: Delivery of Plans')">Save &amp; Send</button>
         </div>
       </div>
       
       <div class="question-block">
         <label for="ps5">What supplementary materials do you provide clients?</label>
-        <textarea id="ps5" rows="3"></textarea>
+        <textarea id="ps5" rows="3" oninput="autoResize(this); toggleButton(this);"></textarea>
         <div class="center-button">
-          <button type="button" onclick="saveAndSend('ps5', 'Program Structure: Supplementary Materials')">Save &amp; Send</button>
+          <button id="btn_ps5" class="save-send-button" type="button" onclick="saveAndSend('ps5', 'Program Structure: Supplementary Materials')">Save &amp; Send</button>
         </div>
       </div>
       
@@ -207,15 +243,92 @@
   </div>
   
   <script>
-    // Function to set a cookie (expires in exdays days)
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+    
+    function toggleButton(textarea) {
+      var btn = document.getElementById("btn_" + textarea.id);
+      var saved = getCookie("analysis_" + textarea.id) || "";
+      if(textarea.value !== saved) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    }
+    
+    function saveAndSend(qid, qtitle) {
+      var textarea = document.getElementById(qid);
+      var answer = textarea.value;
+      if(answer.trim() === "") {
+        alert("Please enter an answer before saving.");
+        return;
+      }
+      // Save the answer in a cookie (expires in 7 days)
+      setCookie("analysis_" + qid, answer, 7);
+      
+      // Hide the individual save button after sending
+      var btn = document.getElementById("btn_" + qid);
+      btn.style.display = "none";
+      
+      // Construct the mailto link using the new email address
+      var email = "cell.genus3u@icloud.com";  
+      var subject = encodeURIComponent(qtitle + " Answer");
+      var body = encodeURIComponent("Answer:\n" + answer);
+      var mailtoLink = "mailto:" + email + "?subject=" + subject + "&body=" + body;
+      
+      window.location.href = mailtoLink;
+      alert("Answer saved and email triggered.");
+    }
+    
+    function sendAllAnswers() {
+      var questionTitles = {
+        "acq1": "What's your current split between local and online clients?",
+        "acq2": "How do most clients currently find you?",
+        "acq3": "What's your conversion rate from initial contact to paying client?",
+        "acq4": "What's your average client lifetime value?",
+        "acq5": "Which Instagram content drives the most engagement and leads?",
+        "acq6": "What's your typical response time to new inquiries?",
+        "acq7": "How do you currently qualify potential clients?",
+        "cm1": "What's your current onboarding process step by step?",
+        "cm2": "How do you track client progress and goals?",
+        "cm3": "How do you communicate with clients (platforms, frequency)?",
+        "cm4": "What documentation do clients need to provide?",
+        "cm5": "How do you handle payments and billing?",
+        "cm6": "What's your current client capacity?",
+        "cm7": "What tasks take up most of your time?",
+        "ps1": "What different service packages do you offer?",
+        "ps2": "How do you customize programs for individuals?",
+        "ps3": "What's your process for adjusting programs based on progress?",
+        "ps4": "How do you currently deliver workout and nutrition plans?",
+        "ps5": "What supplementary materials do you provide clients?"
+      };
+      var allAnswers = "";
+      for(var key in questionTitles) {
+        var textarea = document.getElementById(key);
+        var answer = textarea.value || "";
+        allAnswers += questionTitles[key] + "\n" + answer + "\n\n";
+        // Save each answer in a cookie as well
+        setCookie("analysis_" + key, answer, 7);
+      }
+      
+      var email = "cell.genus3u@icloud.com";
+      var subject = encodeURIComponent("All Analysis Questions Answers");
+      var body = encodeURIComponent(allAnswers);
+      var mailtoLink = "mailto:" + email + "?subject=" + subject + "&body=" + body;
+      
+      window.location.href = mailtoLink;
+      alert("All answers saved and email triggered.");
+    }
+    
     function setCookie(cname, cvalue, exdays) {
       const d = new Date();
       d.setTime(d.getTime() + (exdays*24*60*60*1000));
       let expires = "expires="+ d.toUTCString();
       document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
     }
-
-    // Function to get a cookie by name
+    
     function getCookie(cname) {
       let name = cname + "=";
       let decodedCookie = decodeURIComponent(document.cookie);
@@ -228,29 +341,7 @@
       }
       return "";
     }
-
-    // Function to save the answer and trigger email sending via a mailto link
-    function saveAndSend(qid, qtitle) {
-      var answer = document.getElementById(qid).value;
-      if(answer.trim() === "") {
-        alert("Please enter an answer before saving.");
-        return;
-      }
-      // Save the answer in a cookie (expires in 7 days)
-      setCookie("analysis_" + qid, answer, 7);
-      
-      // Construct the mailto link with a placeholder email address
-      var email = "placeholder@example.com";  // Replace with your actual email address
-      var subject = encodeURIComponent(qtitle + " Answer");
-      var body = encodeURIComponent("Answer:\n" + answer);
-      var mailtoLink = "mailto:" + email + "?subject=" + subject + "&body=" + body;
-      
-      // Trigger the mailto link (this will open the user's email client)
-      window.location.href = mailtoLink;
-      alert("Answer saved and email triggered.");
-    }
-
-    // Function to load any saved answers from cookies when the page loads
+    
     function loadSavedAnswers() {
       var ids = ["acq1", "acq2", "acq3", "acq4", "acq5", "acq6", "acq7",
                  "cm1", "cm2", "cm3", "cm4", "cm5", "cm6", "cm7",
@@ -258,11 +349,15 @@
       ids.forEach(function(id) {
         var saved = getCookie("analysis_" + id);
         if(saved) {
-          document.getElementById(id).value = saved;
+          var ta = document.getElementById(id);
+          ta.value = saved;
+          autoResize(ta);
+          var btn = document.getElementById("btn_" + id);
+          btn.style.display = "none";
         }
       });
     }
-
+    
     window.onload = loadSavedAnswers;
   </script>
 </body>
