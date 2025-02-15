@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Questions | Coach Christian</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Additional styling specific to the analysis form */
+    .question-block {
+      margin-bottom: 20px;
+    }
+    .question-block label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .question-block textarea {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Header (same as other pages) -->
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">
+        <!-- Uncomment and add your logo: <img src="logo.png" alt="Logo"> -->
+        Logo
+      </div>
+      <div class="site-title">CoachChristian</div>
+    </div>
+    <a href="menu.html" class="hamburger">&#9776;</a>
+  </header>
+  
+  <div class="content">
+    <section class="section">
+      <h2>Key Analysis Questions</h2>
+      <p>Please fill in your answers below. You can save each answer individually; your response will be stored in a cookie (so you can return later) and an email (to <em>placeholder@example.com</em>) will be triggered for each saved answer.</p>
+      
+      <!-- Current Client Acquisition Section -->
+      <h3>Current Client Acquisition</h3>
+      
+      <div class="question-block">
+        <label for="acq1">What's your current split between local and online clients?</label>
+        <textarea id="acq1" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq1', 'Current Client Acquisition: Client Split')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="acq2">How do most clients currently find you?</label>
+        <textarea id="acq2" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq2', 'Current Client Acquisition: Client Source')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="acq3">What's your conversion rate from initial contact to paying client?</label>
+        <textarea id="acq3" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq3', 'Current Client Acquisition: Conversion Rate')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="acq4">What's your average client lifetime value?</label>
+        <textarea id="acq4" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq4', 'Current Client Acquisition: Lifetime Value')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="acq5">Which Instagram content drives the most engagement and leads?</label>
+        <textarea id="acq5" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq5', 'Current Client Acquisition: Instagram Engagement')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="acq6">What's your typical response time to new inquiries?</label>
+        <textarea id="acq6" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq6', 'Current Client Acquisition: Response Time')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="acq7">How do you currently qualify potential clients?</label>
+        <textarea id="acq7" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('acq7', 'Current Client Acquisition: Qualifying Clients')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <!-- Client Management Section -->
+      <h3>Client Management</h3>
+      
+      <div class="question-block">
+        <label for="cm1">What's your current onboarding process step by step?</label>
+        <textarea id="cm1" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm1', 'Client Management: Onboarding Process')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="cm2">How do you track client progress and goals?</label>
+        <textarea id="cm2" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm2', 'Client Management: Tracking Progress')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="cm3">How do you communicate with clients (platforms, frequency)?</label>
+        <textarea id="cm3" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm3', 'Client Management: Communication')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="cm4">What documentation do clients need to provide?</label>
+        <textarea id="cm4" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm4', 'Client Management: Documentation')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="cm5">How do you handle payments and billing?</label>
+        <textarea id="cm5" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm5', 'Client Management: Payments and Billing')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="cm6">What's your current client capacity?</label>
+        <textarea id="cm6" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm6', 'Client Management: Client Capacity')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="cm7">What tasks take up most of your time?</label>
+        <textarea id="cm7" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('cm7', 'Client Management: Time-Consuming Tasks')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <!-- Program Structure Section -->
+      <h3>Program Structure</h3>
+      
+      <div class="question-block">
+        <label for="ps1">What different service packages do you offer?</label>
+        <textarea id="ps1" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('ps1', 'Program Structure: Service Packages')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="ps2">How do you customize programs for individuals?</label>
+        <textarea id="ps2" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('ps2', 'Program Structure: Customization')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="ps3">What's your process for adjusting programs based on progress?</label>
+        <textarea id="ps3" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('ps3', 'Program Structure: Adjusting Programs')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="ps4">How do you currently deliver workout and nutrition plans?</label>
+        <textarea id="ps4" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('ps4', 'Program Structure: Delivery of Plans')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+      <div class="question-block">
+        <label for="ps5">What supplementary materials do you provide clients?</label>
+        <textarea id="ps5" rows="3"></textarea>
+        <div class="center-button">
+          <button type="button" onclick="saveAndSend('ps5', 'Program Structure: Supplementary Materials')">Save &amp; Send</button>
+        </div>
+      </div>
+      
+    </section>
+  </div>
+  
+  <script>
+    // Function to set a cookie (expires in exdays days)
+    function setCookie(cname, cvalue, exdays) {
+      const d = new Date();
+      d.setTime(d.getTime() + (exdays*24*60*60*1000));
+      let expires = "expires="+ d.toUTCString();
+      document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
+    }
+
+    // Function to get a cookie by name
+    function getCookie(cname) {
+      let name = cname + "=";
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(name) === 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    // Function to save the answer and trigger email sending via a mailto link
+    function saveAndSend(qid, qtitle) {
+      var answer = document.getElementById(qid).value;
+      if(answer.trim() === "") {
+        alert("Please enter an answer before saving.");
+        return;
+      }
+      // Save the answer in a cookie (expires in 7 days)
+      setCookie("analysis_" + qid, answer, 7);
+      
+      // Construct the mailto link with a placeholder email address
+      var email = "placeholder@example.com";  // Replace with your actual email address
+      var subject = encodeURIComponent(qtitle + " Answer");
+      var body = encodeURIComponent("Answer:\n" + answer);
+      var mailtoLink = "mailto:" + email + "?subject=" + subject + "&body=" + body;
+      
+      // Trigger the mailto link (this will open the user's email client)
+      window.location.href = mailtoLink;
+      alert("Answer saved and email triggered.");
+    }
+
+    // Function to load any saved answers from cookies when the page loads
+    function loadSavedAnswers() {
+      var ids = ["acq1", "acq2", "acq3", "acq4", "acq5", "acq6", "acq7",
+                 "cm1", "cm2", "cm3", "cm4", "cm5", "cm6", "cm7",
+                 "ps1", "ps2", "ps3", "ps4", "ps5"];
+      ids.forEach(function(id) {
+        var saved = getCookie("analysis_" + id);
+        if(saved) {
+          document.getElementById(id).value = saved;
+        }
+      });
+    }
+
+    window.onload = loadSavedAnswers;
+  </script>
+</body>
+</html>
