@@ -1,46 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weight Tracker | Coach Christian</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Additional styling specific to the weight tracker page -->
   <style>
-    /* Warning message style */
+    /* Additional styling specific to the weight tracker page */
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
     .warning {
       color: #e74c3c;
       border-left: 3px solid #e74c3c;
       padding: 0.5rem;
       margin-top: 10px;
-      transition: opacity 0.3s ease;
     }
-    /* Weekly intervals grid */
-    .weeks-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-      margin-top: 15px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
-    .week-item {
-      background: #f1f1f1;
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
       padding: 8px;
-      border-radius: 4px;
       text-align: center;
-      font-size: 14px;
     }
-    /* Loading animation for Save Plan button */
-    .save-plan-button.loading {
-      pointer-events: none;
-      opacity: 0.7;
+    #graphContainer {
+      width: 100%;
+      height: 300px;
+      position: relative;
+      border: 1px solid #ccc;
+      margin-top: 20px;
     }
+    /* Spinner for Save Plan button */
     .spinner {
       display: inline-block;
       width: 18px;
       height: 18px;
-      border: 3px solid rgba(0, 0, 0, 0.2);
+      border: 3px solid rgba(0,0,0,0.2);
+      border-top-color: rgba(0,0,0,0.6);
       border-radius: 50%;
-      border-top-color: rgba(0, 0, 0, 0.6);
       animation: spin 0.8s linear infinite;
       vertical-align: middle;
       margin-left: 10px;
@@ -48,21 +55,18 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    /* Chart container styling */
-    #chartContainer {
-      margin-top: 20px;
+    /* Responsive adjustments for table and graph */
+    @media (min-width: 768px) {
+      table { font-size: 16px; }
     }
   </style>
-  <!-- Include date-fns and Chart.js from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/dist/date-fns.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Fixed Header -->
+  <!-- Fixed Header (using global styles from styles.css) -->
   <header class="fixed-header">
     <div class="header-left">
       <div class="logo">
-        <!-- <img src="logo.png" alt="Logo"> -->
+        <!-- Replace with your logo if desired -->
         Logo
       </div>
       <div class="site-title">CoachChristian</div>
@@ -73,11 +77,11 @@
   <div class="content">
     <section class="section">
       <h2>Weight Tracking Plan</h2>
-      <p>Enter your plan details below. All inputs are validated in real‑time and your plan will be saved in a cookie (45‑day expiration) and logged in the console.</p>
+      <p>Enter your plan details below. All inputs are validated in real‑time and your plan will be saved (in a 45‑day cookie) and displayed as a weekly table and a simple graph.</p>
       
-      <form id="weightForm">
+      <form id="planForm">
         <div class="form-group">
-          <label for="startDate">Start Date (must be a future date):</label>
+          <label for="startDate">Start Date (future date):</label>
           <input type="date" id="startDate" required>
         </div>
         <div class="form-group">
@@ -88,46 +92,57 @@
           <label for="targetWeight">Target Weight (lbs, min 50):</label>
           <input type="number" id="targetWeight" min="50" required>
         </div>
-        <!-- Warning message area -->
         <div id="warningMessage"></div>
-        <!-- Weekly intervals display -->
-        <div id="weeklyIntervals" class="weeks-grid"></div>
-        
         <div class="center-button" style="margin-top:20px;">
-          <button type="button" id="savePlanBtn" class="save-plan-button" onclick="savePlan()">Save Plan</button>
+          <button type="button" id="savePlanBtn" onclick="savePlan()">Save Plan <span id="spinner" class="spinner" style="display:none;"></span></button>
         </div>
       </form>
       
-      <!-- Chart Container -->
-      <div id="chartContainer">
-        <canvas id="chartCanvas"></canvas>
+      <!-- This section appears after a plan is saved -->
+      <div id="planDisplay" style="display:none;">
+        <h3>Weekly Plan</h3>
+        <table id="planTable">
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Date Range</th>
+              <th>Planned Weight (lbs)</th>
+              <th>Actual Weight (lbs)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Table rows will be generated dynamically -->
+          </tbody>
+        </table>
+        <h3>Progress Graph</h3>
+        <div id="graphContainer"></div>
       </div>
     </section>
   </div>
   
   <script>
-    // Set up min attribute for startDate input (tomorrow's date)
+    // Set the minimum date for the startDate input to tomorrow
     function setMinStartDate() {
       const startDateInput = document.getElementById("startDate");
-      let today = new Date();
-      today.setDate(today.getDate() + 1); // future date
+      const today = new Date();
+      today.setDate(today.getDate() + 1);
       startDateInput.min = today.toISOString().split("T")[0];
     }
     setMinStartDate();
     
-    // Utility: Set and get cookies
+    // Cookie helper functions
     function setCookie(cname, cvalue, exdays) {
       const d = new Date();
       d.setTime(d.getTime() + (exdays*24*60*60*1000));
-      let expires = "expires="+ d.toUTCString();
+      const expires = "expires=" + d.toUTCString();
       document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
     }
     
     function getCookie(cname) {
-      let name = cname + "=";
-      let decodedCookie = decodeURIComponent(document.cookie);
-      let ca = decodedCookie.split(';');
-      for(let i = 0; i < ca.length; i++) {
+      const name = cname + "=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for (let i = 0; i < ca.length; i++) {
         let c = ca[i].trim();
         if (c.indexOf(name) === 0) {
           return c.substring(name.length, c.length);
@@ -136,94 +151,76 @@
       return "";
     }
     
-    // Global variables for plan data and chart instance
     let planData = null;
-    let chartInstance = null;
     
-    // Real-time validation & warning check
+    // Real-time weight validation
     function validateWeights() {
       const currentWeight = parseFloat(document.getElementById("currentWeight").value);
       const targetWeight = parseFloat(document.getElementById("targetWeight").value);
       const warningDiv = document.getElementById("warningMessage");
       warningDiv.innerHTML = "";
-      
       if (!isNaN(currentWeight) && !isNaN(targetWeight)) {
         const maxLoss = currentWeight * 0.12;
         if ((currentWeight - targetWeight) > maxLoss) {
           warningDiv.innerHTML = `<div class="warning">⚠️ Target exceeds recommended 12% weight loss (max ${maxLoss.toFixed(1)} lbs)</div>`;
-          document.getElementById("targetWeight").classList.add("warning");
+          document.getElementById("targetWeight").style.border = "2px solid #e74c3c";
         } else {
-          document.getElementById("targetWeight").classList.remove("warning");
+          document.getElementById("targetWeight").style.border = "";
         }
       }
     }
-    
-    // Listen for changes on weight inputs for real-time validation
     document.getElementById("currentWeight").addEventListener("input", validateWeights);
     document.getElementById("targetWeight").addEventListener("input", validateWeights);
     
-    // Generate 12 weekly intervals when start date is selected
-    document.getElementById("startDate").addEventListener("change", generateWeeklyIntervals);
-    
-    function generateWeeklyIntervals() {
-      const startDateStr = document.getElementById("startDate").value;
-      if (!startDateStr) return;
-      const startDate = new Date(startDateStr);
-      const intervalsDiv = document.getElementById("weeklyIntervals");
-      intervalsDiv.innerHTML = "";
-      
-      // Generate 12 weeks
-      let weeks = [];
-      for (let i = 0; i < 12; i++) {
-        // Use date-fns add() to add i weeks
-        const weekStart = dateFns.add(startDate, { weeks: i });
-        const weekEnd = dateFns.add(weekStart, { days: 6 });
-        // Format dates as "Mon DD" - "Sun DD"
-        const startFormatted = dateFns.format(weekStart, 'EEE dd');
-        const endFormatted = dateFns.format(weekEnd, 'EEE dd');
-        const weekText = `Week ${i + 1}: ${startFormatted} - ${endFormatted}`;
-        weeks.push({ week: i + 1, start: dateFns.format(weekStart, 'MM/dd'), end: dateFns.format(weekEnd, 'MM/dd') });
-        
-        // Create a grid item for display
-        const div = document.createElement("div");
-        div.className = "week-item";
-        div.innerText = weekText;
-        intervalsDiv.appendChild(div);
-      }
-      
-      // Store the weeks array temporarily in planData (to be combined with weight info on save)
-      if (!planData) planData = {};
-      planData.weeks = weeks;
+    // Helper functions for date manipulation
+    function addDays(date, days) {
+      const result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
     }
     
-    // Compute weekly target weights using non-linear formula
-    function computeWeeklyTargets(currentWeight, targetWeight) {
+    function formatDate(date) {
+      const mm = ("0" + (date.getMonth() + 1)).slice(-2);
+      const dd = ("0" + date.getDate()).slice(-2);
+      return mm + "/" + dd;
+    }
+    
+    // Generate the 12-week plan (dates and planned weights)
+    function generateWeeklyPlan(startDate, currentWeight, targetWeight) {
+      const weeks = [];
       const totalLoss = currentWeight - targetWeight;
       let sumFactor = 0;
       for (let i = 1; i <= 12; i++) {
         sumFactor += Math.pow(0.93, i);
       }
       const baseRate = totalLoss / sumFactor;
-      
       let cumulativeLoss = 0;
-      let targets = [];
-      for (let i = 1; i <= 12; i++) {
-        let weeklyLoss = baseRate * Math.pow(0.93, i);
+      for (let i = 0; i < 12; i++) {
+        const weekNumber = i + 1;
+        const weekStart = addDays(startDate, i * 7);
+        const weekEnd = addDays(weekStart, 6);
+        const weeklyLoss = baseRate * Math.pow(0.93, weekNumber);
         cumulativeLoss += weeklyLoss;
-        let weekTarget = currentWeight - cumulativeLoss;
-        if (weekTarget < targetWeight) weekTarget = targetWeight;
-        targets.push(parseFloat(weekTarget.toFixed(1)));
+        let plannedWeight = currentWeight - cumulativeLoss;
+        if (plannedWeight < targetWeight) plannedWeight = targetWeight;
+        plannedWeight = parseFloat(plannedWeight.toFixed(1));
+        weeks.push({
+          week: weekNumber,
+          start: formatDate(weekStart),
+          end: formatDate(weekEnd),
+          planned: plannedWeight,
+          actual: ""
+        });
       }
-      return targets;
+      return weeks;
     }
     
-    // Save Plan and generate chart
+    // Save the plan when the Save Plan button is pressed
     function savePlan() {
       const startDateStr = document.getElementById("startDate").value;
       const currentWeight = parseFloat(document.getElementById("currentWeight").value);
       const targetWeight = parseFloat(document.getElementById("targetWeight").value);
       
-      // Basic validations
       if (!startDateStr) {
         alert("Please select a start date.");
         document.getElementById("startDate").focus();
@@ -240,115 +237,145 @@
         return;
       }
       
-      // Re-run weight validation
       validateWeights();
-      const warningDiv = document.getElementById("warningMessage");
-      if (warningDiv.innerText.indexOf("⚠️") !== -1) {
-        // Do not block submission, but you could optionally focus targetWeight
-        // document.getElementById("targetWeight").focus();
-      }
       
-      // Generate weekly intervals if not already generated
-      if (!planData || !planData.weeks) {
-        generateWeeklyIntervals();
-      }
-      
-      // Compute weekly target weights
-      const weeklyTargets = computeWeeklyTargets(currentWeight, targetWeight);
-      
-      // Merge weekly targets into planData.weeks
-      planData.startDate = startDateStr;
-      planData.startWeight = currentWeight;
-      planData.targetWeight = targetWeight;
-      planData.weeks = planData.weeks.map((w, i) => {
-        return { ...w, target: weeklyTargets[i] };
-      });
-      
-      // Save JSON payload to cookie (45-day expiration)
-      const payload = JSON.stringify(planData);
-      setCookie("weightPlan", payload, 45);
-      
-      // Console log payload
-      console.log("Saved Weight Plan:", payload);
-      
-      // Trigger loading animation on Save Plan button
+      // Show loading animation
       const btn = document.getElementById("savePlanBtn");
-      btn.classList.add("loading");
-      btn.innerHTML = 'Saving...<span class="spinner"></span>';
+      const spinner = document.getElementById("spinner");
+      spinner.style.display = "inline-block";
+      btn.disabled = true;
       
-      // After a short delay, remove animation and generate chart
-      setTimeout(function() {
-        btn.classList.remove("loading");
-        btn.innerText = "Save Plan";
-        generateChart(weeklyTargets, currentWeight, targetWeight);
+      setTimeout(() => {
+        spinner.style.display = "none";
+        btn.disabled = false;
+        const startDate = new Date(startDateStr);
+        const weeks = generateWeeklyPlan(startDate, currentWeight, targetWeight);
+        planData = {
+          startDate: startDateStr,
+          startWeight: currentWeight,
+          targetWeight: targetWeight,
+          weeks: weeks
+        };
+        setCookie("weightPlan", JSON.stringify(planData), 45);
+        console.log("Saved Weight Plan:", planData);
+        displayPlan();
       }, 1000);
     }
     
-    // Generate a line chart using Chart.js
-    function generateChart(weeklyTargets, currentWeight, targetWeight) {
-      const ctx = document.getElementById("chartCanvas").getContext("2d");
-      const labels = [];
-      for (let i = 1; i <= 12; i++) {
-        labels.push("W" + i);
-      }
+    // Display the weekly plan table and generate the graph
+    function displayPlan() {
+      document.getElementById("planDisplay").style.display = "block";
+      const tbody = document.getElementById("planTable").getElementsByTagName("tbody")[0];
+      tbody.innerHTML = "";
       
-      const data = {
-        labels: labels,
-        datasets: [
-          {
-            label: "Weekly Target Weight",
-            data: weeklyTargets,
-            borderColor: "blue",
-            backgroundColor: "rgba(0,0,255,0.1)",
-            tension: 0.4,
-            fill: false,
-            pointRadius: 4
-          },
-          {
-            label: "Current Weight",
-            data: Array(12).fill(currentWeight),
-            borderColor: "green",
-            borderDash: [5, 5],
-            fill: false,
-            pointRadius: 0
-          },
-          {
-            label: "Target Weight",
-            data: Array(12).fill(targetWeight),
-            borderColor: "red",
-            borderDash: [5, 5],
-            fill: false,
-            pointRadius: 0
-          }
-        ]
-      };
-      
-      const options = {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom' }
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            title: { display: true, text: "Weight (lbs)" }
-          }
-        }
-      };
-      
-      // If chart exists, destroy it before creating new one
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
-      
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: data,
-        options: options
+      planData.weeks.forEach((week, index) => {
+        const row = document.createElement("tr");
+        
+        // Week number
+        const cellWeek = document.createElement("td");
+        cellWeek.innerText = week.week;
+        row.appendChild(cellWeek);
+        
+        // Date Range
+        const cellRange = document.createElement("td");
+        cellRange.innerText = `Week ${week.week}: ${week.start} - ${week.end}`;
+        row.appendChild(cellRange);
+        
+        // Planned Weight
+        const cellPlanned = document.createElement("td");
+        cellPlanned.innerText = week.planned;
+        row.appendChild(cellPlanned);
+        
+        // Actual Weight (input)
+        const cellActual = document.createElement("td");
+        const inputActual = document.createElement("input");
+        inputActual.type = "number";
+        inputActual.min = "0";
+        inputActual.value = week.actual;
+        inputActual.style.width = "80px";
+        inputActual.onchange = function() {
+          planData.weeks[index].actual = inputActual.value;
+          setCookie("weightPlan", JSON.stringify(planData), 45);
+          updateGraph();
+        };
+        cellActual.appendChild(inputActual);
+        row.appendChild(cellActual);
+        
+        tbody.appendChild(row);
       });
+      
+      updateGraph();
     }
     
-    // On page load, attempt to load saved plan from cookie and restore fields
+    // Generate a simple line graph using inline SVG (no external libraries)
+    function updateGraph() {
+      const container = document.getElementById("graphContainer");
+      container.innerHTML = "";
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      const padding = 40;
+      
+      const maxWeight = planData.startWeight;
+      const minWeight = planData.targetWeight;
+      const scaleY = (height - 2 * padding) / (maxWeight - minWeight);
+      const xSpacing = (width - 2 * padding) / (planData.weeks.length - 1);
+      
+      const svgns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgns, "svg");
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      
+      // Draw horizontal lines for current and target weights
+      function drawHLine(weight, color, label) {
+        const y = padding + (maxWeight - weight) * scaleY;
+        const line = document.createElementNS(svgns, "line");
+        line.setAttribute("x1", padding);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", width - padding);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-dasharray", "4,2");
+        svg.appendChild(line);
+        
+        const text = document.createElementNS(svgns, "text");
+        text.setAttribute("x", width - padding);
+        text.setAttribute("y", y - 5);
+        text.setAttribute("text-anchor", "end");
+        text.setAttribute("fill", color);
+        text.setAttribute("font-size", "12");
+        text.textContent = label + " (" + weight + " lbs)";
+        svg.appendChild(text);
+      }
+      drawHLine(planData.startWeight, "green", "Current Weight");
+      drawHLine(planData.targetWeight, "red", "Target Weight");
+      
+      // Build points for the planned weight line
+      let points = "";
+      planData.weeks.forEach((week, i) => {
+        const x = padding + i * xSpacing;
+        const y = padding + (maxWeight - week.planned) * scaleY;
+        points += `${x},${y} `;
+        // Draw a circle at each data point
+        const circle = document.createElementNS(svgns, "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 4);
+        circle.setAttribute("fill", "blue");
+        svg.appendChild(circle);
+      });
+      
+      // Draw polyline connecting the points
+      const polyline = document.createElementNS(svgns, "polyline");
+      polyline.setAttribute("points", points.trim());
+      polyline.setAttribute("fill", "none");
+      polyline.setAttribute("stroke", "blue");
+      polyline.setAttribute("stroke-width", "2");
+      svg.appendChild(polyline);
+      
+      container.appendChild(svg);
+    }
+    
+    // On page load, restore saved plan from cookie (if available)
     function loadPlan() {
       const saved = getCookie("weightPlan");
       if (saved) {
@@ -356,13 +383,9 @@
         document.getElementById("startDate").value = planData.startDate;
         document.getElementById("currentWeight").value = planData.startWeight;
         document.getElementById("targetWeight").value = planData.targetWeight;
-        // Generate weekly intervals display and chart if possible
-        generateWeeklyIntervals();
-        const weeklyTargets = planData.weeks.map(w => w.target);
-        generateChart(weeklyTargets, planData.startWeight, planData.targetWeight);
+        displayPlan();
       }
     }
-    
     window.onload = loadPlan;
   </script>
 </body>
