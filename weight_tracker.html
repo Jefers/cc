@@ -77,7 +77,7 @@
   <div class="content">
     <section class="section">
       <h2>Weight Tracking Plan</h2>
-      <p>Enter your plan details below. All inputs are validated in real‑time and your plan will be saved (in a 45‑day cookie) and displayed as a weekly table and a simple graph.</p>
+      <p>Enter your plan details below. All inputs are validated in real‑time and your plan will be saved (in a 45‑day cookie) and displayed as a weekly table and a simple graph. You can also update your actual weight each week and see your progress plotted in orange.</p>
       
       <form id="planForm">
         <div class="form-group">
@@ -209,7 +209,7 @@
           start: formatDate(weekStart),
           end: formatDate(weekEnd),
           planned: plannedWeight,
-          actual: ""
+          actual: "" // will hold actual weight (number or empty string)
         });
       }
       return weeks;
@@ -294,7 +294,12 @@
         inputActual.value = week.actual;
         inputActual.style.width = "80px";
         inputActual.onchange = function() {
-          planData.weeks[index].actual = inputActual.value;
+          let val = parseFloat(inputActual.value);
+          if (isNaN(val)) {
+            planData.weeks[index].actual = "";
+          } else {
+            planData.weeks[index].actual = val;
+          }
           setCookie("weightPlan", JSON.stringify(planData), 45);
           updateGraph();
         };
@@ -308,6 +313,7 @@
     }
     
     // Generate a simple line graph using inline SVG (no external libraries)
+    // This now plots both the planned progression (blue) and actual progress (orange)
     function updateGraph() {
       const container = document.getElementById("graphContainer");
       container.innerHTML = "";
@@ -350,12 +356,12 @@
       drawHLine(planData.targetWeight, "red", "Target Weight");
       
       // Build points for the planned weight line
-      let points = "";
+      let plannedPoints = "";
       planData.weeks.forEach((week, i) => {
         const x = padding + i * xSpacing;
         const y = padding + (maxWeight - week.planned) * scaleY;
-        points += `${x},${y} `;
-        // Draw a circle at each data point
+        plannedPoints += `${x},${y} `;
+        // Draw a circle at each planned data point
         const circle = document.createElementNS(svgns, "circle");
         circle.setAttribute("cx", x);
         circle.setAttribute("cy", y);
@@ -364,13 +370,41 @@
         svg.appendChild(circle);
       });
       
-      // Draw polyline connecting the points
-      const polyline = document.createElementNS(svgns, "polyline");
-      polyline.setAttribute("points", points.trim());
-      polyline.setAttribute("fill", "none");
-      polyline.setAttribute("stroke", "blue");
-      polyline.setAttribute("stroke-width", "2");
-      svg.appendChild(polyline);
+      // Draw polyline connecting the planned weight points
+      const polylinePlanned = document.createElementNS(svgns, "polyline");
+      polylinePlanned.setAttribute("points", plannedPoints.trim());
+      polylinePlanned.setAttribute("fill", "none");
+      polylinePlanned.setAttribute("stroke", "blue");
+      polylinePlanned.setAttribute("stroke-width", "2");
+      svg.appendChild(polylinePlanned);
+      
+      // Build points for the actual weight line (if any)
+      let actualPoints = "";
+      let hasActual = false;
+      planData.weeks.forEach((week, i) => {
+        const x = padding + i * xSpacing;
+        if (week.actual !== "" && !isNaN(week.actual)) {
+          hasActual = true;
+          const actualValue = parseFloat(week.actual);
+          const y = padding + (maxWeight - actualValue) * scaleY;
+          actualPoints += `${x},${y} `;
+          // Draw a circle at each actual data point
+          const circle = document.createElementNS(svgns, "circle");
+          circle.setAttribute("cx", x);
+          circle.setAttribute("cy", y);
+          circle.setAttribute("r", 4);
+          circle.setAttribute("fill", "orange");
+          svg.appendChild(circle);
+        }
+      });
+      if(hasActual && actualPoints.trim() !== "") {
+        const polylineActual = document.createElementNS(svgns, "polyline");
+        polylineActual.setAttribute("points", actualPoints.trim());
+        polylineActual.setAttribute("fill", "none");
+        polylineActual.setAttribute("stroke", "orange");
+        polylineActual.setAttribute("stroke-width", "2");
+        svg.appendChild(polylineActual);
+      }
       
       container.appendChild(svg);
     }
