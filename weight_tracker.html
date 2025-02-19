@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Weight Tracker | Coach Christian</title>
   <link rel="stylesheet" href="styles.css">
   <style>
@@ -32,6 +32,7 @@
     th, td {
       padding: 8px;
       text-align: center;
+      font-size: 14px;
     }
     #graphContainer {
       width: 100%;
@@ -55,11 +56,36 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    /* Responsive adjustments for table and graph */
-    @media (min-width: 768px) {
-      table { font-size: 16px; }
+    /* Total Weight Loss output styling */
+    #totalLossOutput {
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    /* Citation toggle styling */
+    #citationToggle {
+      margin-top: 10px;
+      cursor: pointer;
+      color: #555;
+      text-decoration: underline;
+      font-size: 14px;
+    }
+    #citationContent {
+      display: none;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #777;
     }
   </style>
+  <script>
+    // Conversion helper functions
+    function lbsToKg(val) {
+      return val * 0.453592;
+    }
+    function kgToLbs(val) {
+      return val / 0.453592;
+    }
+  </script>
 </head>
 <body>
   <!-- Fixed Header (using global styles from styles.css) -->
@@ -77,7 +103,16 @@
   <div class="content">
     <section class="section">
       <h2>Weight Tracking Plan</h2>
-      <p>Enter your plan details below. All inputs are validated in real‑time and your plan will be saved (in a 45‑day cookie) and displayed as a weekly table and a simple graph. You can also update your actual weight each week and see your progress plotted in orange.</p>
+      <p>Enter your plan details below. Your plan will be saved (45‑day cookie) and displayed as a weekly table and a simple graph showing your planned progression (blue) and your actual progress (orange).</p>
+      
+      <!-- Unit Switch -->
+      <div class="form-group">
+        <label for="unitSelect">Units:</label>
+        <select id="unitSelect" onchange="changeUnit()">
+          <option value="lbs" selected>Lbs</option>
+          <option value="kg">Kg</option>
+        </select>
+      </div>
       
       <form id="planForm">
         <div class="form-group">
@@ -85,18 +120,21 @@
           <input type="date" id="startDate" required>
         </div>
         <div class="form-group">
-          <label for="currentWeight">Current Weight (lbs, min 100):</label>
-          <input type="number" id="currentWeight" min="100" required>
+          <label for="currentWeight">Current Weight (<span id="weightUnitLabel">lbs</span>, min <span id="minCurrent">100</span>):</label>
+          <input type="number" id="currentWeight" min="100" required style="width:80px;">
         </div>
         <div class="form-group">
-          <label for="targetWeight">Target Weight (lbs, min 50):</label>
-          <input type="number" id="targetWeight" min="50" required>
+          <label for="targetWeight">Target Weight (<span id="weightUnitLabel2">lbs</span>, min <span id="minTarget">50</span>):</label>
+          <input type="number" id="targetWeight" min="50" required style="width:80px;">
         </div>
         <div id="warningMessage"></div>
         <div class="center-button" style="margin-top:20px;">
           <button type="button" id="savePlanBtn" onclick="savePlan()">Save Plan <span id="spinner" class="spinner" style="display:none;"></span></button>
         </div>
       </form>
+      
+      <!-- Total Weight Loss Output -->
+      <div id="totalLossOutput"></div>
       
       <!-- This section appears after a plan is saved -->
       <div id="planDisplay" style="display:none;">
@@ -105,9 +143,9 @@
           <thead>
             <tr>
               <th>Week</th>
-              <th>Date Range</th>
-              <th>Planned Weight (lbs)</th>
-              <th>Actual Weight (lbs)</th>
+              <th>Weigh In Date</th>
+              <th>Planned Weight (<span id="tableUnitLabel">lbs</span>)</th>
+              <th>Actual Weight (<span id="tableUnitLabel2">lbs</span>)</th>
             </tr>
           </thead>
           <tbody>
@@ -117,11 +155,21 @@
         <h3>Progress Graph</h3>
         <div id="graphContainer"></div>
       </div>
+      
+      <!-- Citation Toggle -->
+      <div id="citationToggle" onclick="toggleCitation()">Show Citation</div>
+      <div id="citationContent">
+        <p>Based on guidelines from the <a href="https://www.nhlbi.nih.gov/health/educational/lose_wt/" target="_blank">National Heart, Lung, and Blood Institute</a> on safe weight loss (1-2 lbs/week). Classification thresholds are adapted for illustration.</p>
+      </div>
     </section>
   </div>
   
   <script>
-    // Set the minimum date for the startDate input to tomorrow
+    // Global variables
+    let planData = null;
+    let unit = "lbs"; // default unit
+    
+    // Set the minimum date for startDate input (tomorrow)
     function setMinStartDate() {
       const startDateInput = document.getElementById("startDate");
       const today = new Date();
@@ -133,7 +181,7 @@
     // Cookie helper functions
     function setCookie(cname, cvalue, exdays) {
       const d = new Date();
-      d.setTime(d.getTime() + (exdays*24*60*60*1000));
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
       const expires = "expires=" + d.toUTCString();
       document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
     }
@@ -151,8 +199,6 @@
       return "";
     }
     
-    let planData = null;
-    
     // Real-time weight validation
     function validateWeights() {
       const currentWeight = parseFloat(document.getElementById("currentWeight").value);
@@ -162,7 +208,7 @@
       if (!isNaN(currentWeight) && !isNaN(targetWeight)) {
         const maxLoss = currentWeight * 0.12;
         if ((currentWeight - targetWeight) > maxLoss) {
-          warningDiv.innerHTML = `<div class="warning">⚠️ Target exceeds recommended 12% weight loss (max ${maxLoss.toFixed(1)} lbs)</div>`;
+          warningDiv.innerHTML = `<div class="warning">⚠️ Target exceeds recommended 12% weight loss (max ${maxLoss.toFixed(1)} ${unit})</div>`;
           document.getElementById("targetWeight").style.border = "2px solid #e74c3c";
         } else {
           document.getElementById("targetWeight").style.border = "";
@@ -185,7 +231,7 @@
       return mm + "/" + dd;
     }
     
-    // Generate the 12-week plan (dates and planned weights)
+    // Generate the 12-week plan (each week gets a weigh in date = week start) and planned weights
     function generateWeeklyPlan(startDate, currentWeight, targetWeight) {
       const weeks = [];
       const totalLoss = currentWeight - targetWeight;
@@ -197,8 +243,7 @@
       let cumulativeLoss = 0;
       for (let i = 0; i < 12; i++) {
         const weekNumber = i + 1;
-        const weekStart = addDays(startDate, i * 7);
-        const weekEnd = addDays(weekStart, 6);
+        const weekDate = addDays(startDate, i * 7);
         const weeklyLoss = baseRate * Math.pow(0.93, weekNumber);
         cumulativeLoss += weeklyLoss;
         let plannedWeight = currentWeight - cumulativeLoss;
@@ -206,16 +251,15 @@
         plannedWeight = parseFloat(plannedWeight.toFixed(1));
         weeks.push({
           week: weekNumber,
-          start: formatDate(weekStart),
-          end: formatDate(weekEnd),
+          date: formatDate(weekDate),
           planned: plannedWeight,
-          actual: "" // will hold actual weight (number or empty string)
+          actual: "" // to be filled in later
         });
       }
       return weeks;
     }
     
-    // Save the plan when the Save Plan button is pressed
+    // Save the plan when Save Plan button is pressed
     function savePlan() {
       const startDateStr = document.getElementById("startDate").value;
       const currentWeight = parseFloat(document.getElementById("currentWeight").value);
@@ -226,13 +270,13 @@
         document.getElementById("startDate").focus();
         return;
       }
-      if (isNaN(currentWeight) || currentWeight < 100) {
-        alert("Please enter a valid current weight (min 100).");
+      if (isNaN(currentWeight) || currentWeight < (unit === "lbs" ? 100 : 45)) {
+        alert("Please enter a valid current weight (min " + (unit === "lbs" ? "100 lbs" : "45 kg") + ").");
         document.getElementById("currentWeight").focus();
         return;
       }
-      if (isNaN(targetWeight) || targetWeight < 50) {
-        alert("Please enter a valid target weight (min 50).");
+      if (isNaN(targetWeight) || targetWeight < (unit === "lbs" ? 50 : 23)) {
+        alert("Please enter a valid target weight (min " + (unit === "lbs" ? "50 lbs" : "23 kg") + ").");
         document.getElementById("targetWeight").focus();
         return;
       }
@@ -259,10 +303,32 @@
         setCookie("weightPlan", JSON.stringify(planData), 45);
         console.log("Saved Weight Plan:", planData);
         displayPlan();
+        displayTotalLoss();
       }, 1000);
     }
     
-    // Display the weekly plan table and generate the graph
+    // Display total weight loss and classification
+    function displayTotalLoss() {
+      const outputDiv = document.getElementById("totalLossOutput");
+      const loss = planData.startWeight - planData.targetWeight;
+      const lossPercentage = (loss / planData.startWeight) * 100;
+      let classification = "";
+      let color = "";
+      // Classification thresholds: <5%: Easy (green), 5-10%: Moderate (orange), >=10%: Difficult (red)
+      if (lossPercentage < 5) {
+        classification = "Easy";
+        color = "green";
+      } else if (lossPercentage < 10) {
+        classification = "Moderate";
+        color = "orange";
+      } else {
+        classification = "Difficult";
+        color = "red";
+      }
+      outputDiv.innerHTML = `Total Weight Loss: ${loss.toFixed(1)} ${unit} (${lossPercentage.toFixed(1)}% &ndash; <span style="color:${color}">${classification}</span>)`;
+    }
+    
+    // Display the weekly plan table and update the graph
     function displayPlan() {
       document.getElementById("planDisplay").style.display = "block";
       const tbody = document.getElementById("planTable").getElementsByTagName("tbody")[0];
@@ -276,10 +342,10 @@
         cellWeek.innerText = week.week;
         row.appendChild(cellWeek);
         
-        // Date Range
-        const cellRange = document.createElement("td");
-        cellRange.innerText = `Week ${week.week}: ${week.start} - ${week.end}`;
-        row.appendChild(cellRange);
+        // Weigh In Date (only the week start date)
+        const cellDate = document.createElement("td");
+        cellDate.innerText = week.date;
+        row.appendChild(cellDate);
         
         // Planned Weight
         const cellPlanned = document.createElement("td");
@@ -292,7 +358,7 @@
         inputActual.type = "number";
         inputActual.min = "0";
         inputActual.value = week.actual;
-        inputActual.style.width = "80px";
+        inputActual.style.width = "60px";
         inputActual.onchange = function() {
           let val = parseFloat(inputActual.value);
           if (isNaN(val)) {
@@ -312,8 +378,8 @@
       updateGraph();
     }
     
-    // Generate a simple line graph using inline SVG (no external libraries)
-    // This now plots both the planned progression (blue) and actual progress (orange)
+    // Generate a simple line graph using inline SVG (local, no external libraries)
+    // Plots planned progression (blue) and actual progress (orange)
     function updateGraph() {
       const container = document.getElementById("graphContainer");
       container.innerHTML = "";
@@ -331,7 +397,7 @@
       svg.setAttribute("width", width);
       svg.setAttribute("height", height);
       
-      // Draw horizontal lines for current and target weights
+      // Draw horizontal dashed lines for current and target weights
       function drawHLine(weight, color, label) {
         const y = padding + (maxWeight - weight) * scaleY;
         const line = document.createElementNS(svgns, "line");
@@ -349,19 +415,19 @@
         text.setAttribute("text-anchor", "end");
         text.setAttribute("fill", color);
         text.setAttribute("font-size", "12");
-        text.textContent = label + " (" + weight + " lbs)";
+        text.textContent = label + " (" + weight + " " + unit + ")";
         svg.appendChild(text);
       }
       drawHLine(planData.startWeight, "green", "Current Weight");
       drawHLine(planData.targetWeight, "red", "Target Weight");
       
-      // Build points for the planned weight line
+      // Build points for the planned weight line (blue)
       let plannedPoints = "";
       planData.weeks.forEach((week, i) => {
         const x = padding + i * xSpacing;
         const y = padding + (maxWeight - week.planned) * scaleY;
         plannedPoints += `${x},${y} `;
-        // Draw a circle at each planned data point
+        // Draw circle at each planned point
         const circle = document.createElementNS(svgns, "circle");
         circle.setAttribute("cx", x);
         circle.setAttribute("cy", y);
@@ -369,8 +435,6 @@
         circle.setAttribute("fill", "blue");
         svg.appendChild(circle);
       });
-      
-      // Draw polyline connecting the planned weight points
       const polylinePlanned = document.createElementNS(svgns, "polyline");
       polylinePlanned.setAttribute("points", plannedPoints.trim());
       polylinePlanned.setAttribute("fill", "none");
@@ -378,17 +442,16 @@
       polylinePlanned.setAttribute("stroke-width", "2");
       svg.appendChild(polylinePlanned);
       
-      // Build points for the actual weight line (if any)
+      // Build points for the actual weight line (orange), if any
       let actualPoints = "";
       let hasActual = false;
       planData.weeks.forEach((week, i) => {
         const x = padding + i * xSpacing;
         if (week.actual !== "" && !isNaN(week.actual)) {
           hasActual = true;
-          const actualValue = parseFloat(week.actual);
-          const y = padding + (maxWeight - actualValue) * scaleY;
+          const actualVal = parseFloat(week.actual);
+          const y = padding + (maxWeight - actualVal) * scaleY;
           actualPoints += `${x},${y} `;
-          // Draw a circle at each actual data point
           const circle = document.createElementNS(svgns, "circle");
           circle.setAttribute("cx", x);
           circle.setAttribute("cy", y);
@@ -397,7 +460,7 @@
           svg.appendChild(circle);
         }
       });
-      if(hasActual && actualPoints.trim() !== "") {
+      if (hasActual && actualPoints.trim() !== "") {
         const polylineActual = document.createElementNS(svgns, "polyline");
         polylineActual.setAttribute("points", actualPoints.trim());
         polylineActual.setAttribute("fill", "none");
@@ -409,7 +472,73 @@
       container.appendChild(svg);
     }
     
-    // On page load, restore saved plan from cookie (if available)
+    // Change unit: update labels, min values, and convert existing planData if needed.
+    function changeUnit() {
+      const newUnit = document.getElementById("unitSelect").value;
+      if (newUnit === unit) return;
+      
+      // Conversion factor: if switching lbs->kg, multiply by 0.453592; if kg->lbs, multiply by 2.20462.
+      const factor = newUnit === "kg" ? 0.453592 : 2.20462;
+      
+      // Convert form input values if they exist
+      let currentWeightInput = document.getElementById("currentWeight");
+      let targetWeightInput = document.getElementById("targetWeight");
+      if (currentWeightInput.value) {
+        currentWeightInput.value = (parseFloat(currentWeightInput.value) * factor).toFixed(1);
+      }
+      if (targetWeightInput.value) {
+        targetWeightInput.value = (parseFloat(targetWeightInput.value) * factor).toFixed(1);
+      }
+      
+      // Update min values and labels
+      if (newUnit === "kg") {
+        currentWeightInput.min = "45";
+        targetWeightInput.min = "23";
+        document.getElementById("weightUnitLabel").innerText = "kg";
+        document.getElementById("weightUnitLabel2").innerText = "kg";
+        document.getElementById("tableUnitLabel").innerText = "kg";
+        document.getElementById("tableUnitLabel2").innerText = "kg";
+      } else {
+        currentWeightInput.min = "100";
+        targetWeightInput.min = "50";
+        document.getElementById("weightUnitLabel").innerText = "lbs";
+        document.getElementById("weightUnitLabel2").innerText = "lbs";
+        document.getElementById("tableUnitLabel").innerText = "lbs";
+        document.getElementById("tableUnitLabel2").innerText = "lbs";
+      }
+      
+      // If a plan exists, convert its numbers and update display
+      if (planData) {
+        planData.startWeight = parseFloat((planData.startWeight * factor).toFixed(1));
+        planData.targetWeight = parseFloat((planData.targetWeight * factor).toFixed(1));
+        planData.weeks.forEach(week => {
+          week.planned = parseFloat((week.planned * factor).toFixed(1));
+          if (week.actual !== "" && !isNaN(week.actual)) {
+            week.actual = parseFloat((week.actual * factor).toFixed(1));
+          }
+        });
+        setCookie("weightPlan", JSON.stringify(planData), 45);
+        displayPlan();
+        displayTotalLoss();
+        updateGraph();
+      }
+      
+      unit = newUnit;
+    }
+    
+    // Toggle Citation visibility
+    function toggleCitation() {
+      const citation = document.getElementById("citationContent");
+      if (citation.style.display === "none" || citation.style.display === "") {
+        citation.style.display = "block";
+        document.getElementById("citationToggle").innerText = "Hide Citation";
+      } else {
+        citation.style.display = "none";
+        document.getElementById("citationToggle").innerText = "Show Citation";
+      }
+    }
+    
+    // On page load, restore saved plan from cookie if available
     function loadPlan() {
       const saved = getCookie("weightPlan");
       if (saved) {
@@ -418,6 +547,7 @@
         document.getElementById("currentWeight").value = planData.startWeight;
         document.getElementById("targetWeight").value = planData.targetWeight;
         displayPlan();
+        displayTotalLoss();
       }
     }
     window.onload = loadPlan;
