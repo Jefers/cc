@@ -7,27 +7,44 @@
   <script src="1rm.js" defer></script>
 </head>
 <body>
-  <nav>
-    <ul class="main-menu">
+<script>
+  const hamburger = document.querySelector('.hamburger');
+  const menuOverlay = document.createElement('div');
+  menuOverlay.className = 'menu-overlay';
+  menuOverlay.innerHTML = `
+    <ul>
       <li><a href="../index.html">Home</a></li>
-      <li class="has-submenu">
-        <a href="#">Fitness Metrics Tools</a>
-        <ul class="submenu">
-          <li><a href="mhr.html">Maximum Heart Rate</a></li>
-          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
-          <li><a href="bmi.html">Body Mass Index</a></li>
-          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
-          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
-          <li><a href="water-intake.html">Daily Water Intake</a></li>
-          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
-          <li><a href="1rm.html">One-Rep Max</a></li>
-          <li><a href="body-fat.html">Body Fat Percentage</a></li>
-          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
-          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
-        </ul>
-      </li>
+      <li><a href="mhr.html">Maximum Heart Rate</a></li>
+      <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+      <li><a href="bmi.html">Body Mass Index</a></li>
+      <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+      <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+      <li><a href="water-intake.html">Daily Water Intake</a></li>
+      <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+      <li><a href="1rm.html">One-Rep Max</a></li>
+      <li><a href="body-fat.html">Body Fat Percentage</a></li>
+      <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+      <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
     </ul>
-  </nav>
+  `;
+  document.body.appendChild(menuOverlay);
+  
+  hamburger.addEventListener('click', () => {
+    if(menuOverlay.style.display === 'flex') {
+      menuOverlay.style.display = 'none';
+    } else {
+      menuOverlay.style.display = 'flex';
+    }
+  });
+  
+  // Hide overlay when a link is clicked
+  menuOverlay.addEventListener('click', (e) => {
+    if(e.target.tagName === 'A') {
+      menuOverlay.style.display = 'none';
+    }
+  });
+</script>
+
   
   <main>
     <h1>One-Rep Max Calculator</h1>
