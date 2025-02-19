@@ -1,0 +1,366 @@
+/* styles-mobile.css */
+
+/* CSS Variables for easy customization */
+:root {
+  --primary-color: #ffcc00;
+  --hover-color: #e6b800;
+  --background-color: #f9f9f9;
+  --text-color: #333;
+  --accent-color: #fff8dc;
+  --menu-bg: #333;
+  --menu-text: #fff;
+  --overlay-bg: rgba(0, 0, 0, 0.9);
+}
+
+/* Global Resets */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Styles - Mobile-First */
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.5;
+  font-size: 24px; /* Generous base font size for readability */
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+/* Buttons */
+button, .button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 8px;
+  padding: 16px 24px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+button:hover, .button:hover {
+  background-color: var(--hover-color);
+}
+button:active, .button:active {
+  transform: scale(0.98);
+}
+
+/* Fullscreen Menu Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  z-index: 2000;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-overlay ul {
+  list-style: none;
+  text-align: center;
+}
+
+.menu-overlay li {
+  margin: 16px 0;
+}
+
+.menu-overlay a {
+  color: var(--menu-text);
+  font-size: 32px;
+  padding: 8px 16px;
+  display: block;
+}
+
+/* Fixed Header */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--background-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  z-index: 1500;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  background-color: #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 28px;
+}
+
+.site-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* Hamburger Button */
+.hamburger {
+  font-size: 36px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* Content Offset for Header */
+.content {
+  padding-top: 100px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Banner Section */
+.banner {
+  position: relative;
+  height: 300px;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.banner::after {
+  content: "Background Image Placeholder";
+  position: absolute;
+  color: #666;
+  font-size: 24px;
+}
+.banner-text {
+  position: relative;
+  color: rgba(255,255,255,0.95);
+  font-size: 32px;
+  text-align: center;
+  line-height: 1.6;
+  background: rgba(0,0,0,0.6);
+  padding: 20px 30px;
+  border-radius: 8px;
+}
+
+/* Section & Content Layout */
+section {
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 20px;
+  background: var(--accent-color);
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+/* Headings */
+h1, h2, h3 {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+/* Form Elements */
+input, textarea, select {
+  width: 100%;
+  padding: 16px;
+  font-size: 24px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 24px;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 16px;
+  text-align: center;
+}
+
+/* Utility Classes */
+.center-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+  border-top-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 12px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Tool-Specific Styles */
+/* Progress Bar for Waist-to-Height Ratio */
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+.progress {
+  height: 100%;
+  background-color: #4CAF50;
+  width: 0%;
+  transition: width 0.5s;
+}
+
+/* Tooltip (for BMR) */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #000;
+  cursor: pointer;
+}
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 300px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: absolute;
+  z-index: 1;
+  bottom: 140%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 20px;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Gauge for Body Fat Percentage */
+.gauge {
+  max-width: 360px;
+  margin: 24px auto;
+  text-align: center;
+}
+.gauge svg {
+  width: 100%;
+}
+
+/* Heart Icon for Resting HR */
+.heart-icon {
+  font-size: 64px;
+  color: red;
+  transition: transform 0.5s ease;
+}
+.scale {
+  margin-top: 12px;
+  font-size: 24px;
+}
+
+/* Water Intake Specific */
+.water-result {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  margin-top: 16px;
+}
+.water-icon {
+  width: 36px;
+  height: 36px;
+  background: url('water.png') no-repeat center center;
+  background-size: contain;
+  margin-right: 12px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  font-size: 20px;
+  padding: 16px;
+  border-top: 1px solid #ccc;
+  margin-top: 30px;
+}
+
+/* Responsive Adjustments for Larger Screens */
+@media (min-width: 768px) {
+  body {
+    font-size: 28px;
+  }
+  .fixed-header {
+    padding: 20px 32px;
+  }
+  .logo {
+    width: 72px;
+    height: 72px;
+    margin-right: 20px;
+  }
+  .site-title {
+    font-size: 32px;
+  }
+  .hamburger {
+    font-size: 40px;
+  }
+  .banner {
+    height: 400px;
+  }
+  .banner-text {
+    font-size: 40px;
+    padding: 24px 36px;
+  }
+  section {
+    padding: 32px;
+  }
+  h1, h2, h3 {
+    font-size: 40px;
+  }
+  input, textarea, select {
+    font-size: 28px;
+    padding: 16px;
+  }
+  button, .button {
+    font-size: 28px;
+    padding: 16px 32px;
+  }
+  table, th, td {
+    font-size: 28px;
+    padding: 20px;
+  }
+  footer {
+    font-size: 24px;
+  }
+}
