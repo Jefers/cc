@@ -22,6 +22,8 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
+  /* Mobile-first base font size increased */
+  font-size: 18px;
 }
 
 a {
@@ -247,7 +249,7 @@ form {
   gap: 10px;
 }
 
-input, textarea {
+input, textarea, select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -272,9 +274,7 @@ footer {
   margin-top: 20px;
 }
 
-/* Global Styles & Navigation */
-
-/* Main menu styling */
+/* Navigation Menu (Global) */
 .main-menu {
   list-style-type: none;
   padding: 0;
@@ -337,5 +337,120 @@ body {
 
 main {
   padding: 20px;
+}
+
+/* Tool-Specific Styles */
+
+/* Progress Bar for Waist-to-Height Ratio */
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4CAF50;
+  width: 0%;
+  transition: width 0.5s;
+}
+
+/* Tooltip (for BMR) */
+.tooltip {
+  display: inline-block;
+  position: relative;
+  border-bottom: 1px dotted black;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 250px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -125px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Gauge for Body Fat Percentage */
+.gauge {
+  width: 100%;
+  max-width: 300px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.gauge svg {
+  width: 100%;
+}
+
+/* Heart Icon for Resting HR */
+.heart-icon {
+  font-size: 50px;
+  color: red;
+  transition: transform 0.5s ease;
+}
+
+.scale {
+  display: block;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+/* Water Intake Specific */
+.water-result {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.water-icon {
+  width: 30px;
+  height: 30px;
+  background: url('water.png') no-repeat center center;
+  background-size: contain;
+  margin-right: 10px;
+}
+
+/* Mobile-First Adjustments */
+@media (max-width: 600px) {
+  body {
+    font-size: 20px;
+  }
+  .main-menu a {
+    font-size: 22px;
+    padding: 16px 24px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 1.6em;
+  }
+  input, textarea, select, button, .button {
+    font-size: 20px;
+    padding: 12px;
+  }
+  table, th, td {
+    font-size: 20px;
+    padding: 14px;
+  }
+  .result-box {
+    font-size: 20px;
+  }
 }
 
