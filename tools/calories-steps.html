@@ -6,56 +6,89 @@
   <link rel="stylesheet" href="styles-mobile.css">
   <script src="calories-steps.js" defer></script>
   <style>
-    .pedometer {
-      font-size: 24px;
-      margin-top: 10px;
-    }
+    /* You can add any page-specific styles here if needed */
   </style>
 </head>
 <body>
-  <nav>
-    <ul class="main-menu">
-      <li><a href="../index.html">Home</a></li>
-      <li class="has-submenu">
-        <a href="#">Fitness Metrics Tools</a>
-        <ul class="submenu">
-          <li><a href="mhr.html">Maximum Heart Rate</a></li>
-          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
-          <li><a href="bmi.html">Body Mass Index</a></li>
-          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
-          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
-          <li><a href="water-intake.html">Daily Water Intake</a></li>
-          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
-          <li><a href="1rm.html">One-Rep Max</a></li>
-          <li><a href="body-fat.html">Body Fat Percentage</a></li>
-          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
-          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-  
-  <main>
-    <h1>Calories Burned from Steps</h1>
-    <p>Enter your daily steps and weight to estimate calories burned.</p>
-    <form id="steps-form">
-      <label for="steps">Steps:</label>
-      <input type="number" id="steps" required>
-      <br>
-      <label for="weight">Weight:</label>
-      <input type="number" id="weight" required>
-      <select id="weight-unit">
-        <option value="kg">kg</option>
-        <option value="lbs">lbs</option>
-      </select>
-      <br>
-      <button type="submit">Calculate</button>
-    </form>
-    <div id="steps-result" class="pedometer"></div>
-    <button id="toggle-citation">Show Citation</button>
-    <div id="citation" style="display: none;">
-      <p>Based on the Compendium of Physical Activities (Ainsworth et al., 2011).</p>
+  <!-- Fixed Header -->
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">Logo</div>
+      <div class="site-title">CoachChristian</div>
     </div>
-  </main>
+    <div class="hamburger">&#9776;</div>
+  </header>
+
+  <!-- The mobile full-screen menu overlay will be injected via JavaScript below -->
+
+  <div class="content">
+    <main>
+      <h1>Calories Burned from Steps</h1>
+      <p>Enter your daily steps and weight to estimate calories burned.</p>
+      <form id="steps-form">
+        <label for="steps">Steps:</label>
+        <input type="number" id="steps" required>
+        <br>
+        <label for="weight">Weight:</label>
+        <input type="number" id="weight" required>
+        <select id="weight-unit">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+        <br>
+        <button type="submit">Calculate</button>
+      </form>
+      <div id="steps-result" class="pedometer"></div>
+      <button id="toggle-citation">Show Citation</button>
+      <div id="citation" style="display: none;">
+        <p>Based on the Compendium of Physical Activities (Ainsworth et al., 2011).</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Hamburger Menu Overlay Script -->
+  <script>
+    // Create the menu overlay element
+    const hamburger = document.querySelector('.hamburger');
+    const menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    menuOverlay.innerHTML = `
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="mhr.html">Maximum Heart Rate</a></li>
+        <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+        <li><a href="bmi.html">Body Mass Index</a></li>
+        <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+        <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+        <li><a href="water-intake.html">Daily Water Intake</a></li>
+        <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+        <li><a href="1rm.html">One-Rep Max</a></li>
+        <li><a href="body-fat.html">Body Fat Percentage</a></li>
+        <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+        <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+      </ul>
+    `;
+    // Append the overlay to the body
+    document.body.appendChild(menuOverlay);
+     
+    // Toggle overlay display when hamburger is clicked
+    hamburger.addEventListener('click', () => {
+      if(menuOverlay.style.display === 'flex') {
+         menuOverlay.style.display = 'none';
+      } else {
+         menuOverlay.style.display = 'flex';
+         menuOverlay.style.flexDirection = 'column';
+         menuOverlay.style.justifyContent = 'center';
+         menuOverlay.style.alignItems = 'center';
+      }
+    });
+     
+    // Hide overlay when any menu link is clicked
+    menuOverlay.addEventListener('click', (e) => {
+      if(e.target.tagName === 'A') {
+         menuOverlay.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
