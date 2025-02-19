@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Body Mass Index Calculator</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="bmi.js" defer></script>
+  <style>
+    .result-box {
+      padding: 10px;
+      margin-top: 10px;
+      border: 2px solid;
+      font-weight: bold;
+    }
+    .underweight { background-color: #add8e6; border-color: #0000ff; }
+    .healthy { background-color: #90ee90; border-color: #008000; }
+    .overweight { background-color: #ffa07a; border-color: #ff4500; }
+    .obese { background-color: #ffcccb; border-color: #ff0000; }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul class="main-menu">
+      <li><a href="../index.html">Home</a></li>
+      <li class="has-submenu">
+        <a href="#">Fitness Metrics Tools</a>
+        <ul class="submenu">
+          <li><a href="mhr.html">Maximum Heart Rate</a></li>
+          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+          <li><a href="bmi.html">Body Mass Index</a></li>
+          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+          <li><a href="water-intake.html">Daily Water Intake</a></li>
+          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+          <li><a href="1rm.html">One-Rep Max</a></li>
+          <li><a href="body-fat.html">Body Fat Percentage</a></li>
+          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  
+  <main>
+    <h1>Body Mass Index (BMI) Calculator</h1>
+    <p>Enter your weight and height to calculate your BMI.</p>
+    <form id="bmi-form">
+      <label for="weight">Weight:</label>
+      <input type="number" id="weight" required>
+      <select id="weight-unit">
+        <option value="kg">kg</option>
+        <option value="lbs">lbs</option>
+      </select>
+      <br>
+      <label for="height">Height:</label>
+      <input type="number" id="height" required>
+      <select id="height-unit">
+        <option value="cm">cm</option>
+        <option value="ft">ft</option>
+      </select>
+      <br>
+      <button type="submit">Calculate BMI</button>
+    </form>
+    <div id="bmi-result" class="result-box"></div>
+    <button id="toggle-citation">Show Citation</button>
+    <div id="citation" style="display: none;">
+      <p>Based on WHO classification (2000). Limitations: doesn’t measure fat directly.</p>
+    </div>
+  </main>
+</body>
+</html>

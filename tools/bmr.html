@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BMR Calculator</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="bmr.js" defer></script>
+  <style>
+    .tooltip {
+      display: inline-block;
+      position: relative;
+      border-bottom: 1px dotted black;
+      cursor: pointer;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 250px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -125px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul class="main-menu">
+      <li><a href="../ index.html">Home</a></li>
+      <li class="has-submenu">
+        <a href="#">Fitness Metrics Tools</a>
+        <ul class="submenu">
+          <li><a href="mhr.html">Maximum Heart Rate</a></li>
+          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+          <li><a href="bmi.html">Body Mass Index</a></li>
+          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+          <li><a href="water-intake.html">Daily Water Intake</a></li>
+          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+          <li><a href="1rm.html">One-Rep Max</a></li>
+          <li><a href="body-fat.html">Body Fat Percentage</a></li>
+          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  
+  <main>
+    <h1>BMR Calculator</h1>
+    <p>Estimate your Basal Metabolic Rate (BMR).</p>
+    <form id="bmr-form">
+      <label for="age">Age (years):</label>
+      <input type="number" id="age" min="0" required>
+      <br>
+      <label for="weight">Weight (kg):</label>
+      <input type="number" id="weight" min="0" required>
+      <br>
+      <label for="height">Height (cm):</label>
+      <input type="number" id="height" min="0" required>
+      <br>
+      <label for="sex">Sex:</label>
+      <select id="sex" required>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      <br>
+      <button type="submit">Calculate BMR</button>
+    </form>
+    <div id="bmr-result"></div>
+    <label class="tooltip">What's this?
+      <span class="tooltiptext">Based on the Harris-Benedict equation (1919), revised by Roza and Shizgal (1984).</span>
+    </label>
+  </main>
+</body>
+</html>

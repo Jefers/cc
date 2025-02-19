@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VO₂ Max Estimate</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="vo2max.js" defer></script>
+  <style>
+    .badge {
+      display: inline-block;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul class="main-menu">
+      <li><a href="../index.html">Home</a></li>
+      <li class="has-submenu">
+        <a href="#">Fitness Metrics Tools</a>
+        <ul class="submenu">
+          <li><a href="mhr.html">Maximum Heart Rate</a></li>
+          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+          <li><a href="bmi.html">Body Mass Index</a></li>
+          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+          <li><a href="water-intake.html">Daily Water Intake</a></li>
+          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+          <li><a href="1rm.html">One-Rep Max</a></li>
+          <li><a href="body-fat.html">Body Fat Percentage</a></li>
+          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  
+  <main>
+    <h1>VO₂ Max Estimate</h1>
+    <p>Enter your 1-mile walk time (in minutes) and your heart rate immediately after the walk to estimate your VO₂ Max.</p>
+    <form id="vo2-form">
+      <label for="walkTime">1-Mile Walk Time (min):</label>
+      <input type="number" id="walkTime" step="0.1" required>
+      <br>
+      <label for="heartRate">Post-Walk Heart Rate (bpm):</label>
+      <input type="number" id="heartRate" required>
+      <br>
+      <button type="submit">Calculate VO₂ Max</button>
+    </form>
+    <div id="vo2-result"></div>
+    <button id="toggle-citation">Show Citation</button>
+    <div id="citation" style="display: none;">
+      <p>Based on the Rockport Walk Test formula (Kline et al., 1987).</p>
+    </div>
+  </main>
+</body>
+</html>

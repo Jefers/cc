@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resting Heart Rate Assessment</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="resting-hr.js" defer></script>
+  <style>
+    .heart-icon {
+      font-size: 50px;
+      color: red;
+      transition: transform 0.5s ease;
+    }
+    .scale {
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul class="main-menu">
+      <li><a href="../index.html">Home</a></li>
+      <li class="has-submenu">
+        <a href="#">Fitness Metrics Tools</a>
+        <ul class="submenu">
+          <li><a href="mhr.html">Maximum Heart Rate</a></li>
+          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+          <li><a href="bmi.html">Body Mass Index</a></li>
+          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+          <li><a href="water-intake.html">Daily Water Intake</a></li>
+          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+          <li><a href="1rm.html">One-Rep Max</a></li>
+          <li><a href="body-fat.html">Body Fat Percentage</a></li>
+          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  
+  <main>
+    <h1>Resting Heart Rate Assessment</h1>
+    <p>Enter your resting heart rate (bpm) to assess your cardiovascular health.</p>
+    <form id="resting-hr-form">
+      <label for="resting-hr">Resting Heart Rate (bpm):</label>
+      <input type="number" id="resting-hr" required>
+      <button type="submit">Assess</button>
+    </form>
+    <div id="hr-result"></div>
+    <div class="heart-icon" id="heart-icon">❤️</div>
+    <div class="scale" id="hr-scale"></div>
+    <button id="toggle-citation">Show Citation</button>
+    <div id="citation" style="display: none;">
+      <p>AHA guidelines: 60-100 bpm normal (2021).</p>
+    </div>
+  </main>
+</body>
+</

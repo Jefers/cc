@@ -271,3 +271,71 @@ footer {
   border-top: 1px solid #ccc;
   margin-top: 20px;
 }
+
+/* Global Styles & Navigation */
+
+/* Main menu styling */
+.main-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: #333;
+}
+
+.main-menu > li {
+  position: relative;
+  display: inline-block;
+}
+
+.main-menu a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+}
+
+.main-menu a:hover {
+  background-color: #111;
+}
+
+/* Submenu styling */
+.submenu {
+  display: none;
+  position: absolute;
+  background-color: #444;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  min-width: 200px;
+  z-index: 1;
+}
+
+.submenu li {
+  display: block;
+}
+
+.submenu a {
+  padding: 12px 16px;
+}
+
+.submenu a:hover {
+  background-color: #555;
+}
+
+/* Show submenu on hover */
+.has-submenu:hover .submenu {
+  display: block;
+}
+
+/* General page styling */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  padding: 20px;
+}
+

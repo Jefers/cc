@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Target Heart Rate Zones</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="thr-zones.js" defer></script>
+  <style>
+    /* Color gradient styling for zone rows */
+    .zone {
+      padding: 10px;
+      margin: 5px 0;
+      color: white;
+    }
+    .zone-1 { background: linear-gradient(to right, blue, lightblue); }
+    .zone-2 { background: linear-gradient(to right, green, lightgreen); }
+    .zone-3 { background: linear-gradient(to right, orange, yellow); }
+    .zone-4 { background: linear-gradient(to right, red, pink); }
+    .zone-5 { background: linear-gradient(to right, purple, violet); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    .citation { font-size: 12px; color: #777; }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul class="main-menu">
+      <li><a href="../index.html">Home</a></li>
+      <li class="has-submenu">
+        <a href="#">Fitness Metrics Tools</a>
+        <ul class="submenu">
+          <li><a href="mhr.html">Maximum Heart Rate</a></li>
+          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+          <li><a href="bmi.html">Body Mass Index</a></li>
+          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+          <li><a href="water-intake.html">Daily Water Intake</a></li>
+          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+          <li><a href="1rm.html">One-Rep Max</a></li>
+          <li><a href="body-fat.html">Body Fat Percentage</a></li>
+          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  
+  <main>
+    <h1>Target Heart Rate Zones</h1>
+    <p>Enter your age to calculate your heart rate zones.</p>
+    <form id="thr-form">
+      <label for="age">Age (years):</label>
+      <input type="number" id="age" min="1" required>
+      <button type="submit">Calculate Zones</button>
+    </form>
+    <div id="zones-result"></div>
+    <button id="toggle-citation">Show Citation</button>
+    <div id="citation" class="citation" style="display:none;">
+      <p>Zones align with American Heart Association guidelines (AHA, 2023).</p>
+    </div>
+  </main>
+</body>
+</html>
