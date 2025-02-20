@@ -3,45 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <title>Maximum Heart Rate Calculator</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../styles-mobile.css">
   <script src="mhr.js" defer></script>
 </head>
 <body>
-  <nav>
-    <ul class="main-menu">
-      <li><a href="../index.html">Home</a></li>
-      <li class="has-submenu">
-        <a href="#">Fitness Metrics Tools</a>
-        <ul class="submenu">
-          <li><a href="mhr.html">Maximum Heart Rate</a></li>
-          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
-          <li><a href="bmi.html">Body Mass Index</a></li>
-          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
-          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
-          <li><a href="water-intake.html">Daily Water Intake</a></li>
-          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
-          <li><a href="1rm.html">One-Rep Max</a></li>
-          <li><a href="body-fat.html">Body Fat Percentage</a></li>
-          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
-          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-  
-  <main>
-    <h1>Maximum Heart Rate Calculator</h1>
-    <p>Estimate the highest heart rate you can achieve during exercise.</p>
-    <form id="mhr-form">
-      <label for="age">Age (years):</label>
-      <input type="number" id="age" min="1" required>
-      <button type="submit">Calculate</button>
-    </form>
-    <div id="result"></div>
-    <button id="toggle-citation">Show Citation</button>
-    <div id="citation" style="display: none;">
-      <p>Based on the traditional 220-age formula (Fox et al., 1971), though newer models (e.g., 208 - 0.7×age) exist.</p>
+  <!-- Fixed Header with Hamburger Menu -->
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">Logo</div>
+      <div class="site-title">CoachChristian</div>
     </div>
-  </main>
+    <div class="hamburger">&#9776;</div>
+  </header>
+  
+  <!-- Main Content -->
+  <div class="content">
+    <main>
+      <h1>Maximum Heart Rate Calculator</h1>
+      <p>Estimate your maximum heart rate based on your age.</p>
+      <form id="mhr-form">
+        <label for="age">Age (years):</label>
+        <input type="number" id="age" min="1" required>
+        <button type="submit">Calculate</button>
+      </form>
+      <div id="result"></div>
+      <button id="toggle-citation">Show Citation</button>
+      <div id="citation" style="display: none;">
+        <p>Based on the traditional 220-age formula (Fox et al., 1971), though newer models (e.g., 208 - 0.7×age) exist.</p>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Hamburger Menu Overlay Script -->
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    menuOverlay.innerHTML = `
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="mhr.html">Maximum Heart Rate</a></li>
+        <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+        <li><a href="bmi.html">Body Mass Index</a></li>
+        <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+        <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+        <li><a href="water-intake.html">Daily Water Intake</a></li>
+        <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+        <li><a href="1rm.html">One-Rep Max</a></li>
+        <li><a href="body-fat.html">Body Fat Percentage</a></li>
+        <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+        <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+      </ul>
+    `;
+    document.body.appendChild(menuOverlay);
+     
+    hamburger.addEventListener('click', () => {
+      menuOverlay.style.display = menuOverlay.style.display === 'flex' ? 'none' : 'flex';
+      menuOverlay.style.flexDirection = 'column';
+      menuOverlay.style.justifyContent = 'center';
+      menuOverlay.style.alignItems = 'center';
+    });
+     
+    menuOverlay.addEventListener('click', (e) => {
+      if(e.target.tagName === 'A') {
+         menuOverlay.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>

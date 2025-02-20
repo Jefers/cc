@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>BMR Calculator</title>
-  <link rel="stylesheet" href="styles-mobile.css">
+  <link rel="stylesheet" href="../styles-mobile.css">
   <script src="bmr.js" defer></script>
   <style>
     .tooltip {
@@ -11,22 +11,24 @@
       position: relative;
       border-bottom: 1px dotted black;
       cursor: pointer;
+      font-size: 24px;
     }
     .tooltip .tooltiptext {
       visibility: hidden;
-      width: 250px;
+      width: 300px;
       background-color: #555;
       color: #fff;
       text-align: center;
-      border-radius: 6px;
-      padding: 5px;
+      border-radius: 8px;
+      padding: 12px;
       position: absolute;
       z-index: 1;
-      bottom: 125%;
+      bottom: 140%;
       left: 50%;
-      margin-left: -125px;
+      transform: translateX(-50%);
       opacity: 0;
       transition: opacity 0.3s;
+      font-size: 20px;
     }
     .tooltip:hover .tooltiptext {
       visibility: visible;
@@ -35,53 +37,73 @@
   </style>
 </head>
 <body>
-  <nav>
-    <ul class="main-menu">
-      <li><a href="../ index.html">Home</a></li>
-      <li class="has-submenu">
-        <a href="#">Fitness Metrics Tools</a>
-        <ul class="submenu">
-          <li><a href="mhr.html">Maximum Heart Rate</a></li>
-          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
-          <li><a href="bmi.html">Body Mass Index</a></li>
-          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
-          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
-          <li><a href="water-intake.html">Daily Water Intake</a></li>
-          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
-          <li><a href="1rm.html">One-Rep Max</a></li>
-          <li><a href="body-fat.html">Body Fat Percentage</a></li>
-          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
-          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-  
-  <main>
-    <h1>BMR Calculator</h1>
-    <p>Estimate your Basal Metabolic Rate (BMR).</p>
-    <form id="bmr-form">
-      <label for="age">Age (years):</label>
-      <input type="number" id="age" min="0" required>
-      <br>
-      <label for="weight">Weight (kg):</label>
-      <input type="number" id="weight" min="0" required>
-      <br>
-      <label for="height">Height (cm):</label>
-      <input type="number" id="height" min="0" required>
-      <br>
-      <label for="sex">Sex:</label>
-      <select id="sex" required>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-      </select>
-      <br>
-      <button type="submit">Calculate BMR</button>
-    </form>
-    <div id="bmr-result"></div>
-    <label class="tooltip">What's this?
-      <span class="tooltiptext">Based on the Harris-Benedict equation (1919), revised by Roza and Shizgal (1984).</span>
-    </label>
-  </main>
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">Logo</div>
+      <div class="site-title">CoachChristian</div>
+    </div>
+    <div class="hamburger">&#9776;</div>
+  </header>
+  <div class="content">
+    <main>
+      <h1>BMR Calculator</h1>
+      <p>Estimate your Basal Metabolic Rate (BMR).</p>
+      <form id="bmr-form">
+        <label for="age">Age (years):</label>
+        <input type="number" id="age" min="0" required>
+        <br>
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" min="0" required>
+        <br>
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" min="0" required>
+        <br>
+        <label for="sex">Sex:</label>
+        <select id="sex" required>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <br>
+        <button type="submit">Calculate BMR</button>
+      </form>
+      <div id="bmr-result"></div>
+      <label class="tooltip">What's this?
+        <span class="tooltiptext">Based on the Harris-Benedict equation (1919), revised by Roza and Shizgal (1984).</span>
+      </label>
+    </main>
+  </div>
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    menuOverlay.innerHTML = `
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="mhr.html">Maximum Heart Rate</a></li>
+        <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+        <li><a href="bmi.html">Body Mass Index</a></li>
+        <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+        <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+        <li><a href="water-intake.html">Daily Water Intake</a></li>
+        <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+        <li><a href="1rm.html">One-Rep Max</a></li>
+        <li><a href="body-fat.html">Body Fat Percentage</a></li>
+        <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+        <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+      </ul>
+    `;
+    document.body.appendChild(menuOverlay);
+    hamburger.addEventListener('click', () => {
+      menuOverlay.style.display = menuOverlay.style.display === 'flex' ? 'none' : 'flex';
+      menuOverlay.style.flexDirection = 'column';
+      menuOverlay.style.justifyContent = 'center';
+      menuOverlay.style.alignItems = 'center';
+    });
+    menuOverlay.addEventListener('click', (e) => {
+      if(e.target.tagName === 'A') {
+         menuOverlay.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>

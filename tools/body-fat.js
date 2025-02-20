@@ -23,12 +23,12 @@ document.getElementById('body-fat-form').addEventListener('submit', function(eve
     gauge.innerHTML = '';
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('width', '300');
-    svg.setAttribute('height', '150');
+    svg.setAttribute('width', '360');
+    svg.setAttribute('height', '180');
     
-    // Background arc for healthy range (10% to 30%)
+    // Background arc for healthy range (example range: 10%-30%)
     const arc = document.createElementNS(svgNS, 'path');
-    arc.setAttribute('d', 'M50,130 A100,100 0 0,1 250,130');
+    arc.setAttribute('d', 'M50,150 A100,100 0 0,1 250,150');
     arc.setAttribute('fill', 'none');
     arc.setAttribute('stroke', '#ddd');
     arc.setAttribute('stroke-width', '20');
@@ -38,9 +38,9 @@ document.getElementById('body-fat-form').addEventListener('submit', function(eve
     let percentage = Math.min(Math.max((bodyFat - 10) / 20, 0), 1);
     let endAngle = Math.PI + (Math.PI * percentage);
     const x2 = 50 + 100 * Math.cos(endAngle);
-    const y2 = 130 + 100 * Math.sin(endAngle);
+    const y2 = 150 + 100 * Math.sin(endAngle);
     const largeArcFlag = percentage > 0.5 ? 1 : 0;
-    const pathData = `M50,130 A100,100 0 ${largeArcFlag},1 ${x2},${y2}`;
+    const pathData = `M50,150 A100,100 0 ${largeArcFlag},1 ${x2},${y2}`;
     const arcFg = document.createElementNS(svgNS, 'path');
     arcFg.setAttribute('d', pathData);
     arcFg.setAttribute('fill', 'none');

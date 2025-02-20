@@ -6,7 +6,7 @@ document.getElementById('vo2-form').addEventListener('submit', function(event) {
         document.getElementById('vo2-result').textContent = 'Please enter valid numbers.';
         return;
     }
-    // Simplified calculation for demo purposes
+    // Simplified calculation for demonstration purposes
     const vo2max = 132.853 - (0.0769 * walkTime * 60) - (0.3877 * heartRate) + 6.315 - (3.2649 * walkTime) - (0.1565 * walkTime);
     let category = "";
     if (vo2max < 20) { category = "Poor"; }

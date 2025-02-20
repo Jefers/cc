@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Waist-to-Height Ratio Calculator</title>
-  <link rel="stylesheet" href="styles-mobile.css">
+  <link rel="stylesheet" href="../styles-mobile.css">
   <script src="waist-height.js" defer></script>
   <style>
     .progress-bar {
       width: 100%;
       background-color: #ddd;
-      height: 20px;
-      border-radius: 10px;
+      height: 24px;
+      border-radius: 12px;
       overflow: hidden;
-      margin-top: 10px;
+      margin-top: 16px;
     }
     .progress {
       height: 100%;
@@ -23,56 +23,76 @@
   </style>
 </head>
 <body>
-  <nav>
-    <ul class="main-menu">
-      <li><a href="../index.html">Home</a></li>
-      <li class="has-submenu">
-        <a href="#">Fitness Metrics Tools</a>
-        <ul class="submenu">
-          <li><a href="mhr.html">Maximum Heart Rate</a></li>
-          <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
-          <li><a href="bmi.html">Body Mass Index</a></li>
-          <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
-          <li><a href="bmr.html">Basal Metabolic Rate</a></li>
-          <li><a href="water-intake.html">Daily Water Intake</a></li>
-          <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
-          <li><a href="1rm.html">One-Rep Max</a></li>
-          <li><a href="body-fat.html">Body Fat Percentage</a></li>
-          <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
-          <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-  
-  <main>
-    <h1>Waist-to-Height Ratio Calculator</h1>
-    <p>Enter your waist circumference and height to calculate your ratio.</p>
-    <form id="wthr-form">
-      <label for="waist">Waist Circumference:</label>
-      <input type="number" id="waist" required>
-      <select id="waist-unit">
-        <option value="cm">cm</option>
-        <option value="in">in</option>
-      </select>
-      <br>
-      <label for="height">Height:</label>
-      <input type="number" id="height" required>
-      <select id="height-unit">
-        <option value="cm">cm</option>
-        <option value="in">in</option>
-      </select>
-      <br>
-      <button type="submit">Calculate Ratio</button>
-    </form>
-    <div id="wthr-result"></div>
-    <div class="progress-bar">
-      <div id="progress" class="progress"></div>
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">Logo</div>
+      <div class="site-title">CoachChristian</div>
     </div>
-    <button id="toggle-citation">Show Citation</button>
-    <div id="citation" style="display: none;">
-      <p>Ashwell et al. (2012) proposed the 0.5 threshold for metabolic risk.</p>
-    </div>
-  </main>
+    <div class="hamburger">&#9776;</div>
+  </header>
+  <div class="content">
+    <main>
+      <h1>Waist-to-Height Ratio Calculator</h1>
+      <p>Enter your waist circumference and height to calculate your ratio.</p>
+      <form id="wthr-form">
+        <label for="waist">Waist Circumference:</label>
+        <input type="number" id="waist" required>
+        <select id="waist-unit">
+          <option value="cm">cm</option>
+          <option value="in">in</option>
+        </select>
+        <br>
+        <label for="height">Height:</label>
+        <input type="number" id="height" required>
+        <select id="height-unit">
+          <option value="cm">cm</option>
+          <option value="in">in</option>
+        </select>
+        <br>
+        <button type="submit">Calculate Ratio</button>
+      </form>
+      <div id="wthr-result"></div>
+      <div class="progress-bar">
+        <div id="progress" class="progress"></div>
+      </div>
+      <button id="toggle-citation">Show Citation</button>
+      <div id="citation" style="display: none;">
+        <p>Ashwell et al. (2012) proposed the 0.5 threshold for metabolic risk.</p>
+      </div>
+    </main>
+  </div>
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    menuOverlay.innerHTML = `
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="mhr.html">Maximum Heart Rate</a></li>
+        <li><a href="thr-zones.html">Target Heart Rate Zones</a></li>
+        <li><a href="bmi.html">Body Mass Index</a></li>
+        <li><a href="waist-height.html">Waist-to-Height Ratio</a></li>
+        <li><a href="bmr.html">Basal Metabolic Rate</a></li>
+        <li><a href="water-intake.html">Daily Water Intake</a></li>
+        <li><a href="vo2max.html">VO₂ Max Estimate</a></li>
+        <li><a href="1rm.html">One-Rep Max</a></li>
+        <li><a href="body-fat.html">Body Fat Percentage</a></li>
+        <li><a href="resting-hr.html">Resting Heart Rate Assessment</a></li>
+        <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
+      </ul>
+    `;
+    document.body.appendChild(menuOverlay);
+    hamburger.addEventListener('click', () => {
+      menuOverlay.style.display = menuOverlay.style.display === 'flex' ? 'none' : 'flex';
+      menuOverlay.style.flexDirection = 'column';
+      menuOverlay.style.justifyContent = 'center';
+      menuOverlay.style.alignItems = 'center';
+    });
+    menuOverlay.addEventListener('click', (e) => {
+      if(e.target.tagName === 'A') {
+         menuOverlay.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>

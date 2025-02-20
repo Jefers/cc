@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Calories Burned from Steps Calculator</title>
-  <link rel="stylesheet" href="styles-mobile.css">
+  <link rel="stylesheet" href="../styles-mobile.css">
   <script src="calories-steps.js" defer></script>
   <style>
-    /* You can add any page-specific styles here if needed */
+    .pedometer {
+      font-size: 24px;
+      margin-top: 16px;
+    }
   </style>
 </head>
 <body>
-  <!-- Fixed Header -->
   <header class="fixed-header">
     <div class="header-left">
       <div class="logo">Logo</div>
@@ -18,9 +20,6 @@
     </div>
     <div class="hamburger">&#9776;</div>
   </header>
-
-  <!-- The mobile full-screen menu overlay will be injected via JavaScript below -->
-
   <div class="content">
     <main>
       <h1>Calories Burned from Steps</h1>
@@ -45,10 +44,7 @@
       </div>
     </main>
   </div>
-
-  <!-- Hamburger Menu Overlay Script -->
   <script>
-    // Create the menu overlay element
     const hamburger = document.querySelector('.hamburger');
     const menuOverlay = document.createElement('div');
     menuOverlay.className = 'menu-overlay';
@@ -68,22 +64,13 @@
         <li><a href="calories-steps.html">Calories Burned from Steps</a></li>
       </ul>
     `;
-    // Append the overlay to the body
     document.body.appendChild(menuOverlay);
-     
-    // Toggle overlay display when hamburger is clicked
     hamburger.addEventListener('click', () => {
-      if(menuOverlay.style.display === 'flex') {
-         menuOverlay.style.display = 'none';
-      } else {
-         menuOverlay.style.display = 'flex';
-         menuOverlay.style.flexDirection = 'column';
-         menuOverlay.style.justifyContent = 'center';
-         menuOverlay.style.alignItems = 'center';
-      }
+      menuOverlay.style.display = menuOverlay.style.display === 'flex' ? 'none' : 'flex';
+      menuOverlay.style.flexDirection = 'column';
+      menuOverlay.style.justifyContent = 'center';
+      menuOverlay.style.alignItems = 'center';
     });
-     
-    // Hide overlay when any menu link is clicked
     menuOverlay.addEventListener('click', (e) => {
       if(e.target.tagName === 'A') {
          menuOverlay.style.display = 'none';

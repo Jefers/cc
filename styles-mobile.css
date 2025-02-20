@@ -27,7 +27,7 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.5;
-  font-size: 24px; /* Generous base font size for readability */
+  font-size: 24px;  /* Generous base font size for readability */
 }
 
 /* Links */
@@ -68,16 +68,13 @@ button:active, .button:active {
   justify-content: center;
   align-items: center;
 }
-
 .menu-overlay ul {
   list-style: none;
   text-align: center;
 }
-
 .menu-overlay li {
   margin: 16px 0;
 }
-
 .menu-overlay a {
   color: var(--menu-text);
   font-size: 32px;
@@ -99,12 +96,10 @@ button:active, .button:active {
   padding: 16px 24px;
   z-index: 1500;
 }
-
 .header-left {
   display: flex;
   align-items: center;
 }
-
 .logo {
   width: 60px;
   height: 60px;
@@ -116,14 +111,11 @@ button:active, .button:active {
   margin-right: 16px;
   font-size: 28px;
 }
-
 .site-title {
   font-size: 28px;
   font-weight: bold;
   color: var(--text-color);
 }
-
-/* Hamburger Button */
 .hamburger {
   font-size: 36px;
   color: var(--text-color);
@@ -173,8 +165,6 @@ section {
   border-radius: 12px;
   margin-bottom: 30px;
 }
-
-/* Headings */
 h1, h2, h3 {
   font-size: 32px;
   margin-bottom: 16px;
@@ -314,6 +304,58 @@ footer {
   padding: 16px;
   border-top: 1px solid #ccc;
   margin-top: 30px;
+}
+
+/* Navigation Menu (Global) */
+.main-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: #333;
+}
+.main-menu > li {
+  position: relative;
+  display: inline-block;
+}
+.main-menu a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 16px 24px;
+  font-size: 28px;
+  text-decoration: none;
+}
+.main-menu a:hover {
+  background-color: #111;
+}
+/* Submenu styling */
+.submenu {
+  display: none;
+  position: absolute;
+  background-color: #444;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  min-width: 240px;
+  z-index: 1;
+}
+.submenu li {
+  display: block;
+}
+.submenu a {
+  padding: 14px 20px;
+  font-size: 24px;
+}
+.submenu a:hover {
+  background-color: #555;
+}
+.has-submenu:hover .submenu {
+  display: block;
+}
+
+/* General page styling */
+main {
+  padding: 20px;
 }
 
 /* Responsive Adjustments for Larger Screens */
