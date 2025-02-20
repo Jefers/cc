@@ -7,10 +7,10 @@
   --background-color: #f9f9f9;
   --text-color: #333;
   --accent-color: #fff8dc;
-  --testimonial-bg: #fff3b0;
   --menu-bg: #333;
   --menu-text: #fff;
   --overlay-bg: rgba(0, 0, 0, 0.9);
+  --testimonial-bg: #fff3b0;
 }
 
 /* Global Resets & Base Styles */
@@ -25,8 +25,13 @@ body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
-  line-height: 1.6;
+  line-height: 1.5;
   font-size: 18px; /* base size for header and nav remains */
+}
+
+a {
+  text-decoration: none;
+  color: var(--text-color);
 }
 
 /* --- HEADER & NAVIGATION (Unchanged) --- */
@@ -114,19 +119,17 @@ body {
 .has-submenu:hover .submenu {
   display: block;
 }
-
 /* --- END HEADER & NAVIGATION --- */
 
-/* Content Offset for Fixed Header: Keep header height as original */
+/* Content Offset for Fixed Header */
 .content {
   padding-top: 70px;  /* leave as originally defined */
 }
 
 /* --- ENLARGED BODY CONTENT --- */
-/* We apply a scale to main content only, leaving header/menu unchanged */
+/* Scale up only the main content so header/menu remain at original size */
 main, section {
-  /* Increase font size to about 3x for content areas */
-  font-size: 54px; 
+  font-size: 54px; /* ~3x increase for body content */
 }
 
 /* Increase headings */
@@ -145,7 +148,7 @@ input, textarea, select {
   border-radius: 24px;
 }
 
-/* Buttons: Very large, full width, rounded ends, centered */
+/* Buttons: Very large, full width, rounded ends, centered, with original colours */
 button, .button {
   width: 100%;
   padding: 24px;
@@ -153,6 +156,17 @@ button, .button {
   border-radius: 50px;  /* extra rounded */
   margin: 24px auto;
   display: block;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+button:hover, .button:hover {
+  background-color: var(--hover-color);
+}
+button:active, .button:active {
+  transform: scale(0.98);
 }
 
 /* Tables in tool pages */
@@ -195,10 +209,10 @@ th, td {
 .progress-bar {
   width: 100%;
   background-color: #ddd;
-  height: 72px;
-  border-radius: 36px;
+  height: 24px;
+  border-radius: 12px;
   overflow: hidden;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 .progress {
   height: 100%;
@@ -207,7 +221,7 @@ th, td {
   transition: width 0.5s;
 }
 
-/* Tooltip for BMR */
+/* Tooltip (for BMR) */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -217,12 +231,12 @@ th, td {
 }
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 900px;
+  width: 300px;
   background-color: #555;
   color: #fff;
   text-align: center;
-  border-radius: 36px;
-  padding: 36px;
+  border-radius: 8px;
+  padding: 12px;
   position: absolute;
   z-index: 1;
   bottom: 140%;
@@ -230,7 +244,7 @@ th, td {
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.3s;
-  font-size: 48px;
+  font-size: 20px;
 }
 .tooltip:hover .tooltiptext {
   visibility: visible;
@@ -239,8 +253,8 @@ th, td {
 
 /* Gauge for Body Fat Percentage */
 .gauge {
-  max-width: 1080px;
-  margin: 72px auto;
+  max-width: 360px;
+  margin: 24px auto;
   text-align: center;
 }
 .gauge svg {
@@ -249,63 +263,135 @@ th, td {
 
 /* Heart Icon for Resting HR */
 .heart-icon {
-  font-size: 192px;
+  font-size: 64px;
   color: red;
   transition: transform 0.5s ease;
 }
 .scale {
-  margin-top: 36px;
-  font-size: 54px;
+  margin-top: 12px;
+  font-size: 24px;
 }
 
 /* Water Intake Specific */
 .water-result {
   display: flex;
   align-items: center;
-  font-size: 54px;
-  margin-top: 24px;
+  font-size: 24px;
+  margin-top: 16px;
 }
 .water-icon {
-  width: 108px;
-  height: 108px;
+  width: 36px;
+  height: 36px;
   background: url('water.png') no-repeat center center;
   background-size: contain;
-  margin-right: 36px;
+  margin-right: 12px;
 }
 
 /* Footer */
 footer {
   text-align: center;
-  font-size: 36px;
-  padding: 24px;
-  border-top: 2px solid #ccc;
-  margin-top: 36px;
+  font-size: 20px;
+  padding: 16px;
+  border-top: 1px solid #ccc;
+  margin-top: 30px;
 }
 
-/* --- End Enlarged Body Content --- */
+/* --- Navigation Menu (Global) --- */
+.main-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--menu-bg);
+}
+.main-menu > li {
+  position: relative;
+  display: inline-block;
+}
+.main-menu a {
+  display: block;
+  color: var(--menu-text);
+  text-align: center;
+  padding: 16px 24px;
+  font-size: 28px;
+  text-decoration: none;
+}
+.main-menu a:hover {
+  background-color: #111;
+}
+.submenu {
+  display: none;
+  position: absolute;
+  background-color: #444;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  min-width: 240px;
+  z-index: 1;
+}
+.submenu li {
+  display: block;
+}
+.submenu a {
+  padding: 14px 20px;
+  font-size: 24px;
+}
+.submenu a:hover {
+  background-color: #555;
+}
+.has-submenu:hover .submenu {
+  display: block;
+}
+
+/* General page styling */
+main {
+  padding: 20px;
+}
 
 /* --- Responsive Adjustments for Larger Screens --- */
 @media (min-width: 768px) {
-  /* On larger screens, the body base remains, but the header and menu remain as defined above */
-  main, section {
-    font-size: 54px;  /* same as above */
+  body {
+    font-size: 28px;
+  }
+  .fixed-header {
+    padding: 20px 32px;
+  }
+  .logo {
+    width: 72px;
+    height: 72px;
+    margin-right: 20px;
+  }
+  .site-title {
+    font-size: 32px;
+  }
+  .hamburger {
+    font-size: 40px;
+  }
+  .banner {
+    height: 400px;
+  }
+  .banner-text {
+    font-size: 40px;
+    padding: 24px 36px;
+  }
+  section {
+    padding: 32px;
   }
   h1, h2, h3 {
-    font-size: 72px;
+    font-size: 40px;
   }
   input, textarea, select {
-    font-size: 54px;
-    padding: 24px;
+    font-size: 28px;
+    padding: 16px;
   }
   button, .button {
-    font-size: 54px;
-    padding: 24px;
+    font-size: 28px;
+    padding: 16px 32px;
   }
   table, th, td {
-    font-size: 54px;
-    padding: 24px;
+    font-size: 28px;
+    padding: 20px;
   }
   footer {
-    font-size: 36px;
+    font-size: 24px;
   }
 }
