@@ -21,12 +21,12 @@
 }
 
 body {
-  /* Keep original base for header/menu */
+  /* Keep header/nav at base size */
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.5;
-  font-size: 18px; /* base size for header and nav remains */
+  font-size: 18px; /* for header and nav */
 }
 
 a {
@@ -41,7 +41,7 @@ a {
   left: 0;
   width: 100%;
   background: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -61,8 +61,8 @@ a {
   align-items: center;
   justify-content: center;
   margin-right: 10px;
-  /* Uncomment and replace with logo image if desired */
-  /* background-image: url('logo.png'); background-size: cover; */
+  /* Uncomment if you have a logo image:
+     background-image: url('logo.png'); background-size: cover; */
 }
 .site-title {
   font-size: 18px;
@@ -74,7 +74,7 @@ a {
   cursor: pointer;
 }
 
-/* Main navigation menu remains the same */
+/* Main navigation menu remains unchanged */
 .main-menu {
   list-style-type: none;
   padding: 0;
@@ -119,6 +119,7 @@ a {
 .has-submenu:hover .submenu {
   display: block;
 }
+
 /* --- END HEADER & NAVIGATION --- */
 
 /* Content Offset for Fixed Header */
@@ -126,20 +127,24 @@ a {
   padding-top: 70px;  /* leave as originally defined */
 }
 
-/* --- ENLARGED BODY CONTENT --- */
-/* Scale up only the main content so header/menu remain at original size */
-main, section {
-  font-size: 54px; /* ~3x increase for body content */
+/* --- ENLARGED MAIN CONTENT --- */
+/* Introduce a class for main content areas that should be enlarged */
+.main-content {
+  font-size: 54px; /* ~3x increase for body elements */
 }
 
-/* Increase headings */
-h1, h2, h3 {
+/* Headings inside main content */
+.main-content h1,
+.main-content h2,
+.main-content h3 {
   font-size: 72px;
   margin-bottom: 24px;
 }
 
-/* Form Elements: Super big */
-input, textarea, select {
+/* Form Elements inside main content: Super big inputs */
+.main-content input,
+.main-content textarea,
+.main-content select {
   width: 100%;
   padding: 24px;
   font-size: 54px;
@@ -148,12 +153,14 @@ input, textarea, select {
   border-radius: 24px;
 }
 
-/* Buttons: Very large, full width, rounded ends, centered, with original colours */
-button, .button {
+/* Buttons inside main content: Full width, large, rounded, and centered.
+   Preserve the original colours from your variables. */
+.main-content button,
+.main-content .button {
   width: 100%;
   padding: 24px;
-  font-size: 54px;
-  border-radius: 50px;  /* extra rounded */
+  font-size: 54px; /* Adjust if the text seems too small */
+  border-radius: 50px;
   margin: 24px auto;
   display: block;
   background-color: var(--primary-color);
@@ -162,21 +169,24 @@ button, .button {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
-button:hover, .button:hover {
+.main-content button:hover,
+.main-content .button:hover {
   background-color: var(--hover-color);
 }
-button:active, .button:active {
+.main-content button:active,
+.main-content .button:active {
   transform: scale(0.98);
 }
 
-/* Tables in tool pages */
-table {
+/* Tables in main content */
+.main-content table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 24px;
   font-size: 54px;
 }
-th, td {
+.main-content th,
+.main-content td {
   border: 2px solid #ccc;
   padding: 24px;
   text-align: center;
@@ -189,7 +199,7 @@ th, td {
   margin-top: 24px;
 }
 
-/* Spinner: Increase size proportionately */
+/* Spinner (for loading buttons) */
 .spinner {
   display: inline-block;
   width: 72px;
