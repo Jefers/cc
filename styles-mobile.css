@@ -74,6 +74,41 @@ a {
   cursor: pointer;
 }
 
+
+/* Fullscreen Menu Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  z-index: 2000;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.menu-overlay ul {
+  list-style: none;
+  text-align: center;
+}
+.menu-overlay li {
+  margin: 16px 0;
+}
+.menu-overlay a {
+  color: var(--menu-text);
+  font-size: 32px;
+  padding: 8px 16px;
+  display: block;
+}
+
+
+
+
+
+
+
 /* Main navigation menu remains unchanged */
 .main-menu {
   list-style-type: none;
