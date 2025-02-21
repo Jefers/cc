@@ -41,4 +41,29 @@ input, select, textarea {
   display: grid;
   gap: 10px;
 }
-.reward { display: fl
+.reward { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
+.chat-sidebar { background: #1A1A1A; padding: 10px; max-height: 300px; overflow-y: auto; }
+
+
+
+
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background: #1A1A1A;
+  padding: 10px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 320px) {
+  body { font-size: 14px; }
+}
