@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTsites.co.uk - Premium Fitness Website Solutions</title>
+    <link rel="stylesheet" href="consolidated-mobile-styles.css">
+    <!-- Additional Modern CSS Enhancements -->
+    <style>
+        /* Modern Gradient Effects */
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--background-color) 100%);
+        }
+        
+        /* Floating Animation for Logo */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating-logo {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Modern Card Hover Effect */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Image Placeholder Styles */
+        .img-placeholder {
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Animated Logo -->
+    <header class="fixed-header">
+        <div class="header-left">
+            <!-- Suggested: Replace with vector logo (fitness-themed) -->
+            <div class="logo floating-logo">💪</div>
+            <div class="site-title">PTsites.co.uk</div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="content">
+        <section class="gradient-bg text-center animate-slide-up">
+            <!-- Suggested: Hero image of personal trainer/client interaction -->
+            <div class="img-placeholder mb-2">
+                [Suggested: Hero image showing personal trainer working with client]
+            </div>
+            <h1>Transform Your Fitness Business Online</h1>
+            <p class="mb-2">Hi, I'm Jed Gorman - I build high-performance websites for high-performance trainers</p>
+            <a href="#pricing" class="button">View Plans →</a>
+        </section>
+
+        <!-- Features Grid -->
+        <section class="animate-slide-up">
+            <h2 class="text-center mb-2">Everything You Need</h2>
+            <div class="card card-hover">
+                <!-- Suggested: Icon illustration of website building -->
+                <div class="img-placeholder mb-1">
+                    [Suggested: Custom website illustration]
+                </div>
+                <h3>Bespoke Fitness Sites</h3>
+                <p>Tailored designs with booking systems, client portals, and progress tracking</p>
+            </div>
+
+            <div class="card card-hover">
+                <!-- Suggested: Server/cloud infrastructure graphic -->
+                <div class="img-placeholder mb-1">
+                    [Suggested: Hosting infrastructure graphic]
+                </div>
+                <h3>Managed Hosting</h3>
+                <p>24/7 monitored hosting with automatic backups and security</p>
+            </div>
+
+            <div class="card card-hover">
+                <!-- Suggested: Support/chat illustration -->
+                <div class="img-placeholder mb-1">
+                    [Suggested: Support team illustration]
+                </div>
+                <h3>Dedicated Support</h3>
+                <p>UK-based technical support with same-day response guarantee</p>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="gradient-bg animate-slide-up">
+            <h2 class="text-center mb-2">Simple Pricing</h2>
+            
+            <!-- Basic Plan -->
+            <div class="card card-hover">
+                <h3>Starter</h3>
+                <div class="img-placeholder mb-1">
+                    [Suggested: Basic website screenshot]
+                </div>
+                <p class="text-center"><span class="success-color">£50</span>/month</p>
+                <ul class="mb-1">
+                    <li>✓ 5-page Website</li>
+                    <li>✓ Basic SEO Setup</li>
+                    <li>✓ Monthly Maintenance</li>
+                </ul>
+                <button class="button">Start Now</button>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="card card-hover">
+                <h3>Professional</h3>
+                <div class="img-placeholder mb-1">
+                    [Suggested: Dashboard interface screenshot]
+                </div>
+                <p class="text-center"><span class="success-color">£150</span>/month</p>
+                <ul class="mb-1">
+                    <li>✓ Everything in Starter</li>
+                    <li>✓ Booking System</li>
+                    <li>✓ Client Management</li>
+                    <li>✓ Premium Support</li>
+                </ul>
+                <button class="button">Go Pro</button>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="animate-slide-up">
+            <h2 class="text-center mb-2">Success Stories</h2>
+            <div class="card card-hover">
+                <!-- Suggested: Client headshot -->
+                <div class="img-placeholder mb-1">
+                    [Suggested: Client photo]
+                </div>
+                <p>"PTsites helped me triple my online bookings in 3 months!"</p>
+                <p class="success-color">- Sarah, Personal Trainer</p>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="gradient-bg text-center animate-slide-up">
+            <h2 class="mb-1">Ready to Elevate Your Online Presence?</h2>
+            <p class="mb-2">Let's discuss your perfect website solution</p>
+            <a href="mailto:jed@ptsites.co.uk" class="button">Get Started Today</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center mb-2 mt-2">
+        <p>&copy; 2023 PTsites.co.uk | Crafted with ♥ by Jed Gorman</p>
+    </footer>
+</body>
+</html>
