@@ -39,38 +39,43 @@ a {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  right: 0;
+  background: var(--background-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  z-index: 1000;
+  justify-content: space-between;
+  padding: 16px 24px;
+  z-index: 1500;
 }
+
 .header-left {
   display: flex;
   align-items: center;
 }
+
 .logo {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   background-color: #ddd;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
-  /* Uncomment if you have a logo image:
-     background-image: url('logo.png'); background-size: cover; */
+  margin-right: 16px;
+  font-size: 28px;
 }
+
 .site-title {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: bold;
   color: var(--text-color);
 }
+
+/* Hamburger Button */
 .hamburger {
-  font-size: 24px;
+  font-size: 36px;
+  color: var(--text-color);
   cursor: pointer;
 }
 
