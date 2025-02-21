@@ -1,9 +1,9 @@
-	<div class="page dashboard-page">
-  <h1>Welcome, <span id="user-name">${userData.profile.name || 'User'}</span>!</h1>
+<div class="page dashboard-page">
+  <h1>Welcome, <span id="user-name"></span>!</h1>
   <div class="stats-grid">
-    <div class="stat-card">Age: <span>${userData.profile.age || 'N/A'}</span></div>
-    <div class="stat-card">BMI: <span id="bmi">${calculateBMI()}</span></div>
-    <div class="stat-card">XP: <progress value="${userData.xp}" max="200">${userData.xp}/200</progress></div>
+    <div class="stat-card">Age: <span id="age">N/A</span></div>
+    <div class="stat-card">BMI: <span id="bmi">N/A</span></div>
+    <div class="stat-card">XP: <progress id="xp-progress" value="0" max="200">0/200</progress></div>
   </div>
   <button id="log-weight">Log Today’s Weight</button>
   <div id="weight-modal" class="modal" style="display:none;">
