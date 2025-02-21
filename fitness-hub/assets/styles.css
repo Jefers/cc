@@ -1,0 +1,44 @@
+:root {
+  --bg: #0F0F0F;
+  --accent: #00FF88;
+  --text: #FFFFFF;
+}
+
+body {
+  margin: 0;
+  font-family: 'Rubik', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button {
+  min-width: 48px;
+  min-height: 48px;
+  font-size: 18px;
+  background: var(--accent);
+  border: none;
+  color: var(--bg);
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-size: 16px;
+  height: 40px;
+  margin: 8px 0;
+  width: 100%;
+  max-width: 300px;
+}
+
+
+.page { padding: 20px; padding-bottom: 60px; } /* Space for nav */
+.meal-dropzone, .meal-options div {
+  border: 2px dashed var(--accent);
+  padding: 10px;
+  margin: 10px 0;
+}
+.achievement { border-bottom: 1px solid #333; padding: 10px; }
+.session-grid, .replay-grid {
+  display: grid;
+  gap: 10px;
+}
+.reward { display: fl

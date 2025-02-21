@@ -1,0 +1,18 @@
+<div class="page profile-page">
+  <h1>Profile</h1>
+  <form id="profile-form">
+    <input type="text" name="name" placeholder="Name" value="${userData.profile.name}">
+    <input type="number" name="age" placeholder="Age" value="${userData.profile.age || ''}">
+    <input type="number" name="weight" placeholder="Weight (kg)" value="${userData.profile.weight || ''}">
+    <input type="number" name="height" placeholder="Height (cm)" value="${userData.profile.height || ''}">
+    <select name="goals">
+      <option value="Weight Loss">Weight Loss</option>
+      <option value="Muscle Gain">Muscle Gain</option>
+    </select>
+    <textarea placeholder="Medical Notes (optional)"></textarea>
+    <input type="file" id="avatar-upload" accept="image/*">
+    <img id="avatar-preview" src="" alt="Avatar" style="display:none; width:150px; height:150px;">
+    <button type="submit">Save</button>
+    <button type="button" onclick="loadPage('dashboard')">Cancel</button>
+  </form>
+</div>

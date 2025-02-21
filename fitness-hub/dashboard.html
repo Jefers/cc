@@ -1,0 +1,13 @@
+	<div class="page dashboard-page">
+  <h1>Welcome, <span id="user-name">${userData.profile.name || 'User'}</span>!</h1>
+  <div class="stats-grid">
+    <div class="stat-card">Age: <span>${userData.profile.age || 'N/A'}</span></div>
+    <div class="stat-card">BMI: <span id="bmi">${calculateBMI()}</span></div>
+    <div class="stat-card">XP: <progress value="${userData.xp}" max="200">${userData.xp}/200</progress></div>
+  </div>
+  <button id="log-weight">Log Today’s Weight</button>
+  <div id="weight-modal" class="modal" style="display:none;">
+    <input type="number" id="weight-input" placeholder="Enter weight (kg)">
+    <button onclick="saveWeight()">Save</button>
+  </div>
+</div>
