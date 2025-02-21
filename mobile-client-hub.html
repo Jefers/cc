@@ -153,6 +153,19 @@
             cursor: not-allowed;
         }
 
+
+        /* Button with "New" Icon */
+            button.new-icon::after {
+              content: "✨";
+              margin-left: 0.5rem;
+              font-size: 1rem;
+              line-height: 1;
+            }
+
+            button.new-icon:hover::after {
+              color: var(--hover-color);
+            }
+
         /* Community Feed */
         .feed {
             max-height: 200px;
@@ -269,7 +282,13 @@
             <div style="opacity: 0.5; margin-bottom: 16px;">
                 <button class="button button-disabled">Advanced Analytics - Unlock for £15/mo</button>
             </div>
-            <button class="button">Built For Life - more - Join the tribe!</button>
+            <button class="button">Running For Life - more - Join the tribe!</button>
+            
+            <div class="session">
+                <p>Introducing Built For More</p>
+                <button onclick="joinLive()" class="new-icon">Join Built For More</button>
+            </div>
+
             <button class="button">Get Your Marathon Plan → £299</button>
         </section>
 
