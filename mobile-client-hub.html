@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Client Hub</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #1A1A1B;
+            color: #FFFFFF;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Grid Layout */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 320px;
+            background: #2A2A2B;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        /* Header Styles */
+        .header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: #2A2A2B;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #404040;
+            object-fit: cover;
+        }
+
+        .greeting {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .notification {
+            position: relative;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        /* Section Styles */
+        .section {
+            background: #2A2A2B;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* Meal Planner */
+        .meal-slot {
+            background: #404040;
+            min-height: 60px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-size: 16px;
+        }
+
+        .meal-slot:active {
+            transform: scale(0.98);
+        }
+
+        /* Progress Chart */
+        .chart-container {
+            margin: 16px 0;
+            height: 200px;
+        }
+
+        /* Button Styles */
+        .button {
+            background: #00FF88;
+            color: #1A1A1B;
+            border: none;
+            border-radius: 8px;
+            min-height: 60px;
+            padding: 12px;
+            font-size: 18px;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        .button-disabled {
+            background: #404040;
+            cursor: not-allowed;
+        }
+
+        /* Community Feed */
+        .feed {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .feed-item {
+            padding: 12px;
+            border-bottom: 1px solid #404040;
+        }
+
+        .reaction-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .reaction {
+            font-size: 20px;
+            padding: 8px;
+            background: #404040;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Toast Messages */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00FF88;
+            color: #1A1A1B;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Print Styles */
+        @media print {
+            .pro-tools, .community-feed, .notification {
+                display: none;
+            }
+        }
+
+        /* Input Styles */
+        .input {
+            width: 100%;
+            min-height: 60px;
+            padding: 12px;
+            background: #404040;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <form class="login-form" id="loginForm">
+            <h2 class="section-title">Login</h2>
+            <input type="email" class="input" placeholder="Email" required>
+            <input type="password" class="input" placeholder="Password" required>
+            <button type="submit" class="button">Login</button>
+        </form>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="container" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <img src="/api/placeholder/60/60" alt="Profile" class="avatar">
+            <div class="greeting" id="greeting"></div>
+            <div class="notification">🔔<span class="notification-badge">3</span></div>
+        </header>
+
+        <!-- Nutrition Zone -->
+        <section class="section">
+            <h2 class="section-title">My Nutrition</h2>
+            <div id="mealPlanner">
+                <div class="meal-slot" draggable="true">Tap to Add Breakfast</div>
+                <div class="meal-slot" draggable="true">Tap to Add Lunch</div>
+                <div class="meal-slot" draggable="true">Tap to Add Dinner</div>
+                <div class="meal-slot" draggable="true">Tap to Add Snack</div>
+            </div>
+            <div style="margin-top: 16px;">Total Calories: <span id="totalCalories">0</span></div>
+        </section>
+
+        <!-- Progress Galaxy -->
+        <section class="section">
+            <h2 class="section-title">My Progress</h2>
+            <div class="chart-container">
+                <canvas id="weightChart"></canvas>
+            </div>
+            <button class="button" id="addDataBtn">Add Weight Data</button>
+        </section>
+
+        <!-- Pro Tools -->
+        <section class="section pro-tools">
+            <h2 class="section-title">Pro Tools</h2>
+            <div style="opacity: 0.5; margin-bottom: 16px;">
+                <button class="button button-disabled">Advanced Analytics - Unlock for $15/mo</button>
+            </div>
+            <button class="button">Get Your Marathon Plan → $299</button>
+        </section>
+
+        <!-- Community Feed -->
+        <section class="section community-feed">
+            <h2 class="section-title">Community Pulse</h2>
+            <div class="feed" id="communityFeed"></div>
+        </section>
+    </div>
+
+    <!-- Toast Message Container -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Mock User Data
+        const userData = {
+            name: "Alex",
+            lastLogin: "2024-07-20",
+            weight: localStorage.getItem('weight') || 75,
+            goal: localStorage.getItem('goal') || 70
+        };
+
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const [email, password] = e.target.elements;
+            if (email.value === 'client@email.com' && password.value === 'fitness2024') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initializeApp();
+            } else {
+                showToast('Invalid credentials');
+            }
+        });
+
+        // Initialize App
+        function initializeApp() {
+            // Set Greeting
+            const hour = new Date().getHours();
+            const timeOfDay = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+            document.getElementById('greeting').textContent = 
+                `Welcome back, ${userData.name}! Ready for ${timeOfDay} Training?`;
+
+            // Initialize Weight Chart
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            const weightData = {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Weight (kg)',
+                    data: [75, 74, 73.5, 74, 73],
+                    borderColor: '#00FF88',
+                    tension: 0.4
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: weightData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: '#404040'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#404040'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Initialize Community Feed
+            const feedItems = [
+                "🎉 Sarah completed her first 5K!",
+                "💪 Mike hit a new PR in deadlifts",
+                "🏃‍♀️ Emma joined the Marathon Training group"
+            ];
+
+            const feed = document.getElementById('communityFeed');
+            feedItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'feed-item';
+                itemDiv.innerHTML = `
+                    ${item}
+                    <div class="reaction-buttons">
+                        <button class="reaction">😄</button>
+                        <button class="reaction">🔥</button>
+                        <button class="reaction">👏</button>
+                    </div>
+                `;
+                feed.appendChild(itemDiv);
+            });
+
+            // Meal Slot Handlers
+            document.querySelectorAll('.meal-slot').forEach(slot => {
+                slot.addEventListener('click', () => {
+                    const meal = prompt('Enter meal details:');
+                    if (meal) {
+                        slot.textContent = meal;
+                        updateCalories();
+                    }
+                });
+
+                // Drag and Drop
+                slot.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', e.target.textContent);
+                });
+
+                slot.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const data = e.dataTransfer.getData('text/plain');
+                    const sourceSlot = document.querySelector('.meal-slot[draggable="true"]:hover');
+                    if (sourceSlot) {
+                        const temp = sourceSlot.textContent;
+                        sourceSlot.textContent = e.target.textContent;
+                        e.target.textContent = temp;
+                    }
+                });
+            });
+
+            // Add Weight Data Handler
+            document.getElementById('addDataBtn').addEventListener('click', () => {
+                const weight = prompt('Enter your weight (kg):');
+                if (weight && !isNaN(weight)) {
+                    localStorage.setItem('weight', weight);
+                    showToast('Weight updated successfully');
+                } else if (weight) {
+                    showToast('Please enter a valid weight');
+                }
+            });
+        }
+
+        // Utility Functions
+        function updateCalories() {
+            // Mock calorie calculation
+            const calories = Math.floor(Math.random() * 500) + 1500;
+            document.getElementById('totalCalories').textContent = calories;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
