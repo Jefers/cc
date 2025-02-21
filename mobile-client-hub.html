@@ -148,6 +148,7 @@
 
         .button-disabled {
             background: #404040;
+            color:ghostwhite;
             cursor: not-allowed;
         }
 
@@ -265,9 +266,10 @@
         <section class="section pro-tools">
             <h2 class="section-title">Pro Tools</h2>
             <div style="opacity: 0.5; margin-bottom: 16px;">
-                <button class="button button-disabled">Advanced Analytics - Unlock for $15/mo</button>
+                <button class="button button-disabled">Advanced Analytics - Unlock for £15/mo</button>
             </div>
-            <button class="button">Get Your Marathon Plan → $299</button>
+            <button class="button">Built For Life - more - Join the tribe!</button>
+            <button class="button">Get Your Marathon Plan → £299</button>
         </section>
 
         <!-- Community Feed -->
@@ -293,7 +295,7 @@
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const [email, password] = e.target.elements;
-            if (email.value === 'client@email.com' && password.value === 'fitness2024') {
+            if (email.value === 'demo@email.com' && password.value === '123') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 initializeApp();

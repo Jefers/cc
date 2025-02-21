@@ -40,7 +40,7 @@ document.getElementById('login-form')?.addEventListener('submit', (e) => {
   e.preventDefault();
   const username = e.target[0].value;
   const password = e.target[1].value;
-  if (username === 'demo' && password === 'pass123') {
+  if (username === 'demo' && password === '123') {
     loadPage('dashboard');
   } else {
     document.getElementById('login-error').textContent = 'Invalid credentials';
