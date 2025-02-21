@@ -295,7 +295,7 @@
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const [email, password] = e.target.elements;
-            if (email.value === 'demo' && password.value === '123') {
+            if (email.value === 'demo@demo.com' && password.value === '123') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 initializeApp();
