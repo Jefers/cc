@@ -1,46 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu | Coach Christian</title>
-  <link rel="stylesheet" href="consolidated-mobile-styles.css">
-  <style>
-    /* Specific styling for menu links */
-    .menu-container {
-      max-width: 600px;
-      margin: 100px auto 20px;
-      padding: 20px;
-    }
-    .menu-link {
-      display: block;
-      background-color: var(--primary-color);
-      color: var(--text-color);
-      font-size: 24px;
-      text-align: center;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
-    }
-    .menu-link:hover {
-      background-color: var(--hover-color);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Coach Christian</title>
+    <link rel="stylesheet" href="consolidated-mobile-styles.css">
+    <style>
+        /* Menu-specific styles using our design system variables */
+        .menu-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        .menu-grid {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .menu-link {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all var(--transition-speed) ease;
+            border: 1px solid var(--accent-color);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-link:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            transform: translateY(-2px);
+        }
+
+        .menu-link:active {
+            transform: scale(0.98);
+        }
+
+        /* Section heading */
+        .menu-heading {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        @media (min-width: 768px) {
+            .menu-container {
+                padding: 2rem;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .menu-link {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="menu-container">
-    <a class="menu-link" href="index.html">Home</a>
-    <a class="menu-link" href="services.html">Services</a>
-    <a class="menu-link" href="about.html">About</a>
-    <a class="menu-link" href="testimonials.html">Client Testimonials</a>
-    <a class="menu-link" href="hub.html">Client Hub</a>
-    <a class="menu-link" href="hyrox_training_guide.html">Hyrox Training guide</a>
-    <a class="menu-link" href="analysis_questions.html">Analysis Questionaire</a>
-    <a class="menu-link" href="weight_tracker.html">12 Week Weight Tracker</a>
-    <a class="menu-link" href="mobile-client-hub">Client Hub</a>
-    <a class="menu-link" href="tools/index.html">Fitness Tools menu</a>
-    <a class="menu-link" href="contact.html">Contact me</a>
-  </div>
+    <!-- Fixed Header -->
+    <header class="fixed-header">
+        <div class="header-left">
+            <div class="logo">CC</div>
+            <h1 class="site-title">Coach Christian</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+        <div class="menu-container">
+            <h2 class="menu-heading">Navigation Menu</h2>
+            <nav class="menu-grid">
+                <a class="menu-link" href="index.html">Home</a>
+                <a class="menu-link" href="services.html">Services</a>
+                <a class="menu-link" href="about.html">About</a>
+                <a class="menu-link" href="testimonials.html">Client Testimonials</a>
+                <a class="menu-link" href="hub.html">Client Hub</a>
+                <a class="menu-link" href="hyrox_training_guide.html">Hyrox Training Guide</a>
+                <a class="menu-link" href="analysis_questions.html">Analysis Questionnaire</a>
+                <a class="menu-link" href="weight_tracker.html">12 Week Weight Tracker</a>
+                <a class="menu-link" href="mobile-client-hub">Client Hub</a>
+                <a class="menu-link" href="tools/index.html">Fitness Tools</a>
+                <a class="menu-link" href="contact.html">Contact Me</a>
+            </nav>
+        </div>
+    </main>
 </body>
 </html>
