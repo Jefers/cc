@@ -1,57 +1,201 @@
 :root {
-  --bg: #0F0F0F;
-  --accent: #00FF88;
+  --primary: #6B48FF; /* Deep purple */
+  --secondary: #00F5D4; /* Neon cyan */
+  --bg-dark: #1A1C2E; /* Dark background */
+  --bg-light: #2E3047; /* Card background */
   --text: #FFFFFF;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
   font-family: 'Rubik', Arial, sans-serif;
-  background: var(--bg);
+  background: var(--bg-dark);
   color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-#app { min-height: 100vh; }
+#app {
+  min-height: 100vh;
+  padding-bottom: 80px; /* Space for fixed nav */
+}
 
-.page { padding: 20px; padding-bottom: 60px; }
+.page {
+  padding: 20px;
+}
 
+/* Buttons */
 button {
-  min-width: 48px;
-  min-height: 48px;
-  font-size: 18px;
-  background: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--bg-dark);
   border: none;
-  color: var(--bg);
+  border-radius: 24px;
   cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* Inputs */
 input, select, textarea {
   font-size: 16px;
-  height: 40px;
-  margin: 8px 0;
+  height: 48px;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
+  margin: 10px 0;
+  padding: 0 12px;
+  background: var(--bg-light);
+  color: var(--text);
+  border: 1px solid var(--primary);
+  border-radius: 12px;
 }
 
+textarea {
+  height: 100px;
+  padding: 12px;
+}
+
+/* Bottom Navigation */
 .bottom-nav {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   display: flex;
   justify-content: space-around;
-  background: #1A1A1A;
+  background: var(--bg-light);
   padding: 10px 0;
+  box-shadow: var(--shadow);
+  z-index: 1000;
 }
 
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-.stat-card { background: #1A1A1A; padding: 10px; border-radius: 5px; }
-.modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1A1A1A; padding: 20px; }
-.meal-dropzone, .meal-options div { border: 2px dashed var(--accent); padding: 10px; margin: 10px 0; }
-.achievement { border-bottom: 1px solid #333; padding: 10px; }
-.session-grid, .replay-grid { display: grid; gap: 10px; }
-.reward { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
-.chat-sidebar { background: #1A1A1A; padding: 10px; max-height: 300px; overflow-y: auto; }
-.upsell-card { background: #333; padding: 10px; margin: 10px 0; cursor: pointer; }
-.error { color: #FF5555; }
+.bottom-nav button {
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+  flex-direction: column;
+  gap: 4px;
+}
 
-@media (max-width: 320px) { body { font-size: 14px; } }
+.bottom-nav button.active {
+  color: var(--secondary);
+}
+
+/* Dashboard */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  background: var(--bg-light);
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-light);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* Programs */
+.meal-dropzone, .meal-options div {
+  background: var(--bg-light);
+  border: 2px dashed var(--secondary);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 12px;
+}
+
+/* Community */
+.achievement {
+  background: var(--bg-light);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 12px;
+}
+
+.reactions button {
+  background: none;
+  color: var(--text);
+  font-size: 20px;
+}
+
+/* Live */
+.session-grid, .replay-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.session, .replay-grid div {
+  background: var(--bg-light);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.chat-sidebar {
+  background: var(--bg-light);
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Rewards */
+.reward {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-light);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 12px;
+}
+
+/* Upsell */
+.upsell-card {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 12px;
+  color: var(--bg-dark);
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Misc */
+.error { color: #FF6B6B; font-size: 14px; }
+
+@media (min-width: 768px) {
+  .page { padding: 40px; }
+  button { font-size: 18px; }
+  .bottom-nav button { font-size: 16px; }
+}

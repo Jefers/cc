@@ -1,4 +1,3 @@
-// Central userData object
 const userData = JSON.parse(localStorage.getItem('userData')) || {
   profile: { name: "", age: null, weight: null, height: null },
   goals: [],
@@ -6,32 +5,37 @@ const userData = JSON.parse(localStorage.getItem('userData')) || {
   upsellHistory: []
 };
 
-// Load page content
 function loadPage(page) {
   fetch(`${page}.html`)
     .then(response => response.text())
     .then(html => {
       document.getElementById('app').innerHTML = html;
-      renderNav();
+      renderNav(page);
       initPage(page);
     });
 }
 
-// Render navigation bar
-function renderNav() {
+function renderNav(activePage) {
+  const navItems = [
+    { id: 'dashboard', label: 'Home', icon: '🏠' },
+    { id: 'profile', label: 'Profile', icon: '👤' },
+    { id: 'programs', label: 'Programs', icon: '💪' },
+    { id: 'community', label: 'Community', icon: '🌐' },
+    { id: 'live', label: 'Live', icon: '📡' },
+    { id: 'rewards', label: 'Rewards', icon: '🎁' }
+  ];
   const nav = `
     <nav class="bottom-nav">
-      <button onclick="loadPage('dashboard')">🏠 Home</button>
-      <button onclick="loadPage('profile')">👤 Profile</button>
-      <button onclick="loadPage('programs')">💪 Programs</button>
-      <button onclick="loadPage('community')">🌐 Community</button>
-      <button onclick="loadPage('live')">📡 Live</button>
-      <button onclick="loadPage('rewards')">🎁 Rewards</button>
+      ${navItems.map(item => `
+        <button onclick="loadPage('${item.id}')" class="${activePage === item.id ? 'active' : ''}">
+          <span>${item.icon}</span>
+          <span>${item.label}</span>
+        </button>
+      `).join('')}
     </nav>`;
   document.getElementById('app').insertAdjacentHTML('beforeend', nav);
 }
 
-// Login logic
 document.getElementById('login-form')?.addEventListener('submit', (e) => {
   e.preventDefault();
   const username = e.target[0].value;
@@ -43,7 +47,6 @@ document.getElementById('login-form')?.addEventListener('submit', (e) => {
   }
 });
 
-// Page-specific initialization
 function initPage(page) {
   if (page === 'dashboard') initDashboard();
   if (page === 'profile') initProfile();
