@@ -46,4 +46,58 @@
             transform: scale(0.98);
         }
 
-        /* Section head
+        /* Section heading */
+        .menu-heading {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        @media (min-width: 768px) {
+            .menu-container {
+                padding: 2rem;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .menu-link {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <header class="fixed-header">
+        <div class="header-left">
+            <div class="logo">CC</div>
+            <h1 class="site-title">Coach Christian</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+        <div class="menu-container">
+            <h2 class="menu-heading">Navigation Menu</h2>
+            <nav class="menu-grid">
+                <a class="menu-link" href="index.html">Home</a>
+                <a class="menu-link" href="services.html">Services</a>
+                <a class="menu-link" href="about.html">About</a>
+                <a class="menu-link" href="testimonials.html">Client Testimonials</a>
+                <a class="menu-link" href="hub.html">Client Hub</a>
+                <a class="menu-link" href="hyrox_training_guide.html">Hyrox Training Guide</a>
+                <a class="menu-link" href="analysis_questions.html">Analysis Questionnaire</a>
+                <a class="menu-link" href="weight_tracker.html">12 Week Weight Tracker</a>
+                <a class="menu-link" href="mobile-client-hub">Client Hub</a>
+                <a class="menu-link" href="fitness-hub">Fitness Hub</a>
+                <a class="menu-link" href="tools/index.html">Fitness Tools</a>
+                <a class="menu-link" href="contact.html">Contact Me</a>
+            </nav>
+        </div>
+    </main>
+</body>
+</html>
