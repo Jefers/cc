@@ -1,74 +1,110 @@
+/* CSS Variables for Customization */
 :root {
-  --primary: #6B48FF; /* Deep purple */
-  --secondary: #00F5D4; /* Neon cyan */
-  --bg-dark: #1A1C2E; /* Dark background */
-  --bg-light: #2E3047; /* Card background */
-  --text: #FFFFFF;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --primary-color: #00FF88; /* Vibrant green */
+  --hover-color: #00cc6e;   /* Darker green on hover */
+  --background-color: #1A1A1B; /* Dark background */
+  --secondary-bg: #2A2A2B; /* Card/menu background */
+  --text-color: #FFFFFF; /* White text */
+  --accent-color: #404040; /* Subtle gray accents */
+  --menu-bg: #2A2A2B; /* Bottom nav background */
+  --menu-text: #FFFFFF; /* Nav text */
+  --error-color: #ff4444; /* Red for errors */
+  --success-color: #00FF88; /* Green for success */
+  --border-radius: 12px; /* Rounded edges */
+  --transition-speed: 0.3s; /* Smooth transitions */
 }
 
-* {
+/* Global Resets */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Base Styles - Mobile First */
 body {
-  font-family: 'Rubik', Arial, sans-serif;
-  background: var(--bg-dark);
-  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
   line-height: 1.6;
-  overflow-x: hidden;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#app {
-  min-height: 100vh;
-  padding-bottom: 80px; /* Space for fixed nav */
+/* Typography */
+h1, h2, h3 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
-.page {
-  padding: 20px;
-}
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
 
 /* Buttons */
 button {
-  display: inline-flex;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  min-height: 60px;
+  width: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 60px;
-  height: 48px;
-  font-size: 16px;
-  font-weight: 500;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: var(--bg-dark);
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 0.5rem;
 }
 
 button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+  background-color: var(--hover-color);
+  transform: translateY(-1px);
 }
 
-/* Inputs */
-input, select, textarea {
-  font-size: 16px;
-  height: 48px;
+button:active {
+  transform: scale(0.98);
+}
+
+/* Forms */
+input,
+textarea,
+select {
   width: 100%;
-  max-width: 320px;
-  margin: 10px 0;
-  padding: 0 12px;
-  background: var(--bg-light);
-  color: var(--text);
-  border: 1px solid var(--primary);
-  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--accent-color);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  min-height: 60px;
+  margin-bottom: 1rem;
+  transition: border-color var(--transition-speed) ease;
 }
 
-textarea {
-  height: 100px;
-  padding: 12px;
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* App Container */
+#app {
+  min-height: 100vh;
+  padding-bottom: 80px; /* Space for fixed bottom nav */
+}
+
+/* Page Layout */
+.page {
+  padding: 1rem;
 }
 
 /* Bottom Navigation */
@@ -79,38 +115,46 @@ textarea {
   width: 100%;
   display: flex;
   justify-content: space-around;
-  background: var(--bg-light);
-  padding: 10px 0;
-  box-shadow: var(--shadow);
+  background-color: var(--menu-bg);
+  padding: 0.5rem 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
 
 .bottom-nav button {
   background: none;
-  color: var(--text);
-  font-size: 14px;
+  color: var(--menu-text);
+  font-size: 0.9rem;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
+  width: auto;
+  padding: 0.5rem;
+  min-height: 0;
 }
 
 .bottom-nav button.active {
-  color: var(--secondary);
+  color: var(--primary-color);
+}
+
+.bottom-nav button:hover {
+  color: var(--primary-color);
+  transform: none; /* No lift effect on nav buttons */
 }
 
 /* Dashboard */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
 .stat-card {
-  background: var(--bg-light);
-  padding: 15px;
-  border-radius: 12px;
+  background-color: var(--secondary-bg);
+  padding: 1rem;
+  border-radius: var(--border-radius);
   text-align: center;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--accent-color);
 }
 
 /* Modal */
@@ -119,52 +163,63 @@ textarea {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg-light);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  background-color: var(--secondary-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Programs */
-.meal-dropzone, .meal-options div {
-  background: var(--bg-light);
-  border: 2px dashed var(--secondary);
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
+.meal-dropzone,
+.meal-options div {
+  background-color: var(--secondary-bg);
+  border: 2px dashed var(--accent-color);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: var(--border-radius);
 }
 
 /* Community */
 .achievement {
-  background: var(--bg-light);
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
+  background-color: var(--secondary-bg);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-color);
 }
 
 .reactions button {
   background: none;
-  color: var(--text);
-  font-size: 20px;
+  color: var(--text-color);
+  font-size: 1.25rem;
+  width: auto;
+  min-height: 0;
+}
+
+.reactions button:hover {
+  color: var(--primary-color);
 }
 
 /* Live */
-.session-grid, .replay-grid {
+.session-grid,
+.replay-grid {
   display: grid;
-  gap: 15px;
+  gap: 1rem;
 }
 
-.session, .replay-grid div {
-  background: var(--bg-light);
-  padding: 15px;
-  border-radius: 12px;
+.session,
+.replay-grid div {
+  background-color: var(--secondary-bg);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-color);
 }
 
 .chat-sidebar {
-  background: var(--bg-light);
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 12px;
+  background-color: var(--secondary-bg);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: var(--border-radius);
   max-height: 200px;
   overflow-y: auto;
 }
@@ -174,28 +229,74 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--bg-light);
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
+  background-color: var(--secondary-bg);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-color);
 }
 
 /* Upsell */
 .upsell-card {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  padding: 15px;
-  margin: 20px 0;
-  border-radius: 12px;
-  color: var(--bg-dark);
+  background-color: var(--secondary-bg);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-color);
   text-align: center;
   cursor: pointer;
 }
 
-/* Misc */
-.error { color: #FF6B6B; font-size: 14px; }
+.upsell-card:hover {
+  border-color: var(--primary-color);
+}
 
+/* Misc */
+.error {
+  color: var(--error-color);
+  font-size: 0.9rem;
+}
+
+/* Responsive Breakpoints */
 @media (min-width: 768px) {
-  .page { padding: 40px; }
-  button { font-size: 18px; }
-  .bottom-nav button { font-size: 16px; }
+  body {
+    font-size: 18px;
+  }
+
+  .page {
+    padding: 2rem;
+  }
+
+  button {
+    width: auto;
+  }
+
+  .bottom-nav button {
+    font-size: 1rem;
+  }
+
+  .stats-grid {
+    gap: 1.5rem;
+  }
+
+  .stat-card,
+  .meal-dropzone,
+  .meal-options div,
+  .achievement,
+  .session,
+  .replay-grid div,
+  .reward,
+  .upsell-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 20px;
+  }
+
+  .page {
+    padding: 3rem;
+  }
 }
