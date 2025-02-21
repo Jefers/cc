@@ -250,6 +250,71 @@ th {
 .mt-1 { margin-top: 1rem; }
 .mt-2 { margin-top: 2rem; }
 
+/* --- ENLARGED MAIN CONTENT --- */
+/* Introduce a class for main content areas that should be enlarged */
+.main-content {
+  font-size: 54px; /* ~3x increase for body elements */
+}
+
+/* Headings inside main content */
+.main-content h1,
+.main-content h2,
+.main-content h3 {
+  font-size: 72px;
+  margin-bottom: 24px;
+}
+
+/* Form Elements inside main content: Super big inputs */
+.main-content input,
+.main-content textarea,
+.main-content select {
+  width: 100%;
+  padding: 24px;
+  font-size: 54px;
+  margin-bottom: 24px;
+  border: 2px solid #ccc;
+  border-radius: 24px;
+}
+
+/* Buttons inside main content: Full width, large, rounded, and centered.
+   Preserve the original colours from your variables. */
+.main-content button,
+.main-content .button {
+  width: 100%;
+  padding: 24px;
+  font-size: 54px; /* Adjust if the text seems too small */
+  border-radius: 50px;
+  margin: 24px auto;
+  display: block;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.main-content button:hover,
+.main-content .button:hover {
+  background-color: var(--hover-color);
+}
+.main-content button:active,
+.main-content .button:active {
+  transform: scale(0.98);
+}
+
+/* Tables in main content */
+.main-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  font-size: 54px;
+}
+.main-content th,
+.main-content td {
+  border: 2px solid #ccc;
+  padding: 24px;
+  text-align: center;
+}
+
 /* Animations */
 @keyframes slideUp {
   from {
