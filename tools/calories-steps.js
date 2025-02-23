@@ -9,7 +9,7 @@ document.getElementById('steps-form').addEventListener('submit', function(event)
         weightKg = weight * 0.453592;
     }
     
-    const caloriesBurned = steps * weightKg * 0.04;
+    const caloriesBurned = steps * weightKg * 0.00075; /* This is more realistic than before   */
     
     document.getElementById('steps-result').textContent = `Estimated calories burned: ${caloriesBurned.toFixed(1)} kcal.`;
 });
