@@ -22,18 +22,17 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: clamp(5px, 1vw, 10px); /* Minimal padding */
+            padding: 5px; /* Minimal padding */
             overflow-y: auto;
-            font-size: clamp(12px, 2vw, 14px); /* Smaller base font */
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.5rem, 8vw, 2rem); /* Smaller to save space */
+            font-size: 1.5rem; /* Compact title */
             color: #ffffff;
             width: 100%;
-            letter-spacing: clamp(0.3rem, 1.5vw, 0.5rem); /* Slightly less stretch */
-            margin: clamp(5px, 1vh, 10px) 0;
+            letter-spacing: 0.3rem;
+            margin: 5px 0;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -42,45 +41,46 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            margin: clamp(5px, 1vh, 10px) 0; /* Reduced margin */
-            max-width: 100%;
-            flex-grow: 1; /* Expands to fill available space */
+            width: 100%; /* Full width */
+            margin: 0; /* No margin to maximize space */
+            flex-grow: 1; /* Takes all available space */
         }
 
         #hours-minutes, #seconds-milliseconds {
-            font-size: clamp(6rem, 25vw, 10rem); /* Maxed-out for small screens */
+            font-size: 30vw; /* Massive, scales with width */
             font-weight: bold;
             color: #00ff00;
             line-height: 1;
-            width: 100%;
-            word-wrap: break-word;
+            width: 100%; /* 100% width guaranteed */
+            padding: 0 5px; /* Minimal padding, just for edge buffer */
+            margin: 0; /* No margin */
+            text-align: center;
             overflow: hidden;
-            padding: 0 clamp(5px, 1vw, 10px); /* Minimal padding */
+            white-space: nowrap; /* Prevent wrapping */
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: clamp(5px, 1vh, 8px);
+            gap: 5px;
             width: 100%;
-            padding: clamp(5px, 1vw, 10px);
+            padding: 5px;
         }
 
         button {
-            font-size: clamp(1rem, 3vw, 1.2rem); /* Smaller buttons */
-            padding: clamp(8px, 2vw, 12px) clamp(15px, 3vw, 20px);
+            font-size: 1rem;
+            padding: 8px 15px;
             width: 100%;
-            max-width: 250px; /* Slightly smaller max */
+            max-width: 200px;
             cursor: pointer;
             border: none;
-            border-radius: clamp(6px, 1.5vw, 8px);
+            border-radius: 6px;
             background-color: #00ff00;
             color: #000000;
             font-weight: bold;
             transition: background-color 0.2s ease;
-            min-height: 48px; /* Still touch-friendly */
+            min-height: 48px;
         }
 
         button:hover:not(:disabled) {
@@ -94,27 +94,27 @@
         }
 
         #splits {
-            margin-top: clamp(10px, 2vh, 15px);
-            font-size: clamp(1rem, 3vw, 1.2rem); /* Smaller splits */
+            margin-top: 10px;
+            font-size: 1rem;
             color: #ffffff;
-            padding-bottom: clamp(10px, 2vh, 15px);
+            padding-bottom: 10px;
             max-width: 100%;
             overflow-y: auto;
         }
 
         #splits p {
-            margin: clamp(5px, 1vh, 8px) 0;
+            margin: 5px 0;
         }
 
         p {
-            font-size: clamp(0.8rem, 2vw, 0.9rem); /* Tiny instructions */
+            font-size: 0.8rem;
             color: #cccccc;
-            margin: clamp(5px, 1vh, 10px) 0;
+            margin: 5px 0;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); } /* Smaller pulse for max size */
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
@@ -125,14 +125,14 @@
         /* Responsive Adjustments */
         @media (min-width: 768px) {
             body {
-                padding: clamp(10px, 2vw, 20px);
+                padding: 10px;
             }
 
             .button-container {
                 flex-direction: row;
                 justify-content: center;
                 flex-wrap: wrap;
-                gap: clamp(8px, 1.5vw, 15px);
+                gap: 10px;
             }
 
             button {
@@ -141,27 +141,21 @@
             }
 
             #hours-minutes, #seconds-milliseconds {
-                font-size: clamp(8rem, 20vw, 12rem); /* Larger on wide screens */
+                font-size: 20vw; /* Slightly smaller on larger screens */
+            }
+
+            h1 {
+                font-size: 2rem;
             }
 
             #splits {
-                font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+                font-size: 1.2rem;
             }
         }
 
         @media (max-width: 414px) {
-            h1 {
-                font-size: clamp(1.2rem, 6vw, 1.5rem);
-            }
             #hours-minutes, #seconds-milliseconds {
-                font-size: clamp(5rem, 22vw, 8rem); /* Still huge on tiny screens */
-            }
-            button {
-                padding: clamp(6px, 1.5vw, 10px) clamp(10px, 2.5vw, 15px);
-                max-width: 200px;
-            }
-            #splits {
-                font-size: clamp(0.9rem, 2.5vw, 1rem);
+                font-size: 28vw; /* Still massive on small screens */
             }
         }
     </style>
