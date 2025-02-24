@@ -491,11 +491,11 @@ th {
   display: inline-block;
   border-bottom: 1px dotted #000;
   cursor: pointer;
-  font-size: 54px;
+  font-size: 3rem;
 }
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 300px;
+  width: 600px;
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -504,11 +504,11 @@ th {
   position: absolute;
   z-index: 1;
   bottom: 140%;
-  left: 50%;
+  left: 150%;
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.3s;
-  font-size: 20px;
+  font-size: 3rem;
 }
 .tooltip:hover .tooltiptext {
   visibility: visible;
@@ -517,8 +517,8 @@ th {
 
 /* Gauge for Body Fat Percentage */
 .gauge {
-  max-width: 360px;
-  margin: 24px auto;
+  max-width: 50%;
+  margin: 1rem auto;
   text-align: center;
 }
 .gauge svg {

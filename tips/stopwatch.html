@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        /* Mobile-First Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000000; /* Black background */
+            color: #ffffff; /* Default text white for contrast */
+            height: 100vh; /* Full viewport height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            overflow-y: auto; /* Allow scrolling for splits */
+        }
+
+        h1 {
+            font-size: 6.5rem; /* Maxed for mobile readability */
+            color: #ffffff; /* White title */
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        #display {
+            font-size: 7.5rem; /* Large, luminous green time */
+            font-weight: bold;
+            color: #00ff00; /* Luminous green */
+            margin: 20px 0;
+            line-height: 1;
+            word-wrap: break-word; /* Prevent overflow */
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers buttons horizontally */
+            gap: 10px; /* Adds spacing between buttons */
+            width: 100%; /* Ensures container spans full width */
+        }
+
+        button {
+            font-size: 1.5rem; /* Large, readable buttons */
+            padding: 15px 25px;
+            margin: 5px;
+            width: 100%; /* Full width for mobile */
+            max-width: 300px; /* Cap width for larger screens */
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: #00ff00; /* Luminous green buttons */
+            color: #000000; /* Black text on buttons */
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #00cc00; /* Darker green on hover */
+        }
+
+        button:disabled {
+            background-color: #666666; /* Grayed out when disabled */
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        #splits {
+            margin-top: 20px;
+            font-size: 3.8rem; /* Larger split times */
+            color: #ffffff; /* White for contrast */
+            padding-bottom: 20px; /* Space at bottom */
+        }
+
+        #splits p {
+            margin: 10px 0; /* Spacing between split entries */
+            font-size: 3.8rem; /* Larger split times */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease;
+        }
+
+        /* Instructions text */
+        p {
+            font-size: 1rem;
+            color: #cccccc; /* Light gray for less emphasis */
+            margin: 10px 0;
+        }
+
+        /* Ensure buttons stack cleanly on small screens */
+        @media (max-width: 414px) {
+            h1 {
+                font-size: 2rem; /* Slightly smaller for tiny screens */
+            }
+            #display {
+                font-size: 3.5rem; /* Adjust for smaller mobiles */
+            }
+            button {
+                width: auto;
+                font-size: 1.2rem;
+                padding: 12px 20px;
+            }
+            #splits {
+                font-size: 5.5rem; /* Still large but fits */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Stopwatch</h1>
+    <div id="display">0:00:00.00</div>
+    <div class="button-container">
+    <button id="startStop">Start</button>
+    <button id="split" disabled>Split</button>
+    <button id="reset">Reset</button>
+    <button id="export">Export Splits</button>
+    </div>
+    <p>Use Start/Stop to control the timer, Split to record times, and Reset to clear.</p>
+    <div id="splits"></div>
+    <script>
+        let running = false;
+        let startTime;
+        let splitTimes = [];
+
+        function updateDisplay() {
+            if (running) {
+                const currentTime = performance.now() - startTime;
+                document.getElementById('display').textContent = formatTime(currentTime);
+                requestAnimationFrame(updateDisplay);
+            }
+        }
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const milliseconds = Math.floor((ms % 1000) / 10);
+            return `${hours}:${pad(minutes)}:${pad(seconds)}.${pad(milliseconds)}`;
+        }
+
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function displaySplits() {
+            const splitsDiv = document.getElementById('splits');
+            splitsDiv.innerHTML = splitTimes.map((time, index) => 
+                `<p>Split ${index + 1}: ${formatTime(time)}</p>`
+            ).join('');
+            const display = document.getElementById('display');
+            display.classList.add('pulse');
+            setTimeout(() => display.classList.remove('pulse'), 300);
+        }
+
+        document.getElementById('startStop').addEventListener('click', () => {
+            if (running) {
+                running = false;
+                document.getElementById('startStop').textContent = 'Start';
+                document.getElementById('split').disabled = true;
+            } else {
+                startTime = performance.now() - (splitTimes.length > 0 ? splitTimes[splitTimes.length - 1] : 0);
+                running = true;
+                document.getElementById('startStop').textContent = 'Stop';
+                document.getElementById('split').disabled = false;
+                requestAnimationFrame(updateDisplay);
+            }
+        });
+
+        document.getElementById('split').addEventListener('click', () => {
+            if (running) {
+                const currentTime = performance.now() - startTime;
+                splitTimes.push(currentTime);
+                displaySplits();
+            }
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            running = false;
+            document.getElementById('startStop').textContent = 'Start';
+            document.getElementById('display').textContent = '0:00:00.00';
+            splitTimes = [];
+            document.getElementById('splits').innerHTML = '';
+            document.getElementById('split').disabled = true;
+        });
+
+        document.getElementById('export').addEventListener('click', () => {
+            if (splitTimes.length === 0) {
+                alert('No splits to export.');
+                return;
+            }
+            const splitsText = splitTimes.map((time, index) => 
+                `Split ${index + 1}: ${formatTime(time)}`
+            ).join('\n');
+            const blob = new Blob([splitsText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'splits.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
