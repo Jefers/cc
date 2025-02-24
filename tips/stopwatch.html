@@ -6,7 +6,7 @@
     <title>Stopwatch</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* Reset and Mobile-First Base */
+        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -15,15 +15,13 @@
 
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             background-color: #000000;
             color: #ffffff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
             padding: 0;
-            margin: 0;
             overflow-y: auto;
         }
 
@@ -32,23 +30,21 @@
             font-size: 1.5rem;
             color: #ffffff;
             width: 100%;
-            letter-spacing: 0.3rem;
+            text-align: center;
+            letter-spacing: 1rem; /* Increased for full stretch */
             margin: 5px 0;
             font-weight: 700;
             text-transform: uppercase;
-            padding: 0 5px;
-            box-sizing: border-box;
-            text-align: center;
+            padding: 0 10px;
             white-space: nowrap;
         }
 
         #display {
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
             margin: 0;
-            flex-grow: 1;
             padding: 0;
         }
 
@@ -58,21 +54,20 @@
             color: #00ff00;
             line-height: 1;
             width: 100%;
+            text-align: center;
             padding: 0 5px;
             margin: 0;
-            text-align: center;
-            overflow: hidden;
             white-space: nowrap;
-            box-sizing: border-box;
         }
 
         .button-container {
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
-            width: 100%;
             padding: 5px 0;
+            margin: 0; /* No margin to close gap */
         }
 
         button {
@@ -100,29 +95,27 @@
             cursor: not-allowed;
         }
 
+        p.instructions {
+            font-size: 0.8rem;
+            color: #cccccc;
+            margin: 5px 0;
+            padding: 0 10px;
+            text-align: center;
+            white-space: normal;
+        }
+
         #splits {
+            width: 100%;
             margin-top: 10px;
-            font-size: 1rem;
+            font-size: 2.4rem; /* 3x larger than typical 0.8rem base */
             color: #ffffff;
             padding-bottom: 10px;
-            max-width: 100%;
             overflow-y: auto;
-            width: 100%;
         }
 
         #splits p {
             margin: 5px 0;
-            padding: 0 5px;
-        }
-
-        p {
-            font-size: 0.8rem;
-            color: #cccccc;
-            margin: 5px 0;
-            padding: 0 5px;
-            width: 100%;
-            text-align: center;
-            white-space: nowrap;
+            padding: 0 10px;
         }
 
         @keyframes pulse {
@@ -137,14 +130,18 @@
 
         /* Responsive Adjustments */
         @media (min-width: 768px) {
-            body {
-                padding: 10px;
+            h1 {
+                font-size: 2rem;
+                letter-spacing: 1.2rem;
+            }
+
+            #hours-minutes, #seconds-milliseconds {
+                font-size: 20vw;
             }
 
             .button-container {
                 flex-direction: row;
                 justify-content: center;
-                flex-wrap: wrap;
                 gap: 10px;
             }
 
@@ -153,16 +150,8 @@
                 max-width: 180px;
             }
 
-            #hours-minutes, #seconds-milliseconds {
-                font-size: 20vw;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
             #splits {
-                font-size: 1.2rem;
+                font-size: 3rem; /* Larger still on bigger screens */
             }
         }
 
@@ -185,7 +174,7 @@
         <button id="reset">Reset</button>
         <button id="export">Export Splits</button>
     </div>
-    <p>Use Start/Stop to control the timer, Split to record times, and Reset to clear.</p>
+    <p class="instructions">Use Start/Stop to control the timer, Split to record times, and Reset to clear.</p>
     <div id="splits"></div>
     <script>
         let running = false;
