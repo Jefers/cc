@@ -22,41 +22,48 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 5px; /* Minimal padding */
+            padding: 0;
+            margin: 0;
             overflow-y: auto;
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem; /* Compact title */
+            font-size: 1.5rem;
             color: #ffffff;
             width: 100%;
             letter-spacing: 0.3rem;
             margin: 5px 0;
             font-weight: 700;
             text-transform: uppercase;
+            padding: 0 5px;
+            box-sizing: border-box;
+            text-align: center;
+            white-space: nowrap;
         }
 
         #display {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%; /* Full width */
-            margin: 0; /* No margin to maximize space */
-            flex-grow: 1; /* Takes all available space */
+            width: 100%;
+            margin: 0;
+            flex-grow: 1;
+            padding: 0;
         }
 
         #hours-minutes, #seconds-milliseconds {
-            font-size: 30vw; /* Massive, scales with width */
+            font-size: 30vw;
             font-weight: bold;
             color: #00ff00;
             line-height: 1;
-            width: 100%; /* 100% width guaranteed */
-            padding: 0 5px; /* Minimal padding, just for edge buffer */
-            margin: 0; /* No margin */
+            width: 100%;
+            padding: 0 5px;
+            margin: 0;
             text-align: center;
             overflow: hidden;
-            white-space: nowrap; /* Prevent wrapping */
+            white-space: nowrap;
+            box-sizing: border-box;
         }
 
         .button-container {
@@ -65,7 +72,7 @@
             align-items: center;
             gap: 5px;
             width: 100%;
-            padding: 5px;
+            padding: 5px 0;
         }
 
         button {
@@ -100,16 +107,22 @@
             padding-bottom: 10px;
             max-width: 100%;
             overflow-y: auto;
+            width: 100%;
         }
 
         #splits p {
             margin: 5px 0;
+            padding: 0 5px;
         }
 
         p {
             font-size: 0.8rem;
             color: #cccccc;
             margin: 5px 0;
+            padding: 0 5px;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
         }
 
         @keyframes pulse {
@@ -141,7 +154,7 @@
             }
 
             #hours-minutes, #seconds-milliseconds {
-                font-size: 20vw; /* Slightly smaller on larger screens */
+                font-size: 20vw;
             }
 
             h1 {
@@ -155,7 +168,7 @@
 
         @media (max-width: 414px) {
             #hours-minutes, #seconds-milliseconds {
-                font-size: 28vw; /* Still massive on small screens */
+                font-size: 28vw;
             }
         }
     </style>
