@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stopwatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         /* Reset and Mobile-First Base */
         * {
@@ -15,84 +16,97 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #000000; /* Black background */
-            color: #ffffff; /* Default white text */
-            min-height: 100vh; /* Full viewport height */
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: clamp(10px, 2vw, 20px); /* Responsive padding */
-            overflow-y: auto; /* Scroll for splits */
-            font-size: clamp(14px, 2.5vw, 16px); /* Fluid base font */
+            padding: clamp(10px, 2vw, 20px);
+            overflow-y: auto;
+            font-size: clamp(14px, 2.5vw, 16px);
         }
 
         h1 {
-            font-size: clamp(2rem, 6vw, 2.5rem); /* Scales from 32px to 40px */
-            color: #ffffff; /* White title */
-            margin: clamp(10px, 2vh, 20px) 0; /* Responsive margin */
-            font-weight: bold;
+            font-family: 'Orbitron', sans-serif; /* Fancy, sci-fi font */
+            font-size: clamp(2rem, 10vw, 3rem); /* Stretched and fluid */
+            color: #ffffff;
+            width: 100%; /* Full width */
+            letter-spacing: clamp(0.5rem, 2vw, 1rem); /* Stretched effect */
+            margin: clamp(10px, 2vh, 20px) 0;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         #display {
-            font-size: clamp(3.5rem, 15vw, 4.5rem); /* Fluid, capped size */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Full width */
+            margin: clamp(10px, 3vh, 20px) 0;
+            max-width: 100%;
+        }
+
+        #hours-minutes, #seconds-milliseconds {
+            font-size: clamp(3rem, 15vw, 6rem); /* Maxed-out numerals */
             font-weight: bold;
             color: #00ff00; /* Luminous green */
-            margin: clamp(10px, 3vh, 20px) 0; /* Responsive spacing */
             line-height: 1;
-            word-wrap: break-word; /* Prevent overflow */
-            max-width: 100%; /* Fit screen */
+            width: 100%;
+            word-wrap: break-word;
+            overflow: hidden; /* Prevent overflow */
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center buttons horizontally */
-            gap: clamp(5px, 1.5vh, 10px); /* Responsive gap */
+            align-items: center;
+            gap: clamp(5px, 1.5vh, 10px);
             width: 100%;
-            padding: 0 clamp(10px, 2vw, 20px); /* Side padding */
+            padding: 0 clamp(10px, 2vw, 20px);
         }
 
         button {
-            font-size: clamp(1.2rem, 4vw, 1.5rem); /* Scales from 19px to 24px */
-            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 25px); /* Responsive padding */
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 25px);
             width: 100%;
-            max-width: 300px; /* Cap for readability */
+            max-width: 300px;
             cursor: pointer;
             border: none;
-            border-radius: clamp(8px, 2vw, 10px); /* Responsive radius */
-            background-color: #00ff00; /* Luminous green */
-            color: #000000; /* Black text */
+            border-radius: clamp(8px, 2vw, 10px);
+            background-color: #00ff00;
+            color: #000000;
             font-weight: bold;
             transition: background-color 0.2s ease;
-            min-height: 60px; /* Touch-friendly */
+            min-height: 60px;
         }
 
         button:hover:not(:disabled) {
-            background-color: #00cc00; /* Darker green on hover */
+            background-color: #00cc00;
         }
 
         button:disabled {
-            background-color: #666666; /* Grayed out */
+            background-color: #666666;
             opacity: 0.7;
             cursor: not-allowed;
         }
 
         #splits {
-            margin-top: clamp(15px, 3vh, 20px); /* Responsive spacing */
-            font-size: clamp(1.5rem, 5vw, 1.8rem); /* Larger, fluid splits */
-            color: #ffffff; /* White for contrast */
-            padding-bottom: clamp(15px, 3vh, 20px); /* Bottom space */
+            margin-top: clamp(15px, 3vh, 20px);
+            font-size: clamp(1.5rem, 5vw, 1.8rem);
+            color: #ffffff;
+            padding-bottom: clamp(15px, 3vh, 20px);
             max-width: 100%;
-            overflow-y: auto; /* Scroll if needed */
+            overflow-y: auto;
         }
 
         #splits p {
-            margin: clamp(8px, 2vh, 10px) 0; /* Responsive split spacing */
+            margin: clamp(8px, 2vh, 10px) 0;
         }
 
         p {
-            font-size: clamp(0.9rem, 2.5vw, 1rem); /* Fluid instructions */
-            color: #cccccc; /* Light gray */
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: #cccccc;
             margin: clamp(8px, 2vh, 10px) 0;
         }
 
@@ -109,37 +123,36 @@
         /* Responsive Adjustments */
         @media (min-width: 768px) {
             body {
-                padding: clamp(20px, 3vw, 30px); /* Larger padding */
+                padding: clamp(20px, 3vw, 30px);
             }
 
             .button-container {
-                flex-direction: row; /* Buttons side by side */
-                justify-content: center; /* Center horizontally */
-                flex-wrap: wrap; /* Wrap if needed */
-                gap: clamp(10px, 2vw, 20px); /* Larger gap */
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: clamp(10px, 2vw, 20px);
             }
 
             button {
-                width: auto; /* Shrink buttons on larger screens */
-                max-width: 200px; /* Smaller max width */
+                width: auto;
+                max-width: 200px;
             }
 
-            #display {
-                font-size: clamp(4rem, 10vw, 5rem); /* Larger display */
+            #hours-minutes, #seconds-milliseconds {
+                font-size: clamp(4rem, 12vw, 7rem); /* Larger on wider screens */
             }
 
             #splits {
-                font-size: clamp(1.6rem, 3vw, 2rem); /* Slightly larger splits */
+                font-size: clamp(1.6rem, 3vw, 2rem);
             }
         }
 
         @media (max-width: 414px) {
-            /* Fine-tune for smaller mobiles */
             h1 {
-                font-size: clamp(1.8rem, 5vw, 2rem);
+                font-size: clamp(1.8rem, 8vw, 2rem);
             }
-            #display {
-                font-size: clamp(3rem, 12vw, 3.5rem);
+            #hours-minutes, #seconds-milliseconds {
+                font-size: clamp(2.5rem, 12vw, 3.5rem); /* Adjusted for small screens */
             }
             button {
                 padding: clamp(10px, 2.5vw, 12px) clamp(15px, 4vw, 20px);
@@ -152,7 +165,10 @@
 </head>
 <body>
     <h1>Stopwatch</h1>
-    <div id="display">0:00:00.00</div>
+    <div id="display">
+        <span id="hours-minutes">0:00</span>
+        <span id="seconds-milliseconds">00.00</span>
+    </div>
     <div class="button-container">
         <button id="startStop">Start</button>
         <button id="split" disabled>Split</button>
@@ -169,7 +185,9 @@
         function updateDisplay() {
             if (running) {
                 const currentTime = performance.now() - startTime;
-                document.getElementById('display').textContent = formatTime(currentTime);
+                const { hoursMinutes, secondsMilliseconds } = formatTime(currentTime);
+                document.getElementById('hours-minutes').textContent = hoursMinutes;
+                document.getElementById('seconds-milliseconds').textContent = secondsMilliseconds;
                 requestAnimationFrame(updateDisplay);
             }
         }
@@ -180,7 +198,10 @@
             const minutes = Math.floor((totalSeconds % 3600) / 60);
             const seconds = totalSeconds % 60;
             const milliseconds = Math.floor((ms % 1000) / 10);
-            return `${hours}:${pad(minutes)}:${pad(seconds)}.${pad(milliseconds)}`;
+            return {
+                hoursMinutes: `${hours}:${pad(minutes)}`,
+                secondsMilliseconds: `${pad(seconds)}.${pad(milliseconds)}`
+            };
         }
 
         function pad(num) {
@@ -189,9 +210,10 @@
 
         function displaySplits() {
             const splitsDiv = document.getElementById('splits');
-            splitsDiv.innerHTML = splitTimes.map((time, index) => 
-                `<p>Split ${index + 1}: ${formatTime(time)}</p>`
-            ).join('');
+            splitsDiv.innerHTML = splitTimes.map((time, index) => {
+                const { hoursMinutes, secondsMilliseconds } = formatTime(time);
+                return `<p>Split ${index + 1}: ${hoursMinutes}:${secondsMilliseconds}</p>`;
+            }).join('');
             const display = document.getElementById('display');
             display.classList.add('pulse');
             setTimeout(() => display.classList.remove('pulse'), 300);
@@ -222,7 +244,8 @@
         document.getElementById('reset').addEventListener('click', () => {
             running = false;
             document.getElementById('startStop').textContent = 'Start';
-            document.getElementById('display').textContent = '0:00:00.00';
+            document.getElementById('hours-minutes').textContent = '0:00';
+            document.getElementById('seconds-milliseconds').textContent = '00.00';
             splitTimes = [];
             document.getElementById('splits').innerHTML = '';
             document.getElementById('split').disabled = true;
@@ -233,9 +256,10 @@
                 alert('No splits to export.');
                 return;
             }
-            const splitsText = splitTimes.map((time, index) => 
-                `Split ${index + 1}: ${formatTime(time)}`
-            ).join('\n');
+            const splitsText = splitTimes.map((time, index) => {
+                const { hoursMinutes, secondsMilliseconds } = formatTime(time);
+                return `Split ${index + 1}: ${hoursMinutes}:${secondsMilliseconds}`;
+            }).join('\n');
             const blob = new Blob([splitsText], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
