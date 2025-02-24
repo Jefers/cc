@@ -22,18 +22,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: clamp(10px, 2vw, 20px);
+            padding: clamp(5px, 1vw, 10px); /* Minimal padding */
             overflow-y: auto;
-            font-size: clamp(14px, 2.5vw, 16px);
+            font-size: clamp(12px, 2vw, 14px); /* Smaller base font */
         }
 
         h1 {
-            font-family: 'Orbitron', sans-serif; /* Fancy, sci-fi font */
-            font-size: clamp(2rem, 10vw, 3rem); /* Stretched and fluid */
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.5rem, 8vw, 2rem); /* Smaller to save space */
             color: #ffffff;
-            width: 100%; /* Full width */
-            letter-spacing: clamp(0.5rem, 2vw, 1rem); /* Stretched effect */
-            margin: clamp(10px, 2vh, 20px) 0;
+            width: 100%;
+            letter-spacing: clamp(0.3rem, 1.5vw, 0.5rem); /* Slightly less stretch */
+            margin: clamp(5px, 1vh, 10px) 0;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -42,43 +42,45 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%; /* Full width */
-            margin: clamp(10px, 3vh, 20px) 0;
+            width: 100%;
+            margin: clamp(5px, 1vh, 10px) 0; /* Reduced margin */
             max-width: 100%;
+            flex-grow: 1; /* Expands to fill available space */
         }
 
         #hours-minutes, #seconds-milliseconds {
-            font-size: clamp(12rem, 15vw, 6rem); /* Maxed-out numerals */
+            font-size: clamp(6rem, 25vw, 10rem); /* Maxed-out for small screens */
             font-weight: bold;
-            color: #00ff00; /* Luminous green */
+            color: #00ff00;
             line-height: 1;
             width: 100%;
             word-wrap: break-word;
-            overflow: hidden; /* Prevent overflow */
+            overflow: hidden;
+            padding: 0 clamp(5px, 1vw, 10px); /* Minimal padding */
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: clamp(5px, 1.5vh, 10px);
+            gap: clamp(5px, 1vh, 8px);
             width: 100%;
-            padding: 0 clamp(10px, 2vw, 20px);
+            padding: clamp(5px, 1vw, 10px);
         }
 
         button {
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 25px);
+            font-size: clamp(1rem, 3vw, 1.2rem); /* Smaller buttons */
+            padding: clamp(8px, 2vw, 12px) clamp(15px, 3vw, 20px);
             width: 100%;
-            max-width: 300px;
+            max-width: 250px; /* Slightly smaller max */
             cursor: pointer;
             border: none;
-            border-radius: clamp(32px, 10vw, 32px);
+            border-radius: clamp(6px, 1.5vw, 8px);
             background-color: #00ff00;
             color: #000000;
             font-weight: bold;
             transition: background-color 0.2s ease;
-            min-height: 60px;
+            min-height: 48px; /* Still touch-friendly */
         }
 
         button:hover:not(:disabled) {
@@ -92,27 +94,27 @@
         }
 
         #splits {
-            margin-top: clamp(15px, 3vh, 20px);
-            font-size: clamp(5rem, 10vw, 6.6rem);
+            margin-top: clamp(10px, 2vh, 15px);
+            font-size: clamp(1rem, 3vw, 1.2rem); /* Smaller splits */
             color: #ffffff;
-            padding-bottom: clamp(15px, 3vh, 20px);
+            padding-bottom: clamp(10px, 2vh, 15px);
             max-width: 100%;
             overflow-y: auto;
         }
 
         #splits p {
-            margin: clamp(8px, 2vh, 10px) 0;
+            margin: clamp(5px, 1vh, 8px) 0;
         }
 
         p {
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            font-size: clamp(0.8rem, 2vw, 0.9rem); /* Tiny instructions */
             color: #cccccc;
-            margin: clamp(8px, 2vh, 10px) 0;
+            margin: clamp(5px, 1vh, 10px) 0;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); } /* Smaller pulse for max size */
             100% { transform: scale(1); }
         }
 
@@ -123,42 +125,43 @@
         /* Responsive Adjustments */
         @media (min-width: 768px) {
             body {
-                padding: clamp(20px, 3vw, 30px);
+                padding: clamp(10px, 2vw, 20px);
             }
 
             .button-container {
                 flex-direction: row;
                 justify-content: center;
                 flex-wrap: wrap;
-                gap: clamp(10px, 2vw, 20px);
+                gap: clamp(8px, 1.5vw, 15px);
             }
 
             button {
                 width: auto;
-                max-width: 200px;
+                max-width: 180px;
             }
 
             #hours-minutes, #seconds-milliseconds {
-                font-size: clamp(12rem, 100vw, 100%); /* Larger on wider screens */
+                font-size: clamp(8rem, 20vw, 12rem); /* Larger on wide screens */
             }
 
             #splits {
-                font-size: clamp(1.6rem, 3vw, 2rem);
+                font-size: clamp(1.2rem, 2.5vw, 1.5rem);
             }
         }
 
         @media (max-width: 414px) {
             h1 {
-                font-size: clamp(1.8rem, 10vw, 2.5rem);
+                font-size: clamp(1.2rem, 6vw, 1.5rem);
             }
             #hours-minutes, #seconds-milliseconds {
-                font-size: clamp(3.5rem, 100vw, 100%); /* Adjusted for small screens */
+                font-size: clamp(5rem, 22vw, 8rem); /* Still huge on tiny screens */
             }
             button {
-                padding: clamp(10px, 2.5vw, 12px) clamp(15px, 4vw, 20px);
+                padding: clamp(6px, 1.5vw, 10px) clamp(10px, 2.5vw, 15px);
+                max-width: 200px;
             }
             #splits {
-                font-size: clamp(1.3rem, 4vw, 1.5rem);
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
             }
         }
     </style>
