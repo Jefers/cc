@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeffing Session Recorder</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #00ff00;
+        }
+        input, button {
+            font-size: 1.2rem;
+            padding: 5px;
+            margin: 5px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #00ff00;
+        }
+        button {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00cc00;
+        }
+        #session, #post-session {
+            display: none;
+        }
+        #phase {
+            font-size: 2rem;
+            color: #00ff00;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #fff;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #00ff00;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jeffing Session Recorder</h1>
+
+    <!-- Setup Section -->
+    <div id="setup">
+        <label>Run Time (seconds): <input type="number" id="run-time" min="1" required></label><br>
+        <label>Walk Time (seconds): <input type="number" id="walk-time" min="1" required></label><br>
+        <label>Number of Cycles: <input type="number" id="cycles" min="1" required></label><br>
+        <button id="start">Start Session</button>
+    </div>
+
+    <!-- Session Section -->
+    <div id="session">
+        <p>Current Phase: <span id="phase"></span></p>
+        <p>Time Remaining in Interval: <span id="interval-time"></span></p>
+        <p>Total Time: <span id="total-time"></span></p>
+        <p>Cycle: <span id="cycle"></span> of <span id="total-cycles"></span></p>
+        <button id="pause">Pause</button>
+        <button id="stop">Stop</button>
+    </div>
+
+    <!-- Post-Session Section -->
+    <div id="post-session">
+        <label>Distance (optional, km): <input type="number" id="distance" step="0.1"></label><br>
+        <button id="save">Save Session</button>
+    </div>
+
+    <!-- History Section -->
+    <div id="history">
+        <h2>Past Sessions</h2>
+        <table id="sessions-table">
+            <tr>
+                <th>Date</th>
+                <th>Run Time (s)</th>
+                <th>Walk Time (s)</th>
+                <th>Cycles</th>
+                <th>Total Time</th>
+                <th>Distance (km)</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // Element references
+        const setupDiv = document.getElementById('setup');
+        const sessionDiv = document.getElementById('session');
+        const postSessionDiv = document.getElementById('post-session');
+        const runTimeInput = document.getElementById('run-time');
+        const walkTimeInput = document.getElementById('walk-time');
+        const cyclesInput = document.getElementById('cycles');
+        const startButton = document.getElementById('start');
+        const phaseSpan = document.getElementById('phase');
+        const intervalTimeSpan = document.getElementById('interval-time');
+        const totalTimeSpan = document.getElementById('total-time');
+        const cycleSpan = document.getElementById('cycle');
+        const totalCyclesSpan = document.getElementById('total-cycles');
+        const pauseButton = document.getElementById('pause');
+        const stopButton = document.getElementById('stop');
+        const distanceInput = document.getElementById('distance');
+        const saveButton = document.getElementById('save');
+
+        // State variables
+        let runTime, walkTime, totalCycles, currentPhase, intervalTime, totalTime, cycle, isRunning, isPaused, timerId;
+
+        // Format time in mm:ss
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Start the session
+        function startSession() {
+            runTime = parseInt(runTimeInput.value);
+            walkTime = parseInt(walkTimeInput.value);
+            totalCycles = parseInt(cyclesInput.value);
+            if (!runTime || !walkTime || !totalCycles || runTime <= 0 || walkTime <= 0 || totalCycles <= 0) {
+                alert('Please enter positive numbers for run time, walk time, and cycles.');
+                return;
+            }
+            currentPhase = 'Run';
+            intervalTime = runTime;
+            totalTime = 0;
+            cycle = 1;
+            isRunning = true;
+            isPaused = false;
+            setupDiv.style.display = 'none';
+            sessionDiv.style.display = 'block';
+            totalCyclesSpan.textContent = totalCycles;
+            timerId = setInterval(updateTimer, 1000);
+            updateDisplay();
+        }
+
+        // Update timer every second
+        function updateTimer() {
+            if (!isPaused) {
+                intervalTime--;
+                totalTime++;
+                if (intervalTime <= 0) {
+                    if (currentPhase === 'Run') {
+                        currentPhase = 'Walk';
+                        intervalTime = walkTime;
+                    } else {
+                        currentPhase = 'Run';
+                        intervalTime = runTime;
+                        cycle++;
+                        if (cycle > totalCycles) {
+                            stopSession();
+                            return;
+                        }
+                    }
+                }
+                updateDisplay();
+            }
+        }
+
+        // Update display elements
+        function updateDisplay() {
+            phaseSpan.textContent = currentPhase;
+            intervalTimeSpan.textContent = formatTime(intervalTime);
+            totalTimeSpan.textContent = formatTime(totalTime);
+            cycleSpan.textContent = cycle;
+        }
+
+        // Pause or resume the session
+        function pauseResume() {
+            if (isPaused) {
+                isPaused = false;
+                timerId = setInterval(updateTimer, 1000);
+                pauseButton.textContent = 'Pause';
+            } else {
+                isPaused = true;
+                clearInterval(timerId);
+                pauseButton.textContent = 'Resume';
+            }
+        }
+
+        // Stop the session
+        function stopSession() {
+            clearInterval(timerId);
+            isRunning = false;
+            sessionDiv.style.display = 'none';
+            postSessionDiv.style.display = 'block';
+        }
+
+        // Save the session to localStorage
+        function saveSession() {
+            const distance = distanceInput.value ? parseFloat(distanceInput.value) : null;
+            const session = {
+                date: new Date().toLocaleString(),
+                runTime: runTime,
+                walkTime: walkTime,
+                cycles: cycle - (currentPhase === 'Run' ? 1 : 0), // Adjust cycles based on current phase
+                totalTime: totalTime,
+                distance: distance
+            };
+            let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            sessions.push(session);
+            localStorage.setItem('sessions', JSON.stringify(sessions));
+            postSessionDiv.style.display = 'none';
+            setupDiv.style.display = 'block';
+            distanceInput.value = ''; // Reset distance input
+            updateHistory();
+        }
+
+        // Update history table
+        function updateHistory() {
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            const table = document.getElementById('sessions-table');
+            while (table.rows.length > 1) table.deleteRow(1); // Clear rows except header
+            sessions.forEach(session => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = session.date;
+                row.insertCell(1).textContent = session.runTime;
+                row.insertCell(2).textContent = session.walkTime;
+                row.insertCell(3).textContent = session.cycles;
+                row.insertCell(4).textContent = formatTime(session.totalTime);
+                row.insertCell(5).textContent = session.distance ? session.distance : '-';
+            });
+        }
+
+        // Event listeners
+        startButton.addEventListener('click', startSession);
+        pauseButton.addEventListener('click', pauseResume);
+        stopButton.addEventListener('click', stopSession);
+        saveButton.addEventListener('click', saveSession);
+
+        // Load history on page load
+        updateHistory();
+    </script>
+</body>
+</html>
