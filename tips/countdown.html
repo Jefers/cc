@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Mobile-First Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 1rem; /* Stretched title */
+            margin: 5px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 10px;
+            white-space: nowrap;
+        }
+
+        #inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 60px;
+            padding: 5px;
+            font-size: 1rem;
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        #display {
+            font-size: 25vw; /* Large time display */
+            font-weight: bold;
+            color: #00ff00;
+            line-height: 1;
+            text-align: center;
+            padding: 0 10px;
+            margin: 0;
+        }
+
+        .buttons {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            font-size: 1rem;
+            padding: 8px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background-color: #00ff00;
+            color: #000000;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #00cc00;
+        }
+
+        button:disabled {
+            background-color: #666666;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                letter-spacing: 1.2rem;
+            }
+            #display {
+                font-size: 20vw;
+            }
+            button {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+            }
+        }
+
+        @media (max-width: 414px) {
+            #display {
+                font-size: 28vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown</h1>
+    <div id="inputs">
+        <input type="number" id="hours" placeholder="HH" min="0" max="99">
+        <input type="number" id="minutes" placeholder="MM" min="0" max="59">
+        <input type="number" id="seconds" placeholder="SS" min="0" max="59">
+    </div>
+    <div id="display">00:00:00</div>
+    <div class="buttons">
+        <button id="action">Start</button>
+        <button id="reset" disabled>Reset</button>
+    </div>
+    <script>
+        let initialSeconds = 0;
+        let remainingSeconds = 0;
+        let intervalId = null;
+        let isRunning = false;
+        let isPaused = false;
+
+        function startCountdown() {
+            const hours = Math.min(parseInt(document.getElementById('hours').value) || 0, 99);
+            const minutes = Math.min(parseInt(document.getElementById('minutes').value) || 0, 59);
+            const seconds = Math.min(parseInt(document.getElementById('seconds').value) || 0, 59);
+            initialSeconds = hours * 3600 + minutes * 60 + seconds;
+            remainingSeconds = initialSeconds;
+            if (remainingSeconds <= 0) {
+                alert('Please set a time greater than zero.');
+                return;
+            }
+            document.getElementById('inputs').classList.add('hidden');
+            document.getElementById('display').textContent = formatTime(remainingSeconds);
+            document.getElementById('action').textContent = 'Pause';
+            document.getElementById('reset').disabled = false;
+            isRunning = true;
+            isPaused = false;
+            intervalId = setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            if (remainingSeconds > 0) {
+                remainingSeconds--;
+                document.getElementById('display').textContent = formatTime(remainingSeconds);
+            } else {
+                clearInterval(intervalId);
+                document.getElementById('display').textContent = "Time's up!";
+                document.getElementById('display').style.color = '#ff0000';
+                document.getElementById('action').disabled = true;
+                isRunning = false;
+            }
+        }
+
+        function pauseResume() {
+            if (isPaused) {
+                intervalId = setInterval(updateCountdown, 1000);
+                document.getElementById('action').textContent = 'Pause';
+                isPaused = false;
+            } else {
+                clearInterval(intervalId);
+                document.getElementById('action').textContent = 'Resume';
+                isPaused = true;
+            }
+        }
+
+        function resetCountdown() {
+            clearInterval(intervalId);
+            document.getElementById('inputs').classList.remove('hidden');
+            document.getElementById('display').textContent = '00:00:00';
+            document.getElementById('display').style.color = '#00ff00';
+            document.getElementById('action').textContent = 'Start';
+            document.getElementById('action').disabled = false;
+            document.getElementById('reset').disabled = true;
+            isRunning = false;
+            isPaused = false;
+            remainingSeconds = 0;
+        }
+
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+        }
+
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // Event Listeners
+        document.getElementById('action').addEventListener('click', () => {
+            if (!isRunning) {
+                startCountdown();
+            } else {
+                pauseResume();
+            }
+        });
+
+        document.getElementById('reset').addEventListener('click', resetCountdown);
+    </script>
+</body>
+</html>
