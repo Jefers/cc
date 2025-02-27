@@ -5,82 +5,273 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeffing Session Recorder</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="consolidated-mobile-styles.css">
     <!-- Include Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* CSS Variables for Customization */
+        :root {
+          --primary-color: #00FF88;
+          --hover-color: #00cc6e;
+          --background-color: #1A1A1B;
+          --secondary-bg: #2A2A2B;
+          --text-color: #FFFFFF;
+          --accent-color: #404040;
+          --menu-bg: #2A2A2B;
+          --menu-text: #FFFFFF;
+          --overlay-bg: rgba(0, 0, 0, 0.95);
+          --error-color: #ff4444;
+          --success-color: #00FF88;
+          --border-radius: 12px;
+          --transition-speed: 0.3s;
+        }
+
+        /* Global Resets */
+        *,
+        *::before,
+        *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        /* Base Styles - Mobile First */
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background-color: var(--background-color);
+          color: var(--text-color);
+          line-height: 1.6;
+          font-size: 16px;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+          margin-bottom: 1rem;
+          font-weight: 600;
+          line-height: 1.2;
+        }
+
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.75rem; }
+        h3 { font-size: 1.5rem; }
+
+        /* Links */
+        a {
+          color: var(--primary-color);
+          text-decoration: none;
+          transition: color var(--transition-speed) ease;
+        }
+
+        a:hover {
+          color: var(--hover-color);
+        }
+
+        /* Buttons */
+        button,
+        .button {
+          background-color: var(--primary-color);
+          color: var(--background-color);
+          border: none;
+          border-radius: var(--border-radius);
+          padding: 1rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all var(--transition-speed) ease;
+          min-height: 60px;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        button:hover,
+        .button:hover {
+          background-color: var(--hover-color);
+          transform: translateY(-1px);
+        }
+
+        button:active,
+        .button:active {
+          transform: scale(0.98);
+        }
+
+        button.secondary,
+        .button.secondary {
+          background-color: var(--accent-color);
+          color: var(--text-color);
+        }
+
+        button:disabled,
+        .button:disabled {
+          background-color: var(--accent-color);
+          cursor: not-allowed;
+          opacity: 0.7;
+        }
+
+        /* Forms */
+        input,
+        textarea,
+        select {
+          width: 100%;
+          padding: 1rem;
+          font-size: 1rem;
+          background-color: var(--secondary-bg);
+          border: 1px solid var(--accent-color);
+          color: var(--text-color);
+          border-radius: var(--border-radius);
+          min-height: 60px;
+          margin-bottom: 1rem;
+          transition: border-color var(--transition-speed) ease;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+
+        /* Tables */
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 1rem 0;
+          font-size: 1rem;
+        }
+
+        th,
+        td {
+          padding: 1rem;
+          text-align: left;
+          border-bottom: 1px solid var(--accent-color);
+        }
+
+        th {
+          font-weight: 600;
+          background-color: var(--accent-color);
+        }
+
+        /* Responsive Breakpoints */
+        @media (min-width: 768px) {
+          body {
+            font-size: 18px;
+          }
+          
+          button,
+          .button {
+            width: auto;
+          }
+          
+          .content {
+            padding: 92px 2rem 2rem 2rem;
+          }
+          
+          section {
+            padding: 2rem;
+          }
+          
+          .card {
+            padding: 2rem;
+          }
+          
+          .menu-overlay a {
+            font-size: 2rem;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          body {
+            font-size: 20px;
+          }
+          
+          .content {
+            padding: 92px 3rem 3rem 3rem;
+          }
+          
+          section {
+            padding: 2.5rem;
+          }
+          
+          .fixed-header {
+            padding: 1rem 3rem;
+          }
+        }
+
+        /* Specific Styles from HTML */
+        body {
+          background-color: #000;
+          color: #fff;
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
         }
         
         h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: #ffffff;
-            width: 100%;
-            text-align: center;
-            letter-spacing: 1rem;
-            margin: 10px 0;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 0 10px;
-            /*white-space: nowrap;*/
-            word-wrap: break-word; /* allow the long words to be broken and wrap onto the next line */
+          font-family: 'Orbitron', sans-serif;
+          font-size: 1.5rem;
+          color: #ffffff;
+          width: 100%;
+          text-align: center;
+          letter-spacing: 1rem;
+          margin: 10px 0;
+          font-weight: 700;
+          text-transform: uppercase;
+          padding: 0 10px;
+          word-wrap: break-word;
         }
 
         h2 {
-            font-size: 0.8rem;
-            color: #00ff00;
-            margin: 20px 0;
-            text-align: center;
+          font-size: 0.8rem;
+          color: #00ff00;
+          margin: 20px 0;
+          text-align: center;
         }
 
         input, button {
-            font-size: 1.2rem;
-            padding: 5px;
-            margin: 5px;
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #00ff00;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
+          font-size: 1.2rem;
+          padding: 5px;
+          margin: 5px;
+          background-color: #333;
+          color: #fff;
+          border: 1px solid #00ff00;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-top: 10px;
         }
 
         #session, #post-session {
-            display: none;
+          display: none;
         }
         #phase {
-            font-size: 5rem;
-            color: #ff0000;
+          font-size: 5rem;
+          color: #ff0000;
         }
         #run-time, #walk-time, #cycles ,#interval-time, #total-time {
-            font-size: 3rem;
-            color: #00ff00;
+          font-size: 3rem;
+          color: #00ff00;
         }
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
         }
         th, td {
-            border: 1px solid #fff;
-            padding: 8px;
-            text-align: center;
+          border: 1px solid #fff;
+          padding: 8px;
+          text-align: center;
         }
         th {
-            background-color: #00ff00;
-            color: #000;
+          background-color: #00ff00;
+          color: #000;
         }
         canvas {
-            max-width: 100%;
-            margin-top: 20px;
+          max-width: 100%;
+          margin-top: 20px;
         }
     </style>
 </head>
