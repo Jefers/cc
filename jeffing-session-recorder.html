@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeffing Session Recorder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="consolidated-mobile-styles.css">
+    <!-- Include Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background-color: #000;
@@ -12,9 +16,29 @@
             text-align: center;
             padding: 20px;
         }
-        h1, h2 {
-            color: #00ff00;
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 1rem;
+            margin: 10px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 10px;
+            /*white-space: nowrap;*/
+            word-wrap: break-word; /* allow the long words to be broken and wrap onto the next line */
         }
+
+        h2 {
+            font-size: 0.8rem;
+            color: #00ff00;
+            margin: 20px 0;
+            text-align: center;
+        }
+
         input, button {
             font-size: 1.2rem;
             padding: 5px;
@@ -22,21 +46,22 @@
             background-color: #333;
             color: #fff;
             border: 1px solid #00ff00;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
         }
-        button {
-            background-color: #00ff00;
-            color: #000;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #00cc00;
-        }
+
         #session, #post-session {
             display: none;
         }
         #phase {
-            font-size: 2rem;
+            font-size: 5rem;
+            color: #ff0000;
+        }
+        #run-time, #walk-time, #cycles ,#interval-time, #total-time {
+            font-size: 3rem;
             color: #00ff00;
         }
         table {
@@ -52,6 +77,10 @@
         th {
             background-color: #00ff00;
             color: #000;
+        }
+        canvas {
+            max-width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -82,7 +111,7 @@
         <button id="save">Save Session</button>
     </div>
 
-    <!-- History Section -->
+    <!-- History Section with Graph -->
     <div id="history">
         <h2>Past Sessions</h2>
         <table id="sessions-table">
@@ -95,6 +124,8 @@
                 <th>Distance (km)</th>
             </tr>
         </table>
+        <h2>Progression Graph</h2>
+        <canvas id="progressChart"></canvas>
     </div>
 
     <script>
@@ -115,9 +146,11 @@
         const stopButton = document.getElementById('stop');
         const distanceInput = document.getElementById('distance');
         const saveButton = document.getElementById('save');
+        const chartCanvas = document.getElementById('progressChart');
 
         // State variables
         let runTime, walkTime, totalCycles, currentPhase, intervalTime, totalTime, cycle, isRunning, isPaused, timerId;
+        let chart;
 
         // Format time in mm:ss
         function formatTime(seconds) {
@@ -207,7 +240,7 @@
                 date: new Date().toLocaleString(),
                 runTime: runTime,
                 walkTime: walkTime,
-                cycles: cycle - (currentPhase === 'Run' ? 1 : 0), // Adjust cycles based on current phase
+                cycles: cycle - (currentPhase === 'Run' ? 1 : 0),
                 totalTime: totalTime,
                 distance: distance
             };
@@ -216,15 +249,16 @@
             localStorage.setItem('sessions', JSON.stringify(sessions));
             postSessionDiv.style.display = 'none';
             setupDiv.style.display = 'block';
-            distanceInput.value = ''; // Reset distance input
+            distanceInput.value = '';
             updateHistory();
+            updateChart();
         }
 
         // Update history table
         function updateHistory() {
             const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
             const table = document.getElementById('sessions-table');
-            while (table.rows.length > 1) table.deleteRow(1); // Clear rows except header
+            while (table.rows.length > 1) table.deleteRow(1);
             sessions.forEach(session => {
                 const row = table.insertRow();
                 row.insertCell(0).textContent = session.date;
@@ -236,14 +270,63 @@
             });
         }
 
+        // Initialize and update the progression chart
+        function updateChart() {
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            const labels = sessions.map(session => session.date);
+            const data = sessions.map(session => session.totalTime);
+
+            if (chart) chart.destroy(); // Destroy existing chart to avoid overlap
+
+            chart = new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Time (seconds)',
+                        data: data,
+                        borderColor: '#00ff00',
+                        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Session Date',
+                                color: '#fff'
+                            },
+                            ticks: { color: '#fff' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Total Time (s)',
+                                color: '#fff'
+                            },
+                            ticks: { color: '#fff' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    }
+                }
+            });
+        }
+
         // Event listeners
         startButton.addEventListener('click', startSession);
         pauseButton.addEventListener('click', pauseResume);
         stopButton.addEventListener('click', stopSession);
         saveButton.addEventListener('click', saveSession);
 
-        // Load history on page load
+        // Load history and chart on page load
         updateHistory();
+        updateChart();
     </script>
 </body>
 </html>
