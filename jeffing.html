@@ -385,4 +385,10 @@
         const toggles = document.querySelectorAll('.toggle-header');
         toggles.forEach(toggle => {
             toggle.addEventListener('click', () => {
-                const 
+                const content = toggle.nextElementSibling;
+                content.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
