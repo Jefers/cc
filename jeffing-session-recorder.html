@@ -5,292 +5,234 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeffing Session Recorder</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
-    <!-- Include Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* CSS Variables for Customization */
         :root {
-          --primary-color: #00FF88;
-          --hover-color: #00cc6e;
-          --background-color: #1A1A1B;
-          --secondary-bg: #2A2A2B;
-          --text-color: #FFFFFF;
-          --accent-color: #404040;
-          --menu-bg: #2A2A2B;
-          --menu-text: #FFFFFF;
-          --overlay-bg: rgba(0, 0, 0, 0.95);
-          --error-color: #ff4444;
-          --success-color: #00FF88;
-          --border-radius: 12px;
-          --transition-speed: 0.3s;
+            --primary-color: #00FF88;
+            --hover-color: #00cc6e;
+            --background-color: #1A1A1B;
+            --text-color: #FFFFFF;
+            --accent-color: #404040;
         }
 
-        /* Global Resets */
-        *,
-        *::before,
-        *::after {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Base Styles - Mobile First */
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          background-color: var(--background-color);
-          color: var(--text-color);
-          line-height: 1.6;
-          font-size: 16px;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #000;
+            color: #fff;
+            line-height: 1.6;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
         }
 
-        /* Typography */
-        h1, h2, h3, h4, h5, h6 {
-          margin-bottom: 1rem;
-          font-weight: 600;
-          line-height: 1.2;
-        }
-
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.75rem; }
-        h3 { font-size: 1.5rem; }
-
-        /* Links */
-        a {
-          color: var(--primary-color);
-          text-decoration: none;
-          transition: color var(--transition-speed) ease;
-        }
-
-        a:hover {
-          color: var(--hover-color);
-        }
-
-        /* Buttons */
-        button,
-        .button {
-          background-color: var(--primary-color);
-          color: var(--background-color);
-          border: none;
-          border-radius: var(--border-radius);
-          padding: 1rem 1.5rem;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all var(--transition-speed) ease;
-          min-height: 60px;
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        button:hover,
-        .button:hover {
-          background-color: var(--hover-color);
-          transform: translateY(-1px);
-        }
-
-        button:active,
-        .button:active {
-          transform: scale(0.98);
-        }
-
-        button.secondary,
-        .button.secondary {
-          background-color: var(--accent-color);
-          color: var(--text-color);
-        }
-
-        button:disabled,
-        .button:disabled {
-          background-color: var(--accent-color);
-          cursor: not-allowed;
-          opacity: 0.7;
-        }
-
-        /* Forms */
-        input,
-        textarea,
-        select {
-          width: 100%;
-          padding: 1rem;
-          font-size: 1rem;
-          background-color: var(--secondary-bg);
-          border: 1px solid var(--accent-color);
-          color: var(--text-color);
-          border-radius: var(--border-radius);
-          min-height: 60px;
-          margin-bottom: 1rem;
-          transition: border-color var(--transition-speed) ease;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-          outline: none;
-          border-color: var(--primary-color);
-        }
-
-        /* Tables */
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 1rem 0;
-          font-size: 1rem;
-        }
-
-        th,
-        td {
-          padding: 1rem;
-          text-align: left;
-          border-bottom: 1px solid var(--accent-color);
-        }
-
-        th {
-          font-weight: 600;
-          background-color: var(--accent-color);
-        }
-
-        /* Responsive Breakpoints */
-        @media (min-width: 768px) {
-          body {
-            font-size: 18px;
-          }
-          
-          button,
-          .button {
-            width: auto;
-          }
-          
-          .content {
-            padding: 92px 2rem 2rem 2rem;
-          }
-          
-          section {
-            padding: 2rem;
-          }
-          
-          .card {
-            padding: 2rem;
-          }
-          
-          .menu-overlay a {
-            font-size: 2rem;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          body {
-            font-size: 20px;
-          }
-          
-          .content {
-            padding: 92px 3rem 3rem 3rem;
-          }
-          
-          section {
-            padding: 2.5rem;
-          }
-          
-          .fixed-header {
-            padding: 1rem 3rem;
-          }
-        }
-
-        /* Specific Styles from HTML */
-        body {
-          background-color: #000;
-          color: #fff;
-          font-family: Arial, sans-serif;
-          text-align: center;
-          padding: 20px;
-        }
-        
         h1 {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 1.5rem;
-          color: #ffffff;
-          width: 100%;
-          text-align: center;
-          letter-spacing: 1rem;
-          margin: 10px 0;
-          font-weight: 700;
-          text-transform: uppercase;
-          padding: 0 10px;
-          word-wrap: break-word;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            letter-spacing: 1rem;
+            margin: 10px 0;
+            text-transform: uppercase;
         }
 
         h2 {
-          font-size: 0.8rem;
-          color: #00ff00;
-          margin: 20px 0;
-          text-align: center;
+            font-size: 0.8rem;
+            color: #00ff00;
+            margin: 20px 0;
         }
 
         input, button {
-          font-size: 1.2rem;
-          padding: 5px;
-          margin: 5px;
-          background-color: #333;
-          color: #fff;
-          border: 1px solid #00ff00;
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          gap: 10px;
-          margin-top: 10px;
+            font-size: 1.2rem;
+            padding: 5px;
+            margin: 5px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #00ff00;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #000;
+            cursor: pointer;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 20px;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
         }
 
         #session, #post-session {
-          display: none;
+            display: none;
         }
+
         #phase {
-          font-size: 5rem;
-          color: #ff0000;
+            font-size: 3rem;
+            color: #ff0000;
         }
-        #run-time, #walk-time, #cycles ,#interval-time, #total-time {
-          font-size: 3rem;
-          color: #00ff00;
+
+        #run-time, #walk-time, #cycles, #interval-time, #total-time {
+            font-size: 5rem;
+            color: #00ff00;
         }
+
         table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
+
         th, td {
-          border: 1px solid #fff;
-          padding: 8px;
-          text-align: center;
+            border: 1px solid #fff;
+            padding: 8px;
+            text-align: center;
         }
+
         th {
-          background-color: #00ff00;
-          color: #000;
+            background-color: #00ff00;
+            color: #000;
         }
+
         canvas {
-          max-width: 100%;
-          margin-top: 20px;
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        .progress-container {
+            position: relative;
+            width: 375px;
+            height: 375px;
+            margin: 20px auto;
+        }
+
+        .progress-circle {
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle-bg {
+            fill: none;
+            stroke: #333;
+            stroke-width: 10;
+        }
+
+        .progress-circle-bar {
+            fill: none;
+            stroke: #00f;
+            stroke-width: 10;
+            stroke-dasharray: 1130;
+            stroke-dashoffset: 1130;
+            transition: stroke-dashoffset 0.35s;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .timer-text #phase {
+            font-size: 3rem;
+            color: #ff0000;
+        }
+
+        .timer-text #interval-time {
+            font-size: 5rem;
+            color: #00ff00;
+            margin-top: 10px;
+        }
+
+        #total-time-label {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 40px;
+            background-color: #111;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-label {
+            font-size: 1rem;
+            color: #fff;
+            z-index: 1;
+        }
+
+        .toggle-label.left {
+            margin-left: 10px;
+        }
+
+        .toggle-label.right {
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Jeffing Session Recorder</h1>
+    <!-- Mode Toggle Switch -->
+    <div class="toggle-container" id="mode-toggle">
+        <span class="toggle-label left">Run</span>
+        <div class="toggle-slider"></div>
+        <span class="toggle-label right">Cycle</span>
+    </div>
+
+    <h1 id="title">Jeffing Running Session</h1>
 
     <!-- Setup Section -->
     <div id="setup">
-        <label>Run Time (seconds): <input type="number" id="run-time" min="1" required></label><br>
-        <label>Walk Time (seconds): <input type="number" id="walk-time" min="1" required></label><br>
+        <label><span id="phase1-label">Run Time</span> (seconds): <input type="number" id="run-time" min="1" required></label><br>
+        <label><span id="phase2-label">Walk Time</span> (seconds): <input type="number" id="walk-time" min="1" required></label><br>
         <label>Number of Cycles: <input type="number" id="cycles" min="1" required></label><br>
         <button id="start">Start Session</button>
     </div>
 
     <!-- Session Section -->
     <div id="session">
-        <p>Current Phase: <span id="phase"></span></p>
-        <p>Time Remaining in Interval: <span id="interval-time"></span></p>
-        <p>Total Time: <span id="total-time"></span></p>
+        <div class="progress-container">
+            <svg class="progress-circle" width="375" height="375">
+                <circle class="progress-circle-bg" cx="187.5" cy="187.5" r="180"></circle>
+                <circle class="progress-circle-bar" cx="187.5" cy="187.5" r="180"></circle>
+            </svg>
+            <div class="timer-text">
+                <span id="phase"></span><br>
+                <span id="interval-time"></span>
+            </div>
+        </div>
+        <p id="total-time-label">Total Time:</p>
+        <p><span id="total-time"></span></p>
         <p>Cycle: <span id="cycle"></span> of <span id="total-cycles"></span></p>
         <button id="pause">Pause</button>
         <button id="stop">Stop</button>
@@ -315,19 +257,45 @@
                 <th>Distance (km)</th>
             </tr>
         </table>
+        <button id="clear-history">Clear History</button>
+        <button id="export-data">Export Data</button>
         <h2>Progression Graph</h2>
         <canvas id="progressChart"></canvas>
     </div>
 
+    <!-- Audio Elements -->
+    <audio id="run-sound" src="assets/run.wav" preload="auto"></audio>
+    <audio id="walk-sound" src="assets/walk.wav" preload="auto"></audio>
+    <audio id="sprint-sound" src="assets/sprint.wav" preload="auto"></audio>
+    <audio id="pedal-sound" src="assets/pedal.wav" preload="auto"></audio>
+
     <script>
-        // Element references
-        const setupDiv = document.getElementById('setup');
-        const sessionDiv = document.getElementById('session');
-        const postSessionDiv = document.getElementById('post-session');
+        const modes = {
+            running: {
+                title: 'Jeffing Running Session',
+                phases: ['Run', 'Walk'],
+                sounds: [document.getElementById('run-sound'), document.getElementById('walk-sound')]
+            },
+            cycling: {
+                title: 'Jeffing Cycling Session',
+                phases: ['Sprint', 'Pedal'],
+                sounds: [document.getElementById('sprint-sound'), document.getElementById('pedal-sound')]
+            }
+        };
+
+        let currentMode = 'running';
+        let currentPhaseIndex = 0;
+
+        const modeToggle = document.getElementById('mode-toggle');
+        const title = document.getElementById('title');
+        const phase1Label = document.getElementById('phase1-label');
+        const phase2Label = document.getElementById('phase2-label');
         const runTimeInput = document.getElementById('run-time');
         const walkTimeInput = document.getElementById('walk-time');
         const cyclesInput = document.getElementById('cycles');
         const startButton = document.getElementById('start');
+        const setupDiv = document.getElementById('setup');
+        const sessionDiv = document.getElementById('session');
         const phaseSpan = document.getElementById('phase');
         const intervalTimeSpan = document.getElementById('interval-time');
         const totalTimeSpan = document.getElementById('total-time');
@@ -335,22 +303,31 @@
         const totalCyclesSpan = document.getElementById('total-cycles');
         const pauseButton = document.getElementById('pause');
         const stopButton = document.getElementById('stop');
+        const postSessionDiv = document.getElementById('post-session');
         const distanceInput = document.getElementById('distance');
         const saveButton = document.getElementById('save');
+        const clearHistoryButton = document.getElementById('clear-history');
+        const exportDataButton = document.getElementById('export-data');
         const chartCanvas = document.getElementById('progressChart');
+        const progressCircleBar = document.querySelector('.progress-circle-bar');
 
-        // State variables
-        let runTime, walkTime, totalCycles, currentPhase, intervalTime, totalTime, cycle, isRunning, isPaused, timerId;
+        let runTime, walkTime, totalCycles, intervalTime, totalTime, cycle, isRunning, isPaused, timerId;
         let chart;
+        let initialIntervalTime;
 
-        // Format time in mm:ss
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-        // Start the session
+        function updateProgressCircle() {
+            const percentage = (intervalTime / initialIntervalTime) * 100;
+            const circumference = 2 * Math.PI * 180;
+            const dashOffset = circumference * (1 - percentage / 100);
+            progressCircleBar.style.strokeDashoffset = dashOffset;
+        }
+
         function startSession() {
             runTime = parseInt(runTimeInput.value);
             walkTime = parseInt(walkTimeInput.value);
@@ -359,8 +336,9 @@
                 alert('Please enter positive numbers for run time, walk time, and cycles.');
                 return;
             }
-            currentPhase = 'Run';
+            currentPhaseIndex = 0;
             intervalTime = runTime;
+            initialIntervalTime = runTime;
             totalTime = 0;
             cycle = 1;
             isRunning = true;
@@ -370,19 +348,21 @@
             totalCyclesSpan.textContent = totalCycles;
             timerId = setInterval(updateTimer, 1000);
             updateDisplay();
+            playPhaseSound();
         }
 
-        // Update timer every second
         function updateTimer() {
             if (!isPaused) {
                 intervalTime--;
                 totalTime++;
                 if (intervalTime <= 0) {
-                    if (currentPhase === 'Run') {
-                        currentPhase = 'Walk';
+                    if (currentPhaseIndex === 0) {
+                        currentPhaseIndex = 1;
+                        initialIntervalTime = walkTime;
                         intervalTime = walkTime;
                     } else {
-                        currentPhase = 'Run';
+                        currentPhaseIndex = 0;
+                        initialIntervalTime = runTime;
                         intervalTime = runTime;
                         cycle++;
                         if (cycle > totalCycles) {
@@ -390,20 +370,28 @@
                             return;
                         }
                     }
+                    playPhaseSound();
                 }
                 updateDisplay();
+                updateProgressCircle();
             }
         }
 
-        // Update display elements
         function updateDisplay() {
-            phaseSpan.textContent = currentPhase;
+            phaseSpan.textContent = modes[currentMode].phases[currentPhaseIndex];
             intervalTimeSpan.textContent = formatTime(intervalTime);
             totalTimeSpan.textContent = formatTime(totalTime);
             cycleSpan.textContent = cycle;
         }
 
-        // Pause or resume the session
+        function playPhaseSound() {
+            if (currentPhaseIndex === 0) {
+                modes[currentMode].sounds[0].play();
+            } else {
+                modes[currentMode].sounds[1].play();
+            }
+        }
+
         function pauseResume() {
             if (isPaused) {
                 isPaused = false;
@@ -416,7 +404,6 @@
             }
         }
 
-        // Stop the session
         function stopSession() {
             clearInterval(timerId);
             isRunning = false;
@@ -424,14 +411,13 @@
             postSessionDiv.style.display = 'block';
         }
 
-        // Save the session to localStorage
         function saveSession() {
             const distance = distanceInput.value ? parseFloat(distanceInput.value) : null;
             const session = {
                 date: new Date().toLocaleString(),
                 runTime: runTime,
                 walkTime: walkTime,
-                cycles: cycle - (currentPhase === 'Run' ? 1 : 0),
+                cycles: cycle - (currentPhaseIndex === 0 ? 1 : 0),
                 totalTime: totalTime,
                 distance: distance
             };
@@ -445,7 +431,6 @@
             updateChart();
         }
 
-        // Update history table
         function updateHistory() {
             const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
             const table = document.getElementById('sessions-table');
@@ -461,14 +446,11 @@
             });
         }
 
-        // Initialize and update the progression chart
         function updateChart() {
             const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
             const labels = sessions.map(session => session.date);
             const data = sessions.map(session => session.totalTime);
-
-            if (chart) chart.destroy(); // Destroy existing chart to avoid overlap
-
+            if (chart) chart.destroy();
             chart = new Chart(chartCanvas, {
                 type: 'line',
                 data: {
@@ -485,37 +467,40 @@
                 options: {
                     responsive: true,
                     scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Session Date',
-                                color: '#fff'
-                            },
-                            ticks: { color: '#fff' }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Total Time (s)',
-                                color: '#fff'
-                            },
-                            ticks: { color: '#fff' }
-                        }
+                        x: { title: { display: true, text: 'Session Date', color: '#fff' }, ticks: { color: '#fff' } },
+                        y: { title: { display: true, text: 'Total Time (s)', color: '#fff' }, ticks: { color: '#fff' } }
                     },
-                    plugins: {
-                        legend: { labels: { color: '#fff' } }
-                    }
+                    plugins: { legend: { labels: { color: '#fff' } } }
                 }
             });
         }
 
-        // Event listeners
+        modeToggle.addEventListener('click', () => {
+            currentMode = currentMode === 'running' ? 'cycling' : 'running';
+            title.textContent = modes[currentMode].title;
+            phase1Label.textContent = modes[currentMode].phases[0] + ' Time';
+            phase2Label.textContent = modes[currentMode].phases[1] + ' Time';
+            const slider = document.querySelector('.toggle-slider');
+            slider.style.transform = currentMode === 'running' ? 'translateX(0)' : 'translateX(60px)';
+        });
+
         startButton.addEventListener('click', startSession);
         pauseButton.addEventListener('click', pauseResume);
         stopButton.addEventListener('click', stopSession);
         saveButton.addEventListener('click', saveSession);
+        clearHistoryButton.addEventListener('click', () => { localStorage.clear(); updateHistory(); updateChart(); });
+        exportDataButton.addEventListener('click', () => {
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            const csv = 'Date,Run Time (s),Walk Time (s),Cycles,Total Time (s),Distance (km)\n' +
+                sessions.map(s => `${s.date},${s.runTime},${s.walkTime},${s.cycles},${s.totalTime},${s.distance || ''}`).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jeffing_sessions.csv';
+            a.click();
+        });
 
-        // Load history and chart on page load
         updateHistory();
         updateChart();
     </script>
