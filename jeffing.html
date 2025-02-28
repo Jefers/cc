@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeffing - Run-Walk-Run Technique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="consolidated-mobile-styles.css">
+    <style>
+        /* Reset and Mobile-First Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: #ffffff;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 1rem;
+            margin: 10px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 10px;
+            white-space: nowrap;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #00ff00;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.8rem; /* Large text, ~6 words/line on mobile */
+            line-height: 1.4;
+            margin: 10px 0;
+            padding: 0 15px;
+            text-align: left;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            color: #00ff00;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .jump-to {
+            background-color: #00ff00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .jump-to p {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .jump-to ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .jump-to li {
+            margin-bottom: 5px;
+        }
+
+        .jump-to a {
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .jump-to a:hover {
+            text-decoration: underline;
+        }
+
+        .intro {
+            font-size: 1.8rem;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        /* Toggle Sections */
+        .toggle-section {
+            margin: 20px 0;
+        }
+
+        .toggle-header {
+            background-color: #00ff00;
+            color: #000000;
+            padding: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .toggle-header:hover {
+            background-color: #00cc00;
+        }
+
+        .toggle-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .toggle-content.active {
+            display: block;
+        }
+
+        .toggle-content ol {
+            list-style: decimal;
+            margin-left: 20px;
+        }
+
+        .toggle-content li {
+            margin: 15px 0;
+            font-size: 1.8rem;
+        }
+
+        /* Workouts and Technique Tips */
+        .workout, .technique-tips {
+            background-color: #1a1a1a;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #00ff00;
+            border-radius: 5px;
+        }
+
+        .workout h3, .technique-tips h3 {
+            font-size: 2.5rem;
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .workout p, .technique-tips p {
+            font-size: 1.8rem;
+        }
+
+        ul li, ol li {
+            font-size: 1.8rem;
+            margin: 10px 0; /* Keeps spacing consistent */
+        }
+
+        /* Responsive Adjustments */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 3rem;
+                letter-spacing: 1.2rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+            p, .intro, .toggle-content li {
+                font-size: 2rem;
+            }
+            .toggle-header {
+                font-size: 1.8rem;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 414px) {
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            p, .intro, .toggle-content li {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Jeffing</h1>
+        <div class="subtitle">Improve endurance and pace management with this Run-Walk-Run Technique</div>
+        <p class="intro">
+            Perhaps you're deep in the midst of marathon training, or you're a beginner who wants to get better at running but are overwhelmed by anything longer than a 5k. Either way, it's time to give Jeffing, the run-walk coaching technique, a go.
+        </p>
+        <p>
+            Developed by '70s Olympian Jeff Galloway, who has run more than 230 marathons and has a 10k PB of about 28 mins, Jeffing is a highly effective and adaptable training method that promotes smarter training, faster recovery, and a more enjoyable running experience simply by incorporating a mix of running and walking in a single workout.
+        </p>
+        <p>
+            Whether you're a beginner looking to ease into training or an experienced runner seeking a sustainable strategy, Jeffing provides a structured approach. Top experts break down what Jeffing is, explain Jeffing's benefits, and provide Jeffing workouts for beginners and seasoned runners alike.
+        </p>
+
+        <div class="jump-to">
+            <p>Jump to:</p>
+            <ul>
+                <li><a href="#what-is-jeffing">What is Jeffing?</a></li>
+                <li><a href="#why-is-it-called-jeffing">Why is it called Jeffing?</a></li>
+                <li><a href="#benefits">Benefits of Jeffing to improve running</a></li>
+                <li><a href="#how-to-start">How to start Jeffing</a></li>
+                <li><a href="#workouts">Jeffing workouts</a></li>
+                <li><a href="#other-exercise">Jeffing for other forms of exercise</a></li>
+            </ul>
+        </div>
+
+        <section id="what-is-jeffing">
+            <h2>What is Jeffing?</h2>
+            <p>
+                Jeffing is an effective run-walk training method that makes running more accessible and sustainable for all fitness levels. It involves alternating between periods of running and walking.
+            </p>
+            <p>
+                It's a versatile training technique that can be tailored to the needs of each runner, allowing you to adjust the frequency, duration, and pace of the run-walk intervals to suit your individual goals. For most runners, the end game is to gradually reduce the walking intervals until you've reached your target run time and distance.
+            </p>
+            <p>
+                Also known as the 'run-walk-run' technique, it was developed by Jeff Galloway, an American Olympian who took part in the 10,000m race in 1972. Typically, people will start Jeffing by running for a couple of minutes before switching to walking. While the exercise can be completed by anyone, it's popular among ultra runners due to its ability to enhance endurance.
+            </p>
+            <p>
+                If you've tried the Couch to 5K programme, the concept of Jeffing will feel pretty familiar. It uses timed intervals of walking and running to help you gradually build up to running a 5k without stopping.
+            </p>
+        </section>
+
+        <section id="why-is-it-called-jeffing">
+            <h2>Why is it called Jeffing?</h2>
+            <p>
+                The name 'Jeffing' originates from Galloway himself, reflecting his influence in introducing this structured run-walk method.
+            </p>
+            <p>
+                By incorporating planned walking breaks, Jeffing allows individuals to cover longer distances with less strain, making it an excellent option for beginners, returning runners, or anyone looking to improve their running efficiency. Unlike simply walking when tired, this method helps manage effort levels strategically, allowing runners to maintain a steady rhythm while building stamina.
+            </p>
+        </section>
+
+        <div id="benefits" class="toggle-section">
+            <div class="toggle-header">Benefits of Jeffing to improve running</div>
+            <div class="toggle-content">
+                <ol>
+                    <li>
+                        <strong>Injury prevention</strong><br>
+                        One of the biggest advantages of Jeffing is injury prevention. Running continuously places high stress on the joints and muscles, which can lead to common overuse injuries such as shin splints or knee pain. By alternating running with walking, the impact is significantly reduced, making training more sustainable and allowing for consistent progress.
+                    </li>
+                    <li>
+                        <strong>Improved performance</strong><br>
+                        Advocates of the method swear by its ability to increase performance. The theory here is simple: if you have regular rest breaks, you'll be able to push yourself a bit harder when you're actively running. This allows you to reach your personal best, but with less physical strain.<br><br>
+                        Research backs this up, he says. A study published in the Journal of Science and Medicine in Sport found that incorporating walking intervals into your racing strategy can lead to comparable finish times as running the entire race. The study followed 42 marathon runners: one group used intermittent walking, while the other ran continuously. On race day, the run-walk group performed just as well as the continuous runners, but with less fatigue and soreness in the days afterwards.
+                    </li>
+                    <li>
+                        <strong>Improved endurance</strong><br>
+                        Jeffing is highly effective for improving endurance, as walk breaks help runners maintain energy levels over longer distances without early fatigue.
+                    </li>
+                    <li>
+                        <strong>Better pacing</strong><br>
+                        Similar to the point above, Jeffing allows you to learn about pacing. Many runners find that structured walk breaks enable them to maintain a consistent pace throughout a race and finish feeling stronger than they would with non-stop running. The Jeffing approach helps avoid burnout and fatigue, increasing the run's length.
+                    </li>
+                    <li>
+                        <strong>Distance management</strong><br>
+                        Mentally, Jeffing removes the intimidation factor often associated with long-distance running. Instead of focusing on covering an entire distance in one go, breaking it into smaller, manageable intervals makes the process more approachable.<br><br>
+                        This shift in mindset can boost confidence, making running more enjoyable and less overwhelming. For those new to running, Jeffing serves as an excellent starting point, helping to build endurance gradually without excessive strain.
+                    </li>
+                    <li>
+                        <strong>Calorie burn</strong><br>
+                        Jeffing is a great way to introduce more cardio into daily routines. The combination of running and walking is a great way to burn calories and manage weight gain, perfect for protecting against obesity and heart disease.
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <section id="how-to-start">
+            <h2>How to start Jeffing</h2>
+            <p>
+                To start Jeffing, the key is to establish a run-walk ratio suited to your fitness level. Find a balance that allows for steady progress without unnecessary fatigue.
+            </p>
+
+            <div class="workout">
+                <h3>Workout 1 – 15 seconds run, 45 seconds walk</h3>
+                <p>How about this beginner workout:</p>
+                <ul>
+                    <li>Warm up: 5-minute brisk walk</li>
+                    <li>Workout: run 15 secs, walk 45 sec. Repeat for 20-30 mins.</li>
+                    <li>Cool down: 5-minute walk and stretches</li>
+                </ul>
+            </div>
+
+            <div class="workout">
+                <h3>Workout 2 – 1:3 run:walk ratio</h3>
+                <p>Start with a 1:3 ratio for your walking and running intervals. For example, run for 30 seconds and then walk for 90 seconds. Repeat this between 10 - 15 times over the course of a training session.</p>
+            </div>
+
+            <div class="workout">
+                <h3>Workout 3 – use distance</h3>
+                <p>You can use distance to calculate intervals instead of time. For example, run for 400m and then walk for 100m.</p>
+                <p>The faster you want to run, the shorter your walking intervals should be. However, you should not skip the walking intervals completely, as this can make you more fatigued.</p>
+            </div>
+
+            <div class="technique-tips">
+                <h3>Technique tips</h3>
+                <p>Here are some running technique tips:</p>
+                <ol>
+                    <li>Keep your back straight, shoulders relaxed, and arms at a 90-degree angle.</li>
+                    <li>Aim for quick, efficient steps rather than long strides. This reduces impact on joints and helps maintain a steady pace.</li>
+                    <li>Breathe deeply and rhythmically (in through your nose, out through your mouth) to maintain oxygen flow and keep you running for longer.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="workouts">
+            <h2>Jeffing workouts</h2>
+            <p>
+                Incorporate Jeffing into a routine three to four times per week to see consistent improvements. As endurance builds, running intervals can be increased gradually while maintaining walk breaks to manage effort and recovery.
+            </p>
+            <p>Try the following progression workouts:</p>
+
+            <div class="workout">
+                <h3>Workout 1</h3>
+                <ul>
+                    <li>Warm up: 5-minute brisk walk</li>
+                    <li>Workout: run 30 seconds / walk 30 seconds (repeat for 25-35 minutes)</li>
+                    <li>Cool down: 5-minute walk and stretches</li>
+                </ul>
+            </div>
+
+            <div class="workout">
+                <h3>Workout 2</h3>
+                <ul>
+                    <li>Warm up: 5-minute brisk walk</li>
+                    <li>Workout: run 1 minute / walk 30 seconds (repeat for 30 - 40 mins)</li>
+                </ul>
+            </div>
+
+            <div class="workout">
+                <h3>Workout 3</h3>
+                <p>As you progress, you can change the ratios of your workout, progressing to 1:2 and then to 1:1.</p>
+            </div>
+
+            <div class="workout">
+                <h3>Workout 4</h3>
+                <p>After this, the next step is a 2:1 workout, where your running intervals are twice as long as your walking intervals. This can be gradually increased until you can run for longer periods before eventually being able to run without stopping.</p>
+            </div>
+        </section>
+
+        <section id="other-exercise">
+            <h2>Jeffing for other forms of exercise</h2>
+            <p>
+                Though Jeffing was originally designed for runners, the basic principle can be applied to all sorts of other workouts. It's similar to HIIT or circuit training: do your reps, rest for a short interval, and repeat.
+            </p>
+            <p>
+                This interval approach works just as well for cycling, spinning on a stationary bike, or using a StairMaster. The possibilities are endless, and you'll reap the same benefits of improved performance and quicker recovery no matter what activity you choose.
+            </p>
+        </section>
+
+
+        <!-- New Button to Link to Jeffing Session Recorder -->
+        <div class="buttons">
+            <button onclick="window.location.href='jeffing-session-recorder.html'">Record Jeffing Session</button>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Toggle functionality
+        const toggles = document.querySelectorAll('.toggle-header');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const content = toggle.nextElementSibling;
+                content.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

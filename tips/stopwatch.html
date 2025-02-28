@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 1rem; /* Increased for full stretch */
+            margin: 5px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 10px;
+            white-space: nowrap;
+        }
+
+        #display {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #hours-minutes, #seconds-milliseconds {
+            font-size: 30vw;
+            font-weight: bold;
+            color: #00ff00;
+            line-height: 1;
+            width: 100%;
+            text-align: center;
+            padding: 0 5px;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .button-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 0;
+            margin: 0; /* No margin to close gap */
+        }
+
+        button {
+            font-size: 1rem;
+            padding: 8px 15px;
+            width: 100%;
+            max-width: 200px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background-color: #00ff00;
+            color: #000000;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+            min-height: 48px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #00cc00;
+        }
+
+        button:disabled {
+            background-color: #666666;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        p.instructions {
+            font-size: 0.8rem;
+            color: #cccccc;
+            margin: 5px 0;
+            padding: 0 10px;
+            text-align: center;
+            white-space: normal;
+        }
+
+        #splits {
+            width: 100%;
+            margin-top: 10px;
+            font-size: 2.4rem; /* 3x larger than typical 0.8rem base */
+            color: #ffffff;
+            padding-bottom: 10px;
+            overflow-y: auto;
+        }
+
+        #splits p {
+            margin: 5px 0;
+            padding: 0 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                letter-spacing: 1.2rem;
+            }
+
+            #hours-minutes, #seconds-milliseconds {
+                font-size: 20vw;
+            }
+
+            .button-container {
+                flex-direction: row;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            button {
+                width: auto;
+                max-width: 180px;
+            }
+
+            #splits {
+                font-size: 3rem; /* Larger still on bigger screens */
+            }
+        }
+
+        @media (max-width: 414px) {
+            #hours-minutes, #seconds-milliseconds {
+                font-size: 28vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Stopwatch</h1>
+    <div id="display">
+        <span id="hours-minutes">0:00</span>
+        <span id="seconds-milliseconds">00.00</span>
+    </div>
+    <div class="button-container">
+        <button id="startStop">Start</button>
+        <button id="split" disabled>Split</button>
+        <button id="reset">Reset</button>
+        <button id="export">Export Splits</button>
+    </div>
+    <p class="instructions">Use Start/Stop to control the timer, Split to record times, and Reset to clear.</p>
+    <div id="splits"></div>
+    <script>
+        let running = false;
+        let startTime;
+        let splitTimes = [];
+
+        function updateDisplay() {
+            if (running) {
+                const currentTime = performance.now() - startTime;
+                const { hoursMinutes, secondsMilliseconds } = formatTime(currentTime);
+                document.getElementById('hours-minutes').textContent = hoursMinutes;
+                document.getElementById('seconds-milliseconds').textContent = secondsMilliseconds;
+                requestAnimationFrame(updateDisplay);
+            }
+        }
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const milliseconds = Math.floor((ms % 1000) / 10);
+            return {
+                hoursMinutes: `${hours}:${pad(minutes)}`,
+                secondsMilliseconds: `${pad(seconds)}.${pad(milliseconds)}`
+            };
+        }
+
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function displaySplits() {
+            const splitsDiv = document.getElementById('splits');
+            splitsDiv.innerHTML = splitTimes.map((time, index) => {
+                const { hoursMinutes, secondsMilliseconds } = formatTime(time);
+                return `<p>Split ${index + 1}: ${hoursMinutes}:${secondsMilliseconds}</p>`;
+            }).join('');
+            const display = document.getElementById('display');
+            display.classList.add('pulse');
+            setTimeout(() => display.classList.remove('pulse'), 300);
+        }
+
+        document.getElementById('startStop').addEventListener('click', () => {
+            if (running) {
+                running = false;
+                document.getElementById('startStop').textContent = 'Start';
+                document.getElementById('split').disabled = true;
+            } else {
+                startTime = performance.now() - (splitTimes.length > 0 ? splitTimes[splitTimes.length - 1] : 0);
+                running = true;
+                document.getElementById('startStop').textContent = 'Stop';
+                document.getElementById('split').disabled = false;
+                requestAnimationFrame(updateDisplay);
+            }
+        });
+
+        document.getElementById('split').addEventListener('click', () => {
+            if (running) {
+                const currentTime = performance.now() - startTime;
+                splitTimes.push(currentTime);
+                displaySplits();
+            }
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            running = false;
+            document.getElementById('startStop').textContent = 'Start';
+            document.getElementById('hours-minutes').textContent = '0:00';
+            document.getElementById('seconds-milliseconds').textContent = '00.00';
+            splitTimes = [];
+            document.getElementById('splits').innerHTML = '';
+            document.getElementById('split').disabled = true;
+        });
+
+        document.getElementById('export').addEventListener('click', () => {
+            if (splitTimes.length === 0) {
+                alert('No splits to export.');
+                return;
+            }
+            const splitsText = splitTimes.map((time, index) => {
+                const { hoursMinutes, secondsMilliseconds } = formatTime(time);
+                return `Split ${index + 1}: ${hoursMinutes}:${secondsMilliseconds}`;
+            }).join('\n');
+            const blob = new Blob([splitsText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'splits.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>

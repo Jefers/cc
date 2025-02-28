@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeffing Session Recorder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #00FF88;
+            --hover-color: #00cc6e;
+            --background-color: #1A1A1B;
+            --text-color: #FFFFFF;
+            --accent-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #000;
+            color: #fff;
+            line-height: 1.6;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            letter-spacing: 1rem;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 0.8rem;
+            color: #00ff00;
+            margin: 20px 0;
+        }
+
+        input, button {
+            font-size: 1.2rem;
+            padding: 5px;
+            margin: 5px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #00ff00;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #000;
+            cursor: pointer;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 20px;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+        }
+
+        #session, #post-session {
+            display: none;
+        }
+
+        #phase {
+            font-size: 3rem;
+            color: #ff0000;
+        }
+
+        #run-time, #walk-time, #cycles, #interval-time, #total-time {
+            font-size: 5rem;
+            color: #00ff00;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #00ff00;
+            color: #000;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        .progress-container {
+            position: relative;
+            width: 375px;
+            height: 375px;
+            margin: 20px auto;
+        }
+
+        .progress-circle {
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle-bg {
+            fill: none;
+            stroke: #333;
+            stroke-width: 10;
+        }
+
+        .progress-circle-bar {
+            fill: none;
+            stroke: #00f;
+            stroke-width: 10;
+            stroke-dasharray: 1130;
+            stroke-dashoffset: 1130;
+            transition: stroke-dashoffset 0.35s;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .timer-text #phase {
+            font-size: 3rem;
+            color: #ff0000;
+        }
+
+        .timer-text #interval-time {
+            font-size: 5rem;
+            color: #00ff00;
+            margin-top: 10px;
+        }
+
+        #total-time-label {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 40px;
+            background-color: #111;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-label {
+            font-size: 1rem;
+            color: #fff;
+            z-index: 1;
+        }
+
+        .toggle-label.left {
+            margin-left: 10px;
+        }
+
+        .toggle-label.right {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mode Toggle Switch -->
+    <div class="toggle-container" id="mode-toggle">
+        <span class="toggle-label left">Run</span>
+        <div class="toggle-slider"></div>
+        <span class="toggle-label right">Cycle</span>
+    </div>
+
+    <h1 id="title">Jeffing Running Session</h1>
+
+    <!-- Setup Section -->
+    <div id="setup">
+        <label><span id="phase1-label">Run Time</span> (seconds): <input type="number" id="run-time" min="1" required></label><br>
+        <label><span id="phase2-label">Walk Time</span> (seconds): <input type="number" id="walk-time" min="1" required></label><br>
+        <label>Number of Cycles: <input type="number" id="cycles" min="1" required></label><br>
+        <button id="start">Start Session</button>
+    </div>
+
+    <!-- Session Section -->
+    <div id="session">
+        <div class="progress-container">
+            <svg class="progress-circle" width="375" height="375">
+                <circle class="progress-circle-bg" cx="187.5" cy="187.5" r="180"></circle>
+                <circle class="progress-circle-bar" cx="187.5" cy="187.5" r="180"></circle>
+            </svg>
+            <div class="timer-text">
+                <span id="phase"></span><br>
+                <span id="interval-time"></span>
+            </div>
+        </div>
+        <p id="total-time-label">Total Time:</p>
+        <p><span id="total-time"></span></p>
+        <p>Cycle: <span id="cycle"></span> of <span id="total-cycles"></span></p>
+        <button id="pause">Pause</button>
+        <button id="stop">Stop</button>
+    </div>
+
+    <!-- Post-Session Section -->
+    <div id="post-session">
+        <label>Distance (optional, km): <input type="number" id="distance" step="0.1"></label><br>
+        <button id="save">Save Session</button>
+    </div>
+
+    <!-- History Section with Graph -->
+    <div id="history">
+        <h2>Past Sessions</h2>
+        <table id="sessions-table">
+            <tr>
+                <th>Date</th>
+                <th>Run Time (s)</th>
+                <th>Walk Time (s)</th>
+                <th>Cycles</th>
+                <th>Total Time</th>
+                <th>Distance (km)</th>
+            </tr>
+        </table>
+        <button id="clear-history">Clear History</button>
+        <button id="export-data">Export Data</button>
+        <h2>Progression Graph</h2>
+        <canvas id="progressChart"></canvas>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="run-sound" src="assets/run.wav" preload="auto"></audio>
+    <audio id="walk-sound" src="assets/walk.wav" preload="auto"></audio>
+    <audio id="sprint-sound" src="assets/sprint.wav" preload="auto"></audio>
+    <audio id="pedal-sound" src="assets/pedal.wav" preload="auto"></audio>
+
+    <script>
+        const modes = {
+            running: {
+                title: 'Jeffing Running Session',
+                phases: ['Run', 'Walk'],
+                sounds: [document.getElementById('run-sound'), document.getElementById('walk-sound')]
+            },
+            cycling: {
+                title: 'Jeffing Cycling Session',
+                phases: ['Sprint', 'Pedal'],
+                sounds: [document.getElementById('sprint-sound'), document.getElementById('pedal-sound')]
+            }
+        };
+
+        let currentMode = 'running';
+        let currentPhaseIndex = 0;
+
+        const modeToggle = document.getElementById('mode-toggle');
+        const title = document.getElementById('title');
+        const phase1Label = document.getElementById('phase1-label');
+        const phase2Label = document.getElementById('phase2-label');
+        const runTimeInput = document.getElementById('run-time');
+        const walkTimeInput = document.getElementById('walk-time');
+        const cyclesInput = document.getElementById('cycles');
+        const startButton = document.getElementById('start');
+        const setupDiv = document.getElementById('setup');
+        const sessionDiv = document.getElementById('session');
+        const phaseSpan = document.getElementById('phase');
+        const intervalTimeSpan = document.getElementById('interval-time');
+        const totalTimeSpan = document.getElementById('total-time');
+        const cycleSpan = document.getElementById('cycle');
+        const totalCyclesSpan = document.getElementById('total-cycles');
+        const pauseButton = document.getElementById('pause');
+        const stopButton = document.getElementById('stop');
+        const postSessionDiv = document.getElementById('post-session');
+        const distanceInput = document.getElementById('distance');
+        const saveButton = document.getElementById('save');
+        const clearHistoryButton = document.getElementById('clear-history');
+        const exportDataButton = document.getElementById('export-data');
+        const chartCanvas = document.getElementById('progressChart');
+        const progressCircleBar = document.querySelector('.progress-circle-bar');
+
+        let runTime, walkTime, totalCycles, intervalTime, totalTime, cycle, isRunning, isPaused, timerId;
+        let chart;
+        let initialIntervalTime;
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgressCircle() {
+            const percentage = (intervalTime / initialIntervalTime) * 100;
+            const circumference = 2 * Math.PI * 180;
+            const dashOffset = circumference * (1 - percentage / 100);
+            progressCircleBar.style.strokeDashoffset = dashOffset;
+        }
+
+        function startSession() {
+            runTime = parseInt(runTimeInput.value);
+            walkTime = parseInt(walkTimeInput.value);
+            totalCycles = parseInt(cyclesInput.value);
+            if (!runTime || !walkTime || !totalCycles || runTime <= 0 || walkTime <= 0 || totalCycles <= 0) {
+                alert('Please enter positive numbers for run time, walk time, and cycles.');
+                return;
+            }
+            currentPhaseIndex = 0;
+            intervalTime = runTime;
+            initialIntervalTime = runTime;
+            totalTime = 0;
+            cycle = 1;
+            isRunning = true;
+            isPaused = false;
+            setupDiv.style.display = 'none';
+            sessionDiv.style.display = 'block';
+            totalCyclesSpan.textContent = totalCycles;
+            timerId = setInterval(updateTimer, 1000);
+            updateDisplay();
+            playPhaseSound();
+        }
+
+        function updateTimer() {
+            if (!isPaused) {
+                intervalTime--;
+                totalTime++;
+                if (intervalTime <= 0) {
+                    if (currentPhaseIndex === 0) {
+                        currentPhaseIndex = 1;
+                        initialIntervalTime = walkTime;
+                        intervalTime = walkTime;
+                    } else {
+                        currentPhaseIndex = 0;
+                        initialIntervalTime = runTime;
+                        intervalTime = runTime;
+                        cycle++;
+                        if (cycle > totalCycles) {
+                            stopSession();
+                            return;
+                        }
+                    }
+                    playPhaseSound();
+                }
+                updateDisplay();
+                updateProgressCircle();
+            }
+        }
+
+        function updateDisplay() {
+            phaseSpan.textContent = modes[currentMode].phases[currentPhaseIndex];
+            intervalTimeSpan.textContent = formatTime(intervalTime);
+            totalTimeSpan.textContent = formatTime(totalTime);
+            cycleSpan.textContent = cycle;
+        }
+
+        function playPhaseSound() {
+            if (currentPhaseIndex === 0) {
+                modes[currentMode].sounds[0].play();
+            } else {
+                modes[currentMode].sounds[1].play();
+            }
+        }
+
+        function pauseResume() {
+            if (isPaused) {
+                isPaused = false;
+                timerId = setInterval(updateTimer, 1000);
+                pauseButton.textContent = 'Pause';
+            } else {
+                isPaused = true;
+                clearInterval(timerId);
+                pauseButton.textContent = 'Resume';
+            }
+        }
+
+        function stopSession() {
+            clearInterval(timerId);
+            isRunning = false;
+            sessionDiv.style.display = 'none';
+            postSessionDiv.style.display = 'block';
+        }
+
+        function saveSession() {
+            const distance = distanceInput.value ? parseFloat(distanceInput.value) : null;
+            const session = {
+                date: new Date().toLocaleString(),
+                runTime: runTime,
+                walkTime: walkTime,
+                cycles: cycle - (currentPhaseIndex === 0 ? 1 : 0),
+                totalTime: totalTime,
+                distance: distance
+            };
+            let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            sessions.push(session);
+            localStorage.setItem('sessions', JSON.stringify(sessions));
+            postSessionDiv.style.display = 'none';
+            setupDiv.style.display = 'block';
+            distanceInput.value = '';
+            updateHistory();
+            updateChart();
+        }
+
+        function updateHistory() {
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            const table = document.getElementById('sessions-table');
+            while (table.rows.length > 1) table.deleteRow(1);
+            sessions.forEach(session => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = session.date;
+                row.insertCell(1).textContent = session.runTime;
+                row.insertCell(2).textContent = session.walkTime;
+                row.insertCell(3).textContent = session.cycles;
+                row.insertCell(4).textContent = formatTime(session.totalTime);
+                row.insertCell(5).textContent = session.distance ? session.distance : '-';
+            });
+        }
+
+        function updateChart() {
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            const labels = sessions.map(session => session.date);
+            const data = sessions.map(session => session.totalTime);
+            if (chart) chart.destroy();
+            chart = new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Time (seconds)',
+                        data: data,
+                        borderColor: '#00ff00',
+                        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Session Date', color: '#fff' }, ticks: { color: '#fff' } },
+                        y: { title: { display: true, text: 'Total Time (s)', color: '#fff' }, ticks: { color: '#fff' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+        modeToggle.addEventListener('click', () => {
+            currentMode = currentMode === 'running' ? 'cycling' : 'running';
+            title.textContent = modes[currentMode].title;
+            phase1Label.textContent = modes[currentMode].phases[0] + ' Time';
+            phase2Label.textContent = modes[currentMode].phases[1] + ' Time';
+            const slider = document.querySelector('.toggle-slider');
+            slider.style.transform = currentMode === 'running' ? 'translateX(0)' : 'translateX(60px)';
+        });
+
+        startButton.addEventListener('click', startSession);
+        pauseButton.addEventListener('click', pauseResume);
+        stopButton.addEventListener('click', stopSession);
+        saveButton.addEventListener('click', saveSession);
+        clearHistoryButton.addEventListener('click', () => { localStorage.clear(); updateHistory(); updateChart(); });
+        exportDataButton.addEventListener('click', () => {
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            const csv = 'Date,Run Time (s),Walk Time (s),Cycles,Total Time (s),Distance (km)\n' +
+                sessions.map(s => `${s.date},${s.runTime},${s.walkTime},${s.cycles},${s.totalTime},${s.distance || ''}`).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jeffing_sessions.csv';
+            a.click();
+        });
+
+        updateHistory();
+        updateChart();
+    </script>
+</body>
+</html>

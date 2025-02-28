@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sleep Tips</title>
+  <!-- Assume your global stylesheet is already linked for header and nav -->
+  <link rel="stylesheet" href="../consolidated-mobile-styles.css">
+  <style>
+    /* Custom CSS for Sleep Tips Page */
+    .tips-container {
+      max-width: 600px;
+      margin: 80px auto 40px; /* Add some top margin so content doesn't hide under header */
+      padding: 0 20px;
+    }
+    .tip-item {
+      /* No vertical margin between items for continuous effect */
+    }
+    .tip-button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      text-align: left;
+      padding-left: 20px;
+      margin: 0; /* No margin to create seamless flow */
+      transition: background 0.3s ease;
+    }
+    .tip-button:hover {
+      opacity: 0.9;
+    }
+    .tip-explanation {
+      display: none;
+      font-size: 20px;
+      padding: 12px 20px;
+      background-color: var(--accent-color);
+      border-radius: 10px;
+      border-left: 5px solid #555;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    /* Rainbow Colouring – manually assign classes for each tip item */
+    /* Group 1: Tips 1-4: Solid Red */
+    .group1 { background-color: #ff0000; }
+    /* Group 2: Tips 5-8: Gradient Red to Orange */
+    .group2 { background-image: linear-gradient(to right, #ff0000, #ff7f00); }
+    /* Group 3: Tips 9-12: Solid Orange */
+    .group3 { background-color: #ff7f00; }
+    /* Group 4: Tips 13-16: Gradient Orange to Yellow */
+    .group4 { background-image: linear-gradient(to right, #ff7f00, #ffff00); }
+    /* Group 5: Tips 17-20: Solid Yellow */
+    .group5 { background-color: #ffff00; color: #333; }
+    /* Group 6: Tips 21-24: Gradient Yellow to Green */
+    .group6 { background-image: linear-gradient(to right, #ffff00, #00ff00); color: #333; }
+    /* Group 7: Tips 25-28: Solid Green */
+    .group7 { background-color: #00ff00; color: #333; }
+    /* Group 8: Tips 29-30: Gradient Green to Blue */
+    .group8 { background-image: linear-gradient(to right, #00ff00, #0000ff); }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed Header remains via external stylesheet -->
+  <header class="fixed-header">
+    <div class="header-left">
+      <div class="logo">Logo</div>
+      <div class="site-title">CoachChristian</div>
+    </div>
+    <a href="../menu.html" class="hamburger">&#9776;</a>
+  </header>
+  
+  <div class="tips-container">
+    <div class="spacer"></div>
+    <h1>Sleep Tips</h1>
+    <p>Scroll through these tips and tap a button to view more details.</p>
+    
+    <!-- Tip 1 to Tip 4: Group 1 (Solid Red) -->
+    <div class="tip-item">
+      <button class="tip-button group1">1. Stick to a consistent sleep schedule.</button>
+      <p class="tip-explanation">Going to bed and waking up at the same time every day helps regulate your body clock.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group1">2. Create a cool, dark sleep environment.</button>
+      <p class="tip-explanation">A cool, dark room can boost melatonin production and enhance sleep quality.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group1">3. Avoid screens one hour before bed.</button>
+      <p class="tip-explanation">Reducing blue light exposure before bed helps your brain prepare for sleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group1">4. Limit caffeine intake after noon.</button>
+      <p class="tip-explanation">Caffeine can disrupt sleep if consumed later in the day.</p>
+    </div>
+
+    <!-- Group 2: Tips 5-8: Gradient Red to Orange -->
+    <div class="tip-item">
+      <button class="tip-button group2">5. Wind down with a calming bedtime routine.</button>
+      <p class="tip-explanation">A relaxing routine signals your body it's time to sleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group2">6. Exercise daily, but not too late.</button>
+      <p class="tip-explanation">Regular exercise promotes better sleep, but exercising too close to bedtime may interfere with it.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group2">7. Avoid heavy meals before sleeping.</button>
+      <p class="tip-explanation">Large meals can cause discomfort and indigestion, affecting sleep quality.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group2">8. Limit alcohol consumption near bedtime.</button>
+      <p class="tip-explanation">Alcohol might relax you initially, but it can disrupt your sleep cycles later in the night.</p>
+    </div>
+
+    <!-- Group 3: Tips 9-12: Solid Orange -->
+    <div class="tip-item">
+      <button class="tip-button group3">9. Manage stress through relaxation techniques.</button>
+      <p class="tip-explanation">Techniques like meditation and deep breathing help calm your mind before sleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group3">10. Keep your bedroom quiet and peaceful.</button>
+      <p class="tip-explanation">Minimizing noise and distractions creates an optimal sleep environment.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group3">11. Limit daytime naps to twenty minutes.</button>
+      <p class="tip-explanation">Short naps can refresh you, but long naps may disrupt your sleep at night.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group3">12. Use comfortable, supportive bedding nightly.</button>
+      <p class="tip-explanation">The right mattress and pillows can significantly improve sleep quality.</p>
+    </div>
+
+    <!-- Group 4: Tips 13-16: Gradient Orange to Yellow -->
+    <div class="tip-item">
+      <button class="tip-button group4">13. Avoid nicotine close to bedtime.</button>
+      <p class="tip-explanation">Nicotine is a stimulant that can interfere with your ability to fall asleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group4">14. Practice deep breathing before sleep.</button>
+      <p class="tip-explanation">Deep breathing exercises can relax your body and prepare you for sleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group4">15. Meditate for a peaceful mind.</button>
+      <p class="tip-explanation">Meditation helps reduce stress and improve sleep quality.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group4">16. Establish a relaxing pre-sleep ritual.</button>
+      <p class="tip-explanation">A consistent routine can signal your body that it’s time to wind down.</p>
+    </div>
+
+    <!-- Group 5: Tips 17-20: Solid Yellow -->
+    <div class="tip-item">
+      <button class="tip-button group5">17. Consider sleep-promoting supplements if needed.</button>
+      <p class="tip-explanation">Supplements like melatonin can help regulate sleep, but consult a professional first.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group5">18. Avoid stimulating TV or media.</button>
+      <p class="tip-explanation">Avoiding exciting or disturbing content before bed can help you relax.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group5">19. Use white noise to reduce distractions.</button>
+      <p class="tip-explanation">White noise can mask disruptive sounds, helping you fall asleep more easily.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group5">20. Reserve your bed solely for sleep.</button>
+      <p class="tip-explanation">Using your bed only for sleep strengthens the mental association between bed and rest.</p>
+    </div>
+
+    <!-- Group 6: Tips 21-24: Gradient Yellow to Green -->
+    <div class="tip-item">
+      <button class="tip-button group6">21. Avoid stimulating talks near bedtime.</button>
+      <p class="tip-explanation">Avoid emotionally charged conversations before bed to help your mind relax.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group6">22. Journal worries before getting into bed.</button>
+      <p class="tip-explanation">Writing down your thoughts can help clear your mind and reduce anxiety.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group6">23. Limit fluids right before sleeping.</button>
+      <p class="tip-explanation">Reducing fluid intake can prevent disruptive trips to the bathroom during the night.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group6">24. Do gentle stretches before bed.</button>
+      <p class="tip-explanation">Light stretching can ease muscle tension and prepare your body for sleep.</p>
+    </div>
+
+    <!-- Group 7: Tips 25-28: Solid Green -->
+    <div class="tip-item">
+      <button class="tip-button group7">25. Try progressive muscle relaxation techniques.</button>
+      <p class="tip-explanation">Tensing and then relaxing muscle groups can help reduce physical stress and promote sleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group7">26. Listen to soft, calming music.</button>
+      <p class="tip-explanation">Calming music can soothe your mind and help you unwind before sleep.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group7">27. Use aromatherapy for relaxation, if beneficial.</button>
+      <p class="tip-explanation">Scents like lavender are known to promote relaxation and may improve sleep quality.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group7">28. Wake at the same time every morning.</button>
+      <p class="tip-explanation">A consistent wake-up time reinforces your body’s internal clock, improving sleep patterns.</p>
+    </div>
+
+    <!-- Group 8: Tips 29-30: Gradient Green to Blue -->
+    <div class="tip-item">
+      <button class="tip-button group8">29. Avoid intense exercise right before sleep.</button>
+      <p class="tip-explanation">High-intensity exercise close to bedtime can raise your heart rate and delay sleep onset.</p>
+    </div>
+    <div class="tip-item">
+      <button class="tip-button group8">30. Consult professional help for sleep issues.</button>
+      <p class="tip-explanation">If sleep problems persist, seek advice from a sleep specialist for proper diagnosis and treatment.</p>
+    </div>
+
+  </div>
+
+  <script>
+    // Toggle the explanation text when a tip button is clicked.
+    document.querySelectorAll('.tip-button').forEach((button, index) => {
+      button.addEventListener('click', function() {
+        const explanation = this.nextElementSibling;
+        // Toggle display of the explanation paragraph.
+        if (explanation.style.display === "block") {
+          explanation.style.display = "none";
+        } else {
+          explanation.style.display = "block";
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

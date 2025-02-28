@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About Me Section Demo</title>
+  <style>
+    /* Global Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+    
+    /* Color Theme */
+    :root {
+      --rich-red: #AA0114;      /* A rich, deep red */
+      --gold: #FFD700;          /* Golden color */
+      --overlay-tint: rgba(0, 0, 0, 0.5); /* 50% tint for right column overlay */
+    }
+    
+    /* Top & Bottom Sections */
+    header, footer {
+      padding: 2rem;
+      text-align: center;
+      background: var(--rich-red);
+      color: white;
+    }
+    
+    /* ============================
+       ABOUT ME SECTION (Middle)
+       ============================ */
+    #about-me {
+      position: relative;
+      /* Ensure enough height so that the sticky background remains until content scrolls past */
+      min-height: 200vh;
+      overflow: hidden;
+    }
+    
+    /* Sticky background container (the “magic” happens here) */
+    .sticky-bg {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      height: 100vh; /* fills the viewport height */
+      display: flex;
+    }
+    
+    /* Container holding the left and right columns */
+    .about-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* ---------- Left Third – Slideshow ---------- */
+    .left-third {
+      width: 33.33%;
+      position: relative;
+      overflow: hidden;
+    }
+    .slideshow {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .slideshow .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      /* Each slide runs on an 18s cycle */
+      animation: fadeCycle 18s infinite;
+    }
+    /* Six slides with staggered animation delays */
+    .slideshow .slide:nth-child(1) {
+      background-image: url('https://via.placeholder.com/400x800/FF0000/FFFFFF?text=Slide+1');
+      animation-delay: 0s;
+    }
+    .slideshow .slide:nth-child(2) {
+      background-image: url('https://via.placeholder.com/400x800/00FF00/FFFFFF?text=Slide+2');
+      animation-delay: 3s;
+    }
+    .slideshow .slide:nth-child(3) {
+      background-image: url('https://via.placeholder.com/400x800/0000FF/FFFFFF?text=Slide+3');
+      animation-delay: 6s;
+    }
+    .slideshow .slide:nth-child(4) {
+      background-image: url('https://via.placeholder.com/400x800/FFFF00/FFFFFF?text=Slide+4');
+      animation-delay: 9s;
+    }
+    .slideshow .slide:nth-child(5) {
+      background-image: url('https://via.placeholder.com/400x800/FF00FF/FFFFFF?text=Slide+5');
+      animation-delay: 12s;
+    }
+    .slideshow .slide:nth-child(6) {
+      background-image: url('https://via.placeholder.com/400x800/00FFFF/FFFFFF?text=Slide+6');
+      animation-delay: 15s;
+    }
+    @keyframes fadeCycle {
+      0%   { opacity: 0; }
+      8%   { opacity: 1; }
+      25%  { opacity: 1; }
+      33%  { opacity: 0; }
+      100% { opacity: 0; }
+    }
+    
+    /* ---------- Right Two Thirds – Background + Overlay ---------- */
+    .right-twothirds {
+      width: 66.67%;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Large background image for the right side */
+    .right-twothirds .bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://via.placeholder.com/800x800/222222/FFFFFF?text=Background') no-repeat center center;
+      background-size: cover;
+      z-index: 1;
+    }
+    /* Overlay: 50% tinted (only over the right column) */
+    .right-twothirds .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--overlay-tint);
+      z-index: 2;
+      padding: 2rem;
+    }
+    
+    /* ---------- Overlay Content Blocks ---------- */
+    .content-block {
+      margin-bottom: 3rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    /* Alternate alignment: “left” blocks (text on right of image) */
+    .content-block.left {
+      flex-direction: row;
+    }
+    /* “right” blocks (image on right, text on left) */
+    .content-block.right {
+      flex-direction: row-reverse;
+    }
+    /* Full-width content block example (if needed) */
+    .content-block.full {
+      justify-content: center;
+      text-align: center;
+    }
+    /* Golden crown image styling */
+    .content-block img.crown {
+      width: 50px;
+      height: auto;
+      margin: 0 1rem 1rem 0;
+    }
+    /* Text content container */
+    .content-block .text-content {
+      max-width: 70%;
+    }
+    /* Large “scrolled” title styling */
+    .content-block .title {
+      font-size: 2.5rem;
+      font-family: 'Cursive', sans-serif;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+    /* Subheading with scroll images */
+    .content-block .subtitle {
+      font-size: 1.5rem;
+      color: white;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .content-block .subtitle img {
+      width: 30px;
+      height: auto;
+      margin: 0 0.5rem;
+    }
+    /* Main paragraph text */
+    .content-block p {
+      color: white;
+      font-size: 1rem;
+    }
+    
+    /* A decorative gradient bar (red to gold) */
+    .decorative-bar {
+      height: 4px;
+      background: linear-gradient(to right, var(--rich-red), var(--gold));
+      margin: 1rem 0;
+    }
+    
+    /* Additional “about me” content (scrolls away with the sticky bg) */
+    .about-content {
+      position: relative;
+      z-index: 3;
+      background: #fff;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Section -->
+  <header>
+    <h1>Top Section</h1>
+  </header>
+  
+  <!-- ABOUT ME Section -->
+  <section id="about-me">
+    <!-- Sticky Background Container -->
+    <div class="sticky-bg">
+      <div class="about-container">
+        <!-- Left Third: Slideshow -->
+        <div class="left-third">
+          <div class="slideshow">
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+          </div>
+        </div>
+        <!-- Right Two Thirds: Background Image with 50% Overlay -->
+        <div class="right-twothirds">
+          <div class="bg-image"></div>
+          <div class="overlay">
+            <!-- Content Block 1 (Left aligned) -->
+            <div class="content-block left">
+              <img src="golden-crown.png" alt="Golden Crown" class="crown" />
+              <div class="text-content">
+                <h2 class="title">The Odyssey</h2>
+                <div class="subtitle">
+                  <img src="scroll-left.png" alt="Scroll Left" />
+                  A Journey Through Life
+                  <img src="scroll-right.png" alt="Scroll Right" />
+                </div>
+                <div class="decorative-bar"></div>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vehicula, nunc at fermentum venenatis, lorem justo suscipit nibh, in tincidunt ex nisl non leo. Sed semper ligula et risus cursus, at malesuada leo convallis.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Content Block 2 (Right aligned) -->
+            <div class="content-block right">
+              <img src="golden-crown.png" alt="Golden Crown" class="crown" />
+              <div class="text-content">
+                <h2 class="title">A Rich Tapestry</h2>
+                <div class="subtitle">
+                  <img src="scroll-left.png" alt="Scroll Left" />
+                  My Story Unfolds
+                  <img src="scroll-right.png" alt="Scroll Right" />
+                </div>
+                <div class="decorative-bar"></div>
+                <p>
+                  Curabitur non lacus eget urna fermentum aliquet. Vivamus condimentum, metus sit amet tempus dictum, dui nibh ornare turpis, nec dignissim lorem nulla non dolor. Integer ac tincidunt arcu, non molestie nunc.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Content Block 3 (Left aligned) -->
+            <div class="content-block left">
+              <img src="golden-crown.png" alt="Golden Crown" class="crown" />
+              <div class="text-content">
+                <h2 class="title">Legacy &amp; Passion</h2>
+                <div class="subtitle">
+                  <img src="scroll-left.png" alt="Scroll Left" />
+                  Crafting a Future
+                  <img src="scroll-right.png" alt="Scroll Right" />
+                </div>
+                <div class="decorative-bar"></div>
+                <p>
+                  Morbi vestibulum, purus eget consectetur sagittis, ante eros malesuada libero, sed posuere justo nisi at nibh. Nulla facilisi. Donec ut fermentum lacus, sed vehicula eros. Fusce in sapien a nibh porttitor accumsan.
+                </p>
+              </div>
+            </div>
+          </div> <!-- End overlay -->
+        </div> <!-- End right-twothirds -->
+      </div> <!-- End about-container -->
+    </div> <!-- End sticky-bg -->
+    
+    <!-- Extra Content Below the Sticky Area -->
+    <div class="about-content">
+      <h2>More About Me</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae risus nec erat consectetur volutpat. Proin ut felis euismod, fermentum arcu at, tempor quam. Donec commodo libero nec turpis sodales, a ullamcorper leo vestibulum. Suspendisse potenti. Aliquam erat volutpat. Mauris vitae magna nec odio hendrerit tristique. Cras faucibus ante sit amet consequat volutpat.
+      </p>
+      <p>
+        Integer sit amet bibendum nibh. Mauris pharetra augue nec erat gravida, in mollis quam condimentum. Curabitur mollis augue ac nisl malesuada, nec elementum nisi efficitur. Aliquam erat volutpat. In auctor lectus in orci interdum, a viverra sapien hendrerit.
+      </p>
+    </div>
+  </section>
+  
+  <!-- Bottom Section -->
+  <footer>
+    <h1>Bottom Section</h1>
+  </footer>
+</body>
+</html>

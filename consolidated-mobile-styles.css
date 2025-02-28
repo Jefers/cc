@@ -161,6 +161,14 @@ select:focus {
   font-weight: bold;
 }
 
+/* Hamburger Button */
+.hamburger {
+  font-size: 3rem;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+
 /* Menu Overlay */
 .menu-overlay {
   position: fixed;
@@ -171,7 +179,7 @@ select:focus {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .menu-overlay.active {
@@ -249,6 +257,10 @@ th {
 .mb-2 { margin-bottom: 2rem; }
 .mt-1 { margin-top: 1rem; }
 .mt-2 { margin-top: 2rem; }
+
+.spacer {
+  height: 2rem; /* Adjust as needed */
+}
 
 /* --- ENLARGED MAIN CONTENT --- */
 /* Introduce a class for main content areas that should be enlarged */
@@ -432,4 +444,109 @@ th {
   .fixed-header {
     padding: 1rem 3rem;
   }
+}
+
+/* Utility Class for Centered Buttons */
+.center-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* Spinner (for loading buttons) */
+.spinner {
+  display: inline-block;
+  width: 72px;
+  height: 72px;
+  border: 8px solid rgba(0, 0, 0, 0.2);
+  border-top-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 36px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Tool-Specific Styles (Enlarged) --- */
+/* Progress Bar for Waist-to-Height Ratio */
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+.progress {
+  height: 100%;
+  background-color: #4CAF50;
+  width: 0%;
+  transition: width 0.5s;
+}
+
+/* Tooltip (for BMR) */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #000;
+  cursor: pointer;
+  font-size: 3rem;
+}
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 600px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: absolute;
+  z-index: 1;
+  bottom: 140%;
+  left: 150%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 3rem;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Gauge for Body Fat Percentage */
+.gauge {
+  max-width: 50%;
+  margin: 1rem auto;
+  text-align: center;
+}
+.gauge svg {
+  width: 100%;
+}
+
+/* Heart Icon for Resting HR */
+.heart-icon {
+  font-size: 64px;
+  color: red;
+  transition: transform 0.5s ease;
+}
+.scale {
+  margin-top: 12px;
+  font-size: 24px;
+}
+
+/* Water Intake Specific */
+.water-result {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  margin-top: 16px;
+}
+.water-icon {
+  width: 36px;
+  height: 36px;
+  background: url('water.png') no-repeat center center;
+  background-size: contain;
+  margin-right: 12px;
 }
