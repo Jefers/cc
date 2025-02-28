@@ -476,33 +476,4 @@
         }
 
         modeToggle.addEventListener('click', () => {
-            currentMode = currentMode === 'running' ? 'cycling' : 'running';
-            title.textContent = modes[currentMode].title;
-            phase1Label.textContent = modes[currentMode].phases[0] + ' Time';
-            phase2Label.textContent = modes[currentMode].phases[1] + ' Time';
-            const slider = document.querySelector('.toggle-slider');
-            slider.style.transform = currentMode === 'running' ? 'translateX(0)' : 'translateX(60px)';
-        });
-
-        startButton.addEventListener('click', startSession);
-        pauseButton.addEventListener('click', pauseResume);
-        stopButton.addEventListener('click', stopSession);
-        saveButton.addEventListener('click', saveSession);
-        clearHistoryButton.addEventListener('click', () => { localStorage.clear(); updateHistory(); updateChart(); });
-        exportDataButton.addEventListener('click', () => {
-            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
-            const csv = 'Date,Run Time (s),Walk Time (s),Cycles,Total Time (s),Distance (km)\n' +
-                sessions.map(s => `${s.date},${s.runTime},${s.walkTime},${s.cycles},${s.totalTime},${s.distance || ''}`).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'jeffing_sessions.csv';
-            a.click();
-        });
-
-        updateHistory();
-        updateChart();
-    </script>
-</body>
-</html>
+            currentMode = currentMode === 'running' ?
