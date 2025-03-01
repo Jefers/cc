@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboarding Form | Coach Christian</title>
+  <link rel="stylesheet" href="timer-styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <style>
+    body {
+      background-color: var(--background-color, #1a1a1a);
+      color: var(--text-color, #fff);
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
+    }
+    .content { padding-top: 80px; max-width: 600px; margin: 0 auto; }
+    .question-container {
+      position: relative;
+      padding: 20px;
+      background: var(--secondary-bg, #333);
+      border-radius: var(--border-radius, 12px);
+      margin: 20px 0;
+      text-align: center;
+      opacity: 0;
+    }
+    .question-text {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+    input, textarea, select {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      margin: 10px 0;
+      background: #444;
+      color: var(--text-color, #fff);
+      border: none;
+      border-radius: 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+    }
+    textarea { height: 100px; resize: none; }
+    .rating { display: flex; justify-content: center; gap: 10px; }
+    .rating input { width: 50px; text-align: center; }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      background: var(--primary-color, #00ff88);
+      color: #000;
+      border-radius: 999px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      background: var(--hover-color, #00cc6e);
+      transform: translateY(-2px);
+    }
+    .progress-orbit {
+      width: 100px;
+      height: 100px;
+      margin: 20px auto;
+      position: relative;
+    }
+    .orbit-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 5px solid rgba(0, 255, 136, 0.2);
+      position: absolute;
+    }
+    .orbit-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 5px solid transparent;
+      border-top-color: var(--primary-color, #00ff88);
+      position: absolute;
+      transform: rotate(-90deg);
+      transition: all 0.5s ease;
+    }
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      color: var(--primary-color, #00ff88);
+    }
+    .encouragement {
+      font-size: 1rem;
+      color: var(--primary-color, #00ff88);
+      margin-top: 10px;
+      opacity: 0;
+    }
+    .summary-container {
+      padding: 20px;
+      background: var(--secondary-bg, #333);
+      border-radius: var(--border-radius, 12px);
+      margin-top: 20px;
+      display: none;
+    }
+    .summary-text { font-size: 1rem; }
+    .edit-list { max-height: 300px; overflow-y: auto; margin-top: 20px; }
+    .edit-item {
+      padding: 10px;
+      background: #444;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    .edit-item:hover { background: #555; }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Welcome to Your Journey!</h1>
+    <div class="progress-orbit">
+      <div class="orbit-circle"></div>
+      <div class="orbit-fill" id="orbitFill"></div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+    <div id="questionContainer" class="question-container"></div>
+    <div id="summaryContainer" class="summary-container">
+      <h2>Your Summary</h2>
+      <div id="summaryText" class="summary-text"></div>
+      <div class="nav-buttons">
+        <button onclick="editAnswers()">Edit Answers</button>
+        <button onclick="submitForm()">Submit to Coach</button>
+      </div>
+      <div id="editList" class="edit-list" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { id: "phone", text: "Hey there! What’s your telephone number?", type: "text", mandatory: true },
+      { id: "address", text: "Cool! Where can we find you—what’s your address?", type: "text", mandatory: true },
+      { id: "job", text: "Tell me about your job—what do you do, what’s it involve, and what are your hours?", type: "textarea", mandatory: true },
+      { id: "foodDecisions", text: "When do you tend to make poor food choices? What are they, why do they happen, and how often?", type: "textarea" },
+      { id: "dietImprovement", text: "What could we tweak to make your diet even better?", type: "textarea" },
+      { id: "foodShopping", text: "Do you schedule times to shop for food? What’s your eating system like day-to-day?", type: "textarea" },
+      { id: "typicalMeals", text: "What’s your go-to breakfast, lunch, and dinner? Any snacks you love?", type: "textarea" },
+      { id: "healthRating", text: "How would you rate your health right now on a scale of 1-10? Why that score?", type: "rating" },
+      { id: "sleepRating", text: "Awesome! How’s your sleep quality on a 1-10 scale? What’s behind that rating?", type: "rating" },
+      { id: "dailyRoutine", text: "Give me a quick rundown of your typical day—workweek and weekend!", type: "textarea" },
+      { id: "trainingExperience", text: "What’s your training story—past experiences, likes, achievements, or dislikes?", type: "textarea" },
+      { id: "injuries", text: "Any injuries or niggles I should know about?", type: "textarea" },
+      { id: "trainingSchedule", text: "How many times a week can you train, and when works best for you?", type: "textarea" },
+      { id: "goals", text: "Where do you want to be in 30 days, 90 days, and a year? What needs to change to get there?", type: "textarea" },
+      { id: "success", text: "What would make this coaching journey a roaring success for you?", type: "textarea", mandatory: true }
+    ];
+
+    let currentQuestion = 0;
+    let answers = {};
+    const encouragement = [
+      "You’re doing great—keep it up!",
+      "Nice one! Let’s dive deeper.",
+      "Awesome, we’re making progress!",
+      "You’re crushing it—keep going!"
+    ];
+
+    function showQuestion(index) {
+      const container = document.getElementById("questionContainer");
+      container.innerHTML = "";
+      if (index >= questions.length) {
+        showSummary();
+        return;
+      }
+
+      const q = questions[index];
+      const personalizedText = personalizeQuestion(q.text, index);
+      container.innerHTML = `
+        <div class="question-text">${personalizedText} ${q.mandatory ? '<span style="color:#ff4444">*</span>' : ''}</div>
+        ${q.type === "rating" ? `
+          <div class="rating">
+            <input type="number" min="1" max="10" placeholder="1-10" id="${q.id}_rating" ${q.mandatory ? 'required' : ''}>
+            <textarea placeholder="Why this score?" id="${q.id}_reason" ${q.mandatory ? 'required' : ''}></textarea>
+          </div>
+        ` : `
+          <${q.type === "textarea" ? "textarea" : "input"} type="text" id="${q.id}" placeholder="Your answer" ${q.mandatory ? 'required' : ''}></${q.type === "textarea" ? "textarea" : "input"}>
+        `}
+        <div class="nav-buttons">
+          <button onclick="prevQuestion()">Back</button>
+          <button onclick="nextQuestion()">Next</button>
+        </div>
+        <div class="encouragement" id="encourage">${encouragement[Math.floor(Math.random() * encouragement.length)]}</div>
+      `;
+
+      anime({
+        targets: container,
+        opacity: [0, 1],
+        translateY: [50, 0],
+        duration: 1000,
+        easing: 'easeOutQuad'
+      });
+      anime({
+        targets: '#encourage',
+        opacity: [0, 1],
+        delay: 500,
+        duration: 1000,
+        easing: 'easeOutQuad'
+      });
+      updateProgressOrbit();
+    }
+
+    function personalizeQuestion(text, index) {
+      if (index === 0) return text;
+      const prevAnswer = answers[questions[index - 1].id];
+      if (prevAnswer && typeof prevAnswer === "string" && prevAnswer.trim()) {
+        if (index === 1) return `Thanks for that! ${text}`;
+        if (index === 9 && answers.job) return `With your job as ${answers.job.split(' ')[0]}, ${text.toLowerCase()}`;
+      }
+      return text;
+    }
+
+    function nextQuestion() {
+      const q = questions[currentQuestion];
+      const input = document.getElementById(q.id);
+      const rating = q.type === "rating" ? document.getElementById(`${q.id}_rating`) : null;
+      const reason = q.type === "rating" ? document.getElementById(`${q.id}_reason`) : null;
+
+      if (q.mandatory && (!input?.value || (q.type === "rating" && (!rating?.value || !reason?.value)))) {
+        alert("Please fill in this required field!");
+        return;
+      }
+
+      answers[q.id] = q.type === "rating" ? { rating: rating?.value, reason: reason?.value } : input?.value;
+      anime({
+        targets: '.question-container',
+        opacity: [1, 0],
+        translateY: [0, -50],
+        duration: 500,
+        easing: 'easeInQuad',
+        complete: () => {
+          currentQuestion++;
+          showQuestion(currentQuestion);
+        }
+      });
+    }
+
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        anime({
+          targets: '.question-container',
+          opacity: [1, 0],
+          translateY: [0, 50],
+          duration: 500,
+          easing: 'easeInQuad',
+          complete: () => {
+            currentQuestion--;
+            showQuestion(currentQuestion);
+          }
+        });
+      }
+    }
+
+    function updateProgressOrbit() {
+      const progress = (currentQuestion / questions.length) * 100;
+      const orbitFill = document.getElementById("orbitFill");
+      orbitFill.style.borderTopColor = "#00ff88";
+      orbitFill.style.borderRightColor = progress >= 50 ? "#00ff88" : "transparent";
+      orbitFill.style.borderBottomColor = progress >= 75 ? "#00ff88" : "transparent";
+      orbitFill.style.borderLeftColor = progress === 100 ? "#00ff88" : "transparent";
+      document.getElementById("progressText").textContent = `${Math.round(progress)}%`;
+      anime({
+        targets: '.orbit-fill',
+        rotate: [0, 360],
+        duration: 2000,
+        easing: 'easeInOutSine',
+        loop: true
+      });
+    }
+
+    function showSummary() {
+      const container = document.getElementById("questionContainer");
+      container.style.display = "none";
+      const summaryContainer = document.getElementById("summaryContainer");
+      summaryContainer.style.display = "block";
+      const summaryText = document.getElementById("summaryText");
+      summaryText.textContent = generateSummary();
+      anime({
+        targets: summaryContainer,
+        opacity: [0, 1],
+        translateY: [50, 0],
+        duration: 1000,
+        easing: 'easeOutQuad'
+      });
+    }
+
+    function generateSummary() {
+      let summary = "Here's a quick rundown of our new client:\n\n";
+      if (answers.phone) summary += `You can reach them at ${answers.phone}.\n`;
+      if (answers.address) summary += `They’re based at ${answers.address}.\n`;
+      if (answers.job) summary += `Their job involves ${answers.job}, which might influence their schedule.\n`;
+      if (answers.foodDecisions) summary += `They tend to slip up on food choices when ${answers.foodDecisions}.\n`;
+      if (answers.dietImprovement) summary += `They’d like to improve their diet by ${answers.dietImprovement}.\n`;
+      if (answers.healthRating) summary += `Health rated at ${answers.healthRating.rating}/10 because: ${answers.healthRating.reason}.\n`;
+      if (answers.sleepRating) summary += `Sleep quality is ${answers.sleepRating.rating}/10 due to: ${answers.sleepRating.reason}.\n`;
+      if (answers.trainingExperience) summary += `Training history: ${answers.trainingExperience}.\n`;
+      if (answers.injuries) summary += `Notable injuries: ${answers.injuries}.\n`;
+      if (answers.goals) summary += `Goals: ${answers.goals}.\n`;
+      if (answers.success) summary += `Success looks like: ${answers.success}.\n`;
+      return summary;
+    }
+
+    function editAnswers() {
+      const editList = document.getElementById("editList");
+      editList.style.display = editList.style.display === "none" ? "block" : "none";
+      editList.innerHTML = "";
+      questions.forEach((q, i) => {
+        const answer = answers[q.id];
+        if (answer) {
+          const item = document.createElement("div");
+          item.className = "edit-item";
+          item.innerHTML = `${q.text}: ${typeof answer === 'object' ? `${answer.rating} - ${answer.reason}` : answer}`;
+          item.onclick = () => {
+            currentQuestion = i;
+            answers[q.id] = null;
+            editList.style.display = "none";
+            showQuestion(i);
+          };
+          editList.appendChild(item);
+        }
+      });
+    }
+
+    function submitForm() {
+      const summary = generateSummary();
+      const emailBody = encodeURIComponent(summary);
+      window.location.href = `mailto:coach@yourdomain.com?subject=New Client Onboarding&body=${emailBody}`;
+      localStorage.setItem("onboardingData", JSON.stringify(answers));
+      alert("Form submitted! Your summary has been sent to the coach.");
+    }
+
+    modeToggle.addEventListener('click', () => {
+      currentMode = currentMode ===modes.running ? modes.cycling : modes.running;
+      title.textContent = modes[currentMode].title;
+      phase1Label.textContent = modes[currentMode].phases[0] + ' Time';
+      phase2Label.textContent = modes[currentMode].phases[1] + ' Time';
+      const slider = document.querySelector('.toggle-slider');
+      slider.style.transform = currentMode === modes.running ? 'translateX(0)' : 'translateX(60px)';
+    });
+
+    showQuestion(currentQuestion);
+  </script>
+</body>
+</html>

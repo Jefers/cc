@@ -1,0 +1,233 @@
+/* timer-styles.css */
+:root {
+    --primary-color: #00FF88;
+    --hover-color: #00cc6e;
+    --background-color: #1A1A1B;
+    --text-color: #FFFFFF;
+    --accent-color: #404040;
+    --secondary-bg: #2A2A2B;
+    --menu-bg: #2A2A2B;
+    --menu-text: #FFFFFF;
+    --overlay-bg: rgba(0, 0, 0, 0.95);
+    --error-color: #ff4444;
+    --success-color: #00FF88;
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #000;
+    color: #fff;
+    line-height: 1.6;
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: #ffffff;
+    letter-spacing: 1rem;
+    margin: 10px 0;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 0.8rem;
+    color: #00ff00;
+    margin: 20px 0;
+}
+
+input, button {
+    font-size: 1.2rem;
+    padding: 5px;
+    margin: 5px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #00ff00;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Forms */
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    min-height: 60px;
+    margin-bottom: 1rem;
+    transition: border-color var(--transition-speed) ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: #000;
+    cursor: pointer;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+}
+
+button:hover {
+    background-color: var(--hover-color);
+}
+
+#session, #post-session {
+    display: none;
+}
+
+#phase {
+    font-size: 5rem;
+    color: #ff0000;
+}
+
+#run-time, #walk-time, #cycles, #interval-time, #total-time {
+    font-size: 2rem;
+    color: #00ff00;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #fff;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #00ff00;
+    color: #000;
+}
+
+canvas {
+    max-width: 100%;
+    margin-top: 20px;
+}
+
+.progress-container {
+    position: relative;
+    width: 375px;
+    height: 375px;
+    margin: 20px auto;
+}
+
+.progress-circle {
+    transform: rotate(-90deg);
+}
+
+.progress-circle-bg {
+    fill: none;
+    stroke: #333;
+    stroke-width: 10;
+}
+
+.progress-circle-bar {
+    fill: none;
+    stroke: #00f;
+    stroke-width: 10;
+    stroke-dasharray: 1130;
+    stroke-dashoffset: 1130;
+    transition: stroke-dashoffset 0.35s;
+}
+
+.timer-text {
+    font-family: 'Orbitron', sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.timer-text #phase {
+    font-size: 7rem;
+    color: #ff0000;
+}
+
+.timer-text #interval-time {
+    font-size: 5rem;
+    color: #00ff00;
+    margin-top: 10px;
+}
+
+#total-time-label {
+    font-size: 3rem;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.toggle-container {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 100px;
+    height: 40px;
+    background-color: #111;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    box-shadow: inset 0 0 5px rgba(0, 255, 21, 0.5);
+    color: #fff;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    background-color: darkgrey;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.toggle-label {
+    font-size: 1rem;
+    color: #fff;
+    z-index: 1;
+}
+
+.toggle-label.left {
+    margin-left: 3px;
+}
+
+.toggle-label.right {
+    margin-right: 1px;
+}
+/* timer-styles.css (updated section) */
+#interval-time {
+    font-family: 'Courier New', monospace;
+    font-size: 5rem;
+    color: #00ff00;
+    margin-top: 10px;
+}

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weight Tracker | Coach Christian</title>
+  <link rel="stylesheet" href="timer-styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.min.js"></script>
+  <style>
+    body {
+      background-color: var(--background-color, #1a1a1a);
+      color: var(--text-color, #fff);
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .warning {
+      color: var(--error-color, #ff4444);
+      border-left: 3px solid var(--error-color, #ff4444);
+      padding: 0.5rem;
+      margin-top: 10px;
+    }
+    .weekly-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: var(--secondary-bg, #333);
+      border-radius: var(--border-radius, 5px);
+      margin-bottom: 5px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .weekly-row:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    }
+    .weekly-row.on-track .feedback-icon {
+      color: var(--primary-color, #00ff88);
+      animation: pulse 1s infinite;
+    }
+    .weekly-row.off-track .feedback-icon {
+      color: var(--error-color, #ff4444);
+      animation: ripple 1s infinite;
+    }
+    .weekly-row input {
+      width: 100px;
+      font-size: 1rem;
+      background: #444;
+      color: var(--text-color, #fff);
+      border: none;
+      text-align: center;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .milestone-badge {
+      position: absolute;
+      color: var(--primary-color, #00ff88);
+      font-size: 1.5rem;
+      opacity: 0;
+    }
+    #progressChart {
+      margin-top: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      padding: 10px;
+      transition: transform 0.5s;
+    }
+    #progressChart:hover {
+      transform: rotateX(10deg);
+    }
+    .streak {
+      font-size: 1.2rem;
+      color: var(--primary-color, #00ff88);
+      margin-top: 10px;
+      text-align: center;
+    }
+    .center-button button {
+      padding: 10px 20px;
+      background: var(--primary-color, #00ff88);
+      border: none;
+      border-radius: 25px;
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
+      box-shadow: 0 4px 10px rgba(0, 255, 136, 0.3);
+      transition: transform 0.2s;
+    }
+    .center-button button:hover {
+      transform: translateY(-2px);
+      background: var(--hover-color, #00cc70);
+    }
+    /* Neon Orbit Progress */
+    .progress-orbit {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      position: relative;
+    }
+    .orbit-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 5px solid rgba(0, 255, 136, 0.2);
+      position: absolute;
+    }
+    .orbit-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 5px solid transparent;
+      border-top-color: var(--primary-color, #00ff88);
+      position: absolute;
+      transform: rotate(-90deg);
+      transition: all 0.5s ease;
+    }
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      color: var(--primary-color, #00ff88);
+    }
+    /* Hologram Motivation */
+    .hologram {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      color: var(--primary-color, #00ff88);
+      text-align: center;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.7);
+      opacity: 0;
+    }
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes ripple {
+      0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+      100% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="toggle-container" id="mode-toggle">
+    <span class="toggle-label left">Run</span>
+    <div class="toggle-slider"></div>
+    <span class="toggle-label right">Cycle</span>
+  </div>
+
+  <h1 id="title">Weight Tracker</h1>
+
+  <div class="content">
+    <section class="section">
+      <div class="form-group">
+        <label for="unitSelect">Units:</label>
+        <select id="unitSelect" onchange="changeUnit()">
+          <option value="lbs" selected>Lbs</option>
+          <option value="kg">Kg</option>
+        </select>
+      </div>
+
+      <form id="planForm">
+        <div class="form-group">
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate" required />
+        </div>
+        <div class="form-group">
+          <label for="currentWeight">Current (<span id="weightUnitLabel">lbs</span>):</label>
+          <input type="number" id="currentWeight" min="100" required />
+        </div>
+        <div class="form-group">
+          <label for="targetWeight">Target (<span id="weightUnitLabel2">lbs</span>):</label>
+          <input type="number" id="targetWeight" min="50" required />
+        </div>
+        <div id="warningMessage"></div>
+        <div class="center-button">
+          <button type="button" id="savePlanBtn" onclick="savePlan()">Save Plan</button>
+        </div>
+      </form>
+
+      <div id="planDisplay" style="display:none;">
+        <div class="progress-orbit">
+          <div class="orbit-circle"></div>
+          <div class="orbit-fill" id="orbitFill"></div>
+          <div class="progress-text" id="progressText">0%</div>
+        </div>
+        <h3>Your Weekly Plan</h3>
+        <div id="weeklyPlan"></div>
+        <h3>Progress Graph</h3>
+        <canvas id="progressChart"></canvas>
+        <div id="streak" class="streak">Streak: 0 Weeks</div>
+        <div class="hologram" id="hologram"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let planData = null;
+    let unit = "lbs";
+    let chart;
+
+    function setMinStartDate() {
+      const startDateInput = document.getElementById("startDate");
+      const today = new Date();
+      startDateInput.min = today.toISOString().split("T")[0];
+    }
+    setMinStartDate();
+
+    function setCookie(cname, cvalue, exdays) {
+      const d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      document.cookie = `${cname}=${encodeURIComponent(cvalue)};expires=${d.toUTCString()};path=/`;
+    }
+
+    function getCookie(cname) {
+      const name = `${cname}=`;
+      const ca = decodeURIComponent(document.cookie).split(';');
+      for (let c of ca) {
+        c = c.trim();
+        if (c.indexOf(name) === 0) return c.substring(name.length);
+      }
+      return "";
+    }
+
+    function validateWeights() {
+      const currentWeight = parseFloat(document.getElementById("currentWeight").value);
+      const targetWeight = parseFloat(document.getElementById("targetWeight").value);
+      const warningDiv = document.getElementById("warningMessage");
+      warningDiv.innerHTML = "";
+      if (!isNaN(currentWeight) && !isNaN(targetWeight) && currentWeight <= targetWeight) {
+        warningDiv.innerHTML = `<div class="warning">⚠️ Target must be less than current weight!</div>`;
+      }
+    }
+    document.getElementById("currentWeight").addEventListener("input", validateWeights);
+    document.getElementById("targetWeight").addEventListener("input", validateWeights);
+
+    function addDays(date, days) {
+      const result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    }
+
+    function formatDate(date) {
+      return `${("0" + (date.getMonth() + 1)).slice(-2)}/${("0" + date.getDate()).slice(-2)}`;
+    }
+
+    function generateWeeklyPlan(startDate, currentWeight, targetWeight) {
+      const weeks = [];
+      const totalLoss = currentWeight - targetWeight;
+      const weeklyLoss = totalLoss / 12;
+      for (let i = 0; i < 12; i++) {
+        const plannedWeight = currentWeight - (weeklyLoss * (i + 1));
+        weeks.push({
+          week: i + 1,
+          date: formatDate(addDays(startDate, i * 7)),
+          planned: plannedWeight.toFixed(1),
+          actual: ""
+        });
+      }
+      return weeks;
+    }
+
+    function savePlan() {
+      const startDate = document.getElementById("startDate").value;
+      const currentWeight = parseFloat(document.getElementById("currentWeight").value);
+      const targetWeight = parseFloat(document.getElementById("targetWeight").value);
+
+      if (!startDate || isNaN(currentWeight) || isNaN(targetWeight) || currentWeight <= targetWeight) {
+        alert("Please enter valid details!");
+        return;
+      }
+
+      planData = {
+        startDate,
+        startWeight: currentWeight,
+        targetWeight,
+        weeks: generateWeeklyPlan(new Date(startDate), currentWeight, targetWeight)
+      };
+      setCookie("weightPlan", JSON.stringify(planData), 45);
+      displayPlan();
+    }
+
+    function updateProgressOrbit() {
+      const totalLoss = planData.startWeight - planData.targetWeight;
+      const currentLoss = planData.weeks.reduce((sum, w) => {
+        return w.actual ? sum + (planData.startWeight - parseFloat(w.actual)) : sum;
+      }, 0);
+      const progress = Math.min((currentLoss / totalLoss) * 100, 100);
+      const orbitFill = document.getElementById("orbitFill");
+      orbitFill.style.borderTopColor = "#00ff88";
+      orbitFill.style.borderRightColor = progress >= 50 ? "#00ff88" : "transparent";
+      orbitFill.style.borderBottomColor = progress >= 75 ? "#00ff88" : "transparent";
+      orbitFill.style.borderLeftColor = progress === 100 ? "#00ff88" : "transparent";
+      document.getElementById("progressText").textContent = `${Math.round(progress)}%`;
+      anime({
+        targets: '.orbit-fill',
+        rotate: [0, 360],
+        duration: 2000,
+        easing: 'easeInOutSine',
+        loop: true
+      });
+    }
+
+    function triggerMilestone(index) {
+      const totalLoss = planData.startWeight - planData.targetWeight;
+      const progress = planData.startWeight - parseFloat(planData.weeks[index].actual);
+      const milestones = [0.25, 0.5, 0.75, 1];
+      const milestoneIdx = milestones.findIndex(m => progress >= totalLoss * m);
+      if ((index === 2 && milestoneIdx === 0) || (index === 5 && milestoneIdx === 1) || 
+          (index === 8 && milestoneIdx === 2) || (index === 11 && milestoneIdx === 3)) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#00ff88', '#ff9800', '#fff']
+        });
+        const badge = document.createElement("span");
+        badge.className = "milestone-badge";
+        badge.innerHTML = '<i class="fas fa-trophy"></i>';
+        document.getElementById("weeklyPlan").children[index].appendChild(badge);
+        anime({
+          targets: badge,
+          opacity: [0, 1],
+          scale: [0.5, 1],
+          duration: 1000,
+          easing: 'easeOutElastic(1, .5)'
+        });
+      }
+    }
+
+    function displayPlan() {
+      document.getElementById("planDisplay").style.display = "block";
+      const planDiv = document.getElementById("weeklyPlan");
+      planDiv.innerHTML = "";
+
+      planData.weeks.forEach((week, index) => {
+        const row = document.createElement("div");
+        row.className = "weekly-row";
+        let icon = "";
+        if (week.actual) {
+          const actual = parseFloat(week.actual);
+          const planned = parseFloat(week.planned);
+          if (actual <= planned) {
+            row.classList.add("on-track");
+            icon = '<i class="fas fa-check feedback-icon"></i>';
+          } else {
+            row.classList.add("off-track");
+            icon = '<i class="fas fa-exclamation feedback-icon"></i>';
+          }
+        }
+        row.innerHTML = `
+          <span>Week ${week.week}: ${week.date}</span>
+          <span>Planned: ${week.planned} ${unit}</span>
+          <input type="number" value="${week.actual}" onchange="updateActual(${index}, this.value)" placeholder="Actual">
+          ${icon}
+        `;
+        planDiv.appendChild(row);
+      });
+
+      updateProgressOrbit();
+      updateGraph();
+      updateStreak();
+    }
+
+    function updateActual(index, value) {
+      planData.weeks[index].actual = value ? parseFloat(value).toFixed(1) : "";
+      setCookie("weightPlan", JSON.stringify(planData), 45);
+      triggerMilestone(index);
+      displayPlan();
+    }
+
+    function updateGraph() {
+      const ctx = document.getElementById("progressChart").getContext("2d");
+      const labels = planData.weeks.map(w => `W${w.week}`);
+      const planned = planData.weeks.map(w => w.planned);
+      const actual = planData.weeks.map(w => w.actual || null);
+
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Planned",
+              data: planned,
+              borderColor: "#00ff88",
+              backgroundColor: "rgba(0, 255, 136, 0.1)",
+              borderWidth: 2,
+              fill: true,
+              pointRadius: 5,
+              pointHoverRadius: 8
+            },
+            {
+              label: "Actual",
+              data: actual,
+              borderColor: "#ff9800",
+              backgroundColor: "rgba(255, 152, 0, 0.1)",
+              borderWidth: 2,
+              fill: true,
+              pointRadius: 5,
+              pointHoverRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { title: { display: true, text: `Weight (${unit})`, color: '#fff' }, ticks: { color: '#fff' } },
+            x: { ticks: { color: '#fff' } }
+          },
+          plugins: {
+            legend: { labels: { color: '#fff' } },
+            tooltip: {
+              enabled: true,
+              callbacks: {
+                label: (context) => `${context.dataset.label}: ${context.raw} ${unit}`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateStreak() {
+      const streak = planData.weeks.reduce((count, w) => {
+        if (!w.actual || parseFloat(w.actual) > parseFloat(w.planned)) return count;
+        return count + 1;
+      }, 0);
+      document.getElementById("streak").textContent = `Streak: ${streak} Weeks`;
+      const hologram = document.getElementById("hologram");
+      hologram.textContent = streak >= 3 ? "You’re crushing it!" : "Keep pushing forward!";
+      anime({
+        targets: hologram,
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 1000,
+        easing: 'easeOutQuad'
+      });
+    }
+
+    function changeUnit() {
+      const newUnit = document.getElementById("unitSelect").value;
+      if (newUnit === unit) return;
+      const factor = newUnit === "kg" ? 0.453592 : 2.20462;
+
+      ["currentWeight", "targetWeight"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input.value) input.value = (parseFloat(input.value) * factor).toFixed(1);
+      });
+
+      ["weightUnitLabel", "weightUnitLabel2"].forEach(id => {
+        document.getElementById(id).textContent = newUnit;
+      });
+
+      if (planData) {
+        planData.startWeight = (planData.startWeight * factor).toFixed(1);
+        planData.targetWeight = (planData.targetWeight * factor).toFixed(1);
+        planData.weeks.forEach(w => {
+          w.planned = (w.planned * factor).toFixed(1);
+          if (w.actual) w.actual = (w.actual * factor).toFixed(1);
+        });
+        setCookie("weightPlan", JSON.stringify(planData), 45);
+        displayPlan();
+      }
+      unit = newUnit;
+    }
+
+    window.onload = () => {
+      const saved = getCookie("weightPlan");
+      if (saved) {
+        planData = JSON.parse(saved);
+        document.getElementById("startDate").value = planData.startDate;
+        document.getElementById("currentWeight").value = planData.startWeight;
+        document.getElementById("targetWeight").value = planData.targetWeight;
+        displayPlan();
+      }
+    };
+  </script>
+</body>
+</html>
