@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Trainer Website - Menu Structure</title>
+    <link rel="stylesheet" href="consolidated-mobile-styles.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .main-menu-item {
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .main-menu-item:hover {
+            background-color: #2980b9;
+        }
+        
+        .sub-menu {
+            display: none;
+            margin-left: 20px;
+        }
+        
+        .sub-menu.active {
+            display: block;
+        }
+        
+        .sub-heading {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            color: #2c3e50;
+        }
+        
+        .sub-sub-heading {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 10px 0 5px 20px;
+            color: #34495e;
+        }
+        
+        .sub-sub-sub-heading {
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 5px 0 5px 40px;
+            color: #7f8c8d;
+        }
+        
+        .sub-sub-sub-sub-heading {
+            font-size: 0.9rem;
+            margin: 5px 0 5px 60px;
+            color: #95a5a6;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #3498db;
+            transition: color 0.3s;
+        }
+        
+        a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Personal Trainer Website Menu Structure</h1>
+        <p>Click on the main menu items to expand/collapse their submenus</p>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('home')">Home</div>
+    <div id="home" class="sub-menu">
+        <ul>
+            <li><a href="featured-programs.html">Featured Programs</a></li>
+            <li><a href="success-stories.html">Success Stories</a></li>
+            <li><a href="latest-blog-posts.html">Latest Blog Posts</a></li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('about')">About</div>
+    <div id="about" class="sub-menu">
+        <ul>
+            <li><a href="my-story.html">My Story</a></li>
+            <li><a href="philosophy.html">Philosophy</a></li>
+            <li>
+                <div class="sub-heading">Certifications</div>
+                <ul>
+                    <li><a href="fitness-credentials.html">Fitness Credentials</a></li>
+                    <li><a href="nutrition-credentials.html">Nutrition Credentials</a></li>
+                    <li><a href="specialized-training.html">Specialized Training</a></li>
+                </ul>
+            </li>
+            <li><a href="experience.html">Experience</a></li>
+            <li><a href="media-appearances.html">Media Appearances</a></li>
+            <li>
+                <div class="sub-heading">FAQ</div>
+                <ul>
+                    <li><a href="general-questions.html">General Questions</a></li>
+                    <li><a href="training-questions.html">Training Questions</a></li>
+                    <li><a href="nutrition-questions.html">Nutrition Questions</a></li>
+                    <li><a href="pricing-questions.html">Pricing Questions</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('services')">Services</div>
+    <div id="services" class="sub-menu">
+        <ul>
+            <li>
+                <div class="sub-heading">One-on-One Training</div>
+                <ul>
+                    <li><a href="in-person-sessions.html">In-Person Sessions</a></li>
+                    <li><a href="virtual-sessions.html">Virtual Sessions</a></li>
+                    <li><a href="hybrid-programs.html">Hybrid Programs</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Group Training</div>
+                <ul>
+                    <li><a href="small-group.html">Small Group (2-4)</a></li>
+                    <li><a href="bootcamp-classes.html">Bootcamp Classes</a></li>
+                    <li><a href="corporate-wellness.html">Corporate Wellness</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Nutrition Coaching</div>
+                <ul>
+                    <li><a href="meal-planning.html">Meal Planning</a></li>
+                    <li><a href="dietary-analysis.html">Dietary Analysis</a></li>
+                    <li><a href="supplement-guidance.html">Supplement Guidance</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Specialized Programs</div>
+                <ul>
+                    <li><a href="post-rehabilitation.html">Post-Rehabilitation</a></li>
+                    <li><a href="sports-specific-training.html">Sports-Specific Training</a></li>
+                    <li><a href="prenatal-postnatal-fitness.html">Prenatal/Postnatal Fitness</a></li>
+                    <li><a href="senior-fitness.html">Senior Fitness</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Pricing</div>
+                <ul>
+                    <li><a href="individual-sessions.html">Individual Sessions</a></li>
+                    <li><a href="package-deals.html">Package Deals</a></li>
+                    <li><a href="monthly-memberships.html">Monthly Memberships</a></li>
+                    <li><a href="annual-plans.html">Annual Plans</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('programs')">Programs</div>
+    <div id="programs" class="sub-menu">
+        <ul>
+            <li>
+                <div class="sub-heading">Weight Loss</div>
+                <ul>
+                    <li><a href="beginner-programs.html">Beginner Programs</a></li>
+                    <li><a href="intermediate-programs.html">Intermediate Programs</a></li>
+                    <li><a href="advanced-programs.html">Advanced Programs</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Muscle Building</div>
+                <ul>
+                    <li><a href="hypertrophy-focus.html">Hypertrophy Focus</a></li>
+                    <li><a href="strength-focus.html">Strength Focus</a></li>
+                    <li><a href="power-development.html">Power Development</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Endurance Training</div>
+                <ul>
+                    <li><a href="5k-preparation.html">5K Preparation</a></li>
+                    <li><a href="10k-preparation.html">10K Preparation</a></li>
+                    <li><a href="half-marathon.html">Half Marathon</a></li>
+                    <li><a href="marathon.html">Marathon</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Functional Fitness</div>
+                <ul>
+                    <li><a href="mobility-improvement.html">Mobility Improvement</a></li>
+                    <li><a href="balance-training.html">Balance Training</a></li>
+                    <li><a href="injury-prevention.html">Injury Prevention</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Body Transformation</div>
+                <ul>
+                    <li><a href="30-day-challenges.html">30-Day Challenges</a></li>
+                    <li><a href="90-day-programs.html">90-Day Programs</a></li>
+                    <li><a href="6-month-plans.html">6-Month Plans</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('results')">Results</div>
+    <div id="results" class="sub-menu">
+        <ul>
+            <li>
+                <div class="sub-heading">Testimonials</div>
+                <ul>
+                    <li><a href="weight-loss-success.html">Weight Loss Success</a></li>
+                    <li><a href="muscle-gain-stories.html">Muscle Gain Stories</a></li>
+                    <li><a href="athletic-performance.html">Athletic Performance</a></li>
+                    <li><a href="lifestyle-transformations.html">Lifestyle Transformations</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Before & After Gallery</div>
+                <ul>
+                    <li><a href="recent-transformations.html">Recent Transformations</a></li>
+                    <li><a href="long-term-clients.html">Long-term Clients</a></li>
+                    <li><a href="group-success-stories.html">Group Success Stories</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Client Metrics</div>
+                <ul>
+                    <li><a href="average-weight-loss.html">Average Weight Loss</a></li>
+                    <li><a href="strength-improvements.html">Strength Improvements</a></li>
+                    <li><a href="endurance-gains.html">Endurance Gains</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('tools')">Tools</div>
+    <div id="tools" class="sub-menu">
+        <ul>
+            <li>
+                <div class="sub-heading">Fitness Trackers</div>
+                <ul>
+                    <li><a href="weight-tracker.html">Weight Tracker</a></li>
+                    <li><a href="body-measurements.html">Body Measurements</a></li>
+                    <li><a href="progress-photos.html">Progress Photos</a></li>
+                    <li><a href="strength-records.html">Strength Records</a></li>
+                    <li><a href="cardio-performance.html">Cardio Performance</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Nutrition Guides</div>
+                <ul>
+                    <li><a href="macro-calculator.html">Macro Calculator</a></li>
+                    <li><a href="meal-plan-templates.html">Meal Plan Templates</a></li>
+                    <li><a href="grocery-lists.html">Grocery Lists</a></li>
+                    <li>
+                        <div class="sub-sub-heading">Recipe Database</div>
+                        <ul>
+                            <li><a href="breakfast-options.html">Breakfast Options</a></li>
+                            <li><a href="lunch-ideas.html">Lunch Ideas</a></li>
+                            <li><a href="dinner-recipes.html">Dinner Recipes</a></li>
+                            <li><a href="healthy-snacks.html">Healthy Snacks</a></li>
+                            <li><a href="pre-post-workout-meals.html">Pre/Post Workout Meals</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Supplement Guide</div>
+                        <ul>
+                            <li><a href="protein-options.html">Protein Options</a></li>
+                            <li><a href="recovery-supplements.html">Recovery Supplements</a></li>
+                            <li><a href="performance-enhancers.html">Performance Enhancers</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Workout Library</div>
+                <ul>
+                    <li>
+                        <div class="sub-sub-heading">Exercise Database</div>
+                        <ul>
+                            <li><a href="bodyweight-exercises.html">Bodyweight Exercises</a></li>
+                            <li><a href="dumbbell-exercises.html">Dumbbell Exercises</a></li>
+                            <li><a href="barbell-movements.html">Barbell Movements</a></li>
+                            <li><a href="cable-machine-workouts.html">Cable Machine Workouts</a></li>
+                            <li><a href="kettlebell-exercises.html">Kettlebell Exercises</a></li>
+                            <li><a href="resistance-band-workouts.html">Resistance Band Workouts</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Workout Templates</div>
+                        <ul>
+                            <li><a href="full-body-routines.html">Full Body Routines</a></li>
+                            <li><a href="upper-lower-splits.html">Upper/Lower Splits</a></li>
+                            <li><a href="push-pull-legs.html">Push/Pull/Legs</a></li>
+                            <li><a href="body-part-specific.html">Body Part Specific</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Workout Timers</div>
+                        <ul>
+                            <li><a href="hiit-timer.html">HIIT Timer</a></li>
+                            <li><a href="tabata-timer.html">Tabata Timer</a></li>
+                            <li><a href="circuit-timer.html">Circuit Timer</a></li>
+                            <li><a href="rest-timer.html">Rest Timer</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Form Guides</div>
+                        <ul>
+                            <li><a href="video-tutorials.html">Video Tutorials</a></li>
+                            <li><a href="common-mistakes.html">Common Mistakes</a></li>
+                            <li><a href="modification-options.html">Modification Options</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Equipment Essentials</div>
+                <ul>
+                    <li>
+                        <div class="sub-sub-heading">Home Gym Setups</div>
+                        <ul>
+                            <li><a href="minimal-equipment.html">Minimal Equipment</a></li>
+                            <li><a href="moderate-investment.html">Moderate Investment</a></li>
+                            <li><a href="full-home-gym.html">Full Home Gym</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Equipment Reviews</div>
+                        <ul>
+                            <li><a href="cardio-machines.html">Cardio Machines</a></li>
+                            <li><a href="weight-equipment.html">Weight Equipment</a></li>
+                            <li><a href="wearable-tech.html">Wearable Tech</a></li>
+                            <li><a href="fitness-apps.html">Fitness Apps</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Shopping Guides</div>
+                        <ul>
+                            <li><a href="budget-options.html">Budget Options</a></li>
+                            <li><a href="premium-selections.html">Premium Selections</a></li>
+                            <li><a href="space-saving-solutions.html">Space-Saving Solutions</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Free Resources</div>
+                <ul>
+                    <li>
+                        <div class="sub-sub-heading">Workout Plans</div>
+                        <ul>
+                            <li><a href="7-day-starter.html">7-Day Starter</a></li>
+                            <li><a href="14-day-challenge.html">14-Day Challenge</a></li>
+                            <li><a href="30-day-program.html">30-Day Program</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">Nutrition Templates</div>
+                        <ul>
+                            <li><a href="meal-prep-guide.html">Meal Prep Guide</a></li>
+                            <li><a href="portion-control-guide.html">Portion Control Guide</a></li>
+                            <li><a href="eating-out-guide.html">Eating Out Guide</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="sub-sub-heading">E-Books</div>
+                        <ul>
+                            <li><a href="beginners-guide.html">Beginner's Guide</a></li>
+                            <li><a href="nutrition-basics.html">Nutrition Basics</a></li>
+                            <li><a href="recovery-strategies.html">Recovery Strategies</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('blog')">Blog</div>
+    <div id="blog" class="sub-menu">
+        <ul>
+            <li>
+                <div class="sub-heading">Training Tips</div>
+                <ul>
+                    <li><a href="technique-advice.html">Technique Advice</a></li>
+                    <li><a href="programming-guidance.html">Programming Guidance</a></li>
+                    <li><a href="recovery-strategies-blog.html">Recovery Strategies</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Nutrition Insights</div>
+                <ul>
+                    <li><a href="meal-planning-blog.html">Meal Planning</a></li>
+                    <li><a href="dietary-trends.html">Dietary Trends</a></li>
+                    <li><a href="supplement-reviews.html">Supplement Reviews</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Success Stories</div>
+                <ul>
+                    <li><a href="client-spotlights.html">Client Spotlights</a></li>
+                    <li><a href="transformation-journeys.html">Transformation Journeys</a></li>
+                    <li><a href="overcoming-challenges.html">Overcoming Challenges</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Lifestyle Advice</div>
+                <ul>
+                    <li><a href="sleep-optimization.html">Sleep Optimization</a></li>
+                    <li><a href="stress-management.html">Stress Management</a></li>
+                    <li><a href="work-life-balance.html">Work-Life Balance</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Industry News</div>
+                <ul>
+                    <li><a href="research-updates.html">Research Updates</a></li>
+                    <li><a href="fitness-trends.html">Fitness Trends</a></li>
+                    <li><a href="health-developments.html">Health Developments</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Podcast Episodes</div>
+                <ul>
+                    <li><a href="expert-interviews.html">Expert Interviews</a></li>
+                    <li><a href="qa-sessions.html">Q&A Sessions</a></li>
+                    <li><a href="deep-dives.html">Deep Dives</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('contact')">Contact</div>
+    <div id="contact" class="sub-menu">
+        <ul>
+            <li>
+                <div class="sub-heading">Booking</div>
+                <ul>
+                    <li><a href="initial-consultation.html">Initial Consultation</a></li>
+                    <li><a href="training-session.html">Training Session</a></li>
+                    <li><a href="nutrition-consultation.html">Nutrition Consultation</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Location</div>
+                <ul>
+                    <li><a href="training-facilities.html">Training Facilities</a></li>
+                    <li><a href="virtual-options.html">Virtual Options</a></li>
+                    <li><a href="home-training.html">Home Training</a></li>
+                </ul>
+            </li>
+            <li><a href="business-hours.html">Business Hours</a></li>
+            <li><a href="contact-form.html">Contact Form</a></li>
+            <li>
+                <div class="sub-heading">Social Media</div>
+                <ul>
+                    <li><a href="instagram.html">Instagram</a></li>
+                    <li><a href="youtube.html">YouTube</a></li>
+                    <li><a href="facebook.html">Facebook</a></li>
+                    <li><a href="tiktok.html">TikTok</a></li>
+                    <li><a href="linkedin.html">LinkedIn</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="sub-heading">Newsletter Signup</div>
+                <ul>
+                    <li><a href="weekly-tips.html">Weekly Tips</a></li>
+                    <li><a href="monthly-challenges.html">Monthly Challenges</a></li>
+                    <li><a href="exclusive-offers.html">Exclusive Offers</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-menu-item" onclick="toggleMenu('utility')">Utility Menu</div>
+    <div id="utility" class="sub-menu">
+        <ul>
+            <li><a href="client-portal-login.html">Client Portal Login</a></li>
+            <li><a href="gift-certificates.html">Gift Certificates</a></li>
+            <li><a href="partnerships.html">Partnerships</a></li>
+            <li><a href="press-kit.html">Press Kit</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="terms-of-service.html">Terms of Service</a></li>
+            <li><a href="accessibility-statement.html">Accessibility Statement</a></li>
+        </ul>
+    </div>
+
+    <script>
+        function toggleMenu(id) {
+            const menu = document.getElementById(id);
+            menu.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
