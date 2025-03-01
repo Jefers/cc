@@ -4,162 +4,252 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Training Digital Strategy</title>
-    <link rel="stylesheet" href="consolidated-mobile-styles.css">
     <style>
-/*         body {
-            font-family: Arial, sans-serif;
+        /* CSS Variables for Customization */
+        :root {
+            --primary-color: #00FF88;
+            --hover-color: #00cc6e;
+            --background-color: #1A1A1B;
+            --secondary-bg: #2A2A2B;
+            --text-color: #FFFFFF;
+            --accent-color: #404040;
+            --menu-bg: #2A2A2B;
+            --menu-text: #FFFFFF;
+            --overlay-bg: rgba(0, 0, 0, 0.95);
+            --error-color: #ff4444;
+            --success-color: #00FF88;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+        }
+
+        /* Global Resets */
+        *,
+        *::before,
+        *::after {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Base Styles - Mobile First */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
             line-height: 1.6;
-            background-color: #f4f4f4;
-            color: #333;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: 1rem;
         }
+
         h1, h2, h3 {
-            color: #2c3e50;
-            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            line-height: 1.2;
         }
-        h1 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-        h3 {
-            font-size: 1.2em;
-            margin-top: 15px;
-        }
-        p, ul {
-            font-size: 1em;
-            max-width: 100%;
-            margin: 0 auto 15px;
-        } */
+
+        h1 { font-size: 2rem; text-align: center; }
+        h2 { font-size: 1.75rem; }
+        h3 { font-size: 1.5rem; }
+
         a {
-            color: #2de715;
+            color: var(--primary-color);
             text-decoration: none;
+            transition: color var(--transition-speed) ease;
         }
+
         a:hover {
-            text-decoration: underline;
+            color: var(--hover-color);
         }
+
+        .key-points {
+            background-color: var(--secondary-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        section {
+            background-color: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.9em;
+            margin: 1rem 0;
+            font-size: 1rem;
         }
+
         th, td {
-            border: 1px solid #129210;
-            padding: 10px;
+            padding: 1rem;
             text-align: left;
+            border-bottom: 1px solid var(--accent-color);
         }
+
         th {
-            background-color: #3498db;
-            color: rgb(54, 42, 42);
+            font-weight: 600;
+            background-color: var(--accent-color);
         }
-        .key-points {
-            background-color: #55d311;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
+
+        /* Mobile Table Fix */
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            h1 {
-                font-size: 1.5em;
-            }
-            h2 {
-                font-size: 1.3em;
-            }
-            table, th, td {
-                font-size: 0.85em;
+            table, thead, tbody, th, td, tr {
                 display: block;
-                width: 100%;
             }
-            th, td {
-                box-sizing: border-box;
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                margin-bottom: 1rem;
+                background-color: var(--secondary-bg);
+                border: 1px solid var(--accent-color);
+                border-radius: var(--border-radius);
+            }
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                display: block;
+            }
+            td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 1rem;
+                width: 45%;
+                padding-right: 10px;
+                font-weight: 600;
+                color: var(--primary-color);
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (min-width: 768px) {
+            body {
+                font-size: 18px;
+                padding: 2rem;
+            }
+            .content {
+                padding: 2rem;
+            }
+            section {
+                padding: 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            body {
+                font-size: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            section {
+                padding: 2.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Personal Training Digital Strategy</h1>
+    <div class="content">
+        <h1>Personal Training Digital Strategy</h1>
 
-    <div class="key-points">
-        <h2>Key Points</h2>
-        <ul>
-            <li>Research suggests websites remain vital for businesses, even with high social media usage, especially for detailed information and transactions.</li>
-            <li>It seems likely that social media, including Facebook, can drive significant traffic to websites, benefiting your personal training business.</li>
-            <li>The evidence leans toward using multiple platforms like Instagram, TikTok, and Facebook to build brand visibility and direct users to your website for conversions.</li>
-        </ul>
+        <div class="key-points">
+            <h2>Key Takeaways</h2>
+            <ul>
+                <li>Websites remain a powerhouse for businesses, offering a central spot for detailed info and client conversions, even with social media’s rise.</li>
+                <li>Platforms like Facebook, Instagram, and TikTok can send a flood of traffic to your site, supercharging your personal training goals.</li>
+                <li>Hitting up multiple channels and funneling them to your website seems like the ultimate play for growth—let’s make it happen!</li>
+            </ul>
+        </div>
+
+        <section>
+            <h2>The Winning Plan for Your PT Empire</h2>
+            <p>Alright, so after our chat where you said, “people don’t really use websites anymore, young people don’t use Facebook anymore either, it’s all TikTok and Instagram,” I’ve been geeking out on the data. You’re totally right—social media’s the hot spot, especially with the younger crew. But I’ve got a hunch we can mix that vibe with a slick website I’m building for you. It’s not about picking sides—it’s about teaming them up to explode your online personal training game. Let’s dive in with some juicy research and a dash of fun, because this is gonna rock!</p>
+        </section>
+
+        <section>
+            <h3>Why Websites Are Still Your MVP</h3>
+            <p>Social media’s massive—over 5 billion users globally (<a href="https://www.smartinsights.com/social-media-marketing/social-media-strategy/new-global-social-media-research/" target="_blank">Smart Insights, 2025</a>). TikTok and Instagram are stealing hearts, especially with folks under 30 (<a href="https://www.pewresearch.org/internet/fact-sheet/social-media/" target="_blank">Pew Research</a>). But don’t count websites out! A <a href="https://www.pewresearch.org/internet/2021/04/07/social-media-use-in-2021/" target="_blank">Pew survey</a> shows people still hit websites for the full scoop—your services, killer testimonials, and a client hub to track progress. With 60.66% of web traffic on mobile (<a href="https://www.allconnect.com/blog/mobile-vs-desktop" target="_blank">Allconnect</a>), I’ll make it sleek and phone-ready. It’s where scrollers turn into clients, giving your business that pro edge.</p>
+        </section>
+
+        <section>
+            <h3>Social Media: Your Traffic Turbocharger</h3>
+            <p>Let’s talk numbers: Facebook’s at 3.07 billion monthly users, Instagram’s rocking 2 billion, and TikTok’s climbing with 1.58 billion (<a href="https://backlinko.com/social-media-users" target="_blank">Backlinko, 2025</a>). That’s a crowd waiting to meet you! Studies like <a href="https://www.barqar.com/2023/10/25/the-power-of-social-media-in-driving-website-traffic/" target="_blank">Barqar’s analysis</a> say social can drive up to 60% of referral traffic to websites, and <a href="https://neilpatel.com/blog/double-your-social-media-traffic/" target="_blank">Neil Patel</a> swears you can double it with regular posts. For personal trainers, it’s a slam dunk—<a href="https://blog.marketing360.com/case-studies/personal-trainer-marketing-case-study-the-power-of-social-media-marketing/" target="_blank">Marketing 360</a> showed a trainer using Instagram and Facebook to build a fanbase, then sending them to a site for sign-ups. Another win from <a href="https://infinitemgmt.com/case-studies/personal-trainer/" target="_blank">Infinite Management</a> had a New York trainer reaching thousands via social, all looping back to their website. That’s the energy we’re bringing!</p>
+        </section>
+
+        <section>
+            <h3>Multi-Platform Mastery</h3>
+            <p>My big idea? Let’s play all the fields: Instagram for eye-popping pics, TikTok for viral vids, and Facebook for laser-targeted ads (still killer for leads, trust me). Then, we steer everyone to your website. <a href="https://sproutsocial.com/insights/social-media-trends/" target="_blank">Sprout Social</a> says this multi-channel move maximizes reach, and I’m all in. Here’s the breakdown:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Strengths</th>
+                        <th>Strategy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-label="Platform">Instagram</td>
+                        <td data-label="Strengths">Visuals, young adult engagement</td>
+                        <td data-label="Strategy">Post workout clips, before-afters, bio link to site</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Platform">TikTok</td>
+                        <td data-label="Strengths">Short, trendy videos</td>
+                        <td data-label="Strategy">Quick tips, challenges, site link in comments</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Platform">Facebook</td>
+                        <td data-label="Strengths">Ads, wider audience</td>
+                        <td data-label="Strategy">Run targeted ads, share wins, link to site</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>This table’s mobile-friendly—on small screens, it stacks into neat cards so no one’s squinting. We could even add YouTube for longer workouts if you’re up for it!</p>
+        </section>
+
+        <section>
+            <h3>Let’s Get It Rolling</h3>
+            <p>Here’s the playbook: I’m crafting a website packed with goodies—services, testimonials, offers, and a client hub you’ll brag about. It’s mobile-first (that 60.66% stat again), with SEO tricks from <a href="https://www.mypersonaltrainerwebsite.com/blog/9-marketing-strategies-fitness-website-traffic" target="_blank">My PT Website</a>. On social, we’ll drop daily gold—tips, routines, client stories—linking back to the site. Facebook ads will zero in on your dream clients, and we’ll track it all with <a href="https://support.similarweb.com/hc/en-us/articles/5515035575953-Social-Media-Traffic-Analysis" target="_blank">Similarweb</a> to tweak what works. It’s a full-court press to grow your online training, blending social’s hype with the website’s substance. Let’s crush it together!</p>
+        </section>
+
+        <section>
+            <h3>References</h3>
+            <ul>
+                <li><a href="https://www.smartinsights.com/social-media-marketing/social-media-strategy/new-global-social-media-research/" target="_blank">Global Social Media Stats 2025</a></li>
+                <li><a href="https://backlinko.com/social-media-users" target="_blank">Social Network Stats 2025</a></li>
+                <li><a href="https://www.pewresearch.org/internet/2021/04/07/social-media-use-in-2021/" target="_blank">Pew Research Social Media 2021</a></li>
+                <li><a href="https://www.forbes.com/advisor/business/social-media-statistics/" target="_blank">Forbes Social Media Trends 2024</a></li>
+                <li><a href="https://sproutsocial.com/insights/social-media-trends/" target="_blank">Sprout Social Trends 2025</a></li>
+                <li><a href="https://www.statista.com/topics/1164/social-networks/" target="_blank">Statista Social Media Facts</a></li>
+                <li><a href="https://www.pewresearch.org/internet/fact-sheet/social-media/" target="_blank">Pew Social Media Demographics</a></li>
+                <li><a href="https://sproutsocial.com/insights/new-social-media-demographics/" target="_blank">Sprout Social Demographics 2025</a></li>
+                <li><a href="https://www.contentstadium.com/blog/how-to-drive-traffic-from-social-media-to-your-website/" target="_blank">Content Stadium Traffic Tips</a></li>
+                <li><a href="https://support.similarweb.com/hc/en-us/articles/5515035575953-Social-Media-Traffic-Analysis" target="_blank">Similarweb Traffic Analysis</a></li>
+                <li><a href="https://www.tumarketing.co.uk/how-to-use-social-media-to-drive-website-traffic/" target="_blank">TU Marketing Traffic Guide</a></li>
+                <li><a href="https://www.barqar.com/2023/10/25/the-power-of-social-media-in-driving-website-traffic/" target="_blank">Barqar Traffic Power</a></li>
+                <li><a href="https://www.searchenginejournal.com/which-social-network-drives-the-most-traffic-to-your-website-poll/255827/" target="_blank">Search Engine Journal Poll</a></li>
+                <li><a href="https://neilpatel.com/blog/double-your-social-media-traffic/" target="_blank">Neil Patel Traffic Boost</a></li>
+                <li><a href="https://emilyandblair.com/steps/how-to-drive-traffic-to-your-website-using-social-media/" target="_blank">Emily and Blair Traffic Tips</a></li>
+                <li><a href="https://blog.marketing360.com/case-studies/personal-trainer-marketing-case-study-the-power-of-social-media-marketing/" target="_blank">Marketing 360 Case Study</a></li>
+                <li><a href="https://infinitemgmt.com/case-studies/personal-trainer/" target="_blank">Infinite Management Case Study</a></li>
+                <li><a href="https://www.origym.co.uk/blog/pt-social-media-ideas/" target="_blank">Origym Social Ideas</a></li>
+                <li><a href="https://www.mypersonaltrainerwebsite.com/blog/19-quick-social-media-marketing-tips-for-personal-trainers" target="_blank">My PT Website Tips</a></li>
+                <li><a href="https://www.until.co.uk/journal-posts/personal-trainer-social-media-marketing" target="_blank">Until Marketing Ideas</a></li>
+                <li><a href="https://www.mypersonaltrainerwebsite.com/blog/9-marketing-strategies-fitness-website-traffic" target="_blank">Clicks to Clients Strategies</a></li>
+                <li><a href="https://www.issaonline.com/blog/post/social-media-marketing-for-personal-trainers" target="_blank">ISSA Marketing Guide</a></li>
+                <li><a href="https://www.ptdistinction.com/blog/10-social-media-content-ideas-for-personal-trainers" target="_blank">PT Distinction Ideas</a></li>
+                <li><a href="https://www.exercise.com/grow/personal-trainer-social-media-post-ideas/" target="_blank">Exercise.com Post Ideas</a></li>
+                <li><a href="https://www.allconnect.com/blog/mobile-vs-desktop" target="_blank">Allconnect Mobile Stats</a></li>
+            </ul>
+        </section>
     </div>
-
-    <h2>Convincing Plan for Your Success</h2>
-    <p>Hey there! After our chat where you said, “people don’t really use websites anymore, young people don’t use Facebook anymore either, it’s all TikTok and Instagram,” I’ve been digging into the data. You’re spot on about social media’s rise, but I think we can blend that with a killer website I’m building for you to supercharge your online personal training gig. Here’s the plan, backed by facts, to get us on the right track—light-hearted, ambitious, and ready to roll!</p>
-
-    <h3>Why Websites Still Rock</h3>
-    <p>Social media’s huge—over 5 billion users globally (<a href="https://www.smartinsights.com/social-media-marketing/social-media-strategy/new-global-social-media-research/" target="_blank">Smart Insights, 2025</a>)—but websites aren’t dead. They’re where people go for the nitty-gritty, like your services, testimonials, and a client hub. A <a href="https://www.pewresearch.org/internet/2021/04/07/social-media-use-in-2021/" target="_blank">Pew Research survey</a> shows folks still hit websites after spotting a business online, making it perfect for conversions.</p>
-
-    <h3>Social Media as Your Traffic Booster</h3>
-    <p>Facebook’s got 3.07 billion users, Instagram 2 billion, TikTok 1.58 billion (<a href="https://backlinko.com/social-media-users" target="_blank">Backlinko, 2025</a>). They’re goldmines for visibility! Studies like <a href="https://www.barqar.com/2023/10/25/the-power-of-social-media-in-driving-website-traffic/" target="_blank">Barqar’s analysis</a> show social media can drive 60% of referral traffic to websites. Personal trainers thrive here—check out <a href="https://blog.marketing360.com/case-studies/personal-trainer-marketing-case-study-the-power-of-social-media-marketing/" target="_blank">Marketing 360’s case study</a> where social posts funneled clients to a site for sign-ups.</p>
-
-    <h3>The Multi-Platform Play</h3>
-    <p>Let’s hit all angles: Instagram for pics, TikTok for vids, Facebook for ads. Then, point everyone to your website. Data from <a href="https://sproutsocial.com/insights/social-media-trends/" target="_blank">Sprout Social</a> backs this multi-channel vibe. Here’s how:</p>
-    <table>
-        <tr>
-            <th>Platform</th>
-            <th>Strengths</th>
-            <th>Strategy</th>
-        </tr>
-        <tr>
-            <td>Instagram</td>
-            <td>Visual content, young crowd</td>
-            <td>Workout vids, before-afters, link in bio</td>
-        </tr>
-        <tr>
-            <td>TikTok</td>
-            <td>Short, viral vids</td>
-            <td>Quick tips, challenges, website link</td>
-        </tr>
-        <tr>
-            <td>Facebook</td>
-            <td>Ads, broad reach</td>
-            <td>Targeted ads, success stories, site links</td>
-        </tr>
-    </table>
-
-    <h3>Let’s Make It Happen</h3>
-    <p>I’ll build a mobile-friendly site (60.66% of traffic’s mobile, per <a href="https://www.allconnect.com/blog/mobile-vs-desktop" target="_blank">Allconnect</a>), with all the goodies—services, hub, offers. We’ll post killer content on social, run some Facebook ads (they’re ace for leads), and track what works with tools like <a href="https://support.similarweb.com/hc/en-us/articles/5515035575953-Social-Media-Traffic-Analysis" target="_blank">Similarweb</a>. This combo’s our ticket to growing your online training empire—let’s do this!</p>
-
-    <h3>References</h3>
-    <ul>
-        <li><a href="https://www.smartinsights.com/social-media-marketing/social-media-strategy/new-global-social-media-research/" target="_blank">Global Social Media Stats 2025</a></li>
-        <li><a href="https://backlinko.com/social-media-users" target="_blank">Social Network Stats 2025</a></li>
-        <li><a href="https://www.pewresearch.org/internet/2021/04/07/social-media-use-in-2021/" target="_blank">Pew Research Social Media 2021</a></li>
-        <li><a href="https://www.forbes.com/advisor/business/social-media-statistics/" target="_blank">Forbes Social Media Trends 2024</a></li>
-        <li><a href="https://sproutsocial.com/insights/social-media-trends/" target="_blank">Sprout Social Trends 2025</a></li>
-        <li><a href="https://www.statista.com/topics/1164/social-networks/" target="_blank">Statista Social Media Facts</a></li>
-        <li><a href="https://www.pewresearch.org/internet/fact-sheet/social-media/" target="_blank">Pew Social Media Demographics</a></li>
-        <li><a href="https://sproutsocial.com/insights/new-social-media-demographics/" target="_blank">Sprout Social Demographics 2025</a></li>
-        <li><a href="https://www.contentstadium.com/blog/how-to-drive-traffic-from-social-media-to-your-website/" target="_blank">Content Stadium Traffic Tips</a></li>
-        <li><a href="https://support.similarweb.com/hc/en-us/articles/5515035575953-Social-Media-Traffic-Analysis" target="_blank">Similarweb Traffic Analysis</a></li>
-        <li><a href="https://www.tumarketing.co.uk/how-to-use-social-media-to-drive-website-traffic/" target="_blank">TU Marketing Traffic Guide</a></li>
-        <li><a href="https://www.barqar.com/2023/10/25/the-power-of-social-media-in-driving-website-traffic/" target="_blank">Barqar Traffic Power</a></li>
-        <li><a href="https://www.searchenginejournal.com/which-social-network-drives-the-most-traffic-to-your-website-poll/255827/" target="_blank">Search Engine Journal Poll</a></li>
-        <li><a href="https://neilpatel.com/blog/double-your-social-media-traffic/" target="_blank">Neil Patel Traffic Boost</a></li>
-        <li><a href="https://emilyandblair.com/steps/how-to-drive-traffic-to-your-website-using-social-media/" target="_blank">Emily and Blair Traffic Tips</a></li>
-        <li><a href="https://blog.marketing360.com/case-studies/personal-trainer-marketing-case-study-the-power-of-social-media-marketing/" target="_blank">Marketing 360 Case Study</a></li>
-        <li><a href="https://infinitemgmt.com/case-studies/personal-trainer/" target="_blank">Infinite Management Case Study</a></li>
-        <li><a href="https://www.origym.co.uk/blog/pt-social-media-ideas/" target="_blank">Origym Social Ideas</a></li>
-        <li><a href="https://www.mypersonaltrainerwebsite.com/blog/19-quick-social-media-marketing-tips-for-personal-trainers" target="_blank">My PT Website Tips</a></li>
-        <li><a href="https://www.until.co.uk/journal-posts/personal-trainer-social-media-marketing" target="_blank">Until Marketing Ideas</a></li>
-        <li><a href="https://www.mypersonaltrainerwebsite.com/blog/9-marketing-strategies-fitness-website-traffic" target="_blank">Clicks to Clients Strategies</a></li>
-        <li><a href="https://www.issaonline.com/blog/post/social-media-marketing-for-personal-trainers" target="_blank">ISSA Marketing Guide</a></li>
-        <li><a href="https://www.ptdistinction.com/blog/10-social-media-content-ideas-for-personal-trainers" target="_blank">PT Distinction Ideas</a></li>
-        <li><a href="https://www.exercise.com/grow/personal-trainer-social-media-post-ideas/" target="_blank">Exercise.com Post Ideas</a></li>
-        <li><a href="https://www.allconnect.com/blog/mobile-vs-desktop" target="_blank">Allconnect Mobile Stats</a></li>
-    </ul>
 </body>
 </html>
