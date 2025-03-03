@@ -1,5 +1,5 @@
-// Sample data
-let photoSets = [
+// Initialize photoSets from localStorage or use sample data
+let photoSets = JSON.parse(localStorage.getItem('photoSets')) || [
     { id: 1, date: '2024-05-18', notes: 'First set', photos: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'] },
     { id: 2, date: '2024-05-19', notes: 'Second set', photos: ['https://via.placeholder.com/150'] },
 ];
@@ -30,11 +30,11 @@ function updateHeader() {
     } else if (currentPage === 'photo-view') {
         const set = photoSets.find(s => s.id === currentSetId);
         const dateStr = formatDate(set.date);
-        headerLeft.innerHTML = '<button onclick="switchPage(\'gallery\')">&lt; Back</button>';
+        headerLeft.innerHTML = '<button onclick="switchPage(\'gallery\')">< Back</button>';
         headerCenter.innerHTML = `<span>${dateStr}</span>`;
         headerRight.innerHTML = '<button style="color: var(--primary-color);" onclick="switchPage(\'edit\', currentSetId)">Edit</button>';
     } else if (currentPage === 'edit') {
-        headerLeft.innerHTML = '<button onclick="switchPage(currentSetId ? \'photo-view\' : \'gallery\', currentSetId)">&lt; Back</button>';
+        headerLeft.innerHTML = '<button onclick="switchPage(currentSetId ? \'photo-view\' : \'gallery\', currentSetId)">< Back</button>';
         headerCenter.innerHTML = '';
         headerRight.innerHTML = '<button onclick="saveEdit()">Save</button>';
     }
@@ -93,7 +93,7 @@ function renderEdit(setId) {
         `).join('');
     } else {
         editTitle.textContent = 'New Photo Set';
-        editDate.value = '';
+        editDate.value = new Date().toISOString().split('T')[0]; // Default to today
         editNotes.value = '';
         photoPreviews.innerHTML = '';
     }
@@ -119,7 +119,15 @@ document.querySelector('#photo-upload').addEventListener('change', (e) => {
         reader.onload = (event) => {
             const div = document.createElement('div');
             div.className = 'photo-thumbnail';
-            div.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+            div.innerHTML = `
+                <img src="${event.target.result}" alt="Preview">
+                <button class="delete-btn">🗑️</button>
+            `;
+            div.querySelector('.delete-btn').addEventListener('click', (e) => {
+                if (confirm('Are you sure you want to delete this photo?')) {
+                    e.target.parentElement.remove();
+                }
+            });
             photoPreviews.appendChild(div);
         };
         reader.readAsDataURL(file);
@@ -130,25 +138,25 @@ function saveEdit() {
     const editDate = document.querySelector('#edit-date');
     const editNotes = document.querySelector('#edit-notes');
     const photoPreviews = document.querySelector('.photo-previews');
-    const placeholderUrl = 'https://via.placeholder.com/150';
 
     if (currentSetId) {
         const set = photoSets.find(s => s.id === currentSetId);
         set.date = editDate.value;
         set.notes = editNotes.value;
-        set.photos = Array.from(photoPreviews.children).map(child => 
-            child.querySelector('img').src.startsWith('data:') ? placeholderUrl : child.querySelector('img').src
-        );
+        set.photos = Array.from(photoPreviews.children).map(child => child.querySelector('img').src);
     } else {
-        const newId = photoSets.length + 1;
+        const newId = photoSets.length ? Math.max(...photoSets.map(s => s.id)) + 1 : 1;
         const newSet = {
             id: newId,
             date: editDate.value,
             notes: editNotes.value,
-            photos: Array.from(photoPreviews.children).map(() => placeholderUrl),
+            photos: Array.from(photoPreviews.children).map(child => child.querySelector('img').src),
         };
         photoSets.push(newSet);
     }
+
+    // Save to localStorage
+    localStorage.setItem('photoSets', JSON.stringify(photoSets));
     switchPage('gallery');
 }
 
