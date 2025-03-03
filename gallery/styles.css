@@ -37,27 +37,23 @@ body {
     height: 60px;
 }
 
-.header-left, .header-center, .header-right {
+.header-left {
     flex: 1;
+    text-align: left;
+    padding-left: 1rem;
+}
+
+.header-center {
+    flex: 2;
     text-align: center;
 }
 
-/* Page Layout */
-main {
-    padding-top: 80px;
-    padding-bottom: 60px; /* Space for storage bar */
+.header-right {
+    flex: 1;
+    text-align: right;
+    padding-right: 1rem;
 }
 
-.page {
-    display: none;
-    padding: 1rem;
-}
-
-.page.active {
-    display: block;
-}
-
-/* Buttons */
 button {
     background: none;
     border: none;
@@ -68,6 +64,21 @@ button {
 
 button:hover {
     color: var(--primary-color);
+}
+
+/* Page Layout */
+main {
+    padding-top: 80px;
+    padding-bottom: 120px; /* Space for action bar and storage bar */
+}
+
+.page {
+    display: none;
+    padding: 1rem;
+}
+
+.page.active {
+    display: block;
 }
 
 /* Gallery Page */
@@ -122,6 +133,19 @@ button:hover {
     width: 100%;
     height: auto;
     border-radius: var(--border-radius);
+    display: none; /* Initially hidden for slideshow */
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.photo-container img.active {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.photo-container img.inactive {
+    transform: scale(0.95);
 }
 
 /* Compare Page */
@@ -139,6 +163,19 @@ button:hover {
     width: 100%;
     height: auto;
     border-radius: var(--border-radius);
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.compare-left img.active, .compare-right img.active {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.compare-left img.inactive, .compare-right img.inactive {
+    transform: scale(0.95);
 }
 
 /* Edit Page */
@@ -212,6 +249,32 @@ textarea {
     cursor: pointer;
 }
 
+/* Action Bar */
+.action-bar {
+    position: fixed;
+    bottom: 40px; /* Just above storage bar */
+    left: 0;
+    right: 0;
+    background-color: var(--secondary-bg);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-around;
+    z-index: 10;
+}
+
+.action-bar button {
+    padding: 0.5rem 1rem;
+    background-color: var(--accent-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.action-bar button:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
 /* Storage Bar */
 .storage-bar {
     position: fixed;
@@ -223,6 +286,15 @@ textarea {
     text-align: center;
     font-size: 0.9rem;
     z-index: 10;
+}
+
+.storage-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    width: 0%; /* Dynamically set */
 }
 
 /* Media Queries */

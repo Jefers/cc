@@ -6,6 +6,7 @@ let photoSets = JSON.parse(localStorage.getItem('photoSets')) || [
 let currentPage = 'gallery';
 let currentSetId = null;
 let selectedSets = [];
+let slideshowIntervals = [];
 
 function switchPage(page, setId = null) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -94,31 +95,6 @@ function renderGallery() {
             }
         });
     });
-
-    const compareButton = document.createElement('button');
-    compareButton.textContent = 'Compare';
-    compareButton.addEventListener('click', () => {
-        if (selectedSets.length === 2) {
-            switchPage('compare', selectedSets);
-            selectedSets = [];
-            renderGallery(); // Reset selections
-        } else {
-            alert('Please select exactly two sets to compare.');
-        }
-    });
-    grid.appendChild(compareButton);
-
-    const clearButton = document.createElement('button');
-    clearButton.textContent = 'Clear All';
-    clearButton.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all photo sets?')) {
-            localStorage.removeItem('photoSets');
-            photoSets = [];
-            renderGallery();
-            updateStorageBar();
-        }
-    });
-    grid.appendChild(clearButton);
 }
 
 function renderPhotoView(setId) {
@@ -132,51 +108,61 @@ function renderPhotoView(setId) {
         photoContainer.appendChild(img);
     });
 
-    let currentIndex = 0;
     const images = photoContainer.querySelectorAll('img');
-    images.forEach((img, index) => img.style.display = index === 0 ? 'block' : 'none');
+    let currentIndex = 0;
+    images[currentIndex].classList.add('active');
 
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Next';
-    nextButton.addEventListener('click', () => {
-        images[currentIndex].style.display = 'none';
+    const intervalId = setInterval(() => {
+        images[currentIndex].classList.remove('active');
         currentIndex = (currentIndex + 1) % images.length;
-        images[currentIndex].style.display = 'block';
-    });
-    photoContainer.appendChild(nextButton);
+        images[currentIndex].classList.add('active');
+    }, 3000); // Change every 3 seconds
+
+    slideshowIntervals.push(intervalId);
 }
 
-function renderEdit(setId) {
-    const editTitle = document.querySelector('#edit h2');
-    const editDate = document.querySelector('#edit-date');
-    const photoPreviews = document.querySelector('.photo-previews');
-    const editNotes = document.querySelector('#edit-notes');
+function renderCompare(setIds) {
+    const leftContainer = document.querySelector('.compare-left');
+    const rightContainer = document.querySelector('.compare-right');
+    leftContainer.innerHTML = '';
+    rightContainer.innerHTML = '';
 
-    if (setId) {
-        const set = photoSets.find(s => s.id === setId);
-        editTitle.textContent = 'Edit Photos';
-        editDate.value = set.date;
-        editNotes.value = set.notes || '';
-        photoPreviews.innerHTML = set.photos.map((photo, index) => `
-            <div class="photo-thumbnail" data-index="${index}">
-                <img src="${photo}" alt="Photo">
-                <button class="delete-btn" data-index="${index}">🗑️</button>
-            </div>
-        `).join('');
-    } else {
-        editTitle.textContent = 'New Photo Set';
-        editDate.value = new Date().toISOString().split('T')[0];
-        editNotes.value = '';
-        photoPreviews.innerHTML = '';
-    }
+    const leftSet = photoSets.find(s => s.id === setIds[0]);
+    const rightSet = photoSets.find(s => s.id === setIds[1]);
 
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if (confirm('Are you sure you want to delete this photo?')) {
-                e.target.parentElement.remove();
-            }
-        });
+    leftSet.photos.forEach(photo => {
+        const img = document.createElement('img');
+        img.src = photo;
+        img.alt = 'Photo';
+        leftContainer.appendChild(img);
     });
+    rightSet.photos.forEach(photo => {
+        const img = document.createElement('img');
+        img.src = photo;
+        img.alt = 'Photo';
+        rightContainer.appendChild(img);
+    });
+
+    const leftImages = leftContainer.querySelectorAll('img');
+    const rightImages = rightContainer.querySelectorAll('img');
+    let leftIndex = 0;
+    let rightIndex = 0;
+    leftImages[leftIndex].classList.add('active');
+    rightImages[rightIndex].classList.add('active');
+
+    const leftIntervalId = setInterval(() => {
+        leftImages[leftIndex].classList.remove('active');
+        leftIndex = (leftIndex + 1) % leftImages.length;
+        leftImages[leftIndex].classList.add('active');
+    }, 3000);
+
+    const rightIntervalId = setInterval(() => {
+        rightImages[rightIndex].classList.remove('active');
+        rightIndex = (rightIndex + 1) % rightImages.length;
+        rightImages[rightIndex].classList.add('active');
+    }, 3000);
+
+    slideshowIntervals.push(leftIntervalId, rightIntervalId);
 }
 
 function triggerUpload() {
@@ -232,64 +218,37 @@ function saveEdit() {
     switchPage('gallery');
 }
 
-function renderCompare(setIds) {
-    const leftContainer = document.querySelector('.compare-left');
-    const rightContainer = document.querySelector('.compare-right');
-    leftContainer.innerHTML = '';
-    rightContainer.innerHTML = '';
-
-    const leftSet = photoSets.find(s => s.id === setIds[0]);
-    const rightSet = photoSets.find(s => s.id === setIds[1]);
-
-    leftSet.photos.forEach(photo => {
-        const img = document.createElement('img');
-        img.src = photo;
-        img.alt = 'Photo';
-        leftContainer.appendChild(img);
-    });
-    rightSet.photos.forEach(photo => {
-        const img = document.createElement('img');
-        img.src = photo;
-        img.alt = 'Photo';
-        rightContainer.appendChild(img);
-    });
-
-    let leftIndex = 0;
-    let rightIndex = 0;
-    const leftImages = leftContainer.querySelectorAll('img');
-    const rightImages = rightContainer.querySelectorAll('img');
-
-    leftImages.forEach((img, index) => img.style.display = index === 0 ? 'block' : 'none');
-    rightImages.forEach((img, index) => img.style.display = index === 0 ? 'block' : 'none');
-
-    const nextLeftButton = document.createElement('button');
-    nextLeftButton.textContent = 'Next Left';
-    nextLeftButton.addEventListener('click', () => {
-        leftImages[leftIndex].style.display = 'none';
-        leftIndex = (leftIndex + 1) % leftImages.length;
-        leftImages[leftIndex].style.display = 'block';
-    });
-    leftContainer.appendChild(nextLeftButton);
-
-    const nextRightButton = document.createElement('button');
-    nextRightButton.textContent = 'Next Right';
-    nextRightButton.addEventListener('click', () => {
-        rightImages[rightIndex].style.display = 'none';
-        rightIndex = (rightIndex + 1) % rightImages.length;
-        rightImages[rightIndex].style.display = 'block';
-    });
-    rightContainer.appendChild(nextRightButton);
-}
-
 function updateStorageBar() {
-    const storageBar = document.querySelector('.storage-bar');
+    const storageBar = document.querySelector('.storage-progress');
+    const storageText = document.querySelector('.storage-text');
     const totalSize = JSON.stringify(photoSets).length;
     const maxSize = 5 * 1024 * 1024; // 5MB for localStorage
     const percentage = (totalSize / maxSize) * 100;
-    storageBar.textContent = `Storage Used: ${totalSize} bytes (${percentage.toFixed(2)}%)`;
+    storageBar.style.width = `${percentage}%`;
+    storageText.textContent = `Storage Used: ${totalSize} bytes (${percentage.toFixed(2)}%)`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     switchPage('gallery');
     updateStorageBar();
+
+    // Action Bar Buttons
+    document.querySelector('#compare-btn').addEventListener('click', () => {
+        if (selectedSets.length === 2) {
+            switchPage('compare', selectedSets);
+            selectedSets = [];
+            renderGallery(); // Reset selections
+        } else {
+            alert('Please select exactly two sets to compare.');
+        }
+    });
+
+    document.querySelector('#clear-all-btn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all photo sets?')) {
+            localStorage.removeItem('photoSets');
+            photoSets = [];
+            renderGallery();
+            updateStorageBar();
+        }
+    });
 });
