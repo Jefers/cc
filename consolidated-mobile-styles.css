@@ -550,3 +550,8 @@ th {
   background-size: contain;
   margin-right: 12px;
 }
+img {
+  width: 100%;
+  height: auto; /* Maintains aspect ratio */
+  display: block; /* Removes extra space below the image */
+}
