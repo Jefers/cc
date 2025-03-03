@@ -105,8 +105,9 @@ button:hover {
 }
 
 #run-time, #walk-time, #cycles, #interval-time, #total-time {
-    font-size: 2rem;
-    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    font-size: 4rem;
+    color: #ffff00;
 }
 
 table {
@@ -167,17 +168,12 @@ canvas {
 }
 
 .timer-text #phase {
-    font-size: 7rem;
+    font-size: 6rem;
     color: #ff0000;
 }
 
-.timer-text #interval-time {
-    font-size: 5rem;
-    color: #00ff00;
-    margin-top: 10px;
-}
-
 #total-time-label {
+    font-family: 'Orbitron', sans-serif;
     font-size: 3rem;
     color: #fff;
     margin-top: 10px;
@@ -230,4 +226,23 @@ canvas {
     font-size: 5rem;
     color: #00ff00;
     margin-top: 10px;
+}
+
+#total-time {
+    font-size: 4rem;
+    color: #eaff00;
+    margin-top: 10px;
+}
+
+#cycle-container {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    color: #00a2ff;
+    margin-top: 10px;
+}
+
+#cycle, #total-cycles {
+    font-family: 'Courier New', monospace;
+    font-size: 4rem;
+    color: #00a2ff;
 }

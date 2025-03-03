@@ -1,0 +1,195 @@
+/* Core Variables */
+:root {
+    --background-color: #1A1A1B;
+    --secondary-bg: #2A2A2B;
+    --text-color: #FFFFFF;
+    --primary-color: #00FF88;
+    --accent-color: #4A4A4B;
+    --border-radius: 12px;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Header */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--secondary-bg);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.header-left, .header-right {
+    flex: 1;
+}
+
+.header-center {
+    flex: 2;
+    text-align: center;
+}
+
+button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    color: var(--primary-color);
+}
+
+/* Page Layout */
+main {
+    padding-top: 60px; /* Space for fixed header */
+}
+
+.page {
+    display: none;
+    padding: 1rem;
+}
+
+.page.active {
+    display: block;
+}
+
+/* Gallery Page */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.grid-item {
+    background-color: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.grid-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.set-info {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.set-date {
+    font-weight: 600;
+}
+
+.set-count {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+/* Photo View Page */
+.photo-container img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+/* Edit Page */
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+}
+
+.upload-box {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background-color: var(--accent-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--text-color);
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.photo-previews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.photo-thumbnail {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.photo-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+}
+
+.delete-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Media Queries for Larger Screens */
+@media (min-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .upload-box {
+        width: 200px;
+    }
+}
