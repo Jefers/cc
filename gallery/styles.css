@@ -128,6 +128,19 @@ main {
     font-size: 1rem;
 }
 
+.compare-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    display: none;
+}
+
+.grid-item.selected .compare-icon {
+    display: block;
+}
+
 /* Photo View Page */
 .photo-container img {
     width: 100%;
@@ -135,17 +148,12 @@ main {
     border-radius: var(--border-radius);
     display: none; /* Initially hidden for slideshow */
     opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.5s ease;
 }
 
 .photo-container img.active {
     display: block;
     opacity: 1;
-    transform: scale(1);
-}
-
-.photo-container img.inactive {
-    transform: scale(0.95);
 }
 
 /* Compare Page */
@@ -165,17 +173,12 @@ main {
     border-radius: var(--border-radius);
     display: none;
     opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.5s ease;
 }
 
 .compare-left img.active, .compare-right img.active {
     display: block;
     opacity: 1;
-    transform: scale(1);
-}
-
-.compare-left img.inactive, .compare-right img.inactive {
-    transform: scale(0.95);
 }
 
 /* Edit Page */

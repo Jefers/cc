@@ -9,6 +9,10 @@ let selectedSets = [];
 let slideshowIntervals = [];
 
 function switchPage(page, setId = null) {
+    // Clear any existing slideshow intervals
+    slideshowIntervals.forEach(id => clearInterval(id));
+    slideshowIntervals = [];
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelector(`#${page}`).classList.add('active');
     currentPage = page;
@@ -17,32 +21,37 @@ function switchPage(page, setId = null) {
     if (page === 'gallery') renderGallery();
     else if (page === 'photo-view') renderPhotoView(setId);
     else if (page === 'edit') renderEdit(setId);
-    else if (page === 'compare') renderCompare(setId);
+    else if (page === 'compare' && setId) renderCompare(setId);
 }
 
 function updateHeader() {
     const headerLeft = document.querySelector('.header-left');
     const headerCenter = document.querySelector('.header-center');
     const headerRight = document.querySelector('.header-right');
+    const actionBar = document.querySelector('.action-bar');
 
     if (currentPage === 'gallery') {
         headerLeft.innerHTML = '<h1>Gallery</h1>';
         headerCenter.innerHTML = '';
         headerRight.innerHTML = `<button onclick="switchPage('edit')">Upload</button>`;
+        actionBar.style.display = 'flex';
     } else if (currentPage === 'photo-view') {
         const set = photoSets.find(s => s.id === currentSetId);
         const dateStr = formatDate(set.date);
-        headerLeft.innerHTML = `<button onclick="switchPage('gallery')">< Back</button>`;
+        headerLeft.innerHTML = `<button onclick="switchPage('gallery')">< Stop</button>`;
         headerCenter.innerHTML = `<span>${dateStr}</span>`;
         headerRight.innerHTML = `<button style="color: var(--primary-color);" onclick="switchPage('edit', currentSetId)">Edit</button>`;
+        actionBar.style.display = 'none';
     } else if (currentPage === 'edit') {
         headerLeft.innerHTML = `<button onclick="switchPage(currentSetId ? 'photo-view' : 'gallery', currentSetId)">< Back</button>`;
-        headerCenter.innerHTML = '';
+        headerCenter.innerHTML = currentSetId ? 'Edit Set' : 'New Set';
         headerRight.innerHTML = `<button onclick="saveEdit()">Save</button>`;
+        actionBar.style.display = 'none';
     } else if (currentPage === 'compare') {
-        headerLeft.innerHTML = `<button onclick="switchPage('gallery')">< Back</button>`;
+        headerLeft.innerHTML = `<button onclick="switchPage('gallery')">< Stop</button>`;
         headerCenter.innerHTML = 'Compare';
         headerRight.innerHTML = '';
+        actionBar.style.display = 'none';
     }
 }
 
@@ -69,16 +78,19 @@ function renderGallery() {
                 <div class="set-count">${set.photos.length} photos</div>
             </div>
             <button class="delete-set-btn" data-id="${set.id}">🗑️</button>
+            <span class="compare-icon">✓</span>
         `;
+        if (selectedSets.includes(set.id)) item.classList.add('selected');
         item.addEventListener('click', (e) => {
-            if (e.target.className !== 'delete-set-btn') {
-                if (selectedSets.includes(set.id)) {
-                    selectedSets = selectedSets.filter(id => id !== set.id);
-                    item.classList.remove('selected');
-                } else if (selectedSets.length < 2) {
-                    selectedSets.push(set.id);
-                    item.classList.add('selected');
-                }
+            if (e.target.className === 'delete-set-btn') return;
+            if (selectedSets.includes(set.id)) {
+                selectedSets = selectedSets.filter(id => id !== set.id);
+                item.classList.remove('selected');
+            } else if (selectedSets.length < 2) {
+                selectedSets.push(set.id);
+                item.classList.add('selected');
+            } else {
+                switchPage('photo-view', set.id);
             }
         });
         grid.appendChild(item);
@@ -86,9 +98,11 @@ function renderGallery() {
 
     document.querySelectorAll('.delete-set-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const setId = parseInt(e.target.dataset.id);
             if (confirm('Are you sure you want to delete this set?')) {
                 photoSets = photoSets.filter(set => set.id !== setId);
+                selectedSets = selectedSets.filter(id => id !== setId);
                 localStorage.setItem('photoSets', JSON.stringify(photoSets));
                 renderGallery();
                 updateStorageBar();
@@ -101,24 +115,45 @@ function renderPhotoView(setId) {
     const set = photoSets.find(s => s.id === setId);
     const photoContainer = document.querySelector('.photo-container');
     photoContainer.innerHTML = '';
-    set.photos.forEach(photo => {
-        const img = document.createElement('img');
-        img.src = photo;
-        img.alt = 'Photo';
-        photoContainer.appendChild(img);
+    set.photos.forEach((photo, index) => {
+        const div = document.createElement('div');
+        div.className = 'photo-wrapper';
+        div.innerHTML = `
+            <img src="${photo}" alt="Photo" class="${index === 0 ? 'active' : ''}">
+            <button class="delete-btn" data-index="${index}">🗑️</button>
+        `;
+        photoContainer.appendChild(div);
     });
 
     const images = photoContainer.querySelectorAll('img');
+    const deleteButtons = photoContainer.querySelectorAll('.delete-btn');
     let currentIndex = 0;
-    images[currentIndex].classList.add('active');
 
     const intervalId = setInterval(() => {
         images[currentIndex].classList.remove('active');
         currentIndex = (currentIndex + 1) % images.length;
         images[currentIndex].classList.add('active');
-    }, 3000); // Change every 3 seconds
-
+    }, 3500); // 3 seconds visible + 0.5-second transition
     slideshowIntervals.push(intervalId);
+
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            if (confirm('Are you sure you want to delete this photo?')) {
+                set.photos.splice(index, 1);
+                localStorage.setItem('photoSets', JSON.stringify(photoSets));
+                slideshowIntervals.forEach(id => clearInterval(id));
+                if (set.photos.length > 0) {
+                    renderPhotoView(setId);
+                } else {
+                    photoSets = photoSets.filter(s => s.id !== setId);
+                    localStorage.setItem('photoSets', JSON.stringify(photoSets));
+                    switchPage('gallery');
+                }
+                updateStorageBar();
+            }
+        });
+    });
 }
 
 function renderCompare(setIds) {
@@ -130,16 +165,18 @@ function renderCompare(setIds) {
     const leftSet = photoSets.find(s => s.id === setIds[0]);
     const rightSet = photoSets.find(s => s.id === setIds[1]);
 
-    leftSet.photos.forEach(photo => {
+    leftSet.photos.forEach((photo, index) => {
         const img = document.createElement('img');
         img.src = photo;
         img.alt = 'Photo';
+        img.className = index === 0 ? 'active' : '';
         leftContainer.appendChild(img);
     });
-    rightSet.photos.forEach(photo => {
+    rightSet.photos.forEach((photo, index) => {
         const img = document.createElement('img');
         img.src = photo;
         img.alt = 'Photo';
+        img.className = index === 0 ? 'active' : '';
         rightContainer.appendChild(img);
     });
 
@@ -147,22 +184,50 @@ function renderCompare(setIds) {
     const rightImages = rightContainer.querySelectorAll('img');
     let leftIndex = 0;
     let rightIndex = 0;
-    leftImages[leftIndex].classList.add('active');
-    rightImages[rightIndex].classList.add('active');
 
     const leftIntervalId = setInterval(() => {
         leftImages[leftIndex].classList.remove('active');
         leftIndex = (leftIndex + 1) % leftImages.length;
         leftImages[leftIndex].classList.add('active');
-    }, 3000);
+    }, 3500);
 
     const rightIntervalId = setInterval(() => {
         rightImages[rightIndex].classList.remove('active');
         rightIndex = (rightIndex + 1) % rightImages.length;
         rightImages[rightIndex].classList.add('active');
-    }, 3000);
+    }, 3500);
 
     slideshowIntervals.push(leftIntervalId, rightIntervalId);
+}
+
+function renderEdit(setId) {
+    const editDate = document.querySelector('#edit-date');
+    const editNotes = document.querySelector('#edit-notes');
+    const photoPreviews = document.querySelector('.photo-previews');
+    photoPreviews.innerHTML = ''; // Clear previews on entry
+
+    if (setId) {
+        const set = photoSets.find(s => s.id === setId);
+        editDate.value = set.date;
+        editNotes.value = set.notes;
+        set.photos.forEach(photo => {
+            const div = document.createElement('div');
+            div.className = 'photo-thumbnail';
+            div.innerHTML = `
+                <img src="${photo}" alt="Preview">
+                <button class="delete-btn">🗑️</button>
+            `;
+            div.querySelector('.delete-btn').addEventListener('click', (e) => {
+                if (confirm('Are you sure you want to delete this photo?')) {
+                    e.target.parentElement.remove();
+                }
+            });
+            photoPreviews.appendChild(div);
+        });
+    } else {
+        editDate.value = new Date().toISOString().split('T')[0];
+        editNotes.value = '';
+    }
 }
 
 function triggerUpload() {
@@ -190,12 +255,18 @@ document.querySelector('#photo-upload').addEventListener('change', (e) => {
         };
         reader.readAsDataURL(file);
     });
+    e.target.value = ''; // Reset input to allow re-uploading the same files
 });
 
 function saveEdit() {
     const editDate = document.querySelector('#edit-date');
     const editNotes = document.querySelector('#edit-notes');
     const photoPreviews = document.querySelector('.photo-previews');
+
+    if (!editDate.value || photoPreviews.children.length === 0) {
+        alert('Please provide a date and at least one photo.');
+        return;
+    }
 
     if (currentSetId) {
         const set = photoSets.find(s => s.id === currentSetId);
@@ -215,7 +286,7 @@ function saveEdit() {
 
     localStorage.setItem('photoSets', JSON.stringify(photoSets));
     updateStorageBar();
-    switchPage('gallery');
+    switchPage(currentSetId ? 'photo-view' : 'gallery', currentSetId);
 }
 
 function updateStorageBar() {
@@ -232,12 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
     switchPage('gallery');
     updateStorageBar();
 
-    // Action Bar Buttons
     document.querySelector('#compare-btn').addEventListener('click', () => {
         if (selectedSets.length === 2) {
             switchPage('compare', selectedSets);
             selectedSets = [];
-            renderGallery(); // Reset selections
+            renderGallery();
         } else {
             alert('Please select exactly two sets to compare.');
         }
@@ -247,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('Are you sure you want to clear all photo sets?')) {
             localStorage.removeItem('photoSets');
             photoSets = [];
+            selectedSets = [];
             renderGallery();
             updateStorageBar();
         }
