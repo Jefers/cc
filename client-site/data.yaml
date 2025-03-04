@@ -1,0 +1,57 @@
+pages:
+  - title: "Home"
+    filename: "index.html"
+    heading: "Transform Your Life Today"
+    content: "Welcome to our fitness revolution. Featuring hero section with transformation image, intro to training philosophy, featured client success stories, call-to-action buttons (Book Free Consultation, View Programs, Start Your Fitness Journey), unique training approach overview, testimonial highlights, recent blog snippets, and social proof (clients trained, years of experience)."
+
+  - title: "About Me"
+    filename: "my-story.html"
+    heading: "My Fitness Journey"
+    content: "My personal background and fitness journey, professional certification highlights, inspiration to become a trainer, fitness philosophy (core beliefs, nutrition approach, mental health connection), educational background, specialized certifications, personal fitness achievements, media appearances/publications, mission statement, personal challenges overcome, and training methodology explanation."
+
+  - title: "Services"
+    filename: "services.html"
+    heading: "Personalized Fitness Solutions"
+    content: "Comprehensive services including: One-on-One Training (assessment process, custom workouts, nutrition guidance, tech/tracking, goal-setting, pricing); Group Training (sizes/dynamics, corporate wellness, community aspects, motivation techniques, themes, scheduling, pricing); Nutrition Coaching (assessment, macro/micro analysis, meal planning, supplements, ongoing support, program integration, transformations); Specialized Programs (post-rehab, sports-specific, prenatal/postnatal, seniors, weight loss, muscle building, injury prevention)."
+
+  - title: "Programs"
+    filename: "programs.html"
+    heading: "Targeted Training Programs"
+    content: "Detailed programs including: Weight Loss (beginner/intermediate/advanced, metabolic assessment, body comp analysis, psych support, nutrition, tracking, success stats); Muscle Building (hypertrophy, strength, power/performance, nutrition, supplements, recovery); Endurance (running programs, cardio, strength, injury prevention, metrics, nutrition); Functional Fitness (mobility, balance, core, daily movement, rehab, age-specific); Body Transformation (30/90/180-day, assessment, holistic approach, coaching, tech tracking, community, guaranteed results)."
+
+  - title: "Tools"
+    filename: "tools.html"
+    heading: "Fitness Resources & Tools"
+    content: "Complete toolkit including: Fitness Trackers (weight, measurements, photos, strength, cardio, app integration, privacy); Nutrition Guides (macro calculator, meal templates, grocery lists, recipes, supplements, dietary restrictions, seasonal adjustments); Workout Library (video demos, form tutorials, modifications, equipment routines, timers, overload principles, quality standards); Equipment Essentials (home gym setup, budget guides, space-saving, reviews, tech gear, maintenance); Free Resources (starter plans, nutrition guides, e-books, downloads, video series, challenges)."
+
+  - title: "Blog"
+    filename: "blog.html"
+    heading: "Fitness Insights & Stories"
+    content: "Latest posts including: Training Tips (techniques, programming, recovery, injury prevention, research); Nutrition Insights (trends, meal prep, supplements, science, myth-busting); Success Stories (transformations, psych journey, challenges overcome, before/after, video testimonials); Lifestyle Advice (sleep, stress, work-life balance, mental health, holistic wellness)."
+
+  - title: "Contact"
+    filename: "contact.html"
+    heading: "Connect With Us"
+    content: "Multiple contact methods, booking system integration, location details, virtual consultation options, social media links, newsletter signup, consultation questionnaire, pricing/package inquiry form."
+
+  - title: "Privacy Policy"
+    filename: "privacy.html"
+    heading: "Our Privacy Commitment"
+    content: "Data collection practices, user information protection, cookie usage, third-party sharing policies, user rights and controls."
+
+  - title: "Terms of Service"
+    filename: "terms.html"
+    heading: "Service Agreement"
+    content: "Service agreement details, liability limitations, refund/cancellation policies, client responsibilities, professional conduct guidelines."
+
+  - title: "Accessibility Statement"
+    filename: "accessibility.html"
+    heading: "Accessibility Commitment"
+    content: "Website accessibility features, compliance with standards, alternative content provisions, contact for accessibility support."
+
+  - title: "Utility Pages"
+    filename: "utility.html"
+    heading: "Additional Resources"
+    content: "Client portal login guidance, gift certificate information, partnership opportunities, press and media kit details."
+
+

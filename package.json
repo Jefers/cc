@@ -1,0 +1,23 @@
+{
+  "name": "cc",
+  "version": "1.0.0",
+  "description": "This is just a test website as an example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jefers/cc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jefers/cc/issues"
+  },
+  "homepage": "https://github.com/Jefers/cc#readme",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
