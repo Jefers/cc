@@ -14,12 +14,18 @@ function generateMenu(pages, currentFilename) {
     }).join("\n");
 }
 
+// Generate bullet list from content string
+function generateBulletList(content) {
+    const items = content.split(',').map(item => item.trim());
+    return `<ul>\n${items.map(item => `  <li>${item}</li>`).join('\n')}\n</ul>`;
+}
+
 // Generate static HTML page
 function generatePage(template, page, menu) {
     let output = template
         .replace('{{title}}', page.title)
         .replace('{{heading}}', page.heading)
-        .replace('{{content}}', page.content)
+        .replace('{{content}}', generateBulletList(page.content)) // Updated to use bullet list
         .replace('{{menu}}', menu);
 
     let outputPath = `pages/${page.filename}`;
