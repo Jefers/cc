@@ -3,7 +3,7 @@
 /* ============================= */
 :root {
     --primary-color: #00ff88;       /* Neon-green accent */
-    --background-color: #121212;    /* Dark background */
+    --background-color: #5c5c5a;    /* Dark background */
     --text-color: #e0e0e0;          /* Light text */
     --nav-background: rgba(26, 26, 26, 0.95); /* Slightly transparent nav */
     --nav-height: 50px;            /* Fixed nav height */
@@ -122,6 +122,7 @@
   
   .page-header h1 {
     font-size: 2rem;
+    margin-top: 40px;
     margin-bottom: 10px;
     color: var(--primary-color);
   }
@@ -183,6 +184,9 @@ footer {
     padding: 1rem;
     background-color: #073300;
     color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 .icon {
