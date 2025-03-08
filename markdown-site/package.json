@@ -1,0 +1,13 @@
+{
+    "name": "markdown-site",
+    "version": "1.0.0",
+    "description": "Static site generator with Markdown content",
+    "main": "generate.js",
+    "scripts": {
+        "start": "node generate.js"
+    },
+    "dependencies": {
+        "js-yaml": "^4.1.0",
+        "marked": "^14.1.4"
+    }
+}

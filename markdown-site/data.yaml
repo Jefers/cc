@@ -1,0 +1,90 @@
+pages:
+  - title: "Transforming Lives: Your Ultimate Fitness Coaching Experience"
+    filename: "transforming-lives-your-ultimate-fitness-coaching-experience.html"
+    heading: "Transforming Lives"
+    content_file: "content/transforming-lives-your-ultimate-fitness-coaching-experience.md"
+
+  - title: "About Your Coach: The Journey, Philosophy, and Expertise"
+    filename: "about-your-coach-the-journey-philosophy-and-expertise.html"
+    heading: "About Your Coach"
+    content_file: "content/about-your-coach-the-journey-philosophy-and-expertise.md"
+
+  - title: "Our Comprehensive Coaching Approach"
+    filename: "our-comprehensive-coaching-approach.html"
+    heading: "Our Comprehensive Coaching Approach"
+    content_file: "content/our-comprehensive-coaching-approach.md"
+
+  - title: "Comprehensive Nutrition Services"
+    filename: "comprehensive-nutrition-services.html"
+    heading: "Comprehensive Nutrition Services"
+    content_file: "content/comprehensive-nutrition-services.md"
+
+  - title: "Post-rehabilitation Training"
+    filename: "post-rehabilitation-training.html"
+    heading: "Post-rehabilitation Training"
+    content_file: "content/post-rehabilitation-training.md"
+
+  - title: "Sports-specific Conditioning"
+    filename: "sports-specific-conditioning.html"
+    heading: "Sports-specific Conditioning"
+    content_file: "content/sports-specific-conditioning.md"
+
+  - title: "Prenatal/Postnatal Fitness"
+    filename: "prenatal-postnatal-fitness.html"
+    heading: "Prenatal/Postnatal Fitness"
+    content_file: "content/prenatal-postnatal-fitness.md"
+
+  - title: "Senior Fitness Programs"
+    filename: "senior-fitness-programs.html"
+    heading: "Senior Fitness Programs"
+    content_file: "content/senior-fitness-programs.md"
+
+  - title: "Weight Loss Transformation Programs"
+    filename: "weight-loss-transformation-programs.html"
+    heading: "Weight Loss Transformation Programs"
+    content_file: "content/weight-loss-transformation-programs.md"
+
+  - title: "Muscle Building Tracks"
+    filename: "muscle-building-tracks.html"
+    heading: "Muscle Building Tracks"
+    content_file: "content/muscle-building-tracks.md"
+
+  - title: "Injury Prevention Strategies"
+    filename: "injury-prevention-strategies.html"
+    heading: "Injury Prevention Strategies"
+    content_file: "content/injury-prevention-strategies.md"
+
+  - title: "Beginner, Intermediate, Advanced Tracks"
+    filename: "beginner-intermediate-advanced-tracks.html"
+    heading: "Beginner, Intermediate, Advanced Tracks"
+    content_file: "content/beginner-intermediate-advanced-tracks.md"
+
+  - title: "Metabolic Assessment"
+    filename: "metabolic-assessment.html"
+    heading: "Metabolic Assessment"
+    content_file: "content/metabolic-assessment.md"
+
+  - title: "Body Composition Analysis"
+    filename: "body-composition-analysis.html"
+    heading: "Body Composition Analysis"
+    content_file: "content/body-composition-analysis.md"
+
+  - title: "Psychological Support Strategies"
+    filename: "psychological-support-strategies.html"
+    heading: "Psychological Support Strategies"
+    content_file: "content/psychological-support-strategies.md"
+
+  - title: "Nutrition Integration"
+    filename: "nutrition-integration.html"
+    heading: "Nutrition Integration"
+    content_file: "content/nutrition-integration.md"
+
+  - title: "Progress Tracking Methods"
+    filename: "progress-tracking-methods.html"
+    heading: "Progress Tracking Methods"
+    content_file: "content/progress-tracking-methods.md"
+
+  - title: "Success Rate Statistics"
+    filename: "success-rate-statistics.html"
+    heading: "Success Rate Statistics"
+    content_file: "content/success-rate-statistics.md"

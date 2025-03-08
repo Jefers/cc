@@ -1,0 +1,193 @@
+/* ============================= */
+/*         CSS Variables         */
+/* ============================= */
+:root {
+    --primary-color: #00ff88;       /* Neon-green accent */
+    --background-color: #121212;    /* Dark background */
+    --text-color: #e0e0e0;          /* Light text */
+    --nav-background: rgba(26, 26, 26, 0.95); /* Slightly transparent nav */
+    --nav-height: 50px;            /* Fixed nav height */
+    --button-bg: #1f1f1f;          /* Button background for nav links */
+    --button-hover-bg: var(--primary-color); /* Hover background */
+    --transition-speed: 0.3s;
+    --font-family: 'Roboto', sans-serif;
+  }
+  
+  /* ============================= */
+  /*       Global Styles           */
+  /* ============================= */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: opacity var(--transition-speed) ease-in-out;
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in-out forwards;
+  }
+  
+  /* ============================= */
+  /*         Navigation            */
+  /* ============================= */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--nav-background);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  
+  /* Brand */
+  .brand a {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  /* Navigation Menu as Button-Style Links */
+  .nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 0px;
+    opacity: 0.85;
+  }
+  
+  .nav-menu li a {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 4px;
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background var(--transition-speed), color var(--transition-speed);
+  }
+  
+  .nav-menu li a:hover,
+  .nav-menu li a.active {
+    background-color: var(--button-hover-bg);
+    color: var(--background-color);
+  }
+  
+  /* Mobile Menu Toggle */
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .menu-toggle .bar {
+    height: 3px;
+    width: 25px;
+    background-color: var(--text-color);
+    margin: 3px 0;
+    transition: all var(--transition-speed);
+  }
+  
+  /* ============================= */
+  /*         Content Area          */
+  /* ============================= */
+  .content {
+    padding-top: var(--nav-height);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .page-header {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+  }
+  
+  .page-content {
+    font-size: 1rem;
+    margin: 0 auto;
+    max-width: 800px;
+  }
+  
+  /* ============================= */
+  /*      Responsive (Mobile)      */
+  /* ============================= */
+  @media (max-width: 768px) {
+    /* Display hamburger on mobile */
+    .menu-toggle {
+      display: flex;
+    }
+    
+    /* Hide the full menu by default */
+    .nav-menu {
+      position: absolute;
+      top: var(--nav-height);
+      right: 20px; /* Align menu to the right */
+      background-color: rgba(26, 26, 26, 0.95);
+      border-radius: 4px;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      display: none;
+    }
+    
+    /* When open, show as compact button-style list */
+    .nav-menu.open {
+      display: flex;
+    }
+    
+    .nav-menu li {
+      margin: 0px 0;
+    }
+  }
+  
+  /* ============================= */
+  /*      Page Fade-In Animation   */
+  /* ============================= */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #073300;
+    color: white;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    fill: none; /* Most icons use stroke */
+    stroke: currentColor; /* This allows the icon to inherit text color */
+  }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Icon System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Dynamic SVG Icons</h2>
+
+        <!-- Icons loaded dynamically -->
+        <div id="icon-container"></div>
+
+        <!-- Color Picker -->
+        <div class="color-picker">
+            <label for="color">Choose Icon Color: </label>
+            <input type="color" id="color" value="#ff0000">
+        </div>
+
+        <!-- Buttons to Change Colors -->
+        <button onclick="changeColor('red')">Red</button>
+        <button onclick="changeColor('blue')">Blue</button>
+        <button onclick="changeColor('green')">Green</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

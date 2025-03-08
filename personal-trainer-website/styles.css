@@ -58,3 +58,10 @@ footer {
     background-color: #2c3e50;
     color: white;
 }
+
+.icon {
+    width: 18px;
+    height: 18px;
+    fill: none; /* Most icons use stroke */
+    stroke: currentColor; /* This allows the icon to inherit text color */
+  }
