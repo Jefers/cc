@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guide 📖</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>User Guide 📖</h1>
+
+    <div class="section">
+        <h2>Welcome to Your Philippine Adventure Planner! 🌴</h2>
+        <p>This guide will help you use our handy travel planning system. Whether you’re booking flights, tracking hotels, or managing costs, it’s all here—easy and stress-free!</p>
+    </div>
+
+    <div class="section">
+        <h2>Getting Started</h2>
+        <p>Start at <a href="index.html">the main page</a>. You’ll see links to all the tools:</p>
+        <ul>
+            <li><strong>Hotel Tracker 🏨</strong>: Add and manage hotel bookings.</li>
+            <li><strong>Real-Time Tracker ✈️</strong>: Track flight details.</li>
+            <li><strong>Budget Tracker 💸</strong>: Keep an eye on your spending.</li>
+            <li><strong>Booking Guide 📋</strong>: Tips for booking your trip.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>How to Use Each Tool</h2>
+
+        <details>
+            <summary>Adding a Hotel 🏨</summary>
+            <p>Go to "Hotel Tracker." For each location (e.g., Manila):</p>
+            <ol>
+                <li>Enter the hotel name, booking ID, arrival time, Google Plus Code (copy from Google Maps), and notes.</li>
+                <li>Click "Confirm Booking" to save it.</li>
+                <li>It’ll show up in the "Confirmed Hotel List" with options to edit, delete, or add to Google Calendar.</li>
+            </ol>
+        </details>
+
+        <details>
+            <summary>Tracking a Flight ✈️</summary>
+            <p>Go to "Real-Time Tracker." For each flight (e.g., Manila to Bohol):</p>
+            <ol>
+                <li>Enter the flight number, departure, and arrival times.</li>
+                <li>Click "Confirm Booking" to save it.</li>
+                <li>See it in the "Confirmed Real-Time List" with edit, delete, or Google Calendar options.</li>
+            </ol>
+        </details>
+
+        <details>
+            <summary>Managing Your Budget 💸</summary>
+            <p>Go to "Budget Tracker."</p>
+            <ol>
+                <li>Enter costs for bookings (flights, hotels) and extras (food, taxis).</li>
+                <li>Watch the "Running Total" update automatically.</li>
+                <li>Data saves locally—no edit/delete needed, just update the numbers.</li>
+            </ol>
+        </details>
+    </div>
+
+    <div class="section">
+        <h2>Editing or Deleting Entries</h2>
+        <p>Made a mistake? No worries!</p>
+        <ul>
+            <li><strong>Edit</strong>: Click "Edit" on a hotel or flight, update the fields, and re-confirm.</li>
+            <li><strong>Delete</strong>: Click "Delete," confirm the prompt, and it’s gone.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Sharing Your Plans</h2>
+        <p>Back on the main page:</p>
+        <ol>
+            <li>Click "Export All Data" to download a <code>travel-data.json</code> file with all your bookings.</li>
+            <li>Email it to your travel buddy!</li>
+            <li>They can upload it by selecting the file in "Import All Data" on their device.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Adding Photos 📸</h2>
+        <p>Want to spice up your itinerary pages (e.g., Manila)?</p>
+        <ol>
+            <li>Upload a photo to Google Drive, set it to "Anyone with the link," and copy the link.</li>
+            <li>Edit the HTML file (e.g., <code>manila.html</code>) to add: <code>&lt;img src="https://drive.google.com/uc?export=view&id=YOUR_FILE_ID" alt="Manila"&gt;</code></li>
+            <li>Replace <code>YOUR_FILE_ID</code> with the ID from your link.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Overview 🗺️</a>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

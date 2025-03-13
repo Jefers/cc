@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Specification 📋</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>System Specification 📋</h1>
+
+    <div class="section">
+        <h2>Overview</h2>
+        <p>The Philippine Adventure Planner is a static web application hosted on GitHub Pages, designed to manage travel plans for a trip to the Philippines. It uses HTML, CSS, and JavaScript with local storage for data persistence.</p>
+    </div>
+
+    <div class="section">
+        <h2>File Structure</h2>
+        <ul>
+            <li><code>index.html</code>: Main hub with navigation and data export/import.</li>
+            <li><code>hotel-tracker.html</code>: Hotel booking management.</li>
+            <li><code>realtime-tracker.html</code>: Flight detail tracking.</li>
+            <li><code>budget-tracker.html</code>: Cost tracking.</li>
+            <li><code>booking-guide.html</code>: Booking instructions.</li>
+            <li><code>user-guide.html</code>: User instructions.</li>
+            <li><code>system-spec.html</code>: This specification.</li>
+            <li><code>style.css</code>: Centralized styling.</li>
+            <li><code>script.js</code>: Shared export/import functions.</li>
+            <li><code>assets/</code>: Folder for static images.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Features</h2>
+
+        <details>
+            <summary>Hotel Tracker</summary>
+            <p><strong>Purpose</strong>: Manage hotel bookings.</p>
+            <p><strong>Data Fields</strong>: Hotel name, booking ID, arrival time, Google Plus Code, notes, check-in/check-out times.</p>
+            <p><strong>Functions</strong>: Add, edit, delete, add to Google Calendar.</p>
+            <p><strong>Storage</strong>: <code>localStorage</code> keys: <code>manilaHotel</code>, <code>boholHotel</code>, etc.</p>
+        </details>
+
+        <details>
+            <summary>Real-Time Tracker</summary>
+            <p><strong>Purpose</strong>: Track flight details.</p>
+            <p><strong>Data Fields</strong>: Flight number, departure time, arrival time.</p>
+            <p><strong>Functions</strong>: Add, edit, delete, add to Google Calendar.</p>
+            <p><strong>Storage</strong>: <code>localStorage</code> keys: <code>dublinManila</code>, <code>manilaBohol</code>, etc.</p>
+        </details>
+
+        <details>
+            <summary>Budget Tracker</summary>
+            <p><strong>Purpose</strong>: Monitor trip expenses.</p>
+            <p><strong>Data Fields</strong>: Costs for bookings and extras (e.g., food, taxis).</p>
+            <p><strong>Functions</strong>: Input costs, calculate running total.</p>
+            <p><strong>Storage</strong>: <code>localStorage</code> keys: <code>dublinManila</code>, <code>activities</code>, etc.</p>
+        </details>
+
+        <details>
+            <summary>Data Sharing</summary>
+            <p><strong>Purpose</strong>: Share data between devices.</p>
+            <p><strong>Functions</strong>: Export all <code>localStorage</code> to <code>travel-data.json</code>, import from JSON file.</p>
+            <p><strong>Location</strong>: <code>index.html</code>.</p>
+        </details>
+    </div>
+
+    <div class="section">
+        <h2>Technical Details</h2>
+        <ul>
+            <li><strong>Storage</strong>: Browser <code>localStorage</code> for client-side persistence.</li>
+            <li><strong>Styling</strong>: <code>style.css</code> with a pastel color scheme (e.g., #ff6f61 coral, #f0f4f8 light blue).</li>
+            <li><strong>Scripts</strong>: 
+                <ul>
+                    <li><code>script.js</code>: Export/import functions.</li>
+                    <li>Page-specific JS for adding/editing/deleting entries.</li>
+                </ul>
+            </li>
+            <li><strong>External Integration</strong>: Google Calendar via URL generation, Google Drive for manual image links.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Limitations</h2>
+        <ul>
+            <li>No real-time sync; data sharing requires manual export/import.</li>
+            <li>Static hosting (GitHub Pages) limits dynamic features.</li>
+            <li>Images require manual HTML edits for Google Drive links.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Overview 🗺️</a>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
