@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Tracker ✈️⏰</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #ff6f61;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #6b7280;
+            font-size: 1.4em;
+            margin-top: 20px;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        details {
+            margin: 10px 0;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #6b7280;
+            padding: 10px;
+            background-color: #e6e9ff;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        summary:hover {
+            background-color: #d1d5ff;
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+        }
+        input, button {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        input[type="text"], input[type="datetime-local"] {
+            width: calc(100% - 12px);
+        }
+        button {
+            background-color: #ff6f61;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff897c;
+        }
+        .confirmed-list {
+            margin-top: 20px;
+        }
+        .confirmed-item {
+            background-color: #fef3c7;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        nav a {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #ffccd5;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #ffb3c1;
+        }
+        @media (min-width: 768px) {
+            body {
+                padding: 40px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Tracker ✈️⏰</h1>
+
+    <div class="section">
+        <h2>Input Real-Time Specifics 🌟</h2>
+        <p>Enter flight numbers and exact times after booking. Confirm to add to your list and Google Calendar!</p>
+
+        <details>
+            <summary>Dublin to Manila (March 23-24) ✈️</summary>
+            <label>Flight Number: <input type="text" id="dublinManilaFlight"></label>
+            <label>Departure Time: <input type="datetime-local" id="dublinManilaDepart"></label>
+            <label>Arrival Time: <input type="datetime-local" id="dublinManilaArrive"></label>
+            <button onclick="confirmBooking('dublinManila')">Confirm Booking</button>
+        </details>
+
+        <details>
+            <summary>Manila to Bohol (March 26) ✈️</summary>
+            <label>Flight Number: <input type="text" id="manilaBoholFlight"></label>
+            <label>Departure Time: <input type="datetime-local" id="manilaBoholDepart"></label>
+            <label>Arrival Time: <input type="datetime-local" id="manilaBoholArrive"></label>
+            <button onclick="confirmBooking('manilaBohol')">Confirm Booking</button>
+        </details>
+
+        <details>
+            <summary>Bohol to Cebu (March 30) ✈️</summary>
+            <label>Flight Number: <input type="text" id="boholCebuFlight"></label>
+            <label>Departure Time: <input type="datetime-local" id="boholCebuDepart"></label>
+            <label>Arrival Time: <input type="datetime-local" id="boholCebuArrive"></label>
+            <button onclick="confirmBooking('boholCebu')">Confirm Booking</button>
+        </details>
+
+        <details>
+            <summary>Cebu to El Nido (April 3) ✈️</summary>
+            <label>Flight Number: <input type="text" id="cebuElNidoFlight"></label>
+            <label>Departure Time: <input type="datetime-local" id="cebuElNidoDepart"></label>
+            <label>Arrival Time: <input type="datetime-local" id="cebuElNidoArrive"></label>
+            <button onclick="confirmBooking('cebuElNido')">Confirm Booking</button>
+        </details>
+
+        <details>
+            <summary>Coron to Manila (April 10) ✈️</summary>
+            <label>Flight Number: <input type="text" id="coronManilaFlight"></label>
+            <label>Departure Time: <input type="datetime-local" id="coronManilaDepart"></label>
+            <label>Arrival Time: <input type="datetime-local" id="coronManilaArrive"></label>
+            <button onclick="confirmBooking('coronManila')">Confirm Booking</button>
+        </details>
+    </div>
+
+    <div class="section confirmed-list">
+        <h2>Confirmed Real-Time List ✅</h2>
+        <div id="confirmedList"></div>
+    </div>
+
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Overview 🗺️</a>
+        </nav>
+    </div>
+
+    <script>
+        // Load confirmed bookings from local storage
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfirmedBookings();
+        });
+
+        // Confirm a booking and add to list
+        function confirmBooking(id) {
+            const flightNum = document.getElementById(`${id}Flight`).value;
+            const departTime = document.getElementById(`${id}Depart`).value;
+            const arriveTime = document.getElementById(`${id}Arrive`).value;
+
+            if (!flightNum || !departTime || !arriveTime) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            const booking = {
+                id,
+                flightNum,
+                departTime,
+                arriveTime
+            };
+
+            // Save to local storage
+            localStorage.setItem(id, JSON.stringify(booking));
+            addToConfirmedList(booking);
+
+            // Clear inputs
+            document.getElementById(`${id}Flight`).value = '';
+            document.getElementById(`${id}Depart`).value = '';
+            document.getElementById(`${id}Arrive`).value = '';
+        }
+
+        // Add booking to confirmed list and create Google Calendar button
+        function addToConfirmedList(booking) {
+            const list = document.getElementById('confirmedList');
+            const item = document.createElement('div');
+            item.className = 'confirmed-item';
+
+            const departDate = new Date(booking.departTime);
+            const arriveDate = new Date(booking.arriveTime);
+            const title = `${booking.id.replace(/([A-Z])/g, ' $1').trim()} - Flight ${booking.flightNum}`;
+            const departFormatted = departDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const arriveFormatted = arriveDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${departFormatted}/${arriveFormatted}&details=Flight+${encodeURIComponent(booking.flightNum)}`;
+
+            item.innerHTML = `
+                <p><strong>${title}</strong></p>
+                <p>Depart: ${departDate.toLocaleString()}</p>
+                <p>Arrive: ${arriveDate.toLocaleString()}</p>
+                <button onclick="window.open('${calendarUrl}', '_blank')">Add to Google Calendar</button>
+            `;
+            list.appendChild(item);
+        }
+
+        // Load existing confirmed bookings
+        function loadConfirmedBookings() {
+            const list = document.getElementById('confirmedList');
+            list.innerHTML = '';
+            const keys = ['dublinManila', 'manilaBohol', 'boholCebu', 'cebuElNido', 'coronManila'];
+            keys.forEach(key => {
+                const booking = JSON.parse(localStorage.getItem(key));
+                if (booking) {
+                    addToConfirmedList(booking);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
