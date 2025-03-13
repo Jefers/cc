@@ -4,169 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Tracker 🏨⏰</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #ff6f61;
-            text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #6b7280;
-            font-size: 1.4em;
-            margin-top: 20px;
-        }
-        .section {
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        details {
-            margin: 10px 0;
-        }
-        summary {
-            cursor: pointer;
-            font-weight: bold;
-            color: #6b7280;
-            padding: 10px;
-            background-color: #e6e9ff;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        summary:hover {
-            background-color: #d1d5ff;
-        }
-        label {
-            display: block;
-            margin: 10px 0;
-        }
-        input, select, button {
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin: 5px 0;
-        }
-        input[type="text"], input[type="datetime-local"], select {
-            width: calc(100% - 12px);
-        }
-        button {
-            background-color: #ff6f61;
-            color: #fff;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #ff897c;
-        }
-        .confirmed-list {
-            margin-top: 20px;
-        }
-        .confirmed-item {
-            background-color: #fef3c7;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-        nav a {
-            display: block;
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #ffccd5;
-            color: #333;
-            text-decoration: none;
-            border-radius: 8px;
-            text-align: center;
-        }
-        nav a:hover {
-            background-color: #ffb3c1;
-        }
-        @media (min-width: 768px) {
-            body {
-                padding: 40px;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-            h1 {
-                font-size: 2.2em;
-            }
-            .section {
-                padding: 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Hotel Tracker 🏨⏰</h1>
 
     <div class="section">
         <h2>Input Hotel Specifics 🌟</h2>
-        <p>Confirm hotel bookings with flight arrival times to calculate check-in. Adds to Google Calendar!</p>
+        <p>Confirm hotel bookings with details. Use Google Plus Codes (e.g., 8Q7X+5F) from Maps for location!</p>
 
         <details>
             <summary>Manila (March 24-26) 🏙️</summary>
-            <label>Hotel Name: <select id="manilaHotel">
-                <option value="Sheraton Manila Hotel">Sheraton Manila Hotel</option>
-                <option value="Hilton Manila">Hilton Manila</option>
-            </select></label>
+            <label>Hotel Name: <input type="text" id="manilaHotel"></label>
+            <label>Booking ID: <input type="text" id="manilaBookingId"></label>
             <label>Flight Arrival Time: <input type="datetime-local" id="manilaArrive"></label>
+            <label>Google Plus Code: <input type="text" id="manilaPlusCode" placeholder="e.g., 8Q7X+5F"></label>
+            <label>Notes: <textarea id="manilaNotes"></textarea></label>
             <button onclick="confirmHotel('manila', '2025-03-24T14:00', '2025-03-26T12:00')">Confirm Booking</button>
         </details>
 
         <details>
             <summary>Bohol (March 26-29) 🌴</summary>
-            <label>Hotel Name: <select id="boholHotel">
-                <option value="Bohol Beach Club">Bohol Beach Club</option>
-                <option value="Panglao Island Nature Resort">Panglao Island Nature Resort</option>
-            </select></label>
+            <label>Hotel Name: <input type="text" id="boholHotel"></label>
+            <label>Booking ID: <input type="text" id="boholBookingId"></label>
             <label>Flight Arrival Time: <input type="datetime-local" id="boholArrive"></label>
+            <label>Google Plus Code: <input type="text" id="boholPlusCode" placeholder="e.g., 8Q7X+5F"></label>
+            <label>Notes: <textarea id="boholNotes"></textarea></label>
             <button onclick="confirmHotel('bohol', '2025-03-26T14:00', '2025-03-29T12:00')">Confirm Booking</button>
         </details>
 
         <details>
             <summary>Cebu (March 30-April 2) 🌇</summary>
-            <label>Hotel Name: <select id="cebuHotel">
-                <option value="Shangri-La Mactan">Shangri-La Mactan</option>
-                <option value="Cebu City Marriott Hotel">Cebu City Marriott Hotel</option>
-            </select></label>
+            <label>Hotel Name: <input type="text" id="cebuHotel"></label>
+            <label>Booking ID: <input type="text" id="cebuBookingId"></label>
             <label>Flight Arrival Time: <input type="datetime-local" id="cebuArrive"></label>
+            <label>Google Plus Code: <input type="text" id="cebuPlusCode" placeholder="e.g., 8Q7X+5F"></label>
+            <label>Notes: <textarea id="cebuNotes"></textarea></label>
             <button onclick="confirmHotel('cebu', '2025-03-30T14:00', '2025-04-02T12:00')">Confirm Booking</button>
         </details>
 
         <details>
             <summary>El Nido (April 3-6) 🏝️</summary>
-            <label>Hotel Name: <select id="elNidoHotel">
-                <option value="El Nido Resort">El Nido Resort</option>
-                <option value="Lagen Island Resort">Lagen Island Resort</option>
-            </select></label>
+            <label>Hotel Name: <input type="text" id="elNidoHotel"></label>
+            <label>Booking ID: <input type="text" id="elNidoBookingId"></label>
             <label>Flight Arrival Time: <input type="datetime-local" id="elNidoArrive"></label>
+            <label>Google Plus Code: <input type="text" id="elNidoPlusCode" placeholder="e.g., 8Q7X+5F"></label>
+            <label>Notes: <textarea id="elNidoNotes"></textarea></label>
             <button onclick="confirmHotel('elNido', '2025-04-03T14:00', '2025-04-06T12:00')">Confirm Booking</button>
         </details>
 
         <details>
             <summary>Coron (April 7-9) 🌊</summary>
-            <label>Hotel Name: <select id="coronHotel">
-                <option value="Club Paradise Resort">Club Paradise Resort</option>
-                <option value="Coron Bayview Resort">Coron Bayview Resort</option>
-            </select></label>
+            <label>Hotel Name: <input type="text" id="coronHotel"></label>
+            <label>Booking ID: <input type="text" id="coronBookingId"></label>
             <label>Arrival Time (after van): <input type="datetime-local" id="coronArrive"></label>
+            <label>Google Plus Code: <input type="text" id="coronPlusCode" placeholder="e.g., 8Q7X+5F"></label>
+            <label>Notes: <textarea id="coronNotes"></textarea></label>
             <button onclick="confirmHotel('coron', '2025-04-07T14:00', '2025-04-09T12:00')">Confirm Booking</button>
         </details>
 
         <details>
             <summary>Manila (April 18-19) 🏙️</summary>
-            <label>Hotel Name: <select id="manilaFinalHotel">
-                <option value="Sheraton Manila Hotel">Sheraton Manila Hotel</option>
-            </select></label>
-            <label>Arrival Time (after Cardona): <input type="datetime-local" id="manilaFinalArrive"></label>
+            <label>Hotel Name: <input type="text" id="manilaFinalHotel"></label>
+            <label>Booking ID: <input type="text" id="manilaFinalBookingId"></label>
+            <label>Arrival Time (after travel): <input type="datetime-local" id="manilaFinalArrive"></label>
+            <label>Google Plus Code: <input type="text" id="manilaFinalPlusCode" placeholder="e.g., 8Q7X+5F"></label>
+            <label>Notes: <textarea id="manilaFinalNotes"></textarea></label>
             <button onclick="confirmHotel('manilaFinal', '2025-04-18T14:00', '2025-04-19T12:00')">Confirm Booking</button>
         </details>
     </div>
@@ -181,7 +84,8 @@
             <a href="index.html">Back to Overview 🗺️</a>
         </nav>
     </div>
-
+    
+    <script src="script.js"></script>
     <script>
         // Load confirmed hotels from local storage
         document.addEventListener('DOMContentLoaded', () => {
@@ -191,10 +95,13 @@
         // Confirm hotel booking and calculate check-in time
         function confirmHotel(id, defaultCheckIn, checkOut) {
             const hotelName = document.getElementById(`${id}Hotel`).value;
+            const bookingId = document.getElementById(`${id}BookingId`).value;
             const arriveTime = document.getElementById(`${id}Arrive`).value;
+            const plusCode = document.getElementById(`${id}PlusCode`).value;
+            const notes = document.getElementById(`${id}Notes`).value;
 
-            if (!arriveTime) {
-                alert('Please enter arrival time!');
+            if (!hotelName || !arriveTime) {
+                alert('Please enter hotel name and arrival time!');
                 return;
             }
 
@@ -206,8 +113,11 @@
             const hotel = {
                 id,
                 hotelName,
+                bookingId,
                 checkInTime,
                 checkOutTime: checkOut,
+                plusCode,
+                notes,
                 location: id === 'manila' || id === 'manilaFinal' ? 'Manila' :
                          id === 'bohol' ? 'Bohol' :
                          id === 'cebu' ? 'Cebu' :
@@ -219,28 +129,40 @@
             localStorage.setItem(id + 'Hotel', JSON.stringify(hotel));
             addToConfirmedHotelList(hotel);
 
-            // Clear input
+            // Clear inputs
+            document.getElementById(`${id}Hotel`).value = '';
+            document.getElementById(`${id}BookingId`).value = '';
             document.getElementById(`${id}Arrive`).value = '';
+            document.getElementById(`${id}PlusCode`).value = '';
+            document.getElementById(`${id}Notes`).value = '';
         }
 
-        // Add hotel to confirmed list and create Google Calendar button
+        // Add hotel to confirmed list with edit/delete options
         function addToConfirmedHotelList(hotel) {
             const list = document.getElementById('confirmedHotelList');
             const item = document.createElement('div');
             item.className = 'confirmed-item';
+            item.dataset.id = hotel.id;
 
             const checkInDate = new Date(hotel.checkInTime);
             const checkOutDate = new Date(hotel.checkOutTime);
             const title = `Stay at ${hotel.hotelName} - ${hotel.location}`;
             const checkInFormatted = checkInDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
             const checkOutFormatted = checkOutDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${checkInFormatted}/${checkOutFormatted}&details=Check-in+at+${encodeURIComponent(hotel.hotelName)}&location=${encodeURIComponent(hotel.location)}`;
+            const details = `Booking ID: ${hotel.bookingId || 'N/A'}\nNotes: ${hotel.notes || 'None'}\nPlus Code: ${hotel.plusCode || 'N/A'}`;
+            const mapLink = hotel.plusCode ? `https://plus.codes/${encodeURIComponent(hotel.plusCode)}` : '#';
+            const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${checkInFormatted}/${checkOutFormatted}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(hotel.plusCode || hotel.location)}`;
 
             item.innerHTML = `
                 <p><strong>${title}</strong></p>
+                <p>Booking ID: ${hotel.bookingId || 'N/A'}</p>
                 <p>Check-In: ${checkInDate.toLocaleString()}</p>
                 <p>Check-Out: ${checkOutDate.toLocaleString()}</p>
+                <p>Notes: ${hotel.notes || 'None'}</p>
+                <p>Location: <a href="${mapLink}" target="_blank">${hotel.plusCode || hotel.location}</a></p>
                 <button onclick="window.open('${calendarUrl}', '_blank')">Add to Google Calendar</button>
+                <button onclick="editHotel('${hotel.id}')">Edit</button>
+                <button onclick="deleteHotel('${hotel.id}')">Delete</button>
             `;
             list.appendChild(item);
         }
@@ -256,6 +178,35 @@
                     addToConfirmedHotelList(hotel);
                 }
             });
+        }
+
+        // Edit a confirmed hotel
+        function editHotel(id) {
+            const hotel = JSON.parse(localStorage.getItem(id + 'Hotel'));
+            if (!hotel) return;
+
+            // Populate input fields with existing data
+            document.getElementById(`${id}Hotel`).value = hotel.hotelName;
+            document.getElementById(`${id}BookingId`).value = hotel.bookingId || '';
+            document.getElementById(`${id}Arrive`).value = new Date(hotel.checkInTime).toISOString().slice(0, 16);
+            document.getElementById(`${id}PlusCode`).value = hotel.plusCode || '';
+            document.getElementById(`${id}Notes`).value = hotel.notes || '';
+
+            // Remove old entry from storage and list
+            localStorage.removeItem(id + 'Hotel');
+            const item = document.querySelector(`.confirmed-item[data-id="${id}"]`);
+            if (item) item.remove();
+
+            alert('Edit the fields and click "Confirm Booking" to save changes.');
+        }
+
+        // Delete a confirmed hotel
+        function deleteHotel(id) {
+            if (confirm('Are you sure you want to delete this hotel booking?')) {
+                localStorage.removeItem(id + 'Hotel');
+                const item = document.querySelector(`.confirmed-item[data-id="${id}"]`);
+                if (item) item.remove();
+            }
         }
     </script>
 </body>
