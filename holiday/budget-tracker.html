@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker for Philippine Holiday 💸📊</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #ff6f61;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #6b7280;
+            font-size: 1.4em;
+            margin-top: 20px;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .total {
+            position: sticky;
+            top: 0;
+            background-color: #fef3c7;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        details {
+            margin: 10px 0;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #6b7280;
+            padding: 10px;
+            background-color: #e6e9ff;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        summary:hover {
+            background-color: #d1d5ff;
+        }
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        input[type="number"] {
+            width: 100px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: right;
+        }
+        nav a {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #ffccd5;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #ffb3c1;
+        }
+        @media (min-width: 768px) {
+            body {
+                padding: 40px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Budget Tracker for Philippine Holiday 💸📊</h1>
+
+    <div class="total">
+        Running Total: $<span id="runningTotal">0.00</span>
+    </div>
+
+    <div class="section">
+        <h2>Track Your Costs 🌟</h2>
+        <p>Enter costs for bookings and extras below. Totals save locally on your phone! For two people, starting March 23, 2025.</p>
+
+        <details>
+            <summary>Bookings ✈️🏨</summary>
+            <label>Dublin to Manila + Hotel (March 24-26): $<input type="number" step="0.01" id="dublinManila" value="0"></label>
+            <label>Manila to Bohol + Hotel (March 26-29): $<input type="number" step="0.01" id="manilaBohol" value="0"></label>
+            <label>Bohol to Cebu + Hotel (March 30-April 2): $<input type="number" step="0.01" id="boholCebu" value="0"></label>
+            <label>Cebu to El Nido + Hotel (April 3-6): $<input type="number" step="0.01" id="cebuElNido" value="0"></label>
+            <label>El Nido to Coron Transport + Hotel (April 7-9): $<input type="number" step="0.01" id="elNidoCoron" value="0"></label>
+            <label>Coron to Manila Flight (April 10): $<input type="number" step="0.01" id="coronManila" value="0"></label>
+            <label>Final Manila Hotel (April 18-19): $<input type="number" step="0.01" id="finalManila" value="0"></label>
+        </details>
+
+        <details>
+            <summary>Extras 🎉🍽️</summary>
+            <label>Activities (e.g., island hopping, diving): $<input type="number" step="0.01" id="activities" value="0"></label>
+            <label>Food (meals for 27 days): $<input type="number" step="0.01" id="food" value="0"></label>
+            <label>Taxis/Vans (local transport): $<input type="number" step="0.01" id="taxis" value="0"></label>
+            <label>Shopping (souvenirs, etc.): $<input type="number" step="0.01" id="shopping" value="0"></label>
+        </details>
+    </div>
+
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Overview 🗺️</a>
+        </nav>
+    </div>
+
+    <script>
+        // List of cost input IDs
+        const costInputs = [
+            'dublinManila', 'manilaBohol', 'boholCebu', 'cebuElNido', 
+            'elNidoCoron', 'coronManila', 'finalManila', 'activities', 
+            'food', 'taxis', 'shopping'
+        ];
+
+        // Load saved costs and update total on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            costInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const savedValue = localStorage.getItem(id) || '0';
+                input.value = parseFloat(savedValue).toFixed(2);
+                input.addEventListener('input', () => {
+                    localStorage.setItem(id, input.value || '0');
+                    updateTotal();
+                });
+            });
+            updateTotal();
+        });
+
+        // Function to calculate and display running total
+        function updateTotal() {
+            let total = 0;
+            costInputs.forEach(id => {
+                const value = parseFloat(document.getElementById(id).value) || 0;
+                total += value;
+            });
+            document.getElementById('runningTotal').textContent = total.toFixed(2);
+        }
+    </script>
+</body>
+</html>
