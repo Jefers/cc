@@ -4,12 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Journey Summary 🗺️</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            padding: 15px;
+            line-height: 1.5;
+            background-color: #f5f5f5;
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        /* Mobile-First Table */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-bottom: 20px;
+            font-size: 14px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         th, td {
             border: 1px solid #ddd;
@@ -20,158 +42,392 @@
             background-color: #ff6f61;
             color: #fff;
         }
-        svg {
-            width: 100%;
-            height: 200px;
-            margin: 20px 0;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        .flight-line {
-            stroke: red;
-            stroke-width: 2;
-            fill: none;
-        }
-        .land-line {
-            stroke: red;
-            stroke-width: 2;
-            stroke-dasharray: 5;
-            fill: none;
-        }
-        .stop {
-            fill: gray; /* Default: yet to come */
-        }
-        .booked {
-            fill: green;
+        tr:hover {
+            background-color: #e0e7ff;
+            cursor: pointer;
         }
         .current {
-            fill: blue;
+            background-color: #cce5ff;
+            font-weight: bold;
+            color: #1e90ff;
+        }
+        @media (min-width: 768px) {
+            table { font-size: 16px; }
+            th, td { padding: 12px; }
+        }
+
+        /* Vertical Timeline */
+        svg {
+            width: 100%;
+            height: 800px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .flight-line {
+            stroke: #ff6f61;
+            stroke-width: 2;
+        }
+        .land-line {
+            stroke: #ff6f61;
+            stroke-width: 2;
+            stroke-dasharray: 5;
+        }
+        .stop {
+            fill: #ccc; /* Grey: Future, not booked */
+            stroke: #333;
+            stroke-width: 1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .stop.booked {
+            fill: #32cd32; /* Green: Future, booked */
+        }
+        .stop.past {
+            fill: #ffa500; /* Orange: Past */
+        }
+        .stop.current {
+            fill: #1e90ff; /* Blue: Current */
+        }
+        .stop:hover {
+            transform: scale(1.2);
+        }
+        .day-bar {
+            fill: #ccc; /* Grey: Future, not booked */
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .day-bar.booked {
+            fill: #32cd32; /* Green: Future, booked */
+        }
+        .day-bar.past {
+            fill: #ffa500; /* Orange: Past */
+        }
+        .day-bar.current {
+            fill: #1e90ff; /* Blue: Current */
+        }
+        .day-bar.visible {
+            opacity: 0.7;
+        }
+        .day-bar:hover {
+            opacity: 1;
+        }
+        text {
+            font-size: 12px;
+            fill: #333;
+        }
+        @media (min-width: 768px) {
+            svg { height: 900px; }
+            text { font-size: 14px; }
+        }
+
+        /* Legend */
+        .legend {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 1px solid #333;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
+            z-index: 10;
+        }
+        .overlay.active {
+            left: 20%;
+        }
+        .overlay h3 {
+            color: #ff6f61;
+            margin-bottom: 10px;
+        }
+        .overlay p {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
         }
     </style>
 </head>
 <body>
     <h1>Journey Summary 🗺️</h1>
 
-    <div class="section">
-        <h2>Your Trip at a Glance</h2>
-        <table>
-            <tr><th>Day</th><th>Date</th><th>Location</th><th>Notes</th></tr>
-            <tr><td>1</td><td>March 23, 2025</td><td>Dublin → Manila</td><td>Flight departs Dublin</td></tr>
-            <tr><td>2</td><td>March 24, 2025</td><td>Manila</td><td>Arrive Manila, hotel stay</td></tr>
-            <tr><td>3</td><td>March 25, 2025</td><td>Manila</td><td>Hotel stay</td></tr>
-            <tr><td>4</td><td>March 26, 2025</td><td>Manila → Bohol</td><td>Flight to Bohol, hotel stay</td></tr>
-            <tr><td>5</td><td>March 27, 2025</td><td>Bohol</td><td>Chocolate Hills, Tarsiers</td></tr>
-            <tr><td>6</td><td>March 28, 2025</td><td>Bohol</td><td>Hotel stay</td></tr>
-            <tr><td>7</td><td>March 29, 2025</td><td>Bohol</td><td>Hotel stay</td></tr>
-            <tr><td>8</td><td>March 30, 2025</td><td>Bohol → Cebu</td><td>Flight to Cebu, hotel stay</td></tr>
-            <tr><td>9</td><td>March 31, 2025</td><td>Cebu</td><td>Hotel stay</td></tr>
-            <tr><td>10</td><td>April 1, 2025</td><td>Cebu</td><td>Hotel stay</td></tr>
-            <tr><td>11</td><td>April 2, 2025</td><td>Cebu</td><td>Hotel stay</td></tr>
-            <tr><td>12</td><td>April 3, 2025</td><td>Cebu → El Nido</td><td>Flight to El Nido, hotel stay</td></tr>
-            <tr><td>13</td><td>April 4, 2025</td><td>El Nido</td><td>Hotel stay</td></tr>
-            <tr><td>14</td><td>April 5, 2025</td><td>El Nido</td><td>Hotel stay</td></tr>
-            <tr><td>15</td><td>April 6, 2025</td><td>El Nido</td><td>Hotel stay</td></tr>
-            <tr><td>16</td><td>April 7, 2025</td><td>El Nido → Coron</td><td>Ferry to Coron, hotel stay</td></tr>
-            <tr><td>17</td><td>April 8, 2025</td><td>Coron</td><td>Hotel stay</td></tr>
-            <tr><td>18</td><td>April 9, 2025</td><td>Coron</td><td>Hotel stay</td></tr>
-            <tr><td>19</td><td>April 10, 2025</td><td>Coron → Manila</td><td>Flight to Manila</td></tr>
-            <tr><td>28</td><td>April 19, 2025</td><td>Manila</td><td>Final hotel stay, depart</td></tr>
-        </table>
+    <!-- Trip Table -->
+    <h2>Your Trip at a Glance</h2>
+    <table id="journeyTable">
+        <tr><th>Day</th><th>Date</th><th>Location</th><th>Notes</th></tr>
+        <tr><td>1</td><td>2025-03-23</td><td>Dublin → Manila</td><td>Flight departs Dublin</td></tr>
+        <tr><td>2</td><td>2025-03-24</td><td>Manila</td><td>Arrive, hotel stay</td></tr>
+        <tr><td>3</td><td>2025-03-25</td><td>Manila</td><td>Hotel stay</td></tr>
+        <tr><td>4</td><td>2025-03-26</td><td>Manila → Bohol</td><td>Flight to Bohol, hotel stay</td></tr>
+        <tr><td>5</td><td>2025-03-27</td><td>Bohol</td><td>Chocolate Hills, Tarsiers</td></tr>
+        <tr><td>6</td><td>2025-03-28</td><td>Bohol</td><td>Hotel stay</td></tr>
+        <tr><td>7</td><td>2025-03-29</td><td>Bohol</td><td>Hotel stay</td></tr>
+        <tr><td>8</td><td>2025-03-30</td><td>Bohol → Cebu</td><td>Flight to Cebu, hotel stay</td></tr>
+        <tr><td>9</td><td>2025-03-31</td><td>Cebu</td><td>Hotel stay</td></tr>
+        <tr><td>10</td><td>2025-04-01</td><td>Cebu</td><td>Hotel stay</td></tr>
+        <tr><td>11</td><td>2025-04-02</td><td>Cebu</td><td>Hotel stay</td></tr>
+        <tr><td>12</td><td>2025-04-03</td><td>Cebu → El Nido</td><td>Flight to El Nido, hotel stay</td></tr>
+        <tr><td>13</td><td>2025-04-04</td><td>El Nido</td><td>Hotel stay</td></tr>
+        <tr><td>14</td><td>2025-04-05</td><td>El Nido</td><td>Hotel stay</td></tr>
+        <tr><td>15</td><td>2025-04-06</td><td>El Nido</td><td>Hotel stay</td></tr>
+        <tr><td>16</td><td>2025-04-07</td><td>El Nido → Coron</td><td>Ferry to Coron, hotel stay</td></tr>
+        <tr><td>17</td><td>2025-04-08</td><td>Coron</td><td>Hotel stay</td></tr>
+        <tr><td>18</td><td>2025-04-09</td><td>Coron</td><td>Hotel stay</td></tr>
+        <tr><td>19</td><td>2025-04-10</td><td>Coron → Manila</td><td>Flight to Manila</td></tr>
+        <tr><td>28</td><td>2025-04-19</td><td>Manila</td><td>Final hotel stay, depart</td></tr>
+    </table>
+
+    <!-- Legend -->
+    <div class="legend">
+        <h3>Timeline Key</h3>
+        <div class="legend-item"><div class="legend-color" style="background-color: #ccc;"></div><span>Future, Not Booked</span></div>
+        <div class="legend-item"><div class="legend-color" style="background-color: #32cd32;"></div><span>Future, Booked</span></div>
+        <div class="legend-item"><div class="legend-color" style="background-color: #ffa500;"></div><span>Past</span></div>
+        <div class="legend-item"><div class="legend-color" style="background-color: #1e90ff;"></div><span>Current Date</span></div>
     </div>
 
-    <div class="section">
-        <h2>Journey Timeline</h2>
-        <svg viewBox="0 0 800 150">
-            <!-- Stops -->
-            <circle cx="50" cy="75" r="10" class="stop" id="dublin" />
-            <circle cx="150" cy="75" r="10" class="stop" id="manila1" />
-            <circle cx="250" cy="75" r="10" class="stop" id="bohol" />
-            <circle cx="350" cy="75" r="10" class="stop" id="cebu" />
-            <circle cx="450" cy="75" r="10" class="stop" id="elnido" />
-            <circle cx="550" cy="75" r="10" class="stop" id="coron" />
-            <circle cx="650" cy="75" r="10" class="stop" id="manila2" />
+    <!-- Timeline -->
+    <h2>Journey Timeline</h2>
+    <svg viewBox="0 0 300 800" id="journeySvg">
+        <!-- Populated by JavaScript -->
+    </svg>
 
-            <!-- Flight Lines (Curved) -->
-            <path d="M50,75 Q100,25 150,75" class="flight-line" /> <!-- Dublin to Manila -->
-            <path d="M150,75 Q200,25 250,75" class="flight-line" /> <!-- Manila to Bohol -->
-            <path d="M250,75 Q300,25 350,75" class="flight-line" /> <!-- Bohol to Cebu -->
-            <path d="M350,75 Q400,25 450,75" class="flight-line" /> <!-- Cebu to El Nido -->
-            <path d="M550,75 Q600,25 650,75" class="flight-line" /> <!-- Coron to Manila -->
-
-            <!-- Land/Sea Line (Dotted) -->
-            <line x1="450" y1="75" x2="550" y2="75" class="land-line" /> <!-- El Nido to Coron -->
-
-            <!-- Labels -->
-            <text x="40" y="95" font-size="12">Dublin</text>
-            <text x="140" y="95" font-size="12">Manila</text>
-            <text x="240" y="95" font-size="12">Bohol</text>
-            <text x="340" y="95" font-size="12">Cebu</text>
-            <text x="440" y="95" font-size="12">El Nido</text>
-            <text x="540" y="95" font-size="12">Coron</text>
-            <text x="640" y="95" font-size="12">Manila</text>
-        </svg>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay">
+        <button class="close-btn" onclick="hideOverlay()">×</button>
+        <h3 id="overlayDay"></h3>
+        <p id="overlayDate"></p>
+        <p id="overlayLocation"></p>
+        <p id="overlayNotes"></p>
     </div>
+
+    <script>
+        // Full Itinerary Data
+        const journey = [
+            { day: 1, date: '2025-03-23', location: 'Dublin → Manila', notes: 'Flight departs Dublin' },
+            { day: 2, date: '2025-03-24', location: 'Manila', notes: 'Arrive, hotel stay' },
+            { day: 3, date: '2025-03-25', location: 'Manila', notes: 'Hotel stay' },
+            { day: 4, date: '2025-03-26', location: 'Manila → Bohol', notes: 'Flight to Bohol, hotel stay' },
+            { day: 5, date: '2025-03-27', location: 'Bohol', notes: 'Chocolate Hills, Tarsiers' },
+            { day: 6, date: '2025-03-28', location: 'Bohol', notes: 'Hotel stay' },
+            { day: 7, date: '2025-03-29', location: 'Bohol', notes: 'Hotel stay' },
+            { day: 8, date: '2025-03-30', location: 'Bohol → Cebu', notes: 'Flight to Cebu, hotel stay' },
+            { day: 9, date: '2025-03-31', location: 'Cebu', notes: 'Hotel stay' },
+            { day: 10, date: '2025-04-01', location: 'Cebu', notes: 'Hotel stay' },
+            { day: 11, date: '2025-04-02', location: 'Cebu', notes: 'Hotel stay' },
+            { day: 12, date: '2025-04-03', location: 'Cebu → El Nido', notes: 'Flight to El Nido, hotel stay' },
+            { day: 13, date: '2025-04-04', location: 'El Nido', notes: 'Hotel stay' },
+            { day: 14, date: '2025-04-05', location: 'El Nido', notes: 'Hotel stay' },
+            { day: 15, date: '2025-04-06', location: 'El Nido', notes: 'Hotel stay' },
+            { day: 16, date: '2025-04-07', location: 'El Nido → Coron', notes: 'Ferry to Coron, hotel stay' },
+            { day: 17, date: '2025-04-08', location: 'Coron', notes: 'Hotel stay' },
+            { day: 18, date: '2025-04-09', location: 'Coron', notes: 'Hotel stay' },
+            { day: 19, date: '2025-04-10', location: 'Coron → Manila', notes: 'Flight to Manila' },
+            { day: 28, date: '2025-04-19', location: 'Manila', notes: 'Final hotel stay, depart' }
+        ];
+
+        // Timeline Stops (Circles for travel dates/locations, bars for hotel stays)
+        const stops = [
+            { id: 'dublin', location: 'Dublin', days: [1], stayDays: [], y: 50 },
+            { id: 'manila1', location: 'Manila', days: [4], stayDays: [2, 3], y: 150 },
+            { id: 'bohol', location: 'Bohol', days: [8], stayDays: [5, 6, 7], y: 250 },
+            { id: 'cebu', location: 'Cebu', days: [12], stayDays: [9, 10, 11], y: 350 },
+            { id: 'elnido', location: 'El Nido', days: [16], stayDays: [13, 14, 15], y: 450 },
+            { id: 'coron', location: 'Coron', days: [19], stayDays: [17, 18], y: 550 },
+            { id: 'manila2', location: 'Manila', days: [28], stayDays: [28], y: 650 }
+        ];
+
+        // On Page Load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTable();
+            buildTimeline();
+            setupInteractions();
+        });
+
+        // Update Table with Current Day
+        function updateTable() {
+            const today = new Date('2025-03-26'); // Hardcoded for testing
+            // const today = new Date(); // Uncomment for real-time
+            const rows = document.querySelectorAll('#journeyTable tr:not(:first-child)');
+            rows.forEach((row, index) => {
+                const rowDate = new Date(journey[index].date);
+                const nextDate = index + 1 < journey.length ? new Date(journey[index + 1].date) : null;
+                if (rowDate <= today && (!nextDate || today < nextDate)) {
+                    row.classList.add('current');
+                }
+            });
+        }
+
+        // Build the SVG Timeline
+        function buildTimeline() {
+            const svg = document.getElementById('journeySvg');
+            const today = new Date('2025-03-27'); // Hardcoded for testing
+            // const today = new Date(); // Uncomment for real-time
+
+            stops.forEach((stop, index) => {
+                // Circle for Travel Date/Location
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', 50);
+                circle.setAttribute('cy', stop.y);
+                circle.setAttribute('r', 10);
+                circle.setAttribute('class', 'stop');
+                circle.setAttribute('id', stop.id);
+                svg.appendChild(circle);
+
+                // Connecting Line
+                if (index < stops.length - 1) {
+                    const nextStop = stops[index + 1];
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', 50);
+                    line.setAttribute('y1', stop.y + 10);
+                    line.setAttribute('x2', 50);
+                    line.setAttribute('y2', nextStop.y - 10);
+                    line.setAttribute('class', index === 4 ? 'land-line' : 'flight-line');
+                    svg.appendChild(line);
+                }
+
+                // Location Label
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', 70);
+                text.setAttribute('y', stop.y + 5);
+                text.textContent = stop.id === 'manila2' ? 'Manila (End)' : stop.location;
+                svg.appendChild(text);
+
+                // Day Bars for Hotel Stays
+                stop.stayDays.forEach((dayNum, barIndex) => {
+                    const dayData = journey.find(d => d.day === dayNum);
+                    const barX = 130 + (barIndex * 25);
+                    const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    bar.setAttribute('x', barX);
+                    bar.setAttribute('y', stop.y - 10);
+                    bar.setAttribute('width', 20);
+                    bar.setAttribute('height', 20);
+                    bar.setAttribute('class', 'day-bar');
+                    svg.appendChild(bar);
+                    setTimeout(() => bar.classList.add('visible'), barIndex * 200);
+
+                    // State Logic for Bars (Hotel Stays)
+                    const dayDate = new Date(dayData.date);
+                    const isPast = dayDate < today;
+                    const isCurrent = dayDate.toDateString() === today.toDateString();
+                    const isFuture = dayDate > today;
+                    const bookedKeys = {
+                        'manila1': 'manilaHotel',
+                        'bohol': 'boholHotel',
+                        'cebu': 'cebuHotel',
+                        'elnido': 'elNidoHotel',
+                        'coron': 'coronHotel',
+                        'manila2': 'manilaFinalHotel'
+                    };
+                    const isBooked = localStorage.getItem(bookedKeys[stop.id]);
+
+                    if (isCurrent) {
+                        bar.classList.add('current');
+                    } else if (isPast) {
+                        bar.classList.add('past');
+                    } else if (isFuture && isBooked) {
+                        bar.classList.add('booked');
+                    }
+                });
+
+                // State Logic for Circles (Travel Dates/Locations)
+                const travelDate = new Date(journey.find(d => d.day === stop.days[0]).date);
+                const isPast = travelDate < today;
+                const isCurrent = travelDate.toDateString() === today.toDateString();
+                const isFuture = travelDate > today;
+                const bookedKeys = {
+                    'dublin': 'dublinManila',
+                    'manila1': 'manilaBohol',
+                    'bohol': 'boholCebu',
+                    'cebu': 'cebuElNido',
+                    'elnido': 'elNidoCoron', // Assuming a key for ferry
+                    'coron': 'coronManila',
+                    'manila2': 'manilaFinalHotel'
+                };
+                const isBooked = localStorage.getItem(bookedKeys[stop.id]);
+
+                if (isCurrent) {
+                    circle.classList.add('current');
+                } else if (isPast) {
+                    circle.classList.add('past');
+                } else if (isFuture && isBooked) {
+                    circle.classList.add('booked');
+                }
+            });
+        }
+
+        // Setup Interactions
+        function setupInteractions() {
+            const rows = document.querySelectorAll('#journeyTable tr:not(:first-child)');
+            const stopsElements = document.querySelectorAll('.stop');
+
+            rows.forEach((row, index) => {
+                row.addEventListener('click', () => showOverlay(journey[index]));
+            });
+
+            stopsElements.forEach(stop => {
+                stop.addEventListener('click', () => {
+                    const stopData = stops.find(s => s.id === stop.id);
+                    const firstDay = journey.find(d => d.day === stopData.days[0]);
+                    showOverlay(firstDay);
+                });
+            });
+        }
+
+        // Show Overlay
+        function showOverlay(data) {
+            document.getElementById('overlayDay').textContent = `Day ${data.day}`;
+            document.getElementById('overlayDate').textContent = data.date;
+            document.getElementById('overlayLocation').textContent = data.location;
+            document.getElementById('overlayNotes').textContent = data.notes;
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        // Hide Overlay
+        function hideOverlay() {
+            document.getElementById('overlay').classList.remove('active');
+        }
+    </script>
 
     <div class="section">
         <nav>
             <a href="index.html">Back to Overview 🗺️</a>
         </nav>
     </div>
-
-    <script src="script.js"></script>
-    <script>
-        // Update stop status based on bookings and current date
-        function updateJourneyStatus() {
-            const today = new Date('2025-03-14'); // Today: March 14, 2025
-            const stops = {
-                'dublin': '2025-03-23',
-                'manila1': '2025-03-24',
-                'bohol': '2025-03-26',
-                'cebu': '2025-03-30',
-                'elnido': '2025-04-03',
-                'coron': '2025-04-07',
-                'manila2': '2025-04-19'
-            };
-
-            const booked = {
-                'dublinManila': localStorage.getItem('dublinManila'),
-                'manilaBohol': localStorage.getItem('manilaBohol'),
-                'boholCebu': localStorage.getItem('boholCebu'),
-                'cebuElNido': localStorage.getItem('cebuElNido'),
-                'coronManila': localStorage.getItem('coronManila'),
-                'manilaHotel': localStorage.getItem('manilaHotel'),
-                'boholHotel': localStorage.getItem('boholHotel'),
-                'cebuHotel': localStorage.getItem('cebuHotel'),
-                'elNidoHotel': localStorage.getItem('elNidoHotel'),
-                'coronHotel': localStorage.getItem('coronHotel'),
-                'manilaFinalHotel': localStorage.getItem('manilaFinalHotel')
-            };
-
-            for (const [id, date] of Object.entries(stops)) {
-                const stop = document.getElementById(id);
-                const stopDate = new Date(date);
-
-                // Check if booked
-                const isBooked = (id === 'dublin' && booked.dublinManila) ||
-                                (id === 'manila1' && booked.manilaHotel) ||
-                                (id === 'bohol' && (booked.manilaBohol || booked.boholHotel)) ||
-                                (id === 'cebu' && (booked.boholCebu || booked.cebuHotel)) ||
-                                (id === 'elnido' && (booked.cebuElNido || booked.elNidoHotel)) ||
-                                (id === 'coron' && (booked.coronHotel || booked.coronManila)) ||
-                                (id === 'manila2' && booked.manilaFinalHotel);
-
-                // Check if current
-                const isCurrent = stopDate.toDateString() === today.toDateString();
-
-                if (isBooked) {
-                    stop.classList.add('booked');
-                } else if (isCurrent) {
-                    stop.classList.add('current');
-                } else if (stopDate > today) {
-                    stop.classList.add('stop'); // Yet to come (default)
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', updateJourneyStatus);
-    </script>
 </body>
 </html>
