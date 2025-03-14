@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journey Summary 🗺️</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #ff6f61;
+            color: #fff;
+        }
+        svg {
+            width: 100%;
+            height: 200px;
+            margin: 20px 0;
+        }
+        .flight-line {
+            stroke: red;
+            stroke-width: 2;
+            fill: none;
+        }
+        .land-line {
+            stroke: red;
+            stroke-width: 2;
+            stroke-dasharray: 5;
+            fill: none;
+        }
+        .stop {
+            fill: gray; /* Default: yet to come */
+        }
+        .booked {
+            fill: green;
+        }
+        .current {
+            fill: blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Journey Summary 🗺️</h1>
+
+    <div class="section">
+        <h2>Your Trip at a Glance</h2>
+        <table>
+            <tr><th>Day</th><th>Date</th><th>Location</th><th>Notes</th></tr>
+            <tr><td>1</td><td>March 23, 2025</td><td>Dublin → Manila</td><td>Flight departs Dublin</td></tr>
+            <tr><td>2</td><td>March 24, 2025</td><td>Manila</td><td>Arrive Manila, hotel stay</td></tr>
+            <tr><td>3</td><td>March 25, 2025</td><td>Manila</td><td>Hotel stay</td></tr>
+            <tr><td>4</td><td>March 26, 2025</td><td>Manila → Bohol</td><td>Flight to Bohol, hotel stay</td></tr>
+            <tr><td>5</td><td>March 27, 2025</td><td>Bohol</td><td>Chocolate Hills, Tarsiers</td></tr>
+            <tr><td>6</td><td>March 28, 2025</td><td>Bohol</td><td>Hotel stay</td></tr>
+            <tr><td>7</td><td>March 29, 2025</td><td>Bohol</td><td>Hotel stay</td></tr>
+            <tr><td>8</td><td>March 30, 2025</td><td>Bohol → Cebu</td><td>Flight to Cebu, hotel stay</td></tr>
+            <tr><td>9</td><td>March 31, 2025</td><td>Cebu</td><td>Hotel stay</td></tr>
+            <tr><td>10</td><td>April 1, 2025</td><td>Cebu</td><td>Hotel stay</td></tr>
+            <tr><td>11</td><td>April 2, 2025</td><td>Cebu</td><td>Hotel stay</td></tr>
+            <tr><td>12</td><td>April 3, 2025</td><td>Cebu → El Nido</td><td>Flight to El Nido, hotel stay</td></tr>
+            <tr><td>13</td><td>April 4, 2025</td><td>El Nido</td><td>Hotel stay</td></tr>
+            <tr><td>14</td><td>April 5, 2025</td><td>El Nido</td><td>Hotel stay</td></tr>
+            <tr><td>15</td><td>April 6, 2025</td><td>El Nido</td><td>Hotel stay</td></tr>
+            <tr><td>16</td><td>April 7, 2025</td><td>El Nido → Coron</td><td>Ferry to Coron, hotel stay</td></tr>
+            <tr><td>17</td><td>April 8, 2025</td><td>Coron</td><td>Hotel stay</td></tr>
+            <tr><td>18</td><td>April 9, 2025</td><td>Coron</td><td>Hotel stay</td></tr>
+            <tr><td>19</td><td>April 10, 2025</td><td>Coron → Manila</td><td>Flight to Manila</td></tr>
+            <tr><td>28</td><td>April 19, 2025</td><td>Manila</td><td>Final hotel stay, depart</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Journey Timeline</h2>
+        <svg viewBox="0 0 800 150">
+            <!-- Stops -->
+            <circle cx="50" cy="75" r="10" class="stop" id="dublin" />
+            <circle cx="150" cy="75" r="10" class="stop" id="manila1" />
+            <circle cx="250" cy="75" r="10" class="stop" id="bohol" />
+            <circle cx="350" cy="75" r="10" class="stop" id="cebu" />
+            <circle cx="450" cy="75" r="10" class="stop" id="elnido" />
+            <circle cx="550" cy="75" r="10" class="stop" id="coron" />
+            <circle cx="650" cy="75" r="10" class="stop" id="manila2" />
+
+            <!-- Flight Lines (Curved) -->
+            <path d="M50,75 Q100,25 150,75" class="flight-line" /> <!-- Dublin to Manila -->
+            <path d="M150,75 Q200,25 250,75" class="flight-line" /> <!-- Manila to Bohol -->
+            <path d="M250,75 Q300,25 350,75" class="flight-line" /> <!-- Bohol to Cebu -->
+            <path d="M350,75 Q400,25 450,75" class="flight-line" /> <!-- Cebu to El Nido -->
+            <path d="M550,75 Q600,25 650,75" class="flight-line" /> <!-- Coron to Manila -->
+
+            <!-- Land/Sea Line (Dotted) -->
+            <line x1="450" y1="75" x2="550" y2="75" class="land-line" /> <!-- El Nido to Coron -->
+
+            <!-- Labels -->
+            <text x="40" y="95" font-size="12">Dublin</text>
+            <text x="140" y="95" font-size="12">Manila</text>
+            <text x="240" y="95" font-size="12">Bohol</text>
+            <text x="340" y="95" font-size="12">Cebu</text>
+            <text x="440" y="95" font-size="12">El Nido</text>
+            <text x="540" y="95" font-size="12">Coron</text>
+            <text x="640" y="95" font-size="12">Manila</text>
+        </svg>
+    </div>
+
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Overview 🗺️</a>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Update stop status based on bookings and current date
+        function updateJourneyStatus() {
+            const today = new Date('2025-03-14'); // Today: March 14, 2025
+            const stops = {
+                'dublin': '2025-03-23',
+                'manila1': '2025-03-24',
+                'bohol': '2025-03-26',
+                'cebu': '2025-03-30',
+                'elnido': '2025-04-03',
+                'coron': '2025-04-07',
+                'manila2': '2025-04-19'
+            };
+
+            const booked = {
+                'dublinManila': localStorage.getItem('dublinManila'),
+                'manilaBohol': localStorage.getItem('manilaBohol'),
+                'boholCebu': localStorage.getItem('boholCebu'),
+                'cebuElNido': localStorage.getItem('cebuElNido'),
+                'coronManila': localStorage.getItem('coronManila'),
+                'manilaHotel': localStorage.getItem('manilaHotel'),
+                'boholHotel': localStorage.getItem('boholHotel'),
+                'cebuHotel': localStorage.getItem('cebuHotel'),
+                'elNidoHotel': localStorage.getItem('elNidoHotel'),
+                'coronHotel': localStorage.getItem('coronHotel'),
+                'manilaFinalHotel': localStorage.getItem('manilaFinalHotel')
+            };
+
+            for (const [id, date] of Object.entries(stops)) {
+                const stop = document.getElementById(id);
+                const stopDate = new Date(date);
+
+                // Check if booked
+                const isBooked = (id === 'dublin' && booked.dublinManila) ||
+                                (id === 'manila1' && booked.manilaHotel) ||
+                                (id === 'bohol' && (booked.manilaBohol || booked.boholHotel)) ||
+                                (id === 'cebu' && (booked.boholCebu || booked.cebuHotel)) ||
+                                (id === 'elnido' && (booked.cebuElNido || booked.elNidoHotel)) ||
+                                (id === 'coron' && (booked.coronHotel || booked.coronManila)) ||
+                                (id === 'manila2' && booked.manilaFinalHotel);
+
+                // Check if current
+                const isCurrent = stopDate.toDateString() === today.toDateString();
+
+                if (isBooked) {
+                    stop.classList.add('booked');
+                } else if (isCurrent) {
+                    stop.classList.add('current');
+                } else if (stopDate > today) {
+                    stop.classList.add('stop'); // Yet to come (default)
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateJourneyStatus);
+    </script>
+</body>
+</html>
