@@ -111,7 +111,7 @@
             border-radius: 5px;
             font-size: 14px;
         }
-        #trip-plan .legend-item {
+        #trip-plan .legend graduates {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
@@ -194,6 +194,9 @@
             cursor: pointer;
             color: #333;
         }
+        #trip-plan #importFile {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -207,6 +210,10 @@
         </div>
         <button id="addRow">Add Location</button>
         <button id="saveChanges">Save Changes</button>
+        <button id="clearData">Clear Data</button>
+        <button id="importData">Import Data</button>
+        <input type="file" id="importFile" accept=".json">
+        <button id="exportData">Export Data</button>
 
         <h2>Trip Timeline</h2>
         <svg viewBox="0 0 300 800" id="tripSvg">
@@ -291,6 +298,10 @@
 
             document.getElementById('addRow').addEventListener('click', addRow);
             document.getElementById('saveChanges').addEventListener('click', saveChanges);
+            document.getElementById('clearData').addEventListener('click', clearData);
+            document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
+            document.getElementById('importFile').addEventListener('change', importData);
+            document.getElementById('exportData').addEventListener('click', exportData);
         });
 
         function formatDate(dateStr) {
@@ -388,6 +399,57 @@
             buildTimeline(tripData);
             buildSummary(tripData);
             setupInteractions(tripData);
+        }
+
+        function clearData() {
+            if (confirm('Are you sure you want to clear all trip data? This cannot be undone.')) {
+                localStorage.removeItem('tripPlan');
+                tripData = null;
+                location.reload();
+            }
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (!importedData.title || !importedData.locations) {
+                        throw new Error('Invalid trip data format');
+                    }
+                    tripData = importedData;
+                    localStorage.setItem('tripPlan', JSON.stringify(tripData));
+                    buildSummary(tripData);
+                    buildTimeline(tripData);
+                    setupInteractions(tripData);
+                    document.getElementById('tripTitle').textContent = `${tripData.title} 🗺️`;
+                    alert('Trip data imported successfully!');
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+
+        function exportData() {
+            if (!tripData) {
+                alert('No trip data to export.');
+                return;
+            }
+            const jsonStr = JSON.stringify(tripData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'trip-plan.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function buildTimeline(tripData) {

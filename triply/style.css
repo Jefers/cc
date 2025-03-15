@@ -86,7 +86,6 @@ img {
     padding: 5px;
     border-radius: 5px;
 }
-
 /* Replace in style.css */
 #trip-plan .action-btn {
     background: none;
@@ -110,6 +109,7 @@ img {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     margin-right: 10px;
+    margin-top: 10px;
 }
 
 #trip-plan button:not(.action-btn):not(.close-btn):not(.remove-btn):hover {
