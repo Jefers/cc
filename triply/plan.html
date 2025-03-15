@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Plan 🗺️</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles scoped to #trip-plan */
+        #trip-plan * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #trip-plan {
+            background-color: #f0f4f8;
+            padding: 20px;
+        }
+
+        #trip-plan h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        /* Table */
+        #trip-plan table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #trip-plan th, #trip-plan td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #trip-plan th {
+            background-color: #ff6f61;
+            color: #fff;
+        }
+        #trip-plan tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        #trip-plan tr:hover {
+            background-color: #e0e7ff;
+            cursor: pointer;
+        }
+        #trip-plan .current {
+            background-color: #cce5ff;
+            font-weight: bold;
+            color: #1e90ff;
+        }
+        #trip-plan input {
+            width: 100%;
+            padding: 4px;
+            border: none;
+            background: transparent;
+        }
+        #trip-plan .action-btn {
+            background-color: #ff6f61;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #trip-plan .action-btn:hover {
+            background-color: #ff897c;
+        }
+        @media (min-width: 768px) {
+            #trip-plan table { font-size: 16px; }
+            #trip-plan th, #trip-plan td { padding: 12px; }
+            #trip-plan { padding: 40px; max-width: 800px; margin: 0 auto; }
+        }
+
+        /* Timeline */
+        #trip-plan svg {
+            width: 100%;
+            height: 800px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #trip-plan .travel-line {
+            stroke: #ff6f61;
+            stroke-width: 2;
+        }
+        #trip-plan .stop {
+            fill: #ccc;
+            stroke: #333;
+            stroke-width: 1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #trip-plan .stop.booked { fill: #32cd32; }
+        #trip-plan .stop.past { fill: #ffa500; }
+        #trip-plan .stop.current { fill: #1e90ff; }
+        #trip-plan .stop:hover { transform: scale(1.2); }
+        #trip-plan .day-bar {
+            fill: #ccc;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #trip-plan .day-bar.booked { fill: #32cd32; }
+        #trip-plan .day-bar.past { fill: #ffa500; }
+        #trip-plan .day-bar.current { fill: #1e90ff; }
+        #trip-plan .day-bar.visible { opacity: 0.7; }
+        #trip-plan .day-bar:hover { opacity: 1; }
+        #trip-plan text {
+            font-size: 12px;
+            fill: #333;
+        }
+        @media (min-width: 768px) {
+            #trip-plan svg { height: 900px; }
+            #trip-plan text { font-size: 14px; }
+        }
+
+        /* Legend */
+        #trip-plan .legend {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        #trip-plan .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        #trip-plan .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 1px solid #333;
+        }
+
+        /* Overlay */
+        #trip-plan .overlay {
+            position: fixed;
+            top: 0;
+            left: 100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
+            z-index: 10;
+        }
+        #trip-plan .overlay.active { left: 20%; }
+        #trip-plan .overlay h3 {
+            color: #ff6f61;
+            margin-bottom: 10px;
+        }
+        #trip-plan .overlay p {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        #trip-plan .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="tripTitle">Trip Plan 🗺️</h1>
+
+    <!-- Trip Plan Content -->
+    <div id="trip-plan">
+        <h2>Your Trip at a Glance</h2>
+        <table id="tripTable">
+            <tr>
+                <th>Location</th>
+                <th>Arrival</th>
+                <th>Departure</th>
+                <th>Days</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+            <!-- Populated by JavaScript -->
+        </table>
+        <button id="addRow">Add Location</button>
+        <button id="saveChanges">Save Changes</button>
+
+        <div class="legend">
+            <h3>Timeline Key</h3>
+            <div class="legend-item"><div class="legend-color" style="background-color: #ccc;"></div><span>Future, Not Booked</span></div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #32cd32;"></div><span>Future, Booked</span></div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #ffa500;"></div><span>Past</span></div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #1e90ff;"></div><span>Current Date</span></div>
+        </div>
+
+        <h2>Trip Timeline</h2>
+        <svg viewBox="0 0 300 800" id="tripSvg">
+            <!-- Populated by JavaScript -->
+        </svg>
+
+        <div class="overlay" id="overlay">
+            <button class="close-btn" onclick="hideOverlay()">×</button>
+            <h3 id="overlayLocation"></h3>
+            <p id="overlayArrival"></p>
+            <p id="overlayDeparture"></p>
+            <p id="overlayDays"></p>
+            <p id="overlayNotes"></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Planner 🗺️</a>
+        </nav>
+    </div>
+
+    <script>
+        let tripData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            tripData = JSON.parse(localStorage.getItem('tripPlan'));
+            if (!tripData) {
+                alert('No trip plan found. Please create one first.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('tripTitle').textContent = `${tripData.title} 🗺️`;
+            buildTable(tripData);
+            buildTimeline(tripData);
+            setupInteractions(tripData);
+
+            document.getElementById('addRow').addEventListener('click', addRow);
+            document.getElementById('saveChanges').addEventListener('click', saveChanges);
+        });
+
+        function buildTable(tripData) {
+            const table = document.getElementById('tripTable');
+            table.innerHTML = '<tr><th>Location</th><th>Arrival</th><th>Departure</th><th>Days</th><th>Notes</th><th>Actions</th></tr>';
+            const today = new Date('2025-04-01'); // Hardcoded for testing
+
+            tripData.locations.forEach((loc, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" value="${loc.name}" data-index="${index}" class="loc-name"></td>
+                    <td><input type="date" value="${loc.arrival}" data-index="${index}" class="loc-arrival"></td>
+                    <td><input type="date" value="${loc.departure}" data-index="${index}" class="loc-departure"></td>
+                    <td><input type="number" value="${loc.days}" data-index="${index}" class="loc-days" min="1"></td>
+                    <td><input type="text" value="${loc.notes}" data-index="${index}" class="loc-notes"></td>
+                    <td><button class="action-btn delete-btn" data-index="${index}">Delete</button></td>
+                `;
+                const arrivalDate = new Date(loc.arrival);
+                const departureDate = new Date(loc.departure);
+                if (arrivalDate <= today && today <= departureDate) {
+                    row.classList.add('current');
+                }
+                table.appendChild(row);
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteRow(btn.getAttribute('data-index')));
+            });
+        }
+
+        function addRow() {
+            const table = document.getElementById('tripTable');
+            const lastRow = table.rows[table.rows.length - 1];
+            const newIndex = tripData.locations.length;
+            const defaultDate = lastRow ? lastRow.querySelector('.loc-departure').value : tripData.startDate;
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" value="New Location" data-index="${newIndex}" class="loc-name"></td>
+                <td><input type="date" value="${defaultDate}" data-index="${newIndex}" class="loc-arrival"></td>
+                <td><input type="date" value="${defaultDate}" data-index="${newIndex}" class="loc-departure"></td>
+                <td><input type="number" value="1" data-index="${newIndex}" class="loc-days" min="1"></td>
+                <td><input type="text" value="New notes" data-index="${newIndex}" class="loc-notes"></td>
+                <td><button class="action-btn delete-btn" data-index="${newIndex}">Delete</button></td>
+            `;
+            table.appendChild(newRow);
+            newRow.querySelector('.delete-btn').addEventListener('click', () => deleteRow(newIndex));
+        }
+
+        function deleteRow(index) {
+            const table = document.getElementById('tripTable');
+            const row = table.querySelector(`tr td input[data-index="${index}"]`).parentElement.parentElement;
+            table.removeChild(row);
+        }
+
+        function saveChanges() {
+            const table = document.getElementById('tripTable');
+            const rows = table.querySelectorAll('tr:not(:first-child)');
+            const updatedLocations = [];
+
+            rows.forEach(row => {
+                const index = row.querySelector('input').getAttribute('data-index');
+                const loc = {
+                    name: row.querySelector('.loc-name').value,
+                    arrival: row.querySelector('.loc-arrival').value,
+                    departure: row.querySelector('.loc-departure').value,
+                    days: parseInt(row.querySelector('.loc-days').value),
+                    notes: row.querySelector('.loc-notes').value
+                };
+                updatedLocations.push(loc);
+            });
+
+            tripData.locations = updatedLocations;
+            tripData.startDate = updatedLocations[0].arrival;
+            tripData.endDate = updatedLocations[updatedLocations.length - 1].departure;
+
+            localStorage.setItem('tripPlan', JSON.stringify(tripData));
+            buildTimeline(tripData);
+            buildTable(tripData); // Refresh table with updated data
+            setupInteractions(tripData);
+            alert('Changes saved!');
+        }
+
+        function buildTimeline(tripData) {
+            const svg = document.getElementById('tripSvg');
+            svg.innerHTML = ''; // Clear previous timeline
+            const today = new Date('2025-04-01'); // Hardcoded for testing
+            const ySpacing = 600 / (tripData.locations.length - 1 || 1);
+            let yPos = 50;
+
+            tripData.locations.forEach((loc, index) => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', 50);
+                circle.setAttribute('cy', yPos);
+                circle.setAttribute('r', 10);
+                circle.setAttribute('class', 'stop');
+                circle.setAttribute('id', `loc-${index}`);
+                svg.appendChild(circle);
+
+                if (index < tripData.locations.length - 1) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', 50);
+                    line.setAttribute('y1', yPos + 10);
+                    line.setAttribute('x2', 50);
+                    line.setAttribute('y2', yPos + ySpacing - 10);
+                    line.setAttribute('class', 'travel-line');
+                    svg.appendChild(line);
+                }
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', 70);
+                text.setAttribute('y', yPos + 5);
+                text.textContent = loc.name;
+                svg.appendChild(text);
+
+                for (let i = 0; i < loc.days; i++) {
+                    const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    bar.setAttribute('x', 130 + (i * 25));
+                    bar.setAttribute('y', yPos - 10);
+                    bar.setAttribute('width', 20);
+                    bar.setAttribute('height', 20);
+                    bar.setAttribute('class', 'day-bar');
+                    svg.appendChild(bar);
+                    setTimeout(() => bar.classList.add('visible'), i * 200);
+
+                    const dayDate = new Date(loc.arrival);
+                    dayDate.setDate(dayDate.getDate() + i);
+                    const isPast = dayDate < today;
+                    const isCurrent = dayDate.toDateString() === today.toDateString();
+                    const isFuture = dayDate > today;
+                    const isBooked = localStorage.getItem(`${loc.name.toLowerCase()}Booked`);
+
+                    if (isCurrent) bar.classList.add('current');
+                    else if (isPast) bar.classList.add('past');
+                    else if (isFuture && isBooked) bar.classList.add('booked');
+                }
+
+                const arrivalDate = new Date(loc.arrival);
+                const isPast = arrivalDate < today;
+                const isCurrent = arrivalDate.toDateString() === today.toDateString();
+                const isFuture = arrivalDate > today;
+                const isBooked = localStorage.getItem(`${loc.name.toLowerCase()}Booked`);
+
+                if (isCurrent) circle.classList.add('current');
+                else if (isPast) circle.classList.add('past');
+                else if (isFuture && isBooked) circle.classList.add('booked');
+
+                yPos += ySpacing;
+            });
+
+            svg.setAttribute('height', Math.max(800, yPos + 50));
+        }
+
+        function setupInteractions(tripData) {
+            const rows = document.querySelectorAll('#tripTable tr:not(:first-child)');
+            const stops = document.querySelectorAll('.stop');
+
+            rows.forEach((row, index) => {
+                row.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('action-btn')) {
+                        showOverlay(tripData.locations[index]);
+                    }
+                });
+            });
+
+            stops.forEach(stop => {
+                stop.addEventListener('click', () => {
+                    const index = parseInt(stop.id.split('-')[1]);
+                    showOverlay(tripData.locations[index]);
+                });
+            });
+        }
+
+        function showOverlay(loc) {
+            document.getElementById('overlayLocation').textContent = loc.name;
+            document.getElementById('overlayArrival').textContent = `Arrival: ${loc.arrival}`;
+            document.getElementById('overlayDeparture').textContent = `Departure: ${loc.departure}`;
+            document.getElementById('overlayDays').textContent = `Days: ${loc.days}`;
+            document.getElementById('overlayNotes').textContent = loc.notes;
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function hideOverlay() {
+            document.getElementById('overlay').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

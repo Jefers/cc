@@ -1,0 +1,79 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Plan Your Trip</h1>
+        <form id="tripForm">
+            <div class="form-group">
+                <label>Trip Title:</label>
+                <input type="text" id="title" required>
+            </div>
+            <div class="form-group">
+                <label>Start Date:</label>
+                <input type="date" id="startDate" required>
+            </div>
+            <div class="form-group">
+                <label>Total Days:</label>
+                <input type="number" id="totalDays" min="1" required>
+            </div>
+            <div class="form-group">
+                <label>Destinations (comma-separated):</label>
+                <input type="text" id="destinations" required>
+            </div>
+            <button type="submit">Generate Plan</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('tripForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulate AI planning
+            const tripData = {
+                title: document.getElementById('title').value,
+                startDate: document.getElementById('startDate').value,
+                totalDays: parseInt(document.getElementById('totalDays').value),
+                destinations: document.getElementById('destinations').value.split(',').map(d => d.trim())
+            };
+
+            // Generate JSON structure
+            const itinerary = {
+                title: tripData.title,
+                startDate: tripData.startDate,
+                locations: []
+            };
+
+            // Simple date calculation
+            let currentDate = new Date(tripData.startDate);
+            const daysPerDestination = Math.floor(tripData.totalDays / tripData.destinations.length);
+            
+            tripData.destinations.forEach((dest, index) => {
+                const start = new Date(currentDate);
+                const end = new Date(start);
+                end.setDate(start.getDate() + daysPerDestination);
+                
+                itinerary.locations.push({
+                    name: dest,
+                    arrival: start.toISOString().split('T')[0],
+                    departure: end.toISOString().split('T')[0],
+                    days: daysPerDestination,
+                    notes: `${dest} activities`
+                });
+                
+                currentDate = end;
+            });
+
+            // Save to localStorage and redirect
+            localStorage.setItem('tripItinerary', JSON.stringify(itinerary));
+            window.location.href = 'plan.html';
+        });
+    </script>
+</body>
+</html>

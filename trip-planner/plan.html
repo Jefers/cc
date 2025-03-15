@@ -1,0 +1,68 @@
+<!-- plan.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Summary</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="tripTitle"></h1>
+        <div class="timeline" id="timeline"></div>
+        <table id="itineraryTable">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Arrival</th>
+                    <th>Departure</th>
+                    <th>Days</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button onclick="confirmTrip()">Confirm Trip</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itinerary = JSON.parse(localStorage.getItem('tripItinerary'));
+            document.getElementById('tripTitle').textContent = itinerary.title;
+            
+            // Generate table
+            const tbody = document.querySelector('#itineraryTable tbody');
+            itinerary.locations.forEach(location => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${location.name}</td>
+                    <td>${location.arrival}</td>
+                    <td>${location.departure}</td>
+                    <td>${location.days}</td>
+                    <td>${location.notes}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Generate timeline
+            const timeline = document.getElementById('timeline');
+            itinerary.locations.forEach((location, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.innerHTML = `
+                    <div class="timeline-circle"></div>
+                    ${index < itinerary.locations.length - 1 ? '<div class="timeline-bar"></div>' : ''}
+                    <div class="timeline-label">${location.name}<br>${location.days} days</div>
+                `;
+                timeline.appendChild(timelineItem);
+            });
+        });
+
+        function confirmTrip() {
+            alert('Trip confirmed!');
+            // Additional logic to save final plan
+        }
+    </script>
+</body>
+</html>

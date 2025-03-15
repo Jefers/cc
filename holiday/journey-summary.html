@@ -4,28 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Journey Summary 🗺️</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Reset and Base Styles */
-        * {
+        /* Page-specific styles scoped to #journey-summary */
+        #journey-summary * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
         }
 
-        body {
-            padding: 15px;
-            line-height: 1.5;
-            background-color: #f5f5f5;
+        #journey-summary {
+            background-color: #f0f4f8; /* Match style.css body */
+            padding: 20px; /* Match style.css body */
         }
 
-        h1, h2 {
+        #journey-summary h2 {
             color: #333;
             margin-bottom: 15px;
         }
 
         /* Mobile-First Table */
-        table {
+        #journey-summary table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
@@ -33,34 +32,35 @@
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        th, td {
+        #journey-summary th, #journey-summary td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
-        th {
+        #journey-summary th {
             background-color: #ff6f61;
             color: #fff;
         }
-        tr:nth-child(even) {
+        #journey-summary tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        tr:hover {
+        #journey-summary tr:hover {
             background-color: #e0e7ff;
             cursor: pointer;
         }
-        .current {
+        #journey-summary .current {
             background-color: #cce5ff;
             font-weight: bold;
             color: #1e90ff;
         }
         @media (min-width: 768px) {
-            table { font-size: 16px; }
-            th, td { padding: 12px; }
+            #journey-summary table { font-size: 16px; }
+            #journey-summary th, #journey-summary td { padding: 12px; }
+            #journey-summary { padding: 40px; max-width: 800px; margin: 0 auto; } /* Match style.css body */
         }
 
         /* Vertical Timeline */
-        svg {
+        #journey-summary svg {
             width: 100%;
             height: 800px;
             margin-bottom: 20px;
@@ -68,65 +68,47 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-        .flight-line {
+        #journey-summary .flight-line {
             stroke: #ff6f61;
             stroke-width: 2;
         }
-        .land-line {
+        #journey-summary .land-line {
             stroke: #ff6f61;
             stroke-width: 2;
             stroke-dasharray: 5;
         }
-        .stop {
-            fill: #ccc; /* Grey: Future, not booked */
+        #journey-summary .stop {
+            fill: #ccc;
             stroke: #333;
             stroke-width: 1;
             cursor: pointer;
             transition: transform 0.3s ease;
         }
-        .stop.booked {
-            fill: #32cd32; /* Green: Future, booked */
-        }
-        .stop.past {
-            fill: #ffa500; /* Orange: Past */
-        }
-        .stop.current {
-            fill: #1e90ff; /* Blue: Current */
-        }
-        .stop:hover {
-            transform: scale(1.2);
-        }
-        .day-bar {
-            fill: #ccc; /* Grey: Future, not booked */
+        #journey-summary .stop.booked { fill: #32cd32; }
+        #journey-summary .stop.past { fill: #ffa500; }
+        #journey-summary .stop.current { fill: #1e90ff; }
+        #journey-summary .stop:hover { transform: scale(1.2); }
+        #journey-summary .day-bar {
+            fill: #ccc;
             opacity: 0;
             transition: opacity 0.5s ease;
         }
-        .day-bar.booked {
-            fill: #32cd32; /* Green: Future, booked */
-        }
-        .day-bar.past {
-            fill: #ffa500; /* Orange: Past */
-        }
-        .day-bar.current {
-            fill: #1e90ff; /* Blue: Current */
-        }
-        .day-bar.visible {
-            opacity: 0.7;
-        }
-        .day-bar:hover {
-            opacity: 1;
-        }
-        text {
+        #journey-summary .day-bar.booked { fill: #32cd32; }
+        #journey-summary .day-bar.past { fill: #ffa500; }
+        #journey-summary .day-bar.current { fill: #1e90ff; }
+        #journey-summary .day-bar.visible { opacity: 0.7; }
+        #journey-summary .day-bar:hover { opacity: 1; }
+        #journey-summary text {
             font-size: 12px;
             fill: #333;
         }
         @media (min-width: 768px) {
-            svg { height: 900px; }
-            text { font-size: 14px; }
+            #journey-summary svg { height: 900px; }
+            #journey-summary text { font-size: 14px; }
         }
 
         /* Legend */
-        .legend {
+        #journey-summary .legend {
             margin-bottom: 20px;
             padding: 10px;
             background-color: #fff;
@@ -134,12 +116,12 @@
             border-radius: 5px;
             font-size: 14px;
         }
-        .legend-item {
+        #journey-summary .legend-item {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
         }
-        .legend-color {
+        #journey-summary .legend-color {
             width: 20px;
             height: 20px;
             margin-right: 10px;
@@ -147,7 +129,7 @@
         }
 
         /* Overlay */
-        .overlay {
+        #journey-summary .overlay {
             position: fixed;
             top: 0;
             left: 100%;
@@ -160,18 +142,16 @@
             transition: left 0.3s ease;
             z-index: 10;
         }
-        .overlay.active {
-            left: 20%;
-        }
-        .overlay h3 {
+        #journey-summary .overlay.active { left: 20%; }
+        #journey-summary .overlay h3 {
             color: #ff6f61;
             margin-bottom: 10px;
         }
-        .overlay p {
+        #journey-summary .overlay p {
             font-size: 14px;
             margin-bottom: 8px;
         }
-        .close-btn {
+        #journey-summary .close-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -186,54 +166,64 @@
 <body>
     <h1>Journey Summary 🗺️</h1>
 
-    <!-- Trip Table -->
-    <h2>Your Trip at a Glance</h2>
-    <table id="journeyTable">
-        <tr><th>Day</th><th>Date</th><th>Location</th><th>Notes</th></tr>
-        <tr><td>1</td><td>2025-03-23</td><td>Dublin → Manila</td><td>Flight departs Dublin</td></tr>
-        <tr><td>2</td><td>2025-03-24</td><td>Manila</td><td>Arrive, hotel stay</td></tr>
-        <tr><td>3</td><td>2025-03-25</td><td>Manila</td><td>Hotel stay</td></tr>
-        <tr><td>4</td><td>2025-03-26</td><td>Manila → Bohol</td><td>Flight to Bohol, hotel stay</td></tr>
-        <tr><td>5</td><td>2025-03-27</td><td>Bohol</td><td>Chocolate Hills, Tarsiers</td></tr>
-        <tr><td>6</td><td>2025-03-28</td><td>Bohol</td><td>Hotel stay</td></tr>
-        <tr><td>7</td><td>2025-03-29</td><td>Bohol</td><td>Hotel stay</td></tr>
-        <tr><td>8</td><td>2025-03-30</td><td>Bohol → Cebu</td><td>Flight to Cebu, hotel stay</td></tr>
-        <tr><td>9</td><td>2025-03-31</td><td>Cebu</td><td>Hotel stay</td></tr>
-        <tr><td>10</td><td>2025-04-01</td><td>Cebu</td><td>Hotel stay</td></tr>
-        <tr><td>11</td><td>2025-04-02</td><td>Cebu</td><td>Hotel stay</td></tr>
-        <tr><td>12</td><td>2025-04-03</td><td>Cebu → El Nido</td><td>Flight to El Nido, hotel stay</td></tr>
-        <tr><td>13</td><td>2025-04-04</td><td>El Nido</td><td>Hotel stay</td></tr>
-        <tr><td>14</td><td>2025-04-05</td><td>El Nido</td><td>Hotel stay</td></tr>
-        <tr><td>15</td><td>2025-04-06</td><td>El Nido</td><td>Hotel stay</td></tr>
-        <tr><td>16</td><td>2025-04-07</td><td>El Nido → Coron</td><td>Ferry to Coron, hotel stay</td></tr>
-        <tr><td>17</td><td>2025-04-08</td><td>Coron</td><td>Hotel stay</td></tr>
-        <tr><td>18</td><td>2025-04-09</td><td>Coron</td><td>Hotel stay</td></tr>
-        <tr><td>19</td><td>2025-04-10</td><td>Coron → Manila</td><td>Flight to Manila</td></tr>
-        <tr><td>28</td><td>2025-04-19</td><td>Manila</td><td>Final hotel stay, depart</td></tr>
-    </table>
+    <!-- Page-Specific Content -->
+    <div id="journey-summary">
+        <!-- Trip Table -->
+        <h2>Your Trip at a Glance</h2>
+        <table id="journeyTable">
+            <tr><th>Day</th><th>Date</th><th>Location</th><th>Notes</th></tr>
+            <tr><td>1</td><td>2025-03-23</td><td>Dublin → Manila</td><td>Flight departs Dublin</td></tr>
+            <tr><td>2</td><td>2025-03-24</td><td>Manila</td><td>Arrive, hotel stay</td></tr>
+            <tr><td>3</td><td>2025-03-25</td><td>Manila</td><td>Hotel stay</td></tr>
+            <tr><td>4</td><td>2025-03-26</td><td>Manila → Bohol</td><td>Flight to Bohol, hotel stay</td></tr>
+            <tr><td>5</td><td>2025-03-27</td><td>Bohol</td><td>Chocolate Hills, Tarsiers</td></tr>
+            <tr><td>6</td><td>2025-03-28</td><td>Bohol</td><td>Hotel stay</td></tr>
+            <tr><td>7</td><td>2025-03-29</td><td>Bohol</td><td>Hotel stay</td></tr>
+            <tr><td>8</td><td>2025-03-30</td><td>Bohol → Cebu</td><td>Flight to Cebu, hotel stay</td></tr>
+            <tr><td>9</td><td>2025-03-31</td><td>Cebu</td><td>Hotel stay</td></tr>
+            <tr><td>10</td><td>2025-04-01</td><td>Cebu</td><td>Hotel stay</td></tr>
+            <tr><td>11</td><td>2025-04-02</td><td>Cebu</td><td>Hotel stay</td></tr>
+            <tr><td>12</td><td>2025-04-03</td><td>Cebu → El Nido</td><td>Flight to El Nido, hotel stay</td></tr>
+            <tr><td>13</td><td>2025-04-04</td><td>El Nido</td><td>Hotel stay</td></tr>
+            <tr><td>14</td><td>2025-04-05</td><td>El Nido</td><td>Hotel stay</td></tr>
+            <tr><td>15</td><td>2025-04-06</td><td>El Nido</td><td>Hotel stay</td></tr>
+            <tr><td>16</td><td>2025-04-07</td><td>El Nido → Coron</td><td>Ferry to Coron, hotel stay</td></tr>
+            <tr><td>17</td><td>2025-04-08</td><td>Coron</td><td>Hotel stay</td></tr>
+            <tr><td>18</td><td>2025-04-09</td><td>Coron</td><td>Hotel stay</td></tr>
+            <tr><td>19</td><td>2025-04-10</td><td>Coron → Manila</td><td>Flight to Manila</td></tr>
+            <tr><td>28</td><td>2025-04-19</td><td>Manila</td><td>Final hotel stay, depart</td></tr>
+        </table>
 
-    <!-- Legend -->
-    <div class="legend">
-        <h3>Timeline Key</h3>
-        <div class="legend-item"><div class="legend-color" style="background-color: #ccc;"></div><span>Future, Not Booked</span></div>
-        <div class="legend-item"><div class="legend-color" style="background-color: #32cd32;"></div><span>Future, Booked</span></div>
-        <div class="legend-item"><div class="legend-color" style="background-color: #ffa500;"></div><span>Past</span></div>
-        <div class="legend-item"><div class="legend-color" style="background-color: #1e90ff;"></div><span>Current Date</span></div>
+        <!-- Legend -->
+        <div class="legend">
+            <h3>Timeline Key</h3>
+            <div class="legend-item"><div class="legend-color" style="background-color: #ccc;"></div><span>Future, Not Booked</span></div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #32cd32;"></div><span>Future, Booked</span></div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #ffa500;"></div><span>Past</span></div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #1e90ff;"></div><span>Current Date</span></div>
+        </div>
+
+        <!-- Timeline -->
+        <h2>Journey Timeline</h2>
+        <svg viewBox="0 0 300 800" id="journeySvg">
+            <!-- Populated by JavaScript -->
+        </svg>
+
+        <!-- Overlay -->
+        <div class="overlay" id="overlay">
+            <button class="close-btn" onclick="hideOverlay()">×</button>
+            <h3 id="overlayDay"></h3>
+            <p id="overlayDate"></p>
+            <p id="overlayLocation"></p>
+            <p id="overlayNotes"></p>
+        </div>
     </div>
 
-    <!-- Timeline -->
-    <h2>Journey Timeline</h2>
-    <svg viewBox="0 0 300 800" id="journeySvg">
-        <!-- Populated by JavaScript -->
-    </svg>
-
-    <!-- Overlay -->
-    <div class="overlay" id="overlay">
-        <button class="close-btn" onclick="hideOverlay()">×</button>
-        <h3 id="overlayDay"></h3>
-        <p id="overlayDate"></p>
-        <p id="overlayLocation"></p>
-        <p id="overlayNotes"></p>
+    <!-- Navigation Section -->
+    <div class="section">
+        <nav>
+            <a href="index.html">Back to Overview 🗺️</a>
+        </nav>
     </div>
 
     <script>
@@ -261,7 +251,7 @@
             { day: 28, date: '2025-04-19', location: 'Manila', notes: 'Final hotel stay, depart' }
         ];
 
-        // Timeline Stops (Circles for travel dates/locations, bars for hotel stays)
+        // Timeline Stops
         const stops = [
             { id: 'dublin', location: 'Dublin', days: [1], stayDays: [], y: 50 },
             { id: 'manila1', location: 'Manila', days: [4], stayDays: [2, 3], y: 150 },
@@ -281,8 +271,7 @@
 
         // Update Table with Current Day
         function updateTable() {
-            const today = new Date('2025-03-26'); // Hardcoded for testing
-            // const today = new Date(); // Uncomment for real-time
+            const today = new Date('2025-04-01');
             const rows = document.querySelectorAll('#journeyTable tr:not(:first-child)');
             rows.forEach((row, index) => {
                 const rowDate = new Date(journey[index].date);
@@ -296,11 +285,9 @@
         // Build the SVG Timeline
         function buildTimeline() {
             const svg = document.getElementById('journeySvg');
-            const today = new Date('2025-03-27'); // Hardcoded for testing
-            // const today = new Date(); // Uncomment for real-time
+            const today = new Date('2025-04-01');
 
             stops.forEach((stop, index) => {
-                // Circle for Travel Date/Location
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', 50);
                 circle.setAttribute('cy', stop.y);
@@ -309,7 +296,6 @@
                 circle.setAttribute('id', stop.id);
                 svg.appendChild(circle);
 
-                // Connecting Line
                 if (index < stops.length - 1) {
                     const nextStop = stops[index + 1];
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -321,14 +307,12 @@
                     svg.appendChild(line);
                 }
 
-                // Location Label
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('x', 70);
                 text.setAttribute('y', stop.y + 5);
                 text.textContent = stop.id === 'manila2' ? 'Manila (End)' : stop.location;
                 svg.appendChild(text);
 
-                // Day Bars for Hotel Stays
                 stop.stayDays.forEach((dayNum, barIndex) => {
                     const dayData = journey.find(d => d.day === dayNum);
                     const barX = 130 + (barIndex * 25);
@@ -341,7 +325,6 @@
                     svg.appendChild(bar);
                     setTimeout(() => bar.classList.add('visible'), barIndex * 200);
 
-                    // State Logic for Bars (Hotel Stays)
                     const dayDate = new Date(dayData.date);
                     const isPast = dayDate < today;
                     const isCurrent = dayDate.toDateString() === today.toDateString();
@@ -365,7 +348,6 @@
                     }
                 });
 
-                // State Logic for Circles (Travel Dates/Locations)
                 const travelDate = new Date(journey.find(d => d.day === stop.days[0]).date);
                 const isPast = travelDate < today;
                 const isCurrent = travelDate.toDateString() === today.toDateString();
@@ -375,7 +357,7 @@
                     'manila1': 'manilaBohol',
                     'bohol': 'boholCebu',
                     'cebu': 'cebuElNido',
-                    'elnido': 'elNidoCoron', // Assuming a key for ferry
+                    'elnido': 'elNidoCoron',
                     'coron': 'coronManila',
                     'manila2': 'manilaFinalHotel'
                 };
@@ -423,11 +405,5 @@
             document.getElementById('overlay').classList.remove('active');
         }
     </script>
-
-    <div class="section">
-        <nav>
-            <a href="index.html">Back to Overview 🗺️</a>
-        </nav>
-    </div>
 </body>
 </html>
