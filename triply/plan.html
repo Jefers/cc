@@ -47,7 +47,8 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 20px;
+            font-weight: bold;
             padding: 0 4px;
             vertical-align: middle;
         }
@@ -158,6 +159,11 @@
             width: 48%;
             display: inline-block;
         }
+        #trip-plan .overlay input[type="text"].airport-code {
+            width: 20%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
         #trip-plan .overlay textarea {
             height: 60px;
             resize: vertical;
@@ -165,20 +171,8 @@
         #trip-plan .overlay .form-group {
             margin-bottom: 15px;
         }
-        #trip-plan .overlay .flight-stop {
-            border: 1px dashed #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-        #trip-plan .overlay .flight-stop .remove-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            color: #ff6f61;
-            cursor: pointer;
+        #trip-plan .overlay .flight-details div {
+            margin-top: 5px;
         }
         #trip-plan .overlay .save-btn, #trip-plan .overlay .delete-btn {
             margin-top: 10px;
@@ -231,23 +225,32 @@
             <button class="close-btn" onclick="hideOverlay()">×</button>
             <h3 id="overlayLocation"></h3>
             <div class="form-group">
-                <label for="locName">Location:</label>
-                <input type="text" id="locName" name="locName">
+                <label for="locName">Departure Airport (3-letter code):</label>
+                <input type="text" id="locName" name="locName" class="airport-code" maxlength="3">
                 <label for="locArrival">Arrival Date:</label>
                 <input type="date" id="locArrival" name="locArrival">
                 <label for="locDeparture">Departure Date:</label>
                 <input type="date" id="locDeparture" name="locDeparture">
-                <label for="locDays">Days:</label>
-                <input type="number" id="locDays" name="locDays" min="1">
             </div>
-            <div class="form-group" id="flightStops">
-                <label>Flight Details:</label>
-                <div id="flightStopContainer"></div>
-                <button id="addFlightStop" class="action-btn">+ Add Flight Stop</button>
+            <div class="form-group flight-details">
+                <label>Flight Details (from this airport):</label>
+                <div>
+                    <input type="text" id="flightTo" placeholder="To (3-letter code)" class="airport-code" maxlength="3">
+                </div>
+                <div>
+                    <input type="text" id="flightDep" placeholder="Dep (e.g., 1159 for 11:59)">
+                </div>
+                <div>
+                    <input type="text" id="flightArr" placeholder="Arr (e.g., 1159 for 11:59)">
+                </div>
+                <div>
+                    <input type="text" id="flightAirline" placeholder="Airline">
+                    <input type="text" id="flightNumber" placeholder="Flight #" style="width: 30%;">
+                    <input type="text" id="flightGate" placeholder="Gate" style="width: 20%;">
+                </div>
             </div>
             <div class="form-group">
                 <label>Hotel Details:</label>
-                <input type="text" id="hotelDates" placeholder="DD/MM-DD/MM">
                 <input type="text" id="hotelName" placeholder="Hotel Name">
                 <input type="text" id="hotelConf" placeholder="Conf. #">
                 <input type="time" id="hotelCheckIn" placeholder="Check-in">
@@ -295,21 +298,43 @@
             return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
         }
 
+        function formatTime(timeStr) {
+            if (!timeStr) return '';
+            const cleaned = timeStr.replace(/[^0-9]/g, ''); // Remove non-digits
+            if (cleaned.length === 4) {
+                return `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`;
+            }
+            return timeStr; // Fallback if not 4 digits
+        }
+
+        function calculateDays(arrival, departure) {
+            const arrDate = new Date(arrival);
+            const depDate = new Date(departure);
+            const diffTime = depDate - arrDate;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
         function buildSummary(tripData) {
             const summary = document.getElementById('tripSummary');
             summary.innerHTML = '';
             const today = new Date('2025-04-01'); // Hardcoded for testing
 
+            // Sort locations by departure date
+            tripData.locations.sort((a, b) => {
+                const dateA = new Date(a.departure);
+                const dateB = new Date(b.departure);
+                return dateA - dateB;
+            });
+
             tripData.locations.forEach((loc, index) => {
                 const p = document.createElement('p');
                 let flightStr = '';
-                if (loc.flightDetails && loc.flightDetails.length > 0) {
-                    flightStr = loc.flightDetails.map(stop => 
-                        `${stop.date || formatDate(loc.arrival)} ${stop.from} to ${stop.to} ${stop.airline} ${stop.number} then Dep: ${stop.dep} Arr: ${stop.arr} gate: ${stop.gate || ''}`
-                    ).join(' then ').trim();
+                if (loc.flightDetails && loc.flightDetails.to) {
+                    const flightDate = formatDate(loc.arrival);
+                    flightStr = `${flightDate} ${loc.name} to ${loc.flightDetails.to} ${loc.flightDetails.airline} ${loc.flightDetails.number} then Dep: ${formatTime(loc.flightDetails.dep)} Arr: ${formatTime(loc.flightDetails.arr)} gate: ${loc.flightDetails.gate || ''}`;
                 }
                 const hotelStr = loc.hotelDetails && loc.hotelDetails.name 
-                    ? `Hotel: ${loc.days} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf}` 
+                    ? `Hotel: ${calculateDays(loc.arrival, loc.departure)} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf}` 
                     : '';
                 const summaryText = flightStr && hotelStr ? `${flightStr} then ${hotelStr}` : flightStr || hotelStr || '';
                 p.innerHTML = `<strong>${loc.name}</strong>: ${summaryText} <button class="action-btn details-btn" data-index="${index}">…</button>`;
@@ -326,7 +351,6 @@
                 summary.appendChild(p);
             });
 
-            // Ensure event listeners are added after DOM update
             document.querySelectorAll('.details-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const index = btn.getAttribute('data-index');
@@ -339,17 +363,16 @@
             const lastLoc = tripData.locations[tripData.locations.length - 1];
             const defaultDate = lastLoc ? lastLoc.departure : tripData.startDate;
             const newLoc = {
-                name: "New Location",
+                name: "NEW",
                 arrival: defaultDate,
                 departure: defaultDate,
-                days: 1,
-                flightDetails: [],
+                flightDetails: {},
                 hotelDetails: {},
                 notes: ""
             };
             tripData.locations.push(newLoc);
             buildSummary(tripData);
-            setupInteractions(tripData); // Re-attach timeline interactions
+            setupInteractions(tripData);
         }
 
         function deleteRow(index) {
@@ -375,6 +398,7 @@
             let yPos = 50;
 
             tripData.locations.forEach((loc, index) => {
+                const days = calculateDays(loc.arrival, loc.departure);
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', 50);
                 circle.setAttribute('cy', yPos);
@@ -399,7 +423,7 @@
                 text.textContent = loc.name;
                 svg.appendChild(text);
 
-                for (let i = 0; i < loc.days; i++) {
+                for (let i = 0; i < days; i++) {
                     const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                     bar.setAttribute('x', 130 + (i * 25));
                     bar.setAttribute('y', yPos - 10);
@@ -447,31 +471,17 @@
             });
         }
 
-        function addFlightStop(container, stop = {}) {
-            const stopDiv = document.createElement('div');
-            stopDiv.className = 'flight-stop';
-            stopDiv.innerHTML = `
-                <input type="text" class="flight-date" placeholder="DD/MM" value="${stop.date || ''}" style="width: 20%;">
-                <input type="text" class="flight-from" placeholder="From" value="${stop.from || ''}" style="width: 20%;">
-                <input type="text" class="flight-to" placeholder="To" value="${stop.to || ''}" style="width: 20%;">
-                <input type="time" class="flight-dep" placeholder="Dep" value="${stop.dep || ''}">
-                <input type="time" class="flight-arr" placeholder="Arr" value="${stop.arr || ''}">
-                <input type="text" class="flight-airline" placeholder="Airline" value="${stop.airline || ''}">
-                <input type="text" class="flight-number" placeholder="Flight #" value="${stop.number || ''}" style="width: 30%;">
-                <input type="text" class="flight-gate" placeholder="Gate" value="${stop.gate || ''}" style="width: 20%;">
-                <button class="remove-btn">✕</button>
-            `;
-            container.appendChild(stopDiv);
-            stopDiv.querySelector('.remove-btn').addEventListener('click', () => container.removeChild(stopDiv));
-        }
-
         function showOverlay(loc, index) {
             document.getElementById('overlayLocation').textContent = loc.name;
             document.getElementById('locName').value = loc.name;
             document.getElementById('locArrival').value = loc.arrival;
             document.getElementById('locDeparture').value = loc.departure;
-            document.getElementById('locDays').value = loc.days;
-            document.getElementById('hotelDates').value = loc.hotelDetails?.dates || '';
+            document.getElementById('flightTo').value = loc.flightDetails?.to || '';
+            document.getElementById('flightDep').value = loc.flightDetails?.dep || '';
+            document.getElementById('flightArr').value = loc.flightDetails?.arr || '';
+            document.getElementById('flightAirline').value = loc.flightDetails?.airline || '';
+            document.getElementById('flightNumber').value = loc.flightDetails?.number || '';
+            document.getElementById('flightGate').value = loc.flightDetails?.gate || '';
             document.getElementById('hotelName').value = loc.hotelDetails?.name || '';
             document.getElementById('hotelConf').value = loc.hotelDetails?.conf || '';
             document.getElementById('hotelCheckIn').value = loc.hotelDetails?.checkIn || '';
@@ -480,11 +490,6 @@
             document.getElementById('hotelExtras').value = loc.hotelDetails?.extras || '';
             document.getElementById('notes').value = loc.notes || '';
 
-            const flightContainer = document.getElementById('flightStopContainer');
-            flightContainer.innerHTML = '';
-            (loc.flightDetails || []).forEach(stop => addFlightStop(flightContainer, stop));
-            document.getElementById('addFlightStop').onclick = () => addFlightStop(flightContainer);
-
             document.getElementById('overlay').classList.add('active');
 
             const updateField = (field, subField, value) => {
@@ -492,29 +497,21 @@
                     if (subField) {
                         if (!tripData.locations[index][field]) tripData.locations[index][field] = {};
                         tripData.locations[index][field][subField] = value;
-                    } else if (field === 'flightDetails') {
-                        const stops = Array.from(document.querySelectorAll('.flight-stop')).map(stop => ({
-                            date: stop.querySelector('.flight-date').value,
-                            from: stop.querySelector('.flight-from').value,
-                            to: stop.querySelector('.flight-to').value,
-                            dep: stop.querySelector('.flight-dep').value,
-                            arr: stop.querySelector('.flight-arr').value,
-                            airline: stop.querySelector('.flight-airline').value,
-                            number: stop.querySelector('.flight-number').value,
-                            gate: stop.querySelector('.flight-gate').value
-                        }));
-                        tripData.locations[index][field] = stops;
                     } else {
                         tripData.locations[index][field] = value;
                     }
                 }
             };
 
-            document.getElementById('locName').onchange = (e) => updateField('name', null, e.target.value);
+            document.getElementById('locName').onchange = (e) => updateField('name', null, e.target.value.toUpperCase());
             document.getElementById('locArrival').onchange = (e) => updateField('arrival', null, e.target.value);
             document.getElementById('locDeparture').onchange = (e) => updateField('departure', null, e.target.value);
-            document.getElementById('locDays').onchange = (e) => updateField('days', null, parseInt(e.target.value));
-            document.getElementById('hotelDates').onchange = (e) => updateField('hotelDetails', 'dates', e.target.value);
+            document.getElementById('flightTo').onchange = (e) => updateField('flightDetails', 'to', e.target.value.toUpperCase());
+            document.getElementById('flightDep').onchange = (e) => updateField('flightDetails', 'dep', formatTime(e.target.value));
+            document.getElementById('flightArr').onchange = (e) => updateField('flightDetails', 'arr', formatTime(e.target.value));
+            document.getElementById('flightAirline').onchange = (e) => updateField('flightDetails', 'airline', e.target.value);
+            document.getElementById('flightNumber').onchange = (e) => updateField('flightDetails', 'number', e.target.value);
+            document.getElementById('flightGate').onchange = (e) => updateField('flightDetails', 'gate', e.target.value);
             document.getElementById('hotelName').onchange = (e) => updateField('hotelDetails', 'name', e.target.value);
             document.getElementById('hotelConf').onchange = (e) => updateField('hotelDetails', 'conf', e.target.value);
             document.getElementById('hotelCheckIn').onchange = (e) => updateField('hotelDetails', 'checkIn', e.target.value);
@@ -522,7 +519,6 @@
             document.getElementById('hotelRoom').onchange = (e) => updateField('hotelDetails', 'room', e.target.value);
             document.getElementById('hotelExtras').onchange = (e) => updateField('hotelDetails', 'extras', e.target.value);
             document.getElementById('notes').onchange = (e) => updateField('notes', null, e.target.value);
-            document.getElementById('flightStopContainer').addEventListener('change', () => updateField('flightDetails', null, null));
 
             document.getElementById('overlaySave').onclick = () => {
                 saveChanges();

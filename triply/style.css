@@ -92,7 +92,8 @@ img {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
+    font-weight: bold;
     padding: 0 4px;
 }
 
