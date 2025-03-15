@@ -23,49 +23,39 @@
             margin-bottom: 15px;
         }
 
-        /* Table */
-        #trip-plan table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 14px;
+        /* Summary */
+        #trip-plan .summary {
             background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+            line-height: 1.4;
         }
-        #trip-plan th, #trip-plan td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+        #trip-plan .summary p {
+            margin: 5px 0;
         }
-        #trip-plan th {
-            background-color: #ff6f61;
-            color: #fff;
-        }
-        #trip-plan tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        #trip-plan tr:hover {
-            background-color: #e0e7ff;
-            cursor: pointer;
-        }
-        #trip-plan .current {
+        #trip-plan .summary .current {
             background-color: #cce5ff;
             font-weight: bold;
             color: #1e90ff;
+            padding: 2px 5px;
+            border-radius: 3px;
         }
-        #trip-plan .action-btn {
+        #trip-plan .summary .action-btn {
             background: none;
             border: none;
             cursor: pointer;
             font-size: 16px;
             padding: 0 4px;
+            vertical-align: middle;
         }
-        #trip-plan .action-btn:hover {
+        #trip-plan .summary .action-btn:hover {
             color: #ff897c;
         }
         @media (min-width: 768px) {
-            #trip-plan table { font-size: 16px; }
-            #trip-plan th, #trip-plan td { padding: 12px; }
+            #trip-plan .summary { font-size: 16px; }
             #trip-plan { padding: 40px; max-width: 800px; margin: 0 auto; }
         }
 
@@ -138,7 +128,7 @@
             top: 0;
             left: 100%;
             width: 80%;
-            max-width: 300px;
+            max-width: 400px;
             height: 100%;
             background-color: #fff;
             padding: 15px;
@@ -175,6 +165,31 @@
         #trip-plan .overlay .form-group {
             margin-bottom: 15px;
         }
+        #trip-plan .overlay .flight-stop {
+            border: 1px dashed #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        #trip-plan .overlay .flight-stop .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #ff6f61;
+            cursor: pointer;
+        }
+        #trip-plan .overlay .save-btn, #trip-plan .overlay .delete-btn {
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        #trip-plan .overlay .delete-btn {
+            background-color: #ff4444;
+        }
+        #trip-plan .overlay .delete-btn:hover {
+            background-color: #ff6666;
+        }
         #trip-plan .close-btn {
             position: absolute;
             top: 10px;
@@ -193,14 +208,9 @@
     <!-- Trip Plan Content -->
     <div id="trip-plan">
         <h2>Your Trip at a Glance</h2>
-        <table id="tripTable">
-            <tr>
-                <th>Location</th>
-                <th>…</th>
-                <th>🗑️</th>
-            </tr>
+        <div class="summary" id="tripSummary">
             <!-- Populated by JavaScript -->
-        </table>
+        </div>
         <button id="addRow">Add Location</button>
         <button id="saveChanges">Save Changes</button>
 
@@ -230,16 +240,10 @@
                 <label for="locDays">Days:</label>
                 <input type="number" id="locDays" name="locDays" min="1">
             </div>
-            <div class="form-group">
+            <div class="form-group" id="flightStops">
                 <label>Flight Details:</label>
-                <input type="text" id="flightDate" placeholder="DD/MM" style="width: 20%;">
-                <input type="text" id="flightFrom" placeholder="From" style="width: 20%;">
-                <input type="text" id="flightTo" placeholder="To" style="width: 20%;">
-                <input type="time" id="flightDep" placeholder="Dep">
-                <input type="time" id="flightArr" placeholder="Arr">
-                <input type="text" id="flightAirline" placeholder="Airline">
-                <input type="text" id="flightNumber" placeholder="Flight #" style="width: 30%;">
-                <input type="text" id="flightGate" placeholder="Gate" style="width: 20%;">
+                <div id="flightStopContainer"></div>
+                <button id="addFlightStop" class="action-btn">+ Add Flight Stop</button>
             </div>
             <div class="form-group">
                 <label>Hotel Details:</label>
@@ -255,6 +259,8 @@
                 <label for="notes">Notes:</label>
                 <textarea id="notes" name="notes"></textarea>
             </div>
+            <button class="save-btn" id="overlaySave">Save</button>
+            <button class="delete-btn" id="overlayDelete">Delete</button>
         </div>
     </div>
 
@@ -276,7 +282,7 @@
             }
 
             document.getElementById('tripTitle').textContent = `${tripData.title} 🗺️`;
-            buildTable(tripData);
+            buildSummary(tripData);
             buildTimeline(tripData);
             setupInteractions(tripData);
 
@@ -284,65 +290,81 @@
             document.getElementById('saveChanges').addEventListener('click', saveChanges);
         });
 
-        function buildTable(tripData) {
-            const table = document.getElementById('tripTable');
-            table.innerHTML = '<tr><th>Location</th><th>…</th><th>🗑️</th></tr>';
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+        }
+
+        function buildSummary(tripData) {
+            const summary = document.getElementById('tripSummary');
+            summary.innerHTML = '';
             const today = new Date('2025-04-01'); // Hardcoded for testing
 
             tripData.locations.forEach((loc, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${loc.name}</td>
-                    <td><button class="action-btn details-btn" data-index="${index}">…</button></td>
-                    <td><button class="action-btn delete-btn" data-index="${index}">🗑️</button></td>
-                `;
+                const p = document.createElement('p');
+                let flightStr = '';
+                if (loc.flightDetails && loc.flightDetails.length > 0) {
+                    flightStr = loc.flightDetails.map(stop => 
+                        `${stop.date || formatDate(loc.arrival)} ${stop.from} to ${stop.to} ${stop.airline} ${stop.number} then Dep: ${stop.dep} Arr: ${stop.arr} gate: ${stop.gate || ''}`
+                    ).join(' then ').trim();
+                }
+                const hotelStr = loc.hotelDetails && loc.hotelDetails.name 
+                    ? `Hotel: ${loc.days} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf}` 
+                    : '';
+                const summaryText = flightStr && hotelStr ? `${flightStr} then ${hotelStr}` : flightStr || hotelStr || '';
+                p.innerHTML = `<strong>${loc.name}</strong>: ${summaryText} <button class="action-btn details-btn" data-index="${index}">…</button>`;
+                
+                if (!summaryText) {
+                    p.innerHTML = `<strong>${loc.name}</strong>: <button class="action-btn details-btn" data-index="${index}">…</button>`;
+                }
+
                 const arrivalDate = new Date(loc.arrival);
                 const departureDate = new Date(loc.departure);
                 if (arrivalDate <= today && today <= departureDate) {
-                    row.classList.add('current');
+                    p.classList.add('current');
                 }
-                table.appendChild(row);
+                summary.appendChild(p);
             });
 
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => deleteRow(btn.getAttribute('data-index')));
-            });
+            // Ensure event listeners are added after DOM update
             document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.addEventListener('click', () => showOverlay(tripData.locations[btn.getAttribute('data-index')]));
+                btn.addEventListener('click', () => {
+                    const index = btn.getAttribute('data-index');
+                    showOverlay(tripData.locations[index], index);
+                });
             });
         }
 
         function addRow() {
-            const table = document.getElementById('tripTable');
-            const lastRow = table.rows[table.rows.length - 1];
-            const newIndex = tripData.locations.length;
-            const defaultDate = lastRow ? tripData.locations[tripData.locations.length - 1].departure : tripData.startDate;
+            const lastLoc = tripData.locations[tripData.locations.length - 1];
+            const defaultDate = lastLoc ? lastLoc.departure : tripData.startDate;
             const newLoc = {
                 name: "New Location",
                 arrival: defaultDate,
                 departure: defaultDate,
                 days: 1,
-                flightDetails: {},
+                flightDetails: [],
                 hotelDetails: {},
                 notes: ""
             };
             tripData.locations.push(newLoc);
-            buildTable(tripData);
+            buildSummary(tripData);
+            setupInteractions(tripData); // Re-attach timeline interactions
         }
 
         function deleteRow(index) {
             tripData.locations.splice(index, 1);
-            buildTable(tripData);
+            saveChanges();
+            hideOverlay();
         }
 
         function saveChanges() {
-            tripData.startDate = tripData.locations[0].arrival;
-            tripData.endDate = tripData.locations[tripData.locations.length - 1].departure;
+            tripData.startDate = tripData.locations[0]?.arrival || tripData.startDate;
+            tripData.endDate = tripData.locations[tripData.locations.length - 1]?.departure || tripData.endDate;
             localStorage.setItem('tripPlan', JSON.stringify(tripData));
             buildTimeline(tripData);
-            buildTable(tripData);
+            buildSummary(tripData);
             setupInteractions(tripData);
-            alert('Changes saved!');
         }
 
         function buildTimeline(tripData) {
@@ -420,25 +442,35 @@
             stops.forEach(stop => {
                 stop.addEventListener('click', () => {
                     const index = parseInt(stop.id.split('-')[1]);
-                    showOverlay(tripData.locations[index]);
+                    showOverlay(tripData.locations[index], index);
                 });
             });
         }
 
-        function showOverlay(loc) {
+        function addFlightStop(container, stop = {}) {
+            const stopDiv = document.createElement('div');
+            stopDiv.className = 'flight-stop';
+            stopDiv.innerHTML = `
+                <input type="text" class="flight-date" placeholder="DD/MM" value="${stop.date || ''}" style="width: 20%;">
+                <input type="text" class="flight-from" placeholder="From" value="${stop.from || ''}" style="width: 20%;">
+                <input type="text" class="flight-to" placeholder="To" value="${stop.to || ''}" style="width: 20%;">
+                <input type="time" class="flight-dep" placeholder="Dep" value="${stop.dep || ''}">
+                <input type="time" class="flight-arr" placeholder="Arr" value="${stop.arr || ''}">
+                <input type="text" class="flight-airline" placeholder="Airline" value="${stop.airline || ''}">
+                <input type="text" class="flight-number" placeholder="Flight #" value="${stop.number || ''}" style="width: 30%;">
+                <input type="text" class="flight-gate" placeholder="Gate" value="${stop.gate || ''}" style="width: 20%;">
+                <button class="remove-btn">✕</button>
+            `;
+            container.appendChild(stopDiv);
+            stopDiv.querySelector('.remove-btn').addEventListener('click', () => container.removeChild(stopDiv));
+        }
+
+        function showOverlay(loc, index) {
             document.getElementById('overlayLocation').textContent = loc.name;
             document.getElementById('locName').value = loc.name;
             document.getElementById('locArrival').value = loc.arrival;
             document.getElementById('locDeparture').value = loc.departure;
             document.getElementById('locDays').value = loc.days;
-            document.getElementById('flightDate').value = loc.flightDetails?.date || '';
-            document.getElementById('flightFrom').value = loc.flightDetails?.from || '';
-            document.getElementById('flightTo').value = loc.flightDetails?.to || '';
-            document.getElementById('flightDep').value = loc.flightDetails?.dep || '';
-            document.getElementById('flightArr').value = loc.flightDetails?.arr || '';
-            document.getElementById('flightAirline').value = loc.flightDetails?.airline || '';
-            document.getElementById('flightNumber').value = loc.flightDetails?.number || '';
-            document.getElementById('flightGate').value = loc.flightDetails?.gate || '';
             document.getElementById('hotelDates').value = loc.hotelDetails?.dates || '';
             document.getElementById('hotelName').value = loc.hotelDetails?.name || '';
             document.getElementById('hotelConf').value = loc.hotelDetails?.conf || '';
@@ -447,14 +479,31 @@
             document.getElementById('hotelRoom').value = loc.hotelDetails?.room || '';
             document.getElementById('hotelExtras').value = loc.hotelDetails?.extras || '';
             document.getElementById('notes').value = loc.notes || '';
+
+            const flightContainer = document.getElementById('flightStopContainer');
+            flightContainer.innerHTML = '';
+            (loc.flightDetails || []).forEach(stop => addFlightStop(flightContainer, stop));
+            document.getElementById('addFlightStop').onclick = () => addFlightStop(flightContainer);
+
             document.getElementById('overlay').classList.add('active');
 
             const updateField = (field, subField, value) => {
-                const index = tripData.locations.findIndex(l => l.name === loc.name && l.arrival === loc.arrival);
                 if (index !== -1) {
                     if (subField) {
                         if (!tripData.locations[index][field]) tripData.locations[index][field] = {};
                         tripData.locations[index][field][subField] = value;
+                    } else if (field === 'flightDetails') {
+                        const stops = Array.from(document.querySelectorAll('.flight-stop')).map(stop => ({
+                            date: stop.querySelector('.flight-date').value,
+                            from: stop.querySelector('.flight-from').value,
+                            to: stop.querySelector('.flight-to').value,
+                            dep: stop.querySelector('.flight-dep').value,
+                            arr: stop.querySelector('.flight-arr').value,
+                            airline: stop.querySelector('.flight-airline').value,
+                            number: stop.querySelector('.flight-number').value,
+                            gate: stop.querySelector('.flight-gate').value
+                        }));
+                        tripData.locations[index][field] = stops;
                     } else {
                         tripData.locations[index][field] = value;
                     }
@@ -465,14 +514,6 @@
             document.getElementById('locArrival').onchange = (e) => updateField('arrival', null, e.target.value);
             document.getElementById('locDeparture').onchange = (e) => updateField('departure', null, e.target.value);
             document.getElementById('locDays').onchange = (e) => updateField('days', null, parseInt(e.target.value));
-            document.getElementById('flightDate').onchange = (e) => updateField('flightDetails', 'date', e.target.value);
-            document.getElementById('flightFrom').onchange = (e) => updateField('flightDetails', 'from', e.target.value);
-            document.getElementById('flightTo').onchange = (e) => updateField('flightDetails', 'to', e.target.value);
-            document.getElementById('flightDep').onchange = (e) => updateField('flightDetails', 'dep', e.target.value);
-            document.getElementById('flightArr').onchange = (e) => updateField('flightDetails', 'arr', e.target.value);
-            document.getElementById('flightAirline').onchange = (e) => updateField('flightDetails', 'airline', e.target.value);
-            document.getElementById('flightNumber').onchange = (e) => updateField('flightDetails', 'number', e.target.value);
-            document.getElementById('flightGate').onchange = (e) => updateField('flightDetails', 'gate', e.target.value);
             document.getElementById('hotelDates').onchange = (e) => updateField('hotelDetails', 'dates', e.target.value);
             document.getElementById('hotelName').onchange = (e) => updateField('hotelDetails', 'name', e.target.value);
             document.getElementById('hotelConf').onchange = (e) => updateField('hotelDetails', 'conf', e.target.value);
@@ -481,6 +522,13 @@
             document.getElementById('hotelRoom').onchange = (e) => updateField('hotelDetails', 'room', e.target.value);
             document.getElementById('hotelExtras').onchange = (e) => updateField('hotelDetails', 'extras', e.target.value);
             document.getElementById('notes').onchange = (e) => updateField('notes', null, e.target.value);
+            document.getElementById('flightStopContainer').addEventListener('change', () => updateField('flightDetails', null, null));
+
+            document.getElementById('overlaySave').onclick = () => {
+                saveChanges();
+                hideOverlay();
+            };
+            document.getElementById('overlayDelete').onclick = () => deleteRow(index);
         }
 
         function hideOverlay() {
