@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triply - Your Ultimate Trip Planner</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4db8ff;
+            --highlight: #ff6200;
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --font-family: 'Inter', sans-serif;
+            --font-size-base: 18px;
+            --font-size-sm: 0.9rem;
+            --font-size-lg: 1.3rem;
+            --font-size-xl: 1.8rem;
+            --transition: 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: var(--bg-secondary);
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+        h1 { font-size: var(--font-size-xl); margin-bottom: var(--spacing-md); }
+        h2 { font-size: var(--font-size-lg); color: var(--accent); margin-bottom: var(--spacing-md); }
+        p { font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); }
+        main { flex: 1; padding: var(--spacing-md); max-width: 800px; margin: 0 auto; }
+        .feature { margin: var(--spacing-lg) 0; display: flex; flex-direction: column; gap: var(--spacing-md); }
+        .feature img { max-width: 100%; border-radius: 8px; }
+        button {
+            background: var(--highlight);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 999px;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+        }
+        button:hover { background: #ff8c00; transform: scale(1.05); }
+        footer { text-align: center; padding: var(--spacing-md); background: var(--bg-secondary); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: var(--highlight); }
+        @media (min-width: 768px) {
+            .feature { flex-direction: row; align-items: center; }
+            .feature img { max-width: 50%; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Triply ✈️</h1>
+        <p>Your Ultimate Trip Planner</p>
+    </header>
+    <main>
+        <section>
+            <h2>Plan Your Perfect Adventure</h2>
+            <p>Triply takes the hassle out of travel planning. Whether you're jetting off for a weekend or embarking on a global odyssey, Triply keeps your itinerary organized, stylish, and at your fingertips.</p>
+            <button onclick="window.location.href='index.html'">Get Started Now</button>
+        </section>
+        <section class="feature">
+            <div>
+                <h2>Effortless Planning</h2>
+                <p>Enter your destinations, dates, and interests—Triply builds your trip in seconds. Add flights, hotels, and notes with ease.</p>
+            </div>
+            <img src="https://via.placeholder.com/300x200?text=Planning+Screen" alt="Planning Screen">
+        </section>
+        <section class="feature">
+            <img src="https://via.placeholder.com/300x200?text=Timeline+View" alt="Timeline View">
+            <div>
+                <h2>Visualize Your Journey</h2>
+                <p>See your trip unfold with a sleek timeline. Track past, current, and future stops at a glance.</p>
+            </div>
+        </section>
+        <section class="feature">
+            <div>
+                <h2>Take It Anywhere</h2>
+                <p>Import or export your plans as JSON. Access Triply on any device—no app download needed.</p>
+            </div>
+            <img src="https://via.placeholder.com/300x200?text=Mobile+View" alt="Mobile View">
+        </section>
+        <section>
+            <h2>Why Choose Triply?</h2>
+            <p>With a modern dark design, intuitive controls, and a focus on simplicity, Triply is built for travelers who want to focus on the journey, not the logistics. Start planning today!</p>
+            <button onclick="window.location.href='index.html'">Try Triply Free</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Triply. <a href="how-to-use.html">Learn How to Use Triply</a></p>
+    </footer>
+</body>
+</html>

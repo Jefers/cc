@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triply - How to Use</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4db8ff;
+            --highlight: #ff6200;
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --font-family: 'Inter', sans-serif;
+            --font-size-base: 18px;
+            --font-size-sm: 0.9rem;
+            --font-size-lg: 1.3rem;
+            --font-size-xl: 1.8rem;
+            --transition: 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: var(--bg-secondary);
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+        h1 { font-size: var(--font-size-xl); margin-bottom: var(--spacing-md); }
+        h2 { font-size: var(--font-size-lg); color: var(--accent); margin-bottom: var(--spacing-md); }
+        h3 { font-size: var(--font-size-base); margin-bottom: var(--spacing-sm); }
+        p, li { font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); }
+        main { flex: 1; padding: var(--spacing-md); max-width: 800px; margin: 0 auto; }
+        .step { margin: var(--spacing-lg) 0; }
+        ul { padding-left: var(--spacing-lg); }
+        button {
+            background: var(--highlight);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 999px;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+        }
+        button:hover { background: #ff8c00; transform: scale(1.05); }
+        footer { text-align: center; padding: var(--spacing-md); background: var(--bg-secondary); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: var(--highlight); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Triply ✈️</h1>
+        <p>How to Use Your Trip Planner</p>
+    </header>
+    <main>
+        <section>
+            <h2>Getting Started with Triply</h2>
+            <p>Triply makes trip planning simple and fun. Follow these steps to create, manage, and enjoy your travel itinerary.</p>
+            <button onclick="window.location.href='index.html'">Start Using Triply</button>
+        </section>
+        <section class="step">
+            <h2>1. Create Your Trip</h2>
+            <h3>On the Planner Page</h3>
+            <ul>
+                <li><strong>Trip Title:</strong> Give your trip a name (e.g., "Summer Adventure").</li>
+                <li><strong>Start Date:</strong> Pick your departure date.</li>
+                <li><strong>Destinations:</strong> List your stops as "City/Airport" (e.g., "London/GTW, Doha/DOH").</li>
+                <li><strong>Days per Stop:</strong> Enter days for each stop (e.g., "0, 2" - 0 for transit).</li>
+                <li><strong>Interests:</strong> Add what you love (e.g., "sightseeing, food").</li>
+                <li>Click <strong>Create Trip</strong> to build your plan.</li>
+            </ul>
+            <p><em>Tip:</em> Use "0" days for transit stops where you won’t stay overnight.</p>
+        </section>
+        <section class="step">
+            <h2>2. Manage Your Itinerary</h2>
+            <h3>On the Plan Page</h3>
+            <ul>
+                <li><strong>Summary:</strong> See all stops with flight and hotel details.</li>
+                <li><strong>Edit a Stop:</strong> Click "…" to open the overlay, update dates, flights, hotels, or notes, then click <strong>Save</strong>.</li>
+                <li><strong>Add a Stop:</strong> Click <strong>Add Stop</strong> to insert a new location.</li>
+                <li><strong>Delete a Stop:</strong> In the overlay, click <strong>Delete</strong>.</li>
+                <li><strong>Save Changes:</strong> Hit <strong>Save Changes</strong> to update your plan.</li>
+            </ul>
+        </section>
+        <section class="step">
+            <h2>3. Visualize Your Trip</h2>
+            <p>The <strong>Timeline</strong> shows your journey:</p>
+            <ul>
+                <li><strong>Circles:</strong> Each stop, colored by status (past, current, booked).</li>
+                <li><strong>Lines:</strong> Travel between stops.</li>
+                <li><strong>Bars:</strong> Days spent at each stop.</li>
+                <li>Click a circle to edit that stop.</li>
+            </ul>
+        </section>
+        <section class="step">
+            <h2>4. Import or Export Your Plan</h2>
+            <ul>
+                <li><strong>Export:</strong> Click <strong>Export Data</strong> to download your trip as a JSON file.</li>
+                <li><strong>Import:</strong> On either page, click <strong>Import Data</strong>, select your JSON file, and load your trip.</li>
+                <li><strong>Clear Data:</strong> Reset everything with <strong>Clear Data</strong>.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Ready to Travel?</h2>
+            <p>Triply’s sleek design and simple tools make planning a breeze. Start your journey now!</p>
+            <button onclick="window.location.href='index.html'">Plan Your Trip</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Triply. <a href="marketing.html">Back to Home</a></p>
+    </footer>
+</body>
+</html>
