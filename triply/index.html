@@ -7,47 +7,44 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Trip Planner 🗺️</h1>
-    <div class="section">
-        <h2>Plan Your Trip</h2>
-        <form id="tripForm">
-            <label for="title">Trip Title:</label>
-            <input type="text" id="title" name="title" placeholder="e.g., My Summer Adventure" required>
-            
-            <label for="startDate">Start Date:</label>
-            <input type="date" id="startDate" name="startDate" required>
-            
-            <label for="totalDays">Total Days:</label>
-            <input type="number" id="totalDays" name="totalDays" min="1" max="60" placeholder="e.g., 10" required>
-            
-            <label for="destinations">Destinations (comma-separated):</label>
-            <input type="text" id="destinations" name="destinations" placeholder="e.g., Paris, London" required>
-            
-            <label for="interests">Interests (comma-separated):</label>
-            <input type="text" id="interests" name="interests" placeholder="e.g., sightseeing, relaxation" required>
-            
-            <button type="submit">Plan My Trip</button>
-        </form>
-    </div>
-
+    <header>
+        <h1>Trip Planner 🗺️</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <h2>Plan Your Trip</h2>
+            <form id="tripForm">
+                <label for="title">Trip Title:</label>
+                <input type="text" id="title" name="title" placeholder="e.g., My Summer Adventure" required>
+                
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required>
+                
+                <label for="totalDays">Total Days:</label>
+                <input type="number" id="totalDays" name="totalDays" min="1" max="60" placeholder="e.g., 10" required>
+                
+                <label for="destinations">Destinations (comma-separated):</label>
+                <input type="text" id="destinations" name="destinations" placeholder="e.g., Paris, London" required>
+                
+                <label for="interests">Interests (comma-separated):</label>
+                <input type="text" id="interests" name="interests" placeholder="e.g., sightseeing, relaxation" required>
+                
+                <button type="submit">Plan My Trip</button>
+            </form>
+        </section>
+    </main>
     <script>
         document.getElementById('tripForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Collect user inputs
             const title = document.getElementById('title').value;
             const startDate = new Date(document.getElementById('startDate').value);
             const totalDays = parseInt(document.getElementById('totalDays').value);
             const destinations = document.getElementById('destinations').value.split(',').map(d => d.trim());
             const interests = document.getElementById('interests').value.split(',').map(i => i.trim());
 
-            // Simulate AI-generated trip plan
             const tripData = generateTripPlan(title, startDate, totalDays, destinations, interests);
-
-            // Save to localStorage
             localStorage.setItem('tripPlan', JSON.stringify(tripData));
-
-            // Redirect to plan.html
             window.location.href = 'plan.html';
         });
 
@@ -58,7 +55,6 @@
                 locations: []
             };
 
-            // Distribute days evenly among destinations
             const daysPerLocation = Math.floor(totalDays / destinations.length);
             let remainingDays = totalDays % destinations.length;
             let currentDate = new Date(startDate);
@@ -68,7 +64,7 @@
                 const arrival = currentDate.toISOString().split('T')[0];
                 currentDate.setDate(currentDate.getDate() + days);
                 const departure = new Date(currentDate);
-                departure.setDate(departure.getDate() - 1); // Last day of stay
+                departure.setDate(departure.getDate() - 1);
                 const notes = `Enjoy ${interests[Math.floor(Math.random() * interests.length)]} in ${dest}`;
 
                 trip.locations.push({

@@ -5,281 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Plan 🗺️</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Page-specific styles scoped to #trip-plan */
-        #trip-plan * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        #trip-plan {
-            background-color: #f0f4f8;
-            padding: 20px;
-        }
-
-        #trip-plan h2 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        /* Summary */
-        #trip-plan .summary {
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        #trip-plan .summary p {
-            margin: 5px 0;
-        }
-        #trip-plan .summary .current {
-            background-color: #cce5ff;
-            font-weight: bold;
-            color: #1e90ff;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-        #trip-plan .summary .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 0 4px;
-            vertical-align: middle;
-        }
-        #trip-plan .summary .action-btn:hover {
-            color: #ff897c;
-        }
-        @media (min-width: 768px) {
-            #trip-plan .summary { font-size: 16px; }
-            #trip-plan { padding: 40px; max-width: 800px; margin: 0 auto; }
-        }
-
-        /* Timeline */
-        #trip-plan svg {
-            width: 100%;
-            height: 800px;
-            margin-bottom: 20px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        #trip-plan .travel-line {
-            stroke: #ff6f61;
-            stroke-width: 2;
-        }
-        #trip-plan .stop {
-            fill: #ccc;
-            stroke: #333;
-            stroke-width: 1;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        #trip-plan .stop.booked { fill: #32cd32; }
-        #trip-plan .stop.past { fill: #ffa500; }
-        #trip-plan .stop.current { fill: #1e90ff; }
-        #trip-plan .stop:hover { transform: scale(1.2); }
-        #trip-plan .day-bar {
-            fill: #ccc;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        #trip-plan .day-bar.booked { fill: #32cd32; }
-        #trip-plan .day-bar.past { fill: #ffa500; }
-        #trip-plan .day-bar.current { fill: #1e90ff; }
-        #trip-plan .day-bar.visible { opacity: 0.7; }
-        #trip-plan .day-bar:hover { opacity: 1; }
-        #trip-plan text {
-            font-size: 12px;
-            fill: #333;
-        }
-        @media (min-width: 768px) {
-            #trip-plan svg { height: 900px; }
-            #trip-plan text { font-size: 14px; }
-        }
-
-        /* Legend */
-        #trip-plan .legend {
-            padding: 10px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        #trip-plan .legend graduates {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        #trip-plan .legend-color {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            border: 1px solid #333;
-        }
-
-        /* Overlay */
-        #trip-plan .overlay {
-            position: fixed;
-            top: 0;
-            left: 100%;
-            width: 80%;
-            max-width: 400px;
-            height: 100%;
-            background-color: #fff;
-            padding: 15px;
-            box-shadow: -5px 0 10px rgba(0,0,0,0.2);
-            transition: left 0.3s ease;
-            z-index: 10;
-            overflow-y: auto;
-        }
-        #trip-plan .overlay.active { left: 20%; }
-        #trip-plan .overlay h3 {
-            color: #ff6f61;
-            margin-bottom: 10px;
-        }
-        #trip-plan .overlay label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        #trip-plan .overlay input, #trip-plan .overlay textarea {
-            width: 100%;
-            margin-top: 5px;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        #trip-plan .overlay input[type="time"] {
-            width: 48%;
-            display: inline-block;
-        }
-        #trip-plan .overlay input[type="text"].airport-code {
-            width: 20%;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        #trip-plan .overlay textarea {
-            height: 60px;
-            resize: vertical;
-        }
-        #trip-plan .overlay .form-group {
-            margin-bottom: 15px;
-        }
-        #trip-plan .overlay .flight-details div {
-            margin-top: 5px;
-        }
-        #trip-plan .overlay .save-btn, #trip-plan .overlay .delete-btn {
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-        #trip-plan .overlay .delete-btn {
-            background-color: #ff4444;
-        }
-        #trip-plan .overlay .delete-btn:hover {
-            background-color: #ff6666;
-        }
-        #trip-plan .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #333;
-        }
-        #trip-plan #importFile {
-            display: none;
-        }
-    </style>
 </head>
 <body>
-    <h1 id="tripTitle">Trip Plan 🗺️</h1>
-
-    <!-- Trip Plan Content -->
-    <div id="trip-plan">
-        <h2>Your Trip at a Glance</h2>
-        <div class="summary" id="tripSummary">
-            <!-- Populated by JavaScript -->
-        </div>
-        <button id="addRow">Add Location</button>
-        <button id="saveChanges">Save Changes</button>
-        <button id="clearData">Clear Data</button>
-        <button id="importData">Import Data</button>
-        <input type="file" id="importFile" accept=".json">
-        <button id="exportData">Export Data</button>
-
-        <h2>Trip Timeline</h2>
-        <svg viewBox="0 0 300 800" id="tripSvg">
-            <!-- Populated by JavaScript -->
-        </svg>
-
-        <div class="legend">
-            <h3>Timeline Key</h3>
-            <div class="legend-item"><div class="legend-color" style="background-color: #ccc;"></div><span>Future, Not Booked</span></div>
-            <div class="legend-item"><div class="legend-color" style="background-color: #32cd32;"></div><span>Future, Booked</span></div>
-            <div class="legend-item"><div class="legend-color" style="background-color: #ffa500;"></div><span>Past</span></div>
-            <div class="legend-item"><div class="legend-color" style="background-color: #1e90ff;"></div><span>Current Date</span></div>
-        </div>
-
-        <div class="overlay" id="overlay">
-            <button class="close-btn" onclick="hideOverlay()">×</button>
-            <h3 id="overlayLocation"></h3>
-            <div class="form-group">
-                <label for="locName">Departure Airport (3-letter code):</label>
-                <input type="text" id="locName" name="locName" class="airport-code" maxlength="3">
-                <label for="locArrival">Arrival Date:</label>
-                <input type="date" id="locArrival" name="locArrival">
-                <label for="locDeparture">Departure Date:</label>
-                <input type="date" id="locDeparture" name="locDeparture">
+    <header>
+        <h1 id="tripTitle">Trip Plan 🗺️</h1>
+    </header>
+    <main>
+        <section id="trip-plan">
+            <h2>Your Trip at a Glance</h2>
+            <div class="summary" id="tripSummary"></div>
+            <div class="button-group">
+                <button id="addRow">Add Location</button>
+                <button id="saveChanges">Save Changes</button>
+                <button id="clearData">Clear Data</button>
+                <button id="importData">Import Data</button>
+                <input type="file" id="importFile" accept=".json">
+                <button id="exportData">Export Data</button>
             </div>
-            <div class="form-group flight-details">
-                <label>Flight Details (from this airport):</label>
-                <div>
-                    <input type="text" id="flightTo" placeholder="To (3-letter code)" class="airport-code" maxlength="3">
+            <h2>Trip Timeline</h2>
+            <svg viewBox="0 0 300 800" id="tripSvg"></svg>
+            <div class="legend">
+                <h3>Timeline Key</h3>
+                <div class="legend-item"><span class="legend-color future-not-booked"></span>Future, Not Booked</div>
+                <div class="legend-item"><span class="legend-color future-booked"></span>Future, Booked</div>
+                <div class="legend-item"><span class="legend-color past"></span>Past</div>
+                <div class="legend-item"><span class="legend-color current"></span>Current Date</div>
+            </div>
+            <div class="overlay" id="overlay">
+                <button class="close-btn" onclick="hideOverlay()">×</button>
+                <h3 id="overlayLocation"></h3>
+                <div class="form-group">
+                    <label for="locName">Departure Airport (3-letter code):</label>
+                    <input type="text" id="locName" name="locName" class="airport-code" maxlength="3">
+                    <label for="locArrival">Arrival Date:</label>
+                    <input type="date" id="locArrival" name="locArrival">
+                    <label for="locDeparture">Departure Date:</label>
+                    <input type="date" id="locDeparture" name="locDeparture">
                 </div>
-                <div>
-                    <input type="text" id="flightDep" placeholder="Dep (e.g., 1159 for 11:59)">
+                <div class="form-group flight-details">
+                    <label>Flight Details (from this airport):</label>
+                    <div>
+                        <input type="text" id="flightTo" placeholder="To (3-letter code)" class="airport-code" maxlength="3">
+                    </div>
+                    <div>
+                        <input type="text" id="flightDep" placeholder="Dep (e.g., 1159 for 11:59)">
+                    </div>
+                    <div>
+                        <input type="text" id="flightArr" placeholder="Arr (e.g., 1159 for 11:59)">
+                    </div>
+                    <div>
+                        <input type="text" id="flightAirline" placeholder="Airline">
+                        <input type="text" id="flightNumber" placeholder="Flight #" style="width: 30%;">
+                        <input type="text" id="flightGate" placeholder="Gate" style="width: 20%;">
+                    </div>
                 </div>
-                <div>
-                    <input type="text" id="flightArr" placeholder="Arr (e.g., 1159 for 11:59)">
+                <div class="form-group">
+                    <label>Hotel Details:</label>
+                    <input type="text" id="hotelName" placeholder="Hotel Name">
+                    <input type="text" id="hotelConf" placeholder="Conf. #">
+                    <input type="time" id="hotelCheckIn" placeholder="Check-in">
+                    <input type="time" id="hotelCheckOut" placeholder="Check-out">
+                    <input type="text" id="hotelRoom" placeholder="Room Type">
+                    <input type="text" id="hotelExtras" placeholder="Extras">
                 </div>
-                <div>
-                    <input type="text" id="flightAirline" placeholder="Airline">
-                    <input type="text" id="flightNumber" placeholder="Flight #" style="width: 30%;">
-                    <input type="text" id="flightGate" placeholder="Gate" style="width: 20%;">
+                <div class="form-group">
+                    <label for="notes">Notes:</label>
+                    <textarea id="notes" name="notes"></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="save-btn" id="overlaySave">Save</button>
+                    <button class="delete-btn" id="overlayDelete">Delete</button>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Hotel Details:</label>
-                <input type="text" id="hotelName" placeholder="Hotel Name">
-                <input type="text" id="hotelConf" placeholder="Conf. #">
-                <input type="time" id="hotelCheckIn" placeholder="Check-in">
-                <input type="time" id="hotelCheckOut" placeholder="Check-out">
-                <input type="text" id="hotelRoom" placeholder="Room Type">
-                <input type="text" id="hotelExtras" placeholder="Extras">
-            </div>
-            <div class="form-group">
-                <label for="notes">Notes:</label>
-                <textarea id="notes" name="notes"></textarea>
-            </div>
-            <button class="save-btn" id="overlaySave">Save</button>
-            <button class="delete-btn" id="overlayDelete">Delete</button>
-        </div>
-    </div>
-
-    <div class="section">
+        </section>
         <nav>
             <a href="index.html">Back to Planner 🗺️</a>
         </nav>
-    </div>
-
+    </main>
     <script>
         let tripData = null;
 
@@ -311,77 +113,48 @@
 
         function formatTime(timeStr) {
             if (!timeStr) return '';
-            const cleaned = timeStr.replace(/[^0-9]/g, ''); // Remove non-digits
-            if (cleaned.length === 4) {
-                return `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`;
-            }
-            return timeStr; // Fallback if not 4 digits
+            const cleaned = timeStr.replace(/[^0-9]/g, '');
+            return cleaned.length === 4 ? `${cleaned.slice(0, 2)}:${cleaned.slice(2)}` : timeStr;
         }
 
         function calculateDays(arrival, departure) {
             const arrDate = new Date(arrival);
             const depDate = new Date(departure);
-            const diffTime = depDate - arrDate;
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return Math.ceil((depDate - arrDate) / (1000 * 60 * 60 * 24));
         }
 
         function buildSummary(tripData) {
             const summary = document.getElementById('tripSummary');
             summary.innerHTML = '';
-            const today = new Date('2025-04-01'); // Hardcoded for testing
+            const today = new Date('2025-04-01');
 
-            // Sort locations by departure date
-            tripData.locations.sort((a, b) => {
-                const dateA = new Date(a.departure);
-                const dateB = new Date(b.departure);
-                return dateA - dateB;
-            });
+            tripData.locations.sort((a, b) => new Date(a.departure) - new Date(b.departure));
 
             tripData.locations.forEach((loc, index) => {
                 const p = document.createElement('p');
-                let flightStr = '';
-                if (loc.flightDetails && loc.flightDetails.to) {
-                    const flightDate = formatDate(loc.arrival);
-                    flightStr = `${flightDate} ${loc.name} to ${loc.flightDetails.to} ${loc.flightDetails.airline} ${loc.flightDetails.number} then Dep: ${formatTime(loc.flightDetails.dep)} Arr: ${formatTime(loc.flightDetails.arr)} gate: ${loc.flightDetails.gate || ''}`;
-                }
-                const hotelStr = loc.hotelDetails && loc.hotelDetails.name 
-                    ? `Hotel: ${calculateDays(loc.arrival, loc.departure)} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf}` 
-                    : '';
+                let flightStr = loc.flightDetails?.to ? 
+                    `${formatDate(loc.arrival)} ${loc.name} to ${loc.flightDetails.to} ${loc.flightDetails.airline} ${loc.flightDetails.number} then Dep: ${formatTime(loc.flightDetails.dep)} Arr: ${formatTime(loc.flightDetails.arr)} gate: ${loc.flightDetails.gate || ''}` : '';
+                const hotelStr = loc.hotelDetails?.name ? 
+                    `Hotel: ${calculateDays(loc.arrival, loc.departure)} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf}` : '';
                 const summaryText = flightStr && hotelStr ? `${flightStr} then ${hotelStr}` : flightStr || hotelStr || '';
-                p.innerHTML = `<strong>${loc.name}</strong>: ${summaryText} <button class="action-btn details-btn" data-index="${index}">…</button>`;
+                p.innerHTML = `<strong>${loc.name}</strong>: ${summaryText} <button class="action-btn" data-index="${index}">…</button>`;
+                if (!summaryText) p.innerHTML = `<strong>${loc.name}</strong>: <button class="action-btn" data-index="${index}">…</button>`;
                 
-                if (!summaryText) {
-                    p.innerHTML = `<strong>${loc.name}</strong>: <button class="action-btn details-btn" data-index="${index}">…</button>`;
-                }
-
                 const arrivalDate = new Date(loc.arrival);
                 const departureDate = new Date(loc.departure);
-                if (arrivalDate <= today && today <= departureDate) {
-                    p.classList.add('current');
-                }
+                if (arrivalDate <= today && today <= departureDate) p.classList.add('current');
                 summary.appendChild(p);
             });
 
-            document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const index = btn.getAttribute('data-index');
-                    showOverlay(tripData.locations[index], index);
-                });
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', () => showOverlay(tripData.locations[btn.getAttribute('data-index')], btn.getAttribute('data-index')));
             });
         }
 
         function addRow() {
             const lastLoc = tripData.locations[tripData.locations.length - 1];
             const defaultDate = lastLoc ? lastLoc.departure : tripData.startDate;
-            const newLoc = {
-                name: "NEW",
-                arrival: defaultDate,
-                departure: defaultDate,
-                flightDetails: {},
-                hotelDetails: {},
-                notes: ""
-            };
-            tripData.locations.push(newLoc);
+            tripData.locations.push({ name: "NEW", arrival: defaultDate, departure: defaultDate, flightDetails: {}, hotelDetails: {}, notes: "" });
             buildSummary(tripData);
             setupInteractions(tripData);
         }
@@ -412,14 +185,11 @@
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    if (!importedData.title || !importedData.locations) {
-                        throw new Error('Invalid trip data format');
-                    }
+                    if (!importedData.title || !importedData.locations) throw new Error('Invalid trip data format');
                     tripData = importedData;
                     localStorage.setItem('tripPlan', JSON.stringify(tripData));
                     buildSummary(tripData);
@@ -432,14 +202,11 @@
                 }
             };
             reader.readAsText(file);
-            event.target.value = ''; // Reset file input
+            event.target.value = '';
         }
 
         function exportData() {
-            if (!tripData) {
-                alert('No trip data to export.');
-                return;
-            }
+            if (!tripData) return alert('No trip data to export.');
             const jsonStr = JSON.stringify(tripData, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -455,7 +222,7 @@
         function buildTimeline(tripData) {
             const svg = document.getElementById('tripSvg');
             svg.innerHTML = '';
-            const today = new Date('2025-04-01'); // Hardcoded for testing
+            const today = new Date('2025-04-01');
             const ySpacing = 600 / (tripData.locations.length - 1 || 1);
             let yPos = 50;
 
@@ -524,12 +291,8 @@
         }
 
         function setupInteractions(tripData) {
-            const stops = document.querySelectorAll('.stop');
-            stops.forEach(stop => {
-                stop.addEventListener('click', () => {
-                    const index = parseInt(stop.id.split('-')[1]);
-                    showOverlay(tripData.locations[index], index);
-                });
+            document.querySelectorAll('.stop').forEach(stop => {
+                stop.addEventListener('click', () => showOverlay(tripData.locations[parseInt(stop.id.split('-')[1])], parseInt(stop.id.split('-')[1])));
             });
         }
 
@@ -582,10 +345,7 @@
             document.getElementById('hotelExtras').onchange = (e) => updateField('hotelDetails', 'extras', e.target.value);
             document.getElementById('notes').onchange = (e) => updateField('notes', null, e.target.value);
 
-            document.getElementById('overlaySave').onclick = () => {
-                saveChanges();
-                hideOverlay();
-            };
+            document.getElementById('overlaySave').onclick = () => { saveChanges(); hideOverlay(); };
             document.getElementById('overlayDelete').onclick = () => deleteRow(index);
         }
 
