@@ -20,17 +20,21 @@
                 <label for="startDate">Start Date:</label>
                 <input type="date" id="startDate" name="startDate" required>
                 
-                <label for="totalDays">Total Days:</label>
-                <input type="number" id="totalDays" name="totalDays" min="1" max="60" placeholder="e.g., 10" required>
+                <label for="destinations">Destinations (comma-separated, e.g., London/GTW, Doha/DOH):</label>
+                <input type="text" id="destinations" name="destinations" placeholder="e.g., London/GTW, Doha/DOH" required>
                 
-                <label for="destinations">Destinations (comma-separated):</label>
-                <input type="text" id="destinations" name="destinations" placeholder="e.g., Paris, London" required>
+                <label for="daysPerDestination">Days per Destination (comma-separated, e.g., 0, 2):</label>
+                <input type="text" id="daysPerDestination" name="daysPerDestination" placeholder="e.g., 0, 2" required>
                 
-                <label for="interests">Interests (comma-separated):</label>
+                <label for="interests">Interests (comma-separated, e.g., sightseeing, relaxation):</label>
                 <input type="text" id="interests" name="interests" placeholder="e.g., sightseeing, relaxation" required>
                 
                 <button type="submit">Plan My Trip</button>
             </form>
+            <div class="button-group">
+                <button id="importData">Import Trip</button>
+                <input type="file" id="importFile" accept=".json">
+            </div>
         </section>
     </main>
     <script>
@@ -39,40 +43,56 @@
 
             const title = document.getElementById('title').value;
             const startDate = new Date(document.getElementById('startDate').value);
-            const totalDays = parseInt(document.getElementById('totalDays').value);
             const destinations = document.getElementById('destinations').value.split(',').map(d => d.trim());
+            const daysPerDestination = document.getElementById('daysPerDestination').value.split(',').map(d => parseInt(d.trim()));
             const interests = document.getElementById('interests').value.split(',').map(i => i.trim());
 
-            const tripData = generateTripPlan(title, startDate, totalDays, destinations, interests);
+            if (destinations.length !== daysPerDestination.length) {
+                alert('Number of destinations and days must match.');
+                return;
+            }
+
+            const tripData = generateTripPlan(title, startDate, destinations, daysPerDestination, interests);
             localStorage.setItem('tripPlan', JSON.stringify(tripData));
             window.location.href = 'plan.html';
         });
 
-        function generateTripPlan(title, startDate, totalDays, destinations, interests) {
-            const trip = {
-                title: title,
-                startDate: startDate.toISOString().split('T')[0],
-                locations: []
-            };
+        document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
+        document.getElementById('importFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-            const daysPerLocation = Math.floor(totalDays / destinations.length);
-            let remainingDays = totalDays % destinations.length;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (!importedData.title || !importedData.locations) throw new Error('Invalid trip data format');
+                    localStorage.setItem('tripPlan', JSON.stringify(importedData));
+                    window.location.href = 'plan.html';
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        });
+
+        function generateTripPlan(title, startDate, destinations, daysPerDestination, interests) {
+            const trip = { title, startDate: startDate.toISOString().split('T')[0], locations: [] };
             let currentDate = new Date(startDate);
 
             destinations.forEach((dest, index) => {
-                const days = daysPerLocation + (index < remainingDays ? 1 : 0);
+                const [city, airport] = dest.split('/').map(d => d.trim());
+                const days = daysPerDestination[index];
                 const arrival = currentDate.toISOString().split('T')[0];
                 currentDate.setDate(currentDate.getDate() + days);
                 const departure = new Date(currentDate);
-                departure.setDate(departure.getDate() - 1);
-                const notes = `Enjoy ${interests[Math.floor(Math.random() * interests.length)]} in ${dest}`;
+                departure.setDate(departure.getDate() - (days > 0 ? 1 : 0));
+                const notes = days > 0 ? `Enjoy ${interests[Math.floor(Math.random() * interests.length)]} in ${city}` : 'Transfer only';
 
                 trip.locations.push({
-                    name: dest,
-                    arrival: arrival,
-                    departure: departure.toISOString().split('T')[0],
-                    days: days,
-                    notes: notes
+                    city, airport, arrival, departure: departure.toISOString().split('T')[0], days,
+                    flightDetails: {}, hotelDetails: days > 0 ? {} : null, notes
                 });
             });
 
