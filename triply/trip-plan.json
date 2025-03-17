@@ -1,0 +1,172 @@
+{
+    "title": "European Adventure with Dubai",
+    "startDate": "2025-06-01",
+    "endDate": "2025-06-20",
+    "locations": [
+        {
+            "city": "Belfast",
+            "airport": "BFS",
+            "arrival": "2025-06-01",
+            "departure": "2025-06-01",
+            "days": 0,
+            "flightDetails": {
+                "to": "LHR",
+                "toCity": "London",
+                "dep": "0800",
+                "arr": "0920",
+                "airline": "British Airways",
+                "number": "BA141",
+                "gate": "A10",
+                "timeToGate": "15",
+                "remarks": "Go to Gate"
+            },
+            "hotelDetails": null,
+            "notes": "Departing from home"
+        },
+        {
+            "city": "London",
+            "airport": "LHR",
+            "arrival": "2025-06-01",
+            "departure": "2025-06-03",
+            "days": 2,
+            "flightDetails": {
+                "to": "CDG",
+                "toCity": "Paris",
+                "dep": "1100",
+                "arr": "1320",
+                "airline": "Air France",
+                "number": "AF1080",
+                "gate": "B25",
+                "timeToGate": "20",
+                "remarks": "Now Boarding"
+            },
+            "hotelDetails": {
+                "name": "Hilton London Metropole",
+                "conf": "HL123456",
+                "checkIn": "1500",
+                "checkOut": "1100",
+                "room": "Deluxe King",
+                "extras": "Breakfast included"
+            },
+            "notes": "Visit the British Museum"
+        },
+        {
+            "city": "Paris",
+            "airport": "CDG",
+            "arrival": "2025-06-03",
+            "departure": "2025-06-06",
+            "days": 3,
+            "flightDetails": {
+                "to": "FCO",
+                "toCity": "Rome",
+                "dep": "1430",
+                "arr": "1645",
+                "airline": "Alitalia",
+                "number": "AZ317",
+                "gate": "E12",
+                "timeToGate": "25",
+                "remarks": "Delayed"
+            },
+            "hotelDetails": {
+                "name": "Le Meurice",
+                "conf": "LM789012",
+                "checkIn": "1400",
+                "checkOut": "1200",
+                "room": "Superior Double",
+                "extras": "Eiffel Tower view"
+            },
+            "notes": "Eiffel Tower and Louvre"
+        },
+        {
+            "city": "Rome",
+            "airport": "FCO",
+            "arrival": "2025-06-06",
+            "departure": "2025-06-09",
+            "days": 3,
+            "flightDetails": {
+                "to": "BCN",
+                "toCity": "Barcelona",
+                "dep": "0900",
+                "arr": "1100",
+                "airline": "Vueling",
+                "number": "VY6115",
+                "gate": "D08",
+                "timeToGate": "30",
+                "remarks": "Final Call"
+            },
+            "hotelDetails": {
+                "name": "Hotel Artemide",
+                "conf": "HA345678",
+                "checkIn": "1500",
+                "checkOut": "1100",
+                "room": "Classic Twin",
+                "extras": "Rooftop bar access"
+            },
+            "notes": "Colosseum and pasta night"
+        },
+        {
+            "city": "Barcelona",
+            "airport": "BCN",
+            "arrival": "2025-06-09",
+            "departure": "2025-06-11",
+            "days": 2,
+            "flightDetails": {
+                "to": "DXB",
+                "toCity": "Dubai",
+                "dep": "1300",
+                "arr": "2230",
+                "airline": "Emirates",
+                "number": "EK188",
+                "gate": "C15",
+                "timeToGate": "40",
+                "remarks": ""
+            },
+            "hotelDetails": {
+                "name": "W Barcelona",
+                "conf": "WB901234",
+                "checkIn": "1500",
+                "checkOut": "1200",
+                "room": "Ocean View Suite",
+                "extras": "Beach access"
+            },
+            "notes": "Sagrada Familia"
+        },
+        {
+            "city": "Dubai",
+            "airport": "DXB",
+            "arrival": "2025-06-11",
+            "departure": "2025-06-15",
+            "days": 4,
+            "flightDetails": {
+                "to": "BFS",
+                "toCity": "Belfast",
+                "dep": "0730",
+                "arr": "1215",
+                "airline": "Emirates",
+                "number": "EK019",
+                "gate": "A22",
+                "timeToGate": "35",
+                "remarks": "Go to Gate"
+            },
+            "hotelDetails": {
+                "name": "Burj Al Arab",
+                "conf": "BA567890",
+                "checkIn": "1500",
+                "checkOut": "1200",
+                "room": "Deluxe Marina Suite",
+                "extras": "Butler service, spa credit"
+            },
+            "notes": "Burj Khalifa and desert safari"
+        },
+        {
+            "city": "Belfast",
+            "airport": "BFS",
+            "arrival": "2025-06-15",
+            "departure": "2025-06-15",
+            "days": 0,
+            "flightDetails": {},
+            "hotelDetails": null,
+            "notes": "Return home"
+        }
+    ]
+}

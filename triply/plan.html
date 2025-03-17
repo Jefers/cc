@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trip Plan 🗺️</title>
+    <title>Triply - Your Plan</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1 id="tripTitle">Trip Plan 🗺️</h1>
+        <h1 id="tripTitle">Triply</h1>
+        <svg class="header-animation" viewBox="0 0 200 20" width="200" height="20">
+            <circle cx="10" cy="10" r="3" fill="#4db8ff" class="dot dot1"></circle>
+            <circle cx="30" cy="10" r="5" fill="#ff6200" class="dot dot2"></circle>
+            <circle cx="50" cy="10" r="2" fill="#32cd32" class="dot dot3"></circle>
+            <circle cx="70" cy="10" r="4" fill="#ffa500" class="dot dot4"></circle>
+        </svg>
     </header>
     <main>
         <section id="trip-plan">
             <h2>Your Trip at a Glance</h2>
             <div class="summary" id="tripSummary"></div>
             <div class="button-group">
-                <button id="addRow">Add Location</button>
+                <button id="addRow">Add Stop</button>
                 <button id="saveChanges">Save Changes</button>
                 <button id="clearData">Clear Data</button>
                 <button id="importData">Import Data</button>
@@ -23,13 +29,13 @@
                 <button id="exportData">Export Data</button>
             </div>
             <h2>Trip Timeline</h2>
-            <svg viewBox="0 0 300 300" id="tripSvg"></svg>
+            <svg id="tripSvg" viewBox="0 0 300 300"></svg>
             <div class="legend">
                 <h3>Timeline Key</h3>
                 <div class="legend-item"><span class="legend-color future-not-booked"></span>Future, Not Booked</div>
                 <div class="legend-item"><span class="legend-color future-booked"></span>Future, Booked</div>
                 <div class="legend-item"><span class="legend-color past"></span>Past</div>
-                <div class="legend-item"><span class="legend-color current"></span>Current Date</div>
+                <div class="legend-item"><span class="legend-color current"></span>Current</div>
             </div>
             <div class="overlay" id="overlay">
                 <button class="close-btn" onclick="hideOverlay()">×</button>
@@ -43,38 +49,40 @@
                     <input type="date" id="locArrival" name="locArrival">
                     <label for="locDeparture">Departure Date:</label>
                     <input type="date" id="locDeparture" name="locDeparture">
-                    <label for="locDays">Days:</label>
+                    <label for="locDays">Days Staying:</label>
                     <input type="number" id="locDays" name="locDays" min="0" max="60">
                 </div>
                 <div class="form-group flight-details">
-                    <label>Flight Details:</label>
-                    <div>
-                        <input type="text" id="flightTo" placeholder="To (3-letter code)" class="airport-code" maxlength="3">
-                    </div>
-                    <div>
-                        <input type="text" id="flightDep" placeholder="Dep (e.g., 1159 for 11:59)">
-                    </div>
-                    <div>
-                        <input type="text" id="flightArr" placeholder="Arr (e.g., 1159 for 11:59)">
-                    </div>
-                    <div>
-                        <input type="text" id="flightAirline" placeholder="Airline">
-                        <input type="text" id="flightNumber" placeholder="Flight #" style="width: 30%;">
-                        <input type="text" id="flightGate" placeholder="Gate" style="width: 20%;">
-                    </div>
+                    <h4>Flight Details</h4>
+                    <input type="text" id="flightTo" placeholder="To (3-letter code)" class="airport-code" maxlength="3">
+                    <input type="text" id="flightToCity" placeholder="Destination City">
+                    <input type="text" id="flightDep" placeholder="Dep (e.g., 1159)">
+                    <input type="text" id="flightArr" placeholder="Arr (e.g., 1159)">
+                    <input type="text" id="flightAirline" placeholder="Airline">
+                    <input type="text" id="flightNumber" placeholder="Flight #">
+                    <input type="text" id="flightGate" placeholder="Gate">
+                    <input type="text" id="flightTimeToGate" placeholder="Time to Gate (mins)">
+                    <label for="flightRemarks">Remarks:</label>
+                    <select id="flightRemarks" name="flightRemarks">
+                        <option value="">None</option>
+                        <option value="Delayed">Delayed</option>
+                        <option value="Go to Gate">Go to Gate</option>
+                        <option value="Now Boarding">Now Boarding</option>
+                        <option value="Final Call">Final Call</option>
+                    </select>
                 </div>
                 <div class="form-group hotel-details">
                     <h2>Hotel Details</h2>
                     <input type="text" id="hotelName" placeholder="Hotel Name">
                     <input type="text" id="hotelConf" placeholder="Conf. #">
-                    <input type="text" id="hotelCheckIn" placeholder="Check-in (e.g., 1500 for 15:00)">
-                    <input type="text" id="hotelCheckOut" placeholder="Check-out (e.g., 1100 for 11:00)">
+                    <input type="text" id="hotelCheckIn" placeholder="Check-in (e.g., 1500)">
+                    <input type="text" id="hotelCheckOut" placeholder="Check-out (e.g., 1100)">
                     <input type="text" id="hotelRoom" placeholder="Room Type">
                     <input type="text" id="hotelExtras" placeholder="Extras">
                 </div>
                 <div class="form-group">
                     <label for="notes">Notes:</label>
-                    <textarea id="notes" name="notes"></textarea>
+                    <textarea id="notes" name="notes" placeholder="Additional notes"></textarea>
                 </div>
                 <div class="button-group">
                     <button class="save-btn" id="overlaySave">Save</button>
@@ -83,7 +91,7 @@
             </div>
         </section>
         <nav>
-            <a href="index.html">Back to Planner 🗺️</a>
+            <a href="index.html">Back to Planner</a>
         </nav>
     </main>
     <script>
@@ -97,7 +105,7 @@
                 return;
             }
 
-            document.getElementById('tripTitle').textContent = `${tripData.title} 🗺️`;
+            document.getElementById('tripTitle').textContent = `${tripData.title}`;
             buildSummary(tripData);
             buildTimeline(tripData);
             setupInteractions(tripData);
@@ -127,6 +135,11 @@
             return Math.ceil((depDate - arrDate) / (1000 * 60 * 60 * 24));
         }
 
+        function getRandomColor() {
+            const colors = ['#ff4444', '#32cd32', '#ffa500', '#4db8ff', '#ff1493'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
         function buildSummary(tripData) {
             const summary = document.getElementById('tripSummary');
             summary.innerHTML = '';
@@ -135,9 +148,28 @@
             tripData.locations.sort((a, b) => new Date(a.departure) - new Date(b.departure));
             tripData.locations.forEach((loc, index) => {
                 const p = document.createElement('p');
-                let flightStr = loc.flightDetails?.to ? `${formatDate(loc.arrival)} ${loc.airport} to ${loc.flightDetails.to} ${loc.flightDetails.airline || ''} ${loc.flightDetails.number || ''} Dep: ${formatTime(loc.flightDetails.dep || '')} Arr: ${formatTime(loc.flightDetails.arr || '')}` : '';
-                let hotelStr = loc.hotelDetails?.name ? `Hotel: ${calculateDays(loc.arrival, loc.departure)} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf || ''}` : '';
-                p.innerHTML = `<strong>${loc.city} (${loc.airport})</strong>: ${flightStr || hotelStr ? `${flightStr} ${hotelStr}` : 'No details yet'} <button class="action-btn details-btn" data-index="${index}">…</button>`;
+                let flightStr = '';
+                if (loc.flightDetails?.to) {
+                    flightStr = `
+                        ✈️ 
+                        <span class="time">Time: ${formatDate(loc.arrival)} ${formatTime(loc.flightDetails.dep || '')} - ${formatTime(loc.flightDetails.arr || '')}</span> 
+                        <span class="destination">${loc.city} to ${loc.flightDetails.toCity || 'Unknown'}</span> 
+                        <span class="airport">(${loc.airport} - ${loc.flightDetails.to})</span> 
+                        <span class="airline" style="background-color: ${getRandomColor()}">${loc.flightDetails.airline || 'N/A'}</span> 
+                        <span class="flight-number">${loc.flightDetails.number || 'N/A'}</span> 
+                        <span class="time-to-gate">Time to Gate: ${loc.flightDetails.timeToGate || 'N/A'} mins</span> 
+                        <span class="gate">Gate: ${loc.flightDetails.gate || 'N/A'}</span>
+                        ${loc.flightDetails.remarks ? `<span class="remarks ${loc.flightDetails.remarks.toLowerCase().replace(/\s+/g, '-')}">${loc.flightDetails.remarks}</span>` : ''}
+                    `;
+                }
+                let hotelStr = loc.hotelDetails?.name ? 
+                    `🏨 Hotel: ${calculateDays(loc.arrival, loc.departure)} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf || ''}` : '';
+                p.innerHTML = `
+                    <strong>${loc.city} (${loc.airport})</strong>: 
+                    ${flightStr || 'No flight details'} 
+                    ${hotelStr ? `<br>${hotelStr}` : ''} 
+                    <button class="action-btn details-btn" data-index="${index}">…</button>
+                `;
 
                 const arrivalDate = new Date(loc.arrival);
                 const departureDate = new Date(loc.departure);
@@ -194,7 +226,7 @@
                     if (!tripData.title || !tripData.locations) throw new Error('Invalid format');
                     localStorage.setItem('tripPlan', JSON.stringify(tripData));
                     saveChanges();
-                    document.getElementById('tripTitle').textContent = `${tripData.title} 🗺️`;
+                    document.getElementById('tripTitle').textContent = `${tripData.title}`;
                 } catch (error) {
                     alert('Error importing data: ' + error.message);
                 }
@@ -219,8 +251,10 @@
             svg.innerHTML = '';
             const today = new Date('2025-04-01');
             const locCount = tripData.locations.length;
-            const height = 200 + (locCount * 50);
+            const baseHeight = 300;
+            const height = Math.max(baseHeight, locCount * 50 + 100); // Ensure enough space
             svg.setAttribute('height', height);
+            svg.setAttribute('viewBox', `0 0 300 ${height}`);
 
             let yPos = 50;
             tripData.locations.forEach((loc, index) => {
@@ -291,11 +325,14 @@
             document.getElementById('locDeparture').value = loc.departure;
             document.getElementById('locDays').value = loc.days;
             document.getElementById('flightTo').value = loc.flightDetails?.to || '';
+            document.getElementById('flightToCity').value = loc.flightDetails?.toCity || '';
             document.getElementById('flightDep').value = loc.flightDetails?.dep || '';
             document.getElementById('flightArr').value = loc.flightDetails?.arr || '';
             document.getElementById('flightAirline').value = loc.flightDetails?.airline || '';
             document.getElementById('flightNumber').value = loc.flightDetails?.number || '';
             document.getElementById('flightGate').value = loc.flightDetails?.gate || '';
+            document.getElementById('flightTimeToGate').value = loc.flightDetails?.timeToGate || '';
+            document.getElementById('flightRemarks').value = loc.flightDetails?.remarks || '';
             document.getElementById('hotelName').value = loc.hotelDetails?.name || '';
             document.getElementById('hotelConf').value = loc.hotelDetails?.conf || '';
             document.getElementById('hotelCheckIn').value = loc.hotelDetails?.checkIn || '';
@@ -320,11 +357,14 @@
             document.getElementById('locDeparture').onchange = (e) => updateField('departure', null, e.target.value);
             document.getElementById('locDays').onchange = (e) => updateField('days', null, parseInt(e.target.value));
             document.getElementById('flightTo').onchange = (e) => updateField('flightDetails', 'to', e.target.value.toUpperCase());
+            document.getElementById('flightToCity').onchange = (e) => updateField('flightDetails', 'toCity', e.target.value);
             document.getElementById('flightDep').onchange = (e) => updateField('flightDetails', 'dep', formatTime(e.target.value));
             document.getElementById('flightArr').onchange = (e) => updateField('flightDetails', 'arr', formatTime(e.target.value));
             document.getElementById('flightAirline').onchange = (e) => updateField('flightDetails', 'airline', e.target.value);
             document.getElementById('flightNumber').onchange = (e) => updateField('flightDetails', 'number', e.target.value);
             document.getElementById('flightGate').onchange = (e) => updateField('flightDetails', 'gate', e.target.value);
+            document.getElementById('flightTimeToGate').onchange = (e) => updateField('flightDetails', 'timeToGate', e.target.value);
+            document.getElementById('flightRemarks').onchange = (e) => updateField('flightDetails', 'remarks', e.target.value || '');
             document.getElementById('hotelName').onchange = (e) => updateField('hotelDetails', 'name', e.target.value || null);
             document.getElementById('hotelConf').onchange = (e) => updateField('hotelDetails', 'conf', e.target.value || null);
             document.getElementById('hotelCheckIn').onchange = (e) => updateField('hotelDetails', 'checkIn', formatTime(e.target.value) || null);
