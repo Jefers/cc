@@ -75,7 +75,7 @@ button.delete-btn:hover { background: #ff6666; }
 #importFile { display: none; }
 
 .summary { background: var(--bg-secondary); border-radius: 4px; padding: var(--spacing-md); margin-bottom: var(--spacing-md); }
-.summary p { margin: var(--spacing-sm) 0; font-size: var(--font-size-sm); }
+.summary p { margin: var(--spacing-sm) 0; font-size: var(--font-size-xl); }
 .summary .current { background: rgba(77, 184, 255, 0.2); padding: var(--spacing-sm); border-radius: 4px; }
 
 #tripSvg { width: 100%; background: var(--bg-secondary); border-radius: 4px; margin-bottom: var(--spacing-md); }
