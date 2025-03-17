@@ -195,7 +195,6 @@
                 summary.appendChild(card);
             });
 
-            // Auto-select the current card
             const currentCard = document.querySelector('.summary-card.current');
             if (currentCard) {
                 currentCard.classList.add('selected');
@@ -204,7 +203,6 @@
                 });
             }
 
-            // Add click events to summary cards
             document.querySelectorAll('.summary-card').forEach(card => {
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.summary-card').forEach(c => {
@@ -216,7 +214,6 @@
                 });
             });
 
-            // Add click events to details buttons
             document.querySelectorAll('.details-btn').forEach(btn => {
                 btn.addEventListener('click', (event) => {
                     event.stopPropagation();
