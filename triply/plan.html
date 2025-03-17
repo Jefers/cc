@@ -9,7 +9,7 @@
 <body>
     <header>
         <h1 id="tripTitle">Triply</h1>
-        <svg class="header-animation" viewBox="0 0 200 20" width="200" height="20">
+        <svg class="title-animation" viewBox="0 0 200 20" width="600" height="60">
             <circle cx="10" cy="10" r="3" fill="#4db8ff" class="dot dot1"></circle>
             <circle cx="30" cy="10" r="5" fill="#ff6200" class="dot dot2"></circle>
             <circle cx="50" cy="10" r="2" fill="#32cd32" class="dot dot3"></circle>
@@ -19,6 +19,12 @@
     <main>
         <section id="trip-plan">
             <h2>Your Trip at a Glance</h2>
+            <svg class="section-animation" viewBox="0 0 200 20" width="200" height="20">
+                <circle cx="10" cy="10" r="3" fill="#4db8ff" class="dot dot1"></circle>
+                <circle cx="30" cy="10" r="5" fill="#ff6200" class="dot dot2"></circle>
+                <circle cx="50" cy="10" r="2" fill="#32cd32" class="dot dot3"></circle>
+                <circle cx="70" cy="10" r="4" fill="#ffa500" class="dot dot4"></circle>
+            </svg>
             <div class="summary" id="tripSummary"></div>
             <div class="button-group">
                 <button id="addRow">Add Stop</button>
@@ -29,7 +35,13 @@
                 <button id="exportData">Export Data</button>
             </div>
             <h2>Trip Timeline</h2>
-            <svg id="tripSvg" viewBox="0 0 300 300"></svg>
+            <svg class="section-animation" viewBox="0 0 200 20" width="200" height="20">
+                <circle cx="10" cy="10" r="3" fill="#4db8ff" class="dot dot1"></circle>
+                <circle cx="30" cy="10" r="5" fill="#ff6200" class="dot dot2"></circle>
+                <circle cx="50" cy="10" r="2" fill="#32cd32" class="dot dot3"></circle>
+                <circle cx="70" cy="10" r="4" fill="#ffa500" class="dot dot4"></circle>
+            </svg>
+            <svg id="tripSvg" viewBox="0 0 400 300"></svg>
             <div class="legend">
                 <h3>Timeline Key</h3>
                 <div class="legend-item"><span class="legend-color future-not-booked"></span>Future, Not Booked</div>
@@ -147,7 +159,11 @@
 
             tripData.locations.sort((a, b) => new Date(a.departure) - new Date(b.departure));
             tripData.locations.forEach((loc, index) => {
-                const p = document.createElement('p');
+                const card = document.createElement('div');
+                card.classList.add('summary-card');
+                card.setAttribute('data-index', index);
+                card.setAttribute('tabindex', '0');
+
                 let flightStr = '';
                 if (loc.flightDetails?.to) {
                     flightStr = `
@@ -164,7 +180,7 @@
                 }
                 let hotelStr = loc.hotelDetails?.name ? 
                     `🏨 Hotel: ${calculateDays(loc.arrival, loc.departure)} Nights @ ${loc.hotelDetails.name} ${loc.hotelDetails.conf || ''}` : '';
-                p.innerHTML = `
+                card.innerHTML = `
                     <strong>${loc.city} (${loc.airport})</strong>: 
                     ${flightStr || 'No flight details'} 
                     ${hotelStr ? `<br>${hotelStr}` : ''} 
@@ -173,12 +189,39 @@
 
                 const arrivalDate = new Date(loc.arrival);
                 const departureDate = new Date(loc.departure);
-                if (arrivalDate <= today && today <= departureDate) p.classList.add('current');
-                summary.appendChild(p);
+                if (arrivalDate <= today && today <= departureDate) {
+                    card.classList.add('current');
+                }
+                summary.appendChild(card);
             });
 
+            // Auto-select the current card
+            const currentCard = document.querySelector('.summary-card.current');
+            if (currentCard) {
+                currentCard.classList.add('selected');
+                document.querySelectorAll('.summary-card:not(.selected)').forEach(card => {
+                    card.style.opacity = '0.5';
+                });
+            }
+
+            // Add click events to summary cards
+            document.querySelectorAll('.summary-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.summary-card').forEach(c => {
+                        c.classList.remove('selected');
+                        c.style.opacity = '0.5';
+                    });
+                    card.classList.add('selected');
+                    card.style.opacity = '1';
+                });
+            });
+
+            // Add click events to details buttons
             document.querySelectorAll('.details-btn').forEach(btn => {
-                btn.addEventListener('click', () => showOverlay(tripData.locations[btn.getAttribute('data-index')], btn.getAttribute('data-index')));
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    showOverlay(tripData.locations[btn.getAttribute('data-index')], btn.getAttribute('data-index'));
+                });
             });
         }
 
@@ -252,15 +295,15 @@
             const today = new Date('2025-04-01');
             const locCount = tripData.locations.length;
             const baseHeight = 300;
-            const height = Math.max(baseHeight, locCount * 50 + 100); // Ensure enough space
+            const height = Math.max(baseHeight, locCount * 50 + 100);
             svg.setAttribute('height', height);
-            svg.setAttribute('viewBox', `0 0 300 ${height}`);
+            svg.setAttribute('viewBox', `0 0 400 ${height}`);
 
             let yPos = 50;
             tripData.locations.forEach((loc, index) => {
                 const days = calculateDays(loc.arrival, loc.departure);
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', 50);
+                circle.setAttribute('cx', 20);
                 circle.setAttribute('cy', yPos);
                 circle.setAttribute('r', 10);
                 circle.setAttribute('class', 'stop');
@@ -269,26 +312,26 @@
 
                 if (index < locCount - 1) {
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    line.setAttribute('x1', 50);
+                    line.setAttribute('x1', 20);
                     line.setAttribute('y1', yPos + 10);
-                    line.setAttribute('x2', 50);
+                    line.setAttribute('x2', 20);
                     line.setAttribute('y2', yPos + 50 - 10);
                     line.setAttribute('class', 'travel-line');
                     svg.appendChild(line);
                 }
 
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', 70);
+                text.setAttribute('x', 40);
                 text.setAttribute('y', yPos + 5);
                 text.textContent = `${loc.city} (${loc.airport})`;
                 svg.appendChild(text);
 
                 for (let i = 0; i < days; i++) {
                     const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                    bar.setAttribute('x', 130 + (i * 25));
-                    bar.setAttribute('y', yPos - 10);
-                    bar.setAttribute('width', 20);
-                    bar.setAttribute('height', 20);
+                    bar.setAttribute('x', 150 + (i * 15));
+                    bar.setAttribute('y', yPos - 5);
+                    bar.setAttribute('width', 10);
+                    bar.setAttribute('height', 10);
                     bar.setAttribute('class', 'day-bar visible');
                     svg.appendChild(bar);
 
