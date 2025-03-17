@@ -9,7 +9,7 @@
     --success: #32cd32;
     --warning: #ffa500;
     --yellow: #ffff00;
-    --purple: #cb05cb;
+    --purple: #800080;
     --green: #32cd32;
     --orange: #ff6200;
     --shadow: rgba(0, 0, 0, 0.5);
@@ -49,11 +49,9 @@ h1 {
     font-size: var(--font-size-xxl); 
     font-weight: 600; 
 }
-.header-animation {
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translateX(-50%);
+.title-animation, .section-animation {
+    display: block;
+    margin: 0 auto var(--spacing-md) auto;
 }
 .dot {
     animation: bounce 1.5s infinite;
@@ -108,20 +106,21 @@ button.delete-btn:hover { background: #ff6666; }
 #importFile { display: none; }
 
 .summary { background: var(--bg-secondary); border-radius: 4px; padding: var(--spacing-md); margin-bottom: var(--spacing-md); }
-.summary p { margin: var(--spacing-sm) 0; font-size: var(--font-size-xl); }
-.summary .current { background: rgba(77, 184, 255, 0.2); padding: var(--spacing-sm); border-radius: 4px; }
-.summary .time { color: #ffffff; }
-.summary .destination { color: var(--yellow); }
-.summary .airport { color: var(--yellow); }
-.summary .airline { color: #ffffff; padding: 0.2rem 0.5rem; border-radius: 4px; }
-.summary .flight-number { color: #ffffff; }
-.summary .time-to-gate { color: var(--purple); }
-.summary .gate { color: var(--yellow); }
-.summary .remarks { padding: 0.2rem 0.5rem; border-radius: 4px; color: #ffffff; }
-.summary .remarks.delayed { background-color: var(--yellow); color: #000000; }
-.summary .remarks.go-to-gate { background-color: var(--green); }
-.summary .remarks.now-boarding { background-color: var(--green); }
-.summary .remarks.final-call { background-color: var(--orange); }
+.summary-card { margin: var(--spacing-sm) 0; font-size: var(--font-size-sm); }
+.summary-card.selected { background: rgba(77, 184, 255, 0.2); padding: var(--spacing-sm); border-radius: 4px; }
+.summary-card:not(.selected) { opacity: 0.5; }
+.summary-card .time { color: #ffffff; }
+.summary-card .destination { color: var(--yellow); }
+.summary-card .airport { color: var(--yellow); }
+.summary-card .airline { color: #ffffff; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.summary-card .flight-number { color: #ffffff; }
+.summary-card .time-to-gate { color: var(--purple); }
+.summary-card .gate { color: var(--yellow); }
+.summary-card .remarks { padding: 0.2rem 0.5rem; border-radius: 4px; color: #ffffff; }
+.summary-card .remarks.delayed { background-color: var(--yellow); color: #000000; }
+.summary-card .remarks.go-to-gate { background-color: var(--green); }
+.summary-card .remarks.now-boarding { background-color: var(--green); }
+.summary-card .remarks.final-call { background-color: var(--orange); }
 
 #tripSvg { width: 100%; background: var(--bg-secondary); border-radius: 4px; margin-bottom: var(--spacing-md); }
 .travel-line { stroke: var(--highlight); stroke-width: 2; }
@@ -148,8 +147,7 @@ text { fill: var(--text-primary); font-size: var(--font-size-sm); }
 .overlay { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; background: var(--bg-secondary); padding: var(--spacing-lg); box-shadow: -4px 0 8px var(--shadow); transition: left var(--transition); z-index: 10; overflow-y: auto; }
 .overlay.active { left: 0; }
 .close-btn { position: absolute; top: var(--spacing-md); right: var(--spacing-md); background: none; font-size: var(--font-size-lg); color: var(--text-secondary); }
-.flight-details input, .flight-details select { margin-top: var(--spacing-sm); }
-.flight-details select {
+select {
     background: var(--bg-secondary);
     border: 1px solid var(--text-secondary);
     border-radius: 4px;
@@ -158,8 +156,7 @@ text { fill: var(--text-primary); font-size: var(--font-size-sm); }
     font-size: var(--font-size-base);
     width: 100%;
 }
-.flight-details select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 4px var(--accent); }
-.hotel-details { background: rgba(255, 255, 255, 0.05); padding: var(--spacing-md); border-radius: 4px; margin: var(--spacing-md) 0; }
+select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 4px var(--accent); }
 
 nav { text-align: center; padding: var(--spacing-md); }
 nav a { color: var(--accent); text-decoration: none; font-size: var(--font-size-base); transition: color var(--transition); }
