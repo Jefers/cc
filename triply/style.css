@@ -9,7 +9,7 @@
     --success: #32cd32;
     --warning: #ffa500;
     --yellow: #ffff00;
-    --purple: #800080;
+    --purple: #ff04ff;
     --green: #32cd32;
     --orange: #ff6200;
     --shadow: rgba(0, 0, 0, 0.5);
@@ -106,8 +106,8 @@ button.delete-btn:hover { background: #ff6666; }
 #importFile { display: none; }
 
 .summary { background: var(--bg-secondary); border-radius: 4px; padding: var(--spacing-md); margin-bottom: var(--spacing-md); }
-.summary-card { margin: var(--spacing-sm) 0; font-size: var(--font-size-sm); }
-.summary-card.selected { background: rgba(77, 184, 255, 0.2); padding: var(--spacing-sm); border-radius: 4px; }
+.summary-card { margin: var(--spacing-sm) 0; font-size: var(--font-size-sm); padding: var(--spacing-md); border-radius: 4px; background: var(--bg-secondary); transition: box-shadow var(--transition), opacity var(--transition); }
+.summary-card.selected { box-shadow: 0 0 8px var(--accent); }
 .summary-card:not(.selected) { opacity: 0.5; }
 .summary-card .time { color: #ffffff; }
 .summary-card .destination { color: var(--yellow); }
