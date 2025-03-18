@@ -100,8 +100,52 @@
             <a href="index.html">Back to Planner</a>
         </nav>
     </main>
+    <!-- Full-screen overlay for selected card -->
+    <div id="fullscreenOverlay" class="fullscreen-overlay">
+        <button class="close-btn">×</button>
+        <div class="overlay-content">
+            <div class="overlay-text"></div>
+        </div>
+    </div>
     <script>
         let tripData = null;
+        const overlay = document.getElementById('fullscreenOverlay');
+        const overlayText = overlay.querySelector('.overlay-text');
+        const closeBtn = overlay.querySelector('.close-btn');
+        let selectedCard = null;
+
+        // Close overlay when close button is clicked
+        closeBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+
+        // Close overlay when clicking outside content
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+
+        // Event delegation for summary cards
+        document.getElementById('tripSummary').addEventListener('click', (e) => {
+            const card = e.target.closest('.summary-card');
+            if (card && !e.target.classList.contains('details-btn')) {
+                if (selectedCard === card) {
+                    // Second click: open overlay with full HTML to preserve styles
+                    overlayText.innerHTML = '<div class="summary-card">' + card.innerHTML + '</div>';
+                    overlay.classList.add('active');
+                } else {
+                    // First click: select the card
+                    if (selectedCard) {
+                        selectedCard.classList.remove('selected');
+                        selectedCard.style.opacity = '0.5';
+                    }
+                    card.classList.add('selected');
+                    card.style.opacity = '1';
+                    selectedCard = card;
+                }
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             tripData = JSON.parse(localStorage.getItem('tripPlan'));
@@ -192,21 +236,11 @@
             const currentCard = document.querySelector('.summary-card.current');
             if (currentCard) {
                 currentCard.classList.add('selected');
+                selectedCard = currentCard;
                 document.querySelectorAll('.summary-card:not(.selected)').forEach(card => {
                     card.style.opacity = '0.5';
                 });
             }
-
-            document.querySelectorAll('.summary-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('.summary-card').forEach(c => {
-                        c.classList.remove('selected');
-                        c.style.opacity = '0.5';
-                    });
-                    card.classList.add('selected');
-                    card.style.opacity = '1';
-                });
-            });
 
             document.querySelectorAll('.details-btn').forEach(btn => {
                 btn.addEventListener('click', (event) => {
@@ -315,7 +349,7 @@
                 text.setAttribute('x', 40);
                 text.setAttribute('y', yPos + 5);
                 text.textContent = `${loc.city} (${loc.airport})`;
-                text.setAttribute('fill', '#ffffff');  // Ensure text is visible
+                text.setAttribute('fill', '#ffffff');
                 svg.appendChild(text);
 
                 for (let i = 0; i < days; i++) {

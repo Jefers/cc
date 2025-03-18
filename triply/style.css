@@ -1,5 +1,5 @@
 :root {
-    --bg-primary: #1a1a1a;
+    --bg-primary: #161616;
     --bg-secondary: #2d2d2d;
     --text-primary: #e0e0e0;
     --text-secondary: #a0a0a0;
@@ -23,6 +23,7 @@
     --font-size-xl: 1.8rem;
     --font-size-xxl: 2.8rem;
     --font-size-xxxl: 3.8rem;
+    --font-size-xxxxl: 4.8rem;
     --transition: 0.3s ease;
 }
 
@@ -108,7 +109,7 @@ button.delete-btn:hover { background: #ff6666; }
 .summary { background: var(--bg-secondary); border-radius: 4px; padding: var(--spacing-md); margin-bottom: var(--spacing-md); }
 .summary-card { margin: var(--spacing-sm) 0; font-size: var(--font-size-sm); padding: var(--spacing-md); border-radius: 4px; background: var(--bg-secondary); transition: box-shadow var(--transition), opacity var(--transition); }
 .summary-card.selected { box-shadow: 0 0 8px var(--accent); }
-.summary-card:not(.selected) { opacity: 0.5; }
+.summary-card:not(.selected) { opacity: 0.7; }
 .summary-card .time { color: #ffffff; }
 .summary-card .destination { color: var(--yellow); }
 .summary-card .airport { color: var(--yellow); }
@@ -161,6 +162,100 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 4px v
 nav { text-align: center; padding: var(--spacing-md); }
 nav a { color: var(--accent); text-decoration: none; font-size: var(--font-size-base); transition: color var(--transition); }
 nav a:hover { color: var(--highlight); }
+
+/* Full-screen overlay styles */
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.fullscreen-overlay.active {
+    display: flex;
+}
+
+.overlay-content {
+    position: relative;
+    background: var(--bg-secondary);
+    padding: 60px; /* Increased padding to prevent overlap */
+    border-radius: 8px;
+    max-width: 95%;
+    height: auto; /* Let content dictate height */
+    overflow-y: auto; /* Scroll if content overflows */
+}
+
+.fullscreen-overlay .summary-card {
+    font-size: clamp(2rem, 15vw, 2rem); /* Larger, responsive font size */
+    line-height: 1.4; /* Improved readability */
+    color: var(--text-primary); /* Ensure text color matches the theme */
+}
+
+/* Ensure colors are preserved by reapplying styles within overlay context */
+.fullscreen-overlay .summary-card .time {
+    color: #ffffff;
+}
+.fullscreen-overlay .summary-card .destination {
+    color: var(--yellow);
+}
+.fullscreen-overlay .summary-card .airport {
+    color: var(--yellow);
+}
+.fullscreen-overlay .summary-card .airline {
+    color: #ffffff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+.fullscreen-overlay .summary-card .flight-number {
+    color: #ffffff;
+}
+.fullscreen-overlay .summary-card .time-to-gate {
+    color: var(--purple);
+}
+.fullscreen-overlay .summary-card .gate {
+    color: var(--yellow);
+}
+.fullscreen-overlay .summary-card .remarks {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: #ffffff;
+}
+.fullscreen-overlay .summary-card .remarks.delayed {
+    background-color: var(--yellow);
+    color: #000000;
+}
+.fullscreen-overlay .summary-card .remarks.go-to-gate {
+    background-color: var(--green);
+}
+.fullscreen-overlay .summary-card .remarks.now-boarding {
+    background-color: var(--green);
+}
+.fullscreen-overlay .summary-card .remarks.final-call {
+    background-color: var(--orange);
+}
+
+.fullscreen-overlay .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2.5rem; /* Slightly larger for visibility */
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001; /* Ensure it’s above content */
+}
+
+/* Hide the details button in the overlay */
+.fullscreen-overlay .summary-card .details-btn {
+    display: none;
+}
 
 @media (min-width: 768px) {
     .form-section, #trip-plan { max-width: 600px; }
