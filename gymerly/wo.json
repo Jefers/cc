@@ -1,0 +1,22 @@
+[
+    {
+        "date": "2023-10-01T12:00:00Z",
+        "plan": "Two Sets Method",
+        "exercises": [
+            {
+                "name": "Bench Press",
+                "sets": [
+                    {"weight": 60, "reps": 10},
+                    {"weight": 60, "reps": 8}
+                ]
+            },
+            {
+                "name": "Squat",
+                "sets": [
+                    {"weight": 80, "reps": 12},
+                    {"weight": 80, "reps": 10}
+                ]
+            }
+        ]
+    }
+]

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Sets Method - Gymerly</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Two Sets Method</h1>
+        <p>2 sets per exercise, 8-17 reps, 5-7 min rest between sets</p>
+    </header>
+    <main>
+        <div id="timer">Rest Timer: <span id="time">00:00</span></div>
+        <div id="exercises">
+            <div class="exercise" data-name="Bench Press">
+                <h2>Bench Press</h2>
+                <div class="set">
+                    <label>Set 1: Weight <input type="number" class="weight" step="0.5" min="0"> kg</label>
+                    <label>Reps <input type="number" class="reps" min="0" max="17"></label>
+                </div>
+                <button class="start-rest">Start Rest Timer</button>
+                <div class="set">
+                    <label>Set 2: Weight <input type="number" class="weight" step="0.5" min="0"> kg</label>
+                    <label>Reps <input type="number" class="reps" min="0" max="17"></label>
+                </div>
+            </div>
+            <div class="exercise" data-name="Squat">
+                <h2>Squat</h2>
+                <div class="set">
+                    <label>Set 1: Weight <input type="number" class="weight" step="0.5" min="0"> kg</label>
+                    <label>Reps <input type="number" class="reps" min="0" max="17"></label>
+                </div>
+                <button class="start-rest">Start Rest Timer</button>
+                <div class="set">
+                    <label>Set 2: Weight <input type="number" class="weight" step="0.5" min="0"> kg</label>
+                    <label>Reps <input type="number" class="reps" min="0" max="17"></label>
+                </div>
+            </div>
+            <!-- Add more exercises as needed -->
+        </div>
+        <button id="save-workout">Save Workout</button>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

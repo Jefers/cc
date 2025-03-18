@@ -1,0 +1,126 @@
+/* Reset default margins and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1a1a1a; /* Primary background */
+    color: #e0e0e0; /* Primary text */
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #4db8ff; /* Accent */
+    font-size: 2em;
+}
+
+h2 {
+    color: #4db8ff; /* Accent */
+    margin-bottom: 10px;
+}
+
+p {
+    color: #a0a0a0; /* Secondary text */
+}
+
+.plan-list {
+    list-style: none;
+}
+
+.plan-list li {
+    margin: 10px 0;
+}
+
+.plan-list a {
+    color: #ff6200; /* Highlight */
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+.plan-list a:hover {
+    text-decoration: underline;
+}
+
+.exercise {
+    background-color: #2d2d2d; /* Secondary background */
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.set {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #e0e0e0;
+}
+
+input[type="number"] {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border: 1px solid #4db8ff;
+    padding: 5px;
+    width: 80px;
+    margin-right: 10px;
+}
+
+button {
+    background-color: #ff6200; /* Highlight */
+    color: #e0e0e0;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #e05500;
+}
+
+#timer {
+    font-size: 1.5em;
+    text-align: center;
+    margin: 20px 0;
+    color: #4db8ff;
+}
+
+#save-workout {
+    display: block;
+    margin: 20px auto;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .exercise {
+        padding: 10px;
+    }
+
+    input[type="number"] {
+        width: 60px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+    }
+}
