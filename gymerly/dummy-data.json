@@ -1,0 +1,40 @@
+[
+    {
+        "id": 1,
+        "name": "Strength Training",
+        "description": "2 sets per exercise, 8-17 reps, 5-7 min rest",
+        "exercises": [
+            {
+                "id": 1,
+                "name": "Bench Press",
+                "bodyArea": "Chest",
+                "equipment": "Barbell",
+                "sets": [
+                    {
+                        "setNumber": 1,
+                        "weight": 60,
+                        "reps": 10,
+                        "setType": "Working",
+                        "completed": true
+                    },
+                    {
+                        "setNumber": 2,
+                        "weight": 60,
+                        "reps": 8,
+                        "setType": "Working",
+                        "completed": false
+                    }
+                ],
+                "notes": "Focus on form"
+            },
+            {
+                "id": 2,
+                "name": "Squat",
+                "bodyArea": "Legs",
+                "equipment": "Barbell",
+                "sets": [],
+                "notes": ""
+            }
+        ]
+    }
+]
