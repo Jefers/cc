@@ -126,10 +126,10 @@
             }
         });
 
-        // Event delegation for summary cards
+        // Event delegation for summary cards (for desktop)
         document.getElementById('tripSummary').addEventListener('click', (e) => {
             const card = e.target.closest('.summary-card');
-            if (card && !e.target.classList.contains('details-btn')) {
+            if (card && !e.target.classList.contains('details-btn') && !e.target.classList.contains('view-overlay-btn')) {
                 if (selectedCard === card) {
                     // Second click: open overlay with full HTML to preserve styles
                     overlayText.innerHTML = '<div class="summary-card">' + card.innerHTML + '</div>';
@@ -144,6 +144,16 @@
                     card.style.opacity = '1';
                     selectedCard = card;
                 }
+            }
+        });
+
+        // Event listener for the view overlay button (for mobile)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-overlay-btn')) {
+                const index = e.target.getAttribute('data-index');
+                const card = document.querySelector(`.summary-card[data-index="${index}"]`);
+                overlayText.innerHTML = '<div class="summary-card">' + card.innerHTML + '</div>';
+                overlay.classList.add('active');
             }
         });
 
@@ -223,6 +233,7 @@
                     ${flightStr || 'No flight details'} 
                     ${hotelStr ? `<br>${hotelStr}` : ''} 
                     <button class="action-btn details-btn" data-index="${index}">…</button>
+                    <button class="view-overlay-btn" data-index="${index}">-</button>
                 `;
 
                 const arrivalDate = new Date(loc.arrival);

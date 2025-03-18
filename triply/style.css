@@ -1,5 +1,5 @@
 :root {
-    --bg-primary: #161616;
+    --bg-primary: #1a1a1a;
     --bg-secondary: #2d2d2d;
     --text-primary: #e0e0e0;
     --text-secondary: #a0a0a0;
@@ -170,7 +170,7 @@ nav a:hover { color: var(--highlight); }
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.7);
     display: none;
     justify-content: center;
     align-items: center;
@@ -184,77 +184,61 @@ nav a:hover { color: var(--highlight); }
 .overlay-content {
     position: relative;
     background: var(--bg-secondary);
-    padding: 60px; /* Increased padding to prevent overlap */
+    padding: 60px;
     border-radius: 8px;
     max-width: 95%;
-    height: auto; /* Let content dictate height */
-    overflow-y: auto; /* Scroll if content overflows */
+    height: auto;
+    overflow-y: auto;
 }
 
 .fullscreen-overlay .summary-card {
-    font-size: clamp(2rem, 15vw, 2rem); /* Larger, responsive font size */
-    line-height: 1.4; /* Improved readability */
-    color: var(--text-primary); /* Ensure text color matches the theme */
+    font-size: clamp(2rem, 15vw, 2rem);
+    line-height: 1.4;
+    color: var(--text-primary);
 }
 
-/* Ensure colors are preserved by reapplying styles within overlay context */
-.fullscreen-overlay .summary-card .time {
-    color: #ffffff;
-}
-.fullscreen-overlay .summary-card .destination {
-    color: var(--yellow);
-}
-.fullscreen-overlay .summary-card .airport {
-    color: var(--yellow);
-}
-.fullscreen-overlay .summary-card .airline {
-    color: #ffffff;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-}
-.fullscreen-overlay .summary-card .flight-number {
-    color: #ffffff;
-}
-.fullscreen-overlay .summary-card .time-to-gate {
-    color: var(--purple);
-}
-.fullscreen-overlay .summary-card .gate {
-    color: var(--yellow);
-}
-.fullscreen-overlay .summary-card .remarks {
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    color: #ffffff;
-}
-.fullscreen-overlay .summary-card .remarks.delayed {
-    background-color: var(--yellow);
-    color: #000000;
-}
-.fullscreen-overlay .summary-card .remarks.go-to-gate {
-    background-color: var(--green);
-}
-.fullscreen-overlay .summary-card .remarks.now-boarding {
-    background-color: var(--green);
-}
-.fullscreen-overlay .summary-card .remarks.final-call {
-    background-color: var(--orange);
-}
+.fullscreen-overlay .summary-card .time { color: #ffffff; }
+.fullscreen-overlay .summary-card .destination { color: var(--yellow); }
+.fullscreen-overlay .summary-card .airport { color: var(--yellow); }
+.fullscreen-overlay .summary-card .airline { color: #ffffff; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.fullscreen-overlay .summary-card .flight-number { color: #ffffff; }
+.fullscreen-overlay .summary-card .time-to-gate { color: var(--purple); }
+.fullscreen-overlay .summary-card .gate { color: var(--yellow); }
+.fullscreen-overlay .summary-card .remarks { padding: 0.2rem 0.5rem; border-radius: 4px; color: #ffffff; }
+.fullscreen-overlay .summary-card .remarks.delayed { background-color: var(--yellow); color: #000000; }
+.fullscreen-overlay .summary-card .remarks.go-to-gate { background-color: var(--green); }
+.fullscreen-overlay .summary-card .remarks.now-boarding { background-color: var(--green); }
+.fullscreen-overlay .summary-card .remarks.final-call { background-color: var(--orange); }
 
 .fullscreen-overlay .close-btn {
     position: absolute;
     top: 20px;
     right: 20px;
-    font-size: 2.5rem; /* Slightly larger for visibility */
+    font-size: 2.5rem;
     color: white;
     background: none;
     border: none;
     cursor: pointer;
-    z-index: 1001; /* Ensure it’s above content */
+    z-index: 1001;
 }
 
-/* Hide the details button in the overlay */
-.fullscreen-overlay .summary-card .details-btn {
-    display: none;
+.fullscreen-overlay .summary-card .details-btn { display: none; }
+
+/* Style for the view overlay button */
+.view-overlay-btn {
+    background: #50565c;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+.view-overlay-btn:hover {
+    background: #0056b3;
 }
 
 @media (min-width: 768px) {
