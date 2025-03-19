@@ -1,16 +1,16 @@
 /* CSS Variables for Customization */
 :root {
-  --primary-color: #00FF88;
-  --hover-color: #00cc6e;
+  --primary-color: #ffff00;
+  --hover-color: #ffe600;
   --background-color: #1A1A1B;
   --secondary-bg: #2A2A2B;
   --text-color: #FFFFFF;
-  --accent-color: #404040;
+  --accent-color: #ffff00;
   --menu-bg: #2A2A2B;
   --menu-text: #FFFFFF;
   --overlay-bg: rgba(0, 0, 0, 0.95);
   --error-color: #ff4444;
-  --success-color: #00FF88;
+  --success-color: #f6ff00;
   --border-radius: 12px;
   --transition-speed: 0.3s;
 }
@@ -144,16 +144,44 @@ select:focus {
   align-items: center;
   gap: 1rem;
 }
-
+/* Logo container styling */
 .logo {
+  position: relative;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--accent-color);
-  font-size: 1.5rem;
+  color: var(--background-color); /* Black text */
+  font-size: 2.7rem;
+  font-weight: bold;
+}
+
+/* Pseudo-element for the pulsating yellow circle */
+.logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--accent-color); /* Yellow background */
+  animation: pulse 2s infinite;
+  z-index: -1; /* Places the circle behind the text */
+}
+
+/* Pulsating animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .site-title {
@@ -168,6 +196,24 @@ select:focus {
   cursor: pointer;
 }
 
+.running-square {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  background-color: yellow;
+  animation: run-along 15s linear infinite;
+}
+
+@keyframes run-along {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: calc(100% - 2px);
+  }
+}
 
 /* Menu Overlay */
 .menu-overlay {
@@ -554,4 +600,75 @@ img {
   width: 100%;
   height: auto; /* Maintains aspect ratio */
   display: block; /* Removes extra space below the image */
+}
+
+/* Molecule wrapper for positioning and movement */
+.molecule-wrapper {
+  position: absolute;
+  z-index: -1; /* Places molecules behind content */
+  pointer-events: none; /* Prevents interaction with molecules */
+  opacity: 0.3; /* Keeps them subtle */
+}
+
+/* Rotator for the tumbling effect */
+.molecule-rotator {
+  animation: rotate 5s linear infinite; /* Default rotation speed */
+}
+
+/* Molecule stick and balls */
+.molecule {
+  width: 30px; /* Stick length */
+  height: 2px; /* Stick thickness */
+  background-color: #ff0; /* Stick color */
+  transform: rotate(var(--angle)); /* Initial random angle */
+  position: relative;
+}
+
+.molecule::before, .molecule::after {
+  content: '';
+  position: absolute;
+  width: 10px; /* Ball diameter */
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ff0; /* Ball color */
+}
+
+.molecule::before {
+  left: -5px; /* Ball at start of stick */
+  top: -4px;
+}
+
+.molecule::after {
+  right: -5px; /* Ball at end of stick */
+  top: -4px;
+}
+
+/* Animation for horizontal movement */
+@keyframes move-horizontal {
+  0% {
+    left: -50px;
+  }
+  100% {
+    left: calc(100vw + 50px);
+  }
+}
+
+/* Animation for vertical movement */
+@keyframes move-vertical {
+  0% {
+    top: -50px;
+  }
+  100% {
+    top: calc(100vh + 50px);
+  }
+}
+
+/* Animation for rotation */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -95,5 +95,34 @@
             </nav>
         </div>
     </main>
+
+    <script>
+        // JavaScript code from Step 2 goes here
+        for (let i = 0; i < 20; i++) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'molecule-wrapper';
+          const rotator = document.createElement('div');
+          rotator.className = 'molecule-rotator';
+          const molecule = document.createElement('div');
+          molecule.className = 'molecule';
+          rotator.appendChild(molecule);
+          wrapper.appendChild(rotator);
+          document.body.appendChild(wrapper);
+    
+          const isHorizontal = Math.random() > 0.5;
+          if (isHorizontal) {
+            wrapper.style.left = '-50px';
+            wrapper.style.top = `${Math.random() * 100}vh`;
+            wrapper.style.animation = `move-horizontal ${10 + Math.random() * 20}s linear infinite`;
+          } else {
+            wrapper.style.top = '-50px';
+            wrapper.style.left = `${Math.random() * 100}vw`;
+            wrapper.style.animation = `move-vertical ${10 + Math.random() * 20}s linear infinite`;
+          }
+    
+          rotator.style.animation = `rotate ${3 + Math.random() * 7}s linear infinite`;
+          molecule.style.setProperty('--angle', `${Math.random() * 360}deg`);
+        }
+      </script>
 </body>
 </html>
