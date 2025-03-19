@@ -1,0 +1,41 @@
+[
+    {
+        "date": "2023-10-15",
+        "phaseName": "Bulking",
+        "workoutDayName": "Day 1: Push",
+        "exercises": [
+            {
+                "name": "Bench Press",
+                "sets": [
+                    { "weight": 80, "reps": 5, "distance": 0, "time": 0, "completed": true },
+                    { "weight": 80, "reps": 5, "distance": 0, "time": 0, "completed": true }
+                ]
+            },
+            {
+                "name": "Overhead Press",
+                "sets": [
+                    { "weight": 50, "reps": 8, "distance": 0, "time": 0, "completed": false }
+                ]
+            }
+        ]
+    },
+    {
+        "date": "2023-10-16",
+        "phaseName": "Prep",
+        "workoutDayName": "Day 5: Long Run or Hyrox Simulation",
+        "exercises": [
+            {
+                "name": "SkiErg (Simulation)",
+                "sets": [
+                    { "weight": 0, "reps": 0, "distance": 1000, "time": 240, "completed": true }
+                ]
+            },
+            {
+                "name": "Wall Balls (Simulation)",
+                "sets": [
+                    { "weight": 0, "reps": 100, "distance": 0, "time": 300, "completed": true }
+                ]
+            }
+        ]
+    }
+]

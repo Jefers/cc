@@ -1,0 +1,291 @@
+/* plan-styles.css (for plan2025.html) */
+
+/* Dark theme */
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    padding: 20px;
+    position: relative;
+    min-height: 100vh; /* Ensures content isn’t hidden behind fixed banner */
+    padding-bottom: 60px; /* Space for fixed banner */
+}
+.hip {
+    color: #000; /* Black font */
+}
+/* Banner styling */
+.banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #222;
+    text-align: center;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.5);
+}
+
+.banner span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.banner a {
+    color: #ffeb3b;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.banner a:hover {
+    background-color: #ffeb3b;
+    color: #000;
+    text-decoration: none;
+}
+
+.banner p {
+    margin: 0 10px;
+    color: #ffeb3b;
+}
+
+
+svg.square {
+    fill: #ffeb3b; /* Bright yellow */
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    animation: pulse 2s infinite;
+}
+
+#square1 {
+    top: 20px;
+    left: 20px;
+}
+
+#square2 {
+    bottom: 20px;
+    right: 20px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+/* Keep the title on top */
+h1 {
+    position: relative;
+    z-index: 2;
+}
+
+/* Style the SVG behind the title */
+svg.square {
+    position: absolute;
+    z-index: 1;
+    fill: #ffeb3b; /* Adjust the color to match your design */
+    width: 52px;
+    height: 52px;
+}
+
+/* Position the SVG */
+#square1 {
+    top: 10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+}
+/* Headings */
+h1, h2, h3 {
+    color: #ffeb3b; /* Bright yellow for titles */
+}
+
+/* Paragraphs */
+p {
+    line-height: 1.6;
+}
+
+/* Sections */
+section {
+    margin-bottom: 40px;
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+th {
+    background-color: #333;
+    color: #ffeb3b;
+}
+
+/* Responsive tables for mobile */
+@media (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    thead {
+        display: none;
+    }
+    tr {
+        margin-bottom: 15px;
+    }
+    td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        text-align: left;
+        font-weight: bold;
+    }
+}
+
+/* Additional elements from your CSS */
+button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 20px;
+}
+
+button.active, button:hover {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
+.panel {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+li:hover {
+    background-color: #333;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+input[type="number"], input[type="checkbox"] {
+    padding: 5px;
+    margin: 5px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+.set {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 5px 0;
+}
+
+svg.square {
+    fill: #ffeb3b;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    animation: pulse 2s infinite;
+}
+
+#square1 {
+    top: 20px;
+    left: 20px;
+}
+
+#square2 {
+    bottom: 20px;
+    right: 20px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    button {
+        width: 100%;
+        margin: 5px 0;
+    }
+    .panel {
+        padding: 10px;
+    }
+    .set {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    input[type="number"] {
+        width: 100%;
+    }
+}
