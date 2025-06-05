@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pasko Panalo Savings Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background: #fff8f0;
+      color: #333;
+      line-height: 1.6;
+    }
+    header, section, footer {
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    header {
+      background: #e60023;
+      color: white;
+      text-align: center;
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 2rem;
+    }
+    h3 {
+     font-size: 1rem;
+     margin-top: 2rem;
+   }
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      animation: slideUp 0.6s ease forwards;
+      opacity: 0;
+    }
+    @keyframes slideUp {
+      0% { transform: translateY(20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .cta {
+      background: #ffcc00;
+      border: none;
+      color: #000;
+      padding: 1rem;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .form-section {
+      margin-top: 3rem;
+      background: #fff4e6;
+      padding: 2rem;
+      border-radius: 1rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎄 Pasko Panalo Holiday Savings Club 🎄</h1>
+    <h3>Trustee: Jhack Pineda</h3>
+    <p>Save SMART, Celebrate BIG!</p>
+  </header>
+
+  <section class="card">
+    <h2>📅 How It Works</h2>
+    <ul>
+      <li>Only 25 participants per cycle</li>
+      <li>₱500/week for 4 months (Aug–Nov)</li>
+      <li>Total savings: ₱8,000</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>🚀 Why You'll Love It</h2>
+    <ul>
+      <li>Stress-free saving — no debt, no hassle</li>
+      <li>Real value — bulk discounts for your holiday feast</li>
+      <li>Community-powered — save alongside neighbors</li>
+      <li>Safe & trusted — funds managed responsibly</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>💼 Choose Your Reward</h2>
+    <ul>
+      <li>🏷️ Cash Back: Get ₱7,840 — use it however you like!</li>
+      <li>🍚 Holiday Food Bundle: Enjoy discounted goods at 10% below retail!</li>
+    </ul>
+  </section>
+  
+  <section class="form-section">
+    <h2>✅ Ready to Join?</h2>
+    <p>Only 25 spots available! Fill in your details below and our team will get in touch.</p>
+    <form action="mailto:[your-email@example.com]" method="POST" enctype="text/plain">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" name="phone" required />
+
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" rows="3" placeholder="Optional message..."></textarea>
+
+      <button class="cta" type="submit">📧 Submit & Join the Club</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 Pasko Panalo Savings Club | Empowering Filipino Families</p>
+  </footer>
+</body>
+</html>
