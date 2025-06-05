@@ -5,139 +5,173 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pasko Panalo Savings Club</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/scrollreveal"></script>
   <style>
+    :root {
+      --primary: #e60023;
+      --accent: #ffcc00;
+      --light: #fff8f0;
+      --neutral: #333;
+      --box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Inter', sans-serif;
-      margin: 0;
-      background: #fff8f0;
-      color: #333;
-      line-height: 1.6;
-    }
-    header, section, footer {
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
+      background: var(--light);
+      color: var(--neutral);
     }
     header {
-      background: #e60023;
+      background: linear-gradient(135deg, #e60023, #ff4e50);
       color: white;
       text-align: center;
-      padding-top: 3rem;
-      padding-bottom: 3rem;
+      padding: 4rem 2rem;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      box-shadow: var(--box-shadow);
     }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
-    h2 {
-      font-size: 1.5rem;
-      margin-top: 2rem;
+    header p {
+      font-size: 1.2rem;
     }
-    h3 {
-     font-size: 1rem;
-     margin-top: 2rem;
-   }
+    section {
+      padding: 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
     .card {
       background: white;
-      border-radius: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      animation: slideUp 0.6s ease forwards;
-      opacity: 0;
+      border-radius: 1.5rem;
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      margin: 2rem 0;
+      transition: transform 0.3s ease;
     }
-    @keyframes slideUp {
-      0% { transform: translateY(20px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+    .card:hover {
+      transform: translateY(-5px);
     }
-    .cta {
-      background: #ffcc00;
-      border: none;
-      color: #000;
-      padding: 1rem;
-      font-size: 1rem;
-      width: 100%;
-      margin-top: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      color: var(--primary);
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    ul li {
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #ddd;
     }
     .form-section {
-      margin-top: 3rem;
-      background: #fff4e6;
+      background: #ffe8c2;
+      border-radius: 1.5rem;
       padding: 2rem;
-      border-radius: 1rem;
+      box-shadow: var(--box-shadow);
     }
     input, textarea {
       width: 100%;
-      padding: 0.8rem;
-      margin-top: 0.5rem;
-      margin-bottom: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
       border: 1px solid #ccc;
-      border-radius: 0.5rem;
+      border-radius: 0.8rem;
       font-size: 1rem;
+    }
+    .cta {
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+      padding: 1rem;
+      width: 100%;
+      border: none;
+      border-radius: 0.8rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .cta:hover {
+      background: #ffd633;
     }
     footer {
       text-align: center;
       font-size: 0.9rem;
       color: #777;
-      margin-bottom: 2rem;
+      padding: 2rem 1rem;
+    }
+    .illustration {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 1rem;
+      margin: 1rem 0;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>🎄 Pasko Panalo Holiday Savings Club 🎄</h1>
-    <h3>Trustee: Jhack Pineda</h3>
-    <p>Save SMART, Celebrate BIG!</p>
+    <h1>🎄 Pasko Panalo Club</h1>
+    <p>Smart Saving. Big Celebration. Total Joy.</p>
   </header>
 
-  <section class="card">
+  <section class="card" id="how-it-works">
     <h2>📅 How It Works</h2>
+    <img class="illustration" src="https://images.unsplash.com/photo-1603271267285-015ca5f1e6be?auto=format&fit=crop&w=700&q=80" alt="Holiday Budgeting">
     <ul>
-      <li>Only 25 participants per cycle</li>
+      <li>Exclusive to 25 participants per cycle</li>
       <li>₱500/week for 4 months (Aug–Nov)</li>
-      <li>Total savings: ₱8,000</li>
+      <li>Total savings: ₱8,000 safely collected and stored</li>
     </ul>
   </section>
 
-  <section class="card">
-    <h2>🚀 Why You'll Love It</h2>
-    <ul>
-      <li>Stress-free saving — no debt, no hassle</li>
-      <li>Real value — bulk discounts for your holiday feast</li>
-      <li>Community-powered — save alongside neighbors</li>
-      <li>Safe & trusted — funds managed responsibly</li>
-    </ul>
-  </section>
-
-  <section class="card">
+  <section class="card" id="rewards">
     <h2>💼 Choose Your Reward</h2>
+    <img class="illustration" src="https://images.unsplash.com/photo-1603207392361-cf8e2a0ffb0c?auto=format&fit=crop&w=700&q=80" alt="Holiday Reward Options">
     <ul>
-      <li>🏷️ Cash Back: Get ₱7,840 — use it however you like!</li>
-      <li>🍚 Holiday Food Bundle: Enjoy discounted goods at 10% below retail!</li>
+      <li>🏷️ <strong>Cash Back:</strong> Get ₱7,840 back to spend however you want!</li>
+      <li>🍽️ <strong>Holiday Food Bundle:</strong> Choose groceries and goodies at 10% off!</li>
     </ul>
   </section>
-  
-  <section class="form-section">
+
+  <section class="card" id="benefits">
+    <h2>🚀 Why You’ll Love It</h2>
+    <ul>
+      <li>No debt, just smart saving with friends and neighbors</li>
+      <li>Exclusive access to wholesale discounts</li>
+      <li>Share the holiday spirit with your community</li>
+      <li>Reliable and transparent fund handling</li>
+    </ul>
+  </section>
+
+  <section class="form-section" id="join">
     <h2>✅ Ready to Join?</h2>
-    <p>Only 25 spots available! Fill in your details below and our team will get in touch.</p>
-    <form action="mailto:[your-email@example.com]" method="POST" enctype="text/plain">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required />
-
-      <label for="phone">Phone Number:</label>
-      <input type="text" id="phone" name="phone" required />
-
-      <label for="message">Message:</label>
-      <textarea id="message" name="message" rows="3" placeholder="Optional message..."></textarea>
-
-      <button class="cta" type="submit">📧 Submit & Join the Club</button>
+    <p>Only 25 spots per group. Sign up now and we’ll contact you right away!</p>
+    <form action="mailto:your-email@example.com" method="POST" enctype="text/plain">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="text" name="phone" placeholder="Phone Number" required />
+      <textarea name="message" placeholder="Optional message..."></textarea>
+      <button type="submit" class="cta">📧 Send My Details</button>
     </form>
   </section>
 
   <footer>
-    <p>© 2025 Pasko Panalo Savings Club | Empowering Filipino Families</p>
+    <p>© 2025 Pasko Panalo Savings Club. Designed for community joy.</p>
   </footer>
+
+  <script>
+    ScrollReveal().reveal('.card, .form-section', {
+      delay: 100,
+      duration: 800,
+      easing: 'ease-out',
+      reset: false,
+      distance: '30px',
+      origin: 'bottom'
+    });
+  </script>
 </body>
 </html>
