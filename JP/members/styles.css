@@ -1,0 +1,215 @@
+/* Import Inter font (already linked in HTML) */
+:root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent: #4db8ff;
+    --highlight: #ff6200;
+    --success: #32cd32;
+    --yellow: #ffff00;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --font-family: 'Inter', sans-serif;
+    --font-size-base: 18px;
+    --font-size-sm: 0.9rem;
+    --font-size-lg: 1.3rem;
+    --font-size-xl: 1.8rem;
+    --font-size-xxl: 2.8rem;
+    --transition: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+}
+
+h1.title-animation {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+}
+
+.dot {
+    display: inline-block;
+    color: var(--yellow);
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.section {
+    padding: var(--spacing-md);
+}
+
+.content {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.illustration {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: var(--spacing-md);
+}
+
+h2 {
+    font-size: var(--font-size-lg);
+    color: var(--accent);
+    margin-bottom: var(--spacing-md);
+}
+
+ul {
+    list-style: none;
+    margin-bottom: var(--spacing-md);
+}
+
+ul li {
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+ul li::before {
+    content: '🎅';
+    position: absolute;
+    left: 0;
+    color: var(--highlight);
+}
+
+.call-to-action {
+    background: #fffacd; /* Light yellow */
+    padding: var(--spacing-lg);
+}
+
+.call-to-action p {
+    font-size: var(--font-size-base);
+    color: var(--bg-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+label {
+    font-size: var(--font-size-sm);
+    color: var(--bg-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+input, textarea {
+    background: var(--text-primary);
+    border: 1px solid var(--bg-secondary);
+    border-radius: 4px;
+    padding: var(--spacing-sm);
+    color: var(--bg-primary);
+    font-size: var(--font-size-base);
+    width: 100%;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 4px var(--accent);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 6rem;
+}
+
+button {
+    background: var(--highlight);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 999px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+}
+
+button:hover {
+    background: #ff8c00;
+    transform: scale(1.05);
+}
+
+.footer {
+    text-align: center;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: var(--spacing-sm);
+    }
+
+    .header, .section, .call-to-action {
+        padding: var(--spacing-md);
+    }
+
+    h1.title-animation {
+        font-size: var(--font-size-lg);
+    }
+
+    .subtitle {
+        font-size: var(--font-size-base);
+    }
+
+    .content {
+        padding: var(--spacing-sm);
+    }
+}
+
+@media (min-width: 768px) {
+    h1.title-animation {
+        font-size: var(--font-size-xxl);
+    }
+
+    .content {
+        max-width: 600px;
+    }
+}

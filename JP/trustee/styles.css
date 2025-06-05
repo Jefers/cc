@@ -167,6 +167,35 @@ input:focus {
     }
 }
 
+.menu {
+    list-style: none;
+    margin: var(--spacing-md) 0;
+}
+
+.menu li {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-sm);
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.menu li::before {
+    content: '➡️';
+    position: absolute;
+    left: 0;
+    color: var(--highlight);
+}
+
+.menu a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.menu a:hover {
+    color: var(--highlight);
+}
+
 /* Desktop adjustments */
 @media (min-width: 768px) {
     .container {
