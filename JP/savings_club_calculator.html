@@ -4,76 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Christmas Savings Club Calculator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 1.5em;
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-size: 1em;
-            color: #555;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .output {
-            margin-top: 20px;
-            padding: 10px;
-            background: #e8f5e9;
-            border-radius: 4px;
-        }
-        .output p {
-            margin: 5px 0;
-            font-size: 1em;
-            color: #333;
-        }
-        .output p span {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-            h1 {
-                font-size: 1.2em;
-            }
-            input, label {
-                font-size: 0.9em;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>🎄 Christmas Savings Club Calculator 🎅</h1>
+        <h1>🎄 JHack's Christmas Savings Club Calculator 🎅</h1>
         <label for="participants">Participants (default: 25):</label>
         <input type="number" id="participants" value="25" min="1">
         

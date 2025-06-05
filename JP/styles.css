@@ -1,0 +1,179 @@
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Root variables from provided style guide */
+:root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent: #4db8ff;
+    --highlight: #ff6200;
+    --danger: #ff4444;
+    --success: #32cd32;
+    --warning: #ffa500;
+    --yellow: #ffff00;
+    --purple: #ff04ff;
+    --green: #32cd32;
+    --orange: #ff6200;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --font-family: 'Inter', sans-serif;
+    --font-size-base: 18px;
+    --font-size-sm: 0.9rem;
+    --font-size-lg: 1.3rem;
+    --font-size-xl: 1.8rem;
+    --font-size-xxl: 2.8rem;
+    --font-size-xxxl: 3.8rem;
+    --font-size-xxxxl: 4.8rem;
+    --transition: 0.3s ease;
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+}
+
+/* Container for the calculator */
+.container {
+    max-width: 600px;
+    width: 100%;
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+/* Header with festive animation */
+header {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.title-animation {
+    display: inline-block;
+    margin-bottom: var(--spacing-sm);
+}
+
+.dot {
+    display: inline-block;
+    color: var(--yellow);
+    animation: bounce 1.5s infinite;
+}
+
+.dot1 { animation-delay: 0s; }
+.dot2 { animation-delay: 0.2s; }
+.dot3 { animation-delay: 0.4s; }
+.dot4 { animation-delay: 0.6s; }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+input {
+    background: var(--bg-primary);
+    border: 1px solid var(--text-secondary);
+    border-radius: 4px;
+    padding: var(--spacing-sm);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    width: 100%;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 4px var(--accent);
+}
+
+/* Output section */
+.output {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-primary);
+    border-radius: 4px;
+    border: 1px solid var(--text-secondary);
+}
+
+.output p {
+    margin: var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+
+.output p span {
+    font-weight: 600;
+    color: var(--success);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    body {
+        padding: var(--spacing-sm);
+    }
+
+    .container {
+        padding: var(--spacing-sm);
+    }
+
+    h1 {
+        font-size: var(--font-size-lg);
+    }
+
+    input, label {
+        font-size: var(--font-size-sm);
+    }
+
+    .output p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+    .container {
+        max-width: 600px;
+    }
+
+    h1 {
+        font-size: var(--font-size-xxl);
+    }
+}
