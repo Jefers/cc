@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Savings Club Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 1.5em;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 1em;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+        }
+        .output p {
+            margin: 5px 0;
+            font-size: 1em;
+            color: #333;
+        }
+        .output p span {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.2em;
+            }
+            input, label {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎄 Christmas Savings Club Calculator 🎅</h1>
+        <label for="participants">Participants (default: 25):</label>
+        <input type="number" id="participants" value="25" min="1">
+        
+        <label for="weeklyContribution">Weekly Contribution (PHP, default: 500):</label>
+        <input type="number" id="weeklyContribution" value="500" min="1">
+        
+        <label for="weeks">Weeks (default: 16):</label>
+        <input type="number" id="weeks" value="16" min="1">
+        
+        <label for="adminFeeRate">Admin Fee Rate (%, default: 2):</label>
+        <input type="number" id="adminFeeRate" value="2" min="0" step="0.1">
+        
+        <label for="foodParticipants">Food Participants (default: 20):</label>
+        <input type="number" id="foodParticipants" value="20" min="0">
+        
+        <label for="wholesalePrice">Wholesale Price per Item (PHP, default: 2125):</label>
+        <input type="number" id="wholesalePrice" value="2125" min="0">
+        
+        <label for="distributionPrice">Distribution Price per Item (PHP, default: 2250):</label>
+        <input type="number" id="distributionPrice" value="2250" min="0">
+        
+        <label for="investmentRate">Investment Rate (%, default: 4):</label>
+        <input type="number" id="investmentRate" value="4" min="0" step="0.1">
+        
+        <label for="annualCycles">Annual Cycles (default: 3):</label>
+        <input type="number" id="annualCycles" value="3" min="1">
+        
+        <div class="output">
+            <p>Total Contributions: <span id="totalContributions">0</span> PHP</p>
+            <p>Admin Fee per Participant: <span id="adminFeePerParticipant">0</span> PHP</p>
+            <p>Total Admin Fee: <span id="totalAdminFee">0</span> PHP</p>
+            <p>Wholesale Margin per Item: <span id="wholesaleMarginPerItem">0</span> PHP</p>
+            <p>Total Wholesale Margin: <span id="totalWholesaleMargin">0</span> PHP</p>
+            <p>Investment Return: <span id="investmentReturn">0</span> PHP</p>
+            <p>Total Earnings per Cycle: <span id="totalEarnings">0</span> PHP</p>
+            <p>Annual Earnings: <span id="annualEarnings">0</span> PHP</p>
+        </div>
+    </div>
+
+    <script>
+        // Load saved values from Local Storage or use defaults
+        const inputs = [
+            { id: 'participants', default: 25 },
+            { id: 'weeklyContribution', default: 500 },
+            { id: 'weeks', default: 16 },
+            { id: 'adminFeeRate', default: 2 },
+            { id: 'foodParticipants', default: 20 },
+            { id: 'wholesalePrice', default: 2125 },
+            { id: 'distributionPrice', default: 2250 },
+            { id: 'investmentRate', default: 4 },
+            { id: 'annualCycles', default: 3 }
+        ];
+
+        inputs.forEach(input => {
+            const element = document.getElementById(input.id);
+            element.value = localStorage.getItem(input.id) || input.default;
+            element.addEventListener('input', () => {
+                localStorage.setItem(input.id, element.value);
+                calculateEarnings();
+            });
+        });
+
+        // Calculate and display earnings
+        function calculateEarnings() {
+            const participants = parseFloat(document.getElementById('participants').value) || 0;
+            const weeklyContribution = parseFloat(document.getElementById('weeklyContribution').value) || 0;
+            const weeks = parseFloat(document.getElementById('weeks').value) || 0;
+            const adminFeeRate = parseFloat(document.getElementById('adminFeeRate').value) / 100 || 0;
+            const foodParticipants = parseFloat(document.getElementById('foodParticipants').value) || 0;
+            const wholesalePrice = parseFloat(document.getElementById('wholesalePrice').value) || 0;
+            const distributionPrice = parseFloat(document.getElementById('distributionPrice').value) || 0;
+            const investmentRate = parseFloat(document.getElementById('investmentRate').value) / 100 || 0;
+            const annualCycles = parseFloat(document.getElementById('annualCycles').value) || 0;
+
+            // Calculations
+            const totalContributions = participants * weeklyContribution * weeks;
+            const adminFeePerParticipant = weeklyContribution * weeks * adminFeeRate;
+            const totalAdminFee = participants * adminFeePerParticipant;
+            const wholesaleMarginPerItem = distributionPrice - wholesalePrice;
+            const totalWholesaleMargin = foodParticipants * wholesaleMarginPerItem;
+            const investmentReturn = totalContributions * investmentRate * (weeks / 52);
+            const totalEarnings = totalAdminFee + totalWholesaleMargin + investmentReturn;
+            const annualEarnings = totalEarnings * annualCycles;
+
+            // Update display
+            document.getElementById('totalContributions').textContent = totalContributions.toFixed(2);
+            document.getElementById('adminFeePerParticipant').textContent = adminFeePerParticipant.toFixed(2);
+            document.getElementById('totalAdminFee').textContent = totalAdminFee.toFixed(2);
+            document.getElementById('wholesaleMarginPerItem').textContent = wholesaleMarginPerItem.toFixed(2);
+            document.getElementById('totalWholesaleMargin').textContent = totalWholesaleMargin.toFixed(2);
+            document.getElementById('investmentReturn').textContent = investmentReturn.toFixed(2);
+            document.getElementById('totalEarnings').textContent = totalEarnings.toFixed(2);
+            document.getElementById('annualEarnings').textContent = annualEarnings.toFixed(2);
+        }
+
+        // Initial calculation
+        calculateEarnings();
+    </script>
+</body>
+</html>
