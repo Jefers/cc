@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CClub - Member Data</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <style>
+        .member-data {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        input[readonly] {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .member-list {
+            margin-top: 2rem;
+            color: var(--text-secondary);
+        }
+        .member-item {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        .toggle {
+            background: var(--accent);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 1rem;
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🎄 CClub</div>
+        <button class="nav-toggle">☰</button>
+        <ul class="nav-menu">
+            <li><a href="../index.html">Menu</a></li>
+            <li><a href="../members/index.html">Home</a></li>
+            <li><a href="../members/status.html">Status</a></li>
+            <li><a href="calculator.html">Calculator</a></li>
+            <li><a href="member-data.html" class="active">Member Data</a></li>
+            <li><a href="reasons.html">Reasons</a></li>
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="financial-benefits.html">Benefits</a></li>
+        </ul>
+    </nav>
+    <div class="member-data" data-sr-id="member-data">
+        <h1 class="title">Manage Member Data 🎁</h1>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" value="Sample Member">
+            </div>
+            <div class="form-group">
+                <label for="signupDate">Signup Date:</label>
+                <input type="date" id="signupDate" value="2025-06-01">
+            </div>
+            <div class="form-group">
+                <label for="weeklyPayment">Weekly Payment (PHP):</label>
+                <input type="number" id="weeklyPayment" min="100" value="500">
+            </div>
+            <div class="form-group">
+                <label for="totalWeeks">Total Weeks (8-24):</label>
+                <input type="number" id="totalWeeks" min="8" max="24" value="16">
+            </div>
+            <div class="form-group">
+                <label for="weeksPaid">Weeks Paid (0-24):</label>
+                <input type="number" id="weeksPaid" min="0" max="24" value="5">
+            </div>
+            <div class="form-group">
+                <label for="cashSplit">Cash Split (%):</label>
+                <input type="number" id="cashSplit" min="0" max="100" value="50">
+            </div>
+            <div class="form-group">
+                <label for="payoutAmount">Payout Amount (PHP):</label>
+                <input type="number" id="payoutAmount" readonly>
+            </div>
+            <div class="form-group">
+                <label for="payoutDate">Payout Date:</label>
+                <input type="date" id="payoutDate" readonly>
+            </div>
+            <div class="form-group">
+                <label for="estimatedSavings">Estimated Savings (PHP):</label>
+                <input type="number" id="estimatedSavings" value="2000">
+            </div>
+        </div>
+        <button class="toggle" onclick="saveMember()">Save Member</button>
+        <button class="toggle" onclick="clearData()">Clear All Data</button>
+        <div class="member-list">
+            <h3>Member List</h3>
+            <div id="memberList"></div>
+        </div>
+    </div>
+    <script>
+        document.querySelector('.nav-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        function calculatePayout() {
+            const weeklyPayment = parseFloat(document.getElementById('weeklyPayment').value) || 0;
+            const totalWeeks = parseInt(document.getElementById('totalWeeks').value) || 0;
+            const signupDate = new Date(document.getElementById('signupDate').value);
+            const cashSplit = parseInt(document.getElementById('cashSplit').value) || 0;
+
+            const payoutAmount = weeklyPayment * totalWeeks;
+            document.getElementById('payoutAmount').value = payoutAmount.toFixed(2);
+
+            const payoutDate = new Date(signupDate);
+            payoutDate.setDate(payoutDate.getDate() + totalWeeks * 7);
+            document.getElementById('payoutDate').value = payoutDate.toISOString().split('T')[0];
+        }
+
+        function saveMember() {
+            const member = {
+                name: document.getElementById('name').value,
+                signupDate: document.getElementById('signupDate').value,
+                weeklyPayment: parseFloat(document.getElementById('weeklyPayment').value),
+                totalWeeks: parseInt(document.getElementById('totalWeeks').value),
+                weeksPaid: parseInt(document.getElementById('weeksPaid').value),
+                cashSplit: parseInt(document.getElementById('cashSplit').value),
+                payoutAmount: parseFloat(document.getElementById('payoutAmount').value),
+                payoutDate: document.getElementById('payoutDate').value,
+                estimatedSavings: parseFloat(document.getElementById('estimatedSavings').value),
+                totalSaved: parseFloat(document.getElementById('weeksPaid').value) * parseFloat(document.getElementById('weeklyPayment').value)
+            };
+
+            let memberData = JSON.parse(localStorage.getItem('memberData')) || [];
+            memberData.push(member);
+            localStorage.setItem('memberData', JSON.stringify(memberData));
+            displayMembers();
+        }
+
+        function displayMembers() {
+            const memberData = JSON.parse(localStorage.getItem('memberData')) || [];
+            const memberList = document.getElementById('memberList');
+            memberList.innerHTML = '';
+            memberData.forEach(member => {
+                const div = document.createElement('div');
+                div.className = 'member-item';
+                div.innerHTML = `
+                    Name: ${member.name}<br>
+                    Signup: ${member.signupDate}<br>
+                    Weekly: ₱${member.weeklyPayment}<br>
+                    Weeks: ${member.weeksPaid}/${member.totalWeeks}<br>
+                    Payout: ₱${member.payoutAmount} on ${member.payoutDate}<br>
+                    Split: ${member.cashSplit}%/${100 - member.cashSplit}%<br>
+                    Savings: ₱${member.estimatedSavings}
+                `;
+                memberList.appendChild(div);
+            });
+        }
+
+        function clearData() {
+            localStorage.removeItem('memberData');
+            displayMembers();
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculatePayout);
+        });
+
+        calculatePayout();
+        displayMembers();
+
+        ScrollReveal().reveal('.member-data', {
+            duration: 1000,
+            origin: 'bottom',
+            distance: '50px',
+            easing: 'ease-in-out'
+        });
+    </script>
+</body>
+</html>

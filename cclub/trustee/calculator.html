@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CClub - Financial Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <style>
+        .calculator {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        input, select {
+            padding: 0.5rem;
+            border: 1px solid var(--text-secondary);
+            border-radius: 5px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .toggle {
+            background: var(--accent);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .results {
+            margin-top: 2rem;
+            color: var(--text-secondary);
+        }
+        .results h3 {
+            color: var(--yellow);
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🎄 CClub</div>
+        <button class="nav-toggle">☰</button>
+        <ul class="nav-menu">
+            <li><a href="../index.html">Menu</a></li>
+            <li><a href="../members/index.html">Home</a></li>
+            <li><a href="../members/status.html">Status</a></li>
+            <li><a href="calculator.html" class="active">Calculator</a></li>
+            <li><a href="member-data.html">Member Data</a></li>
+            <li><a href="reasons.html">Reasons</a></li>
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="financial-benefits.html">Benefits</a></li>
+        </ul>
+    </nav>
+    <div class="calculator" data-sr-id="calculator">
+        <h1 class="title">Financial Planner 🎁</h1>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="participants">Participants (1-50):</label>
+                <input type="number" id="participants" min="1" max="50" value="10">
+            </div>
+            <div class="form-group">
+                <label for="weeklyContribution">Weekly Contribution (PHP):</label>
+                <input type="number" id="weeklyContribution" min="100" value="500">
+            </div>
+            <div class="form-group">
+                <label for="weeks">Weeks (8-24):</label>
+                <input type="number" id="weeks" min="8" max="24" value="16">
+            </div>
+            <div class="form-group">
+                <label for="joiningFee">Joining Fee (PHP):</label>
+                <input type="number" id="joiningFee" min="0" value="100">
+            </div>
+            <div class="form-group">
+                <label forang="discountRate">Discount Rate (%):</label>
+                <input type="number" id="discountRate" min="0" max="20" value="5">
+            </div>
+            <div class="form-group">
+                <label for="wholesaleMargin">Wholesale Margin (%):</label>
+                <input type="number" id="wholesaleMargin" min="0" max="10" value="5">
+            </div>
+            <div class="form-group Grado de dificultad: Fácil
+                <input type="number" id="investmentReturn" min="0" max="10" value="2">
+            </div>
+            <div class="form-group">
+                <label for="lateFee">Late Fee (PHP):</label>
+                <input type="number" id="lateFee" min="0" value="50">
+            </div>
+            <div class="form-group">
+                <label for="commission">Trustee Commission (%):</label>
+                <input type="number" id="commission" min="0" max="10" value="5">
+            </div>
+            <div class="form-group">
+                <label for="riceCost">Rice Cost (PHP):</label>
+                <input type="number" id="riceCost" min="0" value="200">
+            </div>
+            <div class="form-group">
+                <label for="cannedCost">Canned Goods Cost (PHP):</label>
+                <input type="number" id="cannedCost" min="0" value="150">
+            </div>
+            <div class="form-group">
+                <label for="treatsCost">Treats Cost (PHP):</label>
+                <input type="number" id="treatsCost" min="0" value="100">
+            </div>
+            <div class="form-group">
+                <label for="packagingCost">Packaging Cost (PHP):</label>
+                <input type="number" id="packagingCost" min="0" value="50">
+            </div>
+        </div>
+        <button class="toggle" onclick="calculate()">Calculate</button>
+        <div class="results">
+            <h3>Cash Breakdown</h3>
+            <p id="cashBreakdown"></p>
+            <h3>Food Bundle Breakdown</h3>
+            <p id="foodBreakdown"></p>
+            <h3>Summary</h3>
+            <p id="summary"></p>
+        </div>
+    </div>
+    <script>
+        document.querySelector('.nav-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        function calculate() {
+            const participants = parseInt(document.getElementById('participants').value) || 0;
+            const weeklyContribution = parseFloat(document.getElementById('weeklyContribution').value) || 0;
+            const weeks = parseInt(document.getElementById('weeks').value) || 0;
+            const joiningFee = parseFloat(document.getElementById('joiningFee').value) || 0;
+            const discountRate = parseFloat(document.getElementById('discountRate').value) / 100 || 0;
+            const wholesaleMargin = parseFloat(document.getElementById('wholesaleMargin').value) / 100 || 0;
+            const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) / 100 || 0;
+            const lateFee = parseFloat(document.getElementById('lateFee').value) || 0;
+            const commission = parseFloat(document.getElementById('commission').value) / 100 || 0;
+            const riceCost = parseFloat(document.getElementById('riceCost').value) || 0;
+            const cannedCost = parseFloat(document.getElementById('cannedCost').value) || 0;
+            const treatsCost = parseFloat(document.getElementById('treatsCost').value) || 0;
+            const packagingCost = parseFloat(document.getElementById('packagingCost').value) || 0;
+
+            const totalSavings = participants * weeklyContribution * weeks;
+            const totalJoiningFees = participants * joiningFee;
+            const totalLateFees = participants * lateFee * 0.1; // Assume 10% late rate
+            const totalCommission = totalSavings * commission;
+            const investmentEarnings = totalSavings * investmentReturn;
+            const cashTotal = totalSavings + totalJoiningFees + totalLateFees + investmentEarnings - totalCommission;
+
+            const foodBundleCost = riceCost + cannedCost + treatsCost + packagingCost;
+            const foodBundlePrice = foodBundleCost / (1 - discountRate);
+            const foodBundleProfit = foodBundlePrice * (1 + wholesaleMargin) - foodBundleCost;
+            const foodBundleMargin = (foodBundleProfit / foodBundlePrice * 100).toFixed(2);
+            const breakEvenUnits = Math.ceil(foodBundleCost / foodBundleProfit);
+
+            const annualEarnings = totalCommission + foodBundleProfit * participants;
+
+            document.getElementById('cashBreakdown').innerHTML = `
+                Total Savings: ₱${totalSavings.toFixed(2)}<br>
+                Joining Fees: ₱${totalJoiningFees.toFixed(2)}<br>
+                Late Fees: ₱${totalLateFees.toFixed(2)}<br>
+                Investment Earnings: ₱${investmentEarnings.toFixed(2)}<br>
+                Trustee Commission: ₱${totalCommission.toFixed(2)}<br>
+                Total Cash: ₱${cashTotal.toFixed(2)}
+            `;
+
+            document.getElementById('foodBreakdown').innerHTML = `
+                Food Bundle Cost: ₱${foodBundleCost.toFixed(2)}<br>
+                Food Bundle Price: ₱${foodBundlePrice.toFixed(2)}<br>
+                Profit per Bundle: ₱${foodBundleProfit.toFixed(2)}<br>
+                Profit Margin: ${foodBundleMargin}%<br>
+                Break-even Units: ${breakEvenUnits}
+            `;
+
+            document.getElementById('summary').innerHTML = `
+                Best Option: Maximize participants and weeks for highest earnings.<br>
+                Max Annual Earnings: ₱${annualEarnings.toFixed(2)}<br>
+                Recommendation: Adjust discount and margin to optimize profit.
+            `;
+        }
+
+        ScrollReveal().reveal('.calculator', {
+            duration: 1000,
+            origin: 'bottom',
+            distance: '50px',
+            easing: 'ease-in-out'
+        });
+    </script>
+</body>
+</html>

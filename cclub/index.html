@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CClub - Filipino Christmas Savings Club</title>
+    <link rel="stylesheet" href="members/styles.css">
+    <script src="https://unpkg.com/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #2e7d32, #ff4500);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .welcome {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        h1 {
+            color: var(--yellow);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+        .parol {
+            font-size: 3rem;
+            animation: rotate 10s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🎄 CClub</div>
+        <button class="nav-toggle">☰</button>
+        <ul class="nav-menu">
+            <li><a href="index.html" class="active">Menu</a></li>
+            <li><a href="members/index.html">Home</a></li>
+            <li><a href="members/status.html">Status</a></li>
+            <li><a href="trustee/calculator.html">Calculator</a></li>
+            <li><a href="trustee/member-data.html">Member Data</a></li>
+            <li><a href="trustee/reasons.html">Reasons</a></li>
+            <li><a href="trustee/faqs.html">FAQs</a></li>
+            <li><a href="trustee/financial-benefits.html">Benefits</a></li>
+        </ul>
+    </nav>
+    <div class="welcome" data-sr-id="welcome">
+        <span class="parol">🎄</span>
+        <h1>Welcome to CClub!</h1>
+        <p>Join our festive Filipino-inspired savings club and celebrate Christmas with financial joy! Explore our member and trustee tools to start saving today.</p>
+    </div>
+    <script>
+        document.querySelector('.nav-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        ScrollReveal().reveal('.welcome', {
+            duration: 1000,
+            origin: 'bottom',
+            distance: '50px',
+            easing: 'ease-in-out'
+        });
+    </script>
+</body>
+</html>

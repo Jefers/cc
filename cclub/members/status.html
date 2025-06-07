@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CClub - Savings Status</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <style>
+        .dashboard {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        h1 {
+            color: var(--yellow);
+            font-size: 2rem;
+        }
+        .progress-container {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background: var(--bg-primary);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4500, #ffd700);
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-star {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            animation: twinkle 1.5s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .parol {
+            font-size: 2rem;
+            animation: rotate 10s linear infinite;
+            margin: 1rem 0;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .detail-card {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+        }
+        .motivational {
+            color: var(--highlight);
+            font-style: italic;
+            animation: fade 5s infinite;
+        }
+        @keyframes fade {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .details-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🎄 CClub</div>
+        <button class="nav-toggle">☰</button>
+        <ul class="nav-menu">
+            <li><a href="../index.html">Menu</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="status.html" class="active">Status</a></li>
+            <li><a href="../trustee/calculator.html">Calculator</a></li>
+            <li><a href="../trustee/member-data.html">Member Data</a></li>
+            <li><a href="../trustee/reasons.html">Reasons</a></li>
+            <li><a href="../trustee/faqs.html">FAQs</a></li>
+            <li><a href="../trustee/financial-benefits.html">Benefits</a></li>
+        </ul>
+    </nav>
+    <div class="dashboard" data-sr-id="dashboard">
+        <span class="parol">🎄</span>
+        <h1>Your Savings Status</h1>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">
+                <span class="progress-star">✨</span>
+            </div>
+        </div>
+        <div class="details-grid">
+            <div class="detail-card">Signup Date: <span id="signupDate"></span></div>
+            <div class="detail-card">Weeks Paid / Total: <span id="weeks"></span></div>
+            <div class="detail-card">Payout Date: <span id="payoutDate"></span></div>
+            <div class="detail-card">Cash/Goods Split: <span id="split"></span></div>
+            <div class="detail-card">Estimated Savings: <span id="savings"></span></div>
+        </div>
+        <p class="motivational" id="motivational">Keep saving for a festive Christmas! 🎁</p>
+    </div>
+    <script>
+        document.querySelector('.nav-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        function loadMemberData() {
+            const defaultData = {
+                name: "Sample Member",
+                signupDate: "2025-06-01",
+                weeklyPayment: 500,
+                totalWeeks: 16,
+                weeksPaid: 5,
+                cashSplit: 50,
+                payoutAmount: 8000,
+                estimatedSavings: 2000,
+                totalSaved: 2500,
+                payoutDate: "2025-09-20"
+            };
+
+            const memberData = JSON.parse(localStorage.getItem('memberData')) || [defaultData];
+            const member = memberData[0] || defaultData;
+
+            document.getElementById('signupDate').textContent = member.signupDate;
+            document.getElementById('weeks').textContent = `${member.weeksPaid} / ${member.totalWeeks}`;
+            document.getElementById('payoutDate').textContent = member.payoutDate;
+            document.getElementById('split').textContent = `${member.cashSplit}% / ${100 - member.cashSplit}%`;
+            document.getElementById('savings').textContent = `₱${member.estimatedSavings}`;
+
+            const progress = (member.weeksPaid * member.weeklyPayment) / member.payoutAmount * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            const messages = [
+                "Keep saving for a festive Christmas! 🎁",
+                "You're on track for a joyful payout! 🎄",
+                "Every peso brings you closer to the holidays! ✨"
+            ];
+            document.getElementById('motivational').textContent = messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        loadMemberData();
+
+        ScrollReveal().reveal('.dashboard', {
+            duration: 1000,
+            origin: 'bottom',
+            distance: '50px',
+            easing: 'ease-in-out'
+        });
+    </script>
+</body>
+</html>
