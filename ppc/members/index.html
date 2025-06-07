@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="../trustee/calculator.html">Calculator</a></li>
+                <li><a href="../trustee/reasons.html">Reasons</a></li>
+                <li><a href="../trustee/faqs.html">FAQs</a></li>
+                <li><a href="../trustee/financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <header class="header">
+        <h1 class="title-animation">🎄 Pasko Panalo Club</h1>
+        <p class="subtitle">Smart Saving. Big Celebration. Total Joy.</p>
+    </header>
+    <section class="section how-it-works reveal">
+        <div class="content">
+            <img src="../assets/how-it-works.png" alt="Holiday budgeting with piggy bank" class="illustration">
+            <h2>How It Works</h2>
+            <ul>
+                <li>Exclusive to <strong>25 participants</strong> per cycle</li>
+                <li>₱500/week for <strong>4 months</strong> (Aug–Nov)</li>
+                <li>Total savings: <strong>₱8,000</strong> safely collected and stored</li>
+                <li>One-time <strong>₱180 joining fee</strong> covers all admin costs</li>
+            </ul>
+        </div>
+    </section>
+    <section class="section choose-reward reveal">
+        <div class="content">
+            <img src="../assets/choose-reward.png" alt="Holiday gifts and food basket" class="illustration">
+            <h2>Choose Your Reward</h2>
+            <ul>
+                <li>🏷️ <strong>Cash Back</strong>: Get your full ₱8,000 back at the end of the cycle!</li>
+                <li>🍽️ <strong>Holiday Food Bundle</strong>: Choose groceries and goodies at 10% off!</li>
+            </ul>
+        </div>
+    </section>
+    <section class="section why-love-it reveal">
+        <div class="content">
+            <h2>Why You'll Love It</h2>
+            <ul>
+                <li>No debt, just smart saving with friends and neighbors</li>
+                <li>Exclusive access to wholesale discounts</li>
+                <li>Share the holiday spirit with your community</li>
+                <li>Reliable and transparent fund handling</li>
+            </ul>
+        </div>
+    </section>
+    <section class="section call-to-action reveal">
+        <div class="content">
+            <h2>Join Now!</h2>
+            <p>Only 25 spots per group. Sign up now and we’ll contact you right away!</p>
+            <form action="mailto:your-email@example.com" method="post" enctype="text/plain">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="Name" required>
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="Phone" required>
+                <label for="message">Optional Message</label>
+                <textarea id="message" name="Message" rows="4"></textarea>
+                <button type="submit">📧 Send My Details</button>
+            </form>
+        </div>
+    </section>
+    <footer class="footer">
+        <p>© 2025 Pasko Panalo Savings Club. Designed for community joy.</p>
+    </footer>
+    <script src="https://unpkg.com/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <script>
+        ScrollReveal().reveal('.reveal', {
+            duration: 1000,
+            distance: '50px',
+            origin: 'bottom',
+            easing: 'ease-in-out',
+            reset: false
+        });
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((dot, index) => {
+            dot.style.animationDelay = `${index * 0.2}s`;
+        });
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

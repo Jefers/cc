@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40 FAQs - Pasko Panalo Club</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../members/index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="../members/index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="reasons.html">Reasons</a></li>
+                <li><a href="faqs.html">FAQs</a></li>
+                <li><a href="financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1 class="title-animation">🎄 Pasko Panalo Club FAQs <span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span><span class="dot dot4">.</span></h1>
+        </header>
+        <main>
+            <h2>40 Questions About Pasko Panalo Club</h2>
+            <div class="summary">
+                <p>Got questions? We’ve got answers! Here’s everything you need to know to join our community savings club and make your Christmas merry! 🎅</p>
+                <ol>
+                    <li><strong>What is Pasko Panalo Club?</strong> A community savings club to help you save for Christmas.</li>
+                    <li><strong>How much do I save weekly?</strong> 500 PHP per week.</li>
+                    <li><strong>How long is the savings cycle?</strong> 16 weeks, from August to November.</li>
+                    <li><strong>What’s the total savings?</strong> 8,000 PHP per cycle.</li>
+                    <li><strong>Is there a joining fee?</strong> Yes, 180 PHP per participant, paid upfront.</li>
+                    <li><strong>What does the joining fee cover?</strong> Admin costs for managing the group.</li>
+                    <li><strong>How many participants per group?</strong> 25 participants maximum.</li>
+                    <li><strong>What happens at the end of the cycle?</strong> You get 8,000 PHP in cash or a food bundle.</li>
+                    <li><strong>What’s in the food bundle?</strong> Groceries like rice, canned goods, and holiday treats.</li>
+                    <li><strong>Is the food bundle discounted?</strong> Yes, 10% below retail prices.</li>
+                    <li><strong>Who manages the funds?</strong> A trusted trustee in your community.</li>
+                    <li><strong>Is my money safe?</strong> Yes, funds are securely stored until payout.</li>
+                    <li><strong>Can I miss a weekly payment?</strong> Contact your trustee; late payments may have penalties.</li>
+                    <li><strong>What if I need to withdraw early?</strong> Early withdrawal may incur a small fee.</li>
+                    <li><strong>When do I get my payout?</strong> Early December, in time for Christmas shopping.</li>
+                    <li><strong>Can I choose my reward?</strong> Yes, cash or food bundle—your choice!</li>
+                    <li><strong>Are there any hidden fees?</strong> No, the 180 PHP joining fee covers everything.</li>
+                    <li><strong>Can I join multiple cycles?</strong> Yes, up to 3 cycles per year.</li>
+                    <li><strong>How do I sign up?</strong> Contact your trustee or visit our website.</li>
+                    <li><strong>Is there a minimum age to join?</strong> Yes, 18 years or older.</li>
+                    <li><strong>Can I join if I’m an OFW?</strong> Yes, you can save for your family back home.</li>
+                    <li><strong>Do I need a bank account?</strong> No, payments can be made in cash to the trustee.</li>
+                    <li><strong>Is there a contract?</strong> No, just a simple agreement with your trustee.</li>
+                    <li><strong>What if the group doesn’t fill up?</strong> The cycle starts once 25 participants are confirmed.</li>
+                    <li><strong>Can I be a trustee?</strong> Yes, contact us to learn how to start a group.</li>
+                    <li><strong>How much can a trustee earn?</strong> Up to 9,667 PHP per cycle.</li>
+                    <li><strong>Are there group activities?</strong> Yes, some groups host holiday meetups!</li>
+                    <li><strong>Can I save more than 500 PHP a week?</strong> No, the amount is fixed for fairness.</li>
+                    <li><strong>What if I can’t pay one week?</strong> Talk to your trustee for options.</li>
+                    <li><strong>Is this a loan program?</strong> No, it’s a savings club—no borrowing involved.</li>
+                    <li><strong>Do I earn interest?</strong> No, but you get discounts on food bundles.</li>
+                    <li><strong>Can I pay the joining fee in installments?</strong> No, it’s a one-time upfront fee.</li>
+                    <li><strong>Where are food bundles sourced?</strong> From local suppliers at wholesale prices.</li>
+                    <li><strong>Can I customize my food bundle?</strong> Yes, within the available options.</li>
+                    <li><strong>Is this available nationwide?</strong> Yes, wherever there’s a trustee to manage a group.</li>
+                    <li><strong>How do I contact my trustee?</strong> You’ll get their details upon signup.</li>
+                    <li><strong>Is there a deadline to join?</strong> Yes, before the cycle starts in August.</li>
+                    <li><strong>Can I refer friends?</strong> Yes, and help fill the group faster!</li>
+                    <li><strong>What if I move during the cycle?</strong> Notify your trustee to arrange payments.</li>
+                    <li><strong>Why should I join?</strong> To save smart, avoid debt, and enjoy Christmas stress-free!</li>
+                </ol>
+            </div>
+        </main>
+    </div>
+    <script>
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

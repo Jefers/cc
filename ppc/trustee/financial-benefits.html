@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Benefits - Pasko Panalo Club</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../members/index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="../members/index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="reasons.html">Reasons</a></li>
+                <li><a href="faqs.html">FAQs</a></li>
+                <li><a href="financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1 class="title-animation">🎄 Save Smart with Pasko Panalo Club! <span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span><span class="dot dot4">.</span></h1>
+        </header>
+        <main>
+            <h2>Why Pasko Panalo Club is Your Financial Win! 💰</h2>
+            <div class="summary">
+                <p>Join Pasko Panalo Club and make your holiday season merry without breaking the bank! Here’s why this club is your ticket to a stress-free, debt-free, and joyful Christmas! 🎅</p>
+                <ul>
+                    <li><strong>Debt-Free Holidays</strong>: Save 500 PHP weekly for 16 weeks to get 8,000 PHP—no loans, no interest!</li>
+                    <li><strong>Affordable Entry</strong>: Just a 180 PHP joining fee, covering all admin costs.</li>
+                    <li><strong>Full Payout</strong>: Get your 8,000 PHP back in cash or a food bundle for Noche Buena.</li>
+                    <li><strong>Save on Groceries</strong>: Food bundles are 10% cheaper than retail prices.</li>
+                    <li><strong>Smart Budgeting</strong>: Spread your holiday expenses over 4 months, avoiding last-minute stress.</li>
+                    <li><strong>Trustee Earnings</strong>: Run a group and earn up to 9,667 PHP per cycle—29,001 PHP annually!</li>
+                    <li><strong>No Hidden Costs</strong>: What you save is what you get, minus the small joining fee.</li>
+                    <li><strong>Community Savings</strong>: Pool resources with 25 neighbors for better buying power.</li>
+                    <li><strong>Financial Discipline</strong>: Build a habit of saving weekly for big rewards.</li>
+                    <li><strong>Holiday Joy</strong>: Celebrate Christmas with funds ready for gifts, feasts, and more!</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+    <script>
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
