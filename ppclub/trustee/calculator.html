@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trustee Calculator - Pasko Panalo Club</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">Pasko Panalo Club</div>
+    <button class="nav-toggle">☰</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/members/index.html">Members</a></li>
+      <li><a href="/members/status.html">Status</a></li>
+      <li><a href="/trustee/calculator.html">Calculator</a></li>
+      <li><a href="/trustee/member-data.html">Member Data</a></li>
+      <li><a href="/trustee/reasons.html">Reasons</a></li>
+      <li><a href="/trustee/faqs.html">FAQs</a></li>
+      <li><a href="/trustee/financial-benefits.html">Benefits</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1 id="animated-title">Pasko Panalo Club</h1>
+
+    <form id="calculator-form">
+      <fieldset>
+        <legend>General Inputs</legend>
+        <label>Number of Participants (1–50): <input type="number" name="participants" min="1" max="50" required></label>
+        <label>Weekly Contribution (PHP): <input type="number" name="weeklyContribution" min="100" required></label>
+        <label>Number of Weeks (8–24): <input type="number" name="weeks" min="8" max="24" required></label>
+        <label>Joining Fee per Participant (PHP): <input type="number" name="joiningFee"></label>
+        <label>Late Fee per Week (PHP): <input type="number" name="lateFee"></label>
+        <label>Trustee Commission (%): <input type="number" name="commission" min="0" max="10"></label>
+        <label>Investment Return (%): <input type="number" name="investmentReturn" min="0" max="10"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Food Bundle Settings</legend>
+        <label>Food Bundle Discount Rate (%): <input type="number" name="discountRate" min="0" max="20"></label>
+        <label>Wholesale Margin (%): <input type="number" name="wholesaleMargin" min="0" max="10"></label>
+        <label>Rice Cost (PHP): <input type="number" name="riceCost"></label>
+        <label>Canned Goods Cost (PHP): <input type="number" name="cannedCost"></label>
+        <label>Holiday Treats Cost (PHP): <input type="number" name="treatsCost"></label>
+        <label>Packaging Cost (PHP): <input type="number" name="packagingCost"></label>
+      </fieldset>
+
+      <button type="submit">Calculate</button>
+    </form>
+
+    <section>
+      <button class="toggle" data-target="#cash-breakdown">Toggle Cash Savings Breakdown</button>
+      <div id="cash-breakdown" class="hidden"></div>
+
+      <button class="toggle" data-target="#food-breakdown">Toggle Food Bundle Breakdown</button>
+      <div id="food-breakdown" class="hidden"></div>
+
+      <button class="toggle" data-target="#summary">Toggle Summary</button>
+      <div id="summary" class="hidden"></div>
+    </section>
+  </main>
+
+  <script>
+    const title = document.getElementById('animated-title');
+    let dots = '';
+    setInterval(() => {
+      dots = dots.length < 3 ? dots + '.' : '';
+      title.textContent = `Pasko Panalo Club${dots}`;
+    }, 500);
+
+    document.querySelectorAll('.toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const target = document.querySelector(button.dataset.target);
+        target.classList.toggle('hidden');
+      });
+    });
+
+    document.getElementById('calculator-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+      for (const key in data) data[key] = parseFloat(data[key]) || 0;
+
+      const {
+        participants, weeklyContribution, weeks, joiningFee, lateFee,
+        commission, investmentReturn, discountRate, wholesaleMargin,
+        riceCost, cannedCost, treatsCost, packagingCost
+      } = data;
+
+      const totalContributions = participants * weeklyContribution * weeks;
+      const totalJoiningFees = participants * joiningFee;
+      const totalLateFees = participants * lateFee * (weeks * 0.1); // assume 10% miss one week
+      const trusteeCommission = (commission / 100) * totalContributions;
+      const returns = (investmentReturn / 100) * totalContributions;
+
+      const totalSavings = totalContributions + totalJoiningFees + totalLateFees + returns - trusteeCommission;
+
+      const cashHTML = `
+        <p>Total Contributions: PHP ${totalContributions.toFixed(2)}</p>
+        <p>Total Joining Fees: PHP ${totalJoiningFees.toFixed(2)}</p>
+        <p>Total Late Fees: PHP ${totalLateFees.toFixed(2)}</p>
+        <p>Trustee Commission: PHP ${trusteeCommission.toFixed(2)}</p>
+        <p>Investment Returns: PHP ${returns.toFixed(2)}</p>
+        <p><strong>Total Cash Savings: PHP ${totalSavings.toFixed(2)}</strong></p>
+      `;
+
+      const bundleCost = riceCost + cannedCost + treatsCost + packagingCost;
+      const discountedPrice = bundleCost * (1 - discountRate / 100);
+      const marketPrice = bundleCost * (1 + wholesaleMargin / 100);
+      const bundleBuyers = Math.floor(participants * 0.5);
+      const revenue = marketPrice * bundleBuyers;
+      const cost = bundleCost * bundleBuyers;
+      const profit = revenue - cost;
+      const margin = profit / revenue * 100;
+
+      const foodHTML = `
+        <p>Cost per Bundle: PHP ${bundleCost.toFixed(2)}</p>
+        <p>Market Price: PHP ${marketPrice.toFixed(2)}</p>
+        <p>Discounted Price: PHP ${discountedPrice.toFixed(2)}</p>
+        <p>Bundles Sold: ${bundleBuyers}</p>
+        <p>Total Revenue: PHP ${revenue.toFixed(2)}</p>
+        <p>Total Cost: PHP ${cost.toFixed(2)}</p>
+        <p><strong>Profit: PHP ${profit.toFixed(2)} (${margin.toFixed(2)}%)</strong></p>
+      `;
+
+      const summaryHTML = `
+        <p>Recommended Participants: ${participants}</p>
+        <p>Maximum Earnings (Cash + Food): PHP ${(profit + totalSavings).toFixed(2)}</p>
+        <p>Best Option: ${(profit > trusteeCommission) ? 'Food Bundle' : 'Cash Savings'}</p>
+        <p>Suggested Payout: ${(totalSavings / participants).toFixed(2)} PHP/participant</p>
+      `;
+
+      document.getElementById('cash-breakdown').innerHTML = cashHTML;
+      document.getElementById('food-breakdown').innerHTML = foodHTML;
+      document.getElementById('summary').innerHTML = summaryHTML;
+    });
+  </script>
+</body>
+</html>

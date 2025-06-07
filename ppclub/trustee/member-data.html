@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Data - Trustee Panel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">Pasko Panalo Club</div>
+    <button class="nav-toggle">☰</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/members/index.html">Members</a></li>
+      <li><a href="/members/status.html">Status</a></li>
+      <li><a href="/trustee/calculator.html">Calculator</a></li>
+      <li><a href="/trustee/member-data.html">Member Data</a></li>
+      <li><a href="/trustee/reasons.html">Reasons</a></li>
+      <li><a href="/trustee/faqs.html">FAQs</a></li>
+      <li><a href="/trustee/financial-benefits.html">Benefits</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1 id="animated-title">Pasko Panalo Club</h1>
+
+    <form id="member-form">
+      <fieldset>
+        <legend>Add Member Data</legend>
+        <label>Name: <input type="text" name="name" required></label>
+        <label>Signup Date: <input type="date" name="signupDate" required></label>
+        <label>Weekly Payment Amount (PHP): <input type="number" name="weeklyPayment" value="200" required></label>
+        <label>Total Weeks: <input type="number" name="totalWeeks" value="12" required></label>
+        <label>Weeks Paid: <input type="number" name="weeksPaid" value="0" required></label>
+        <label>Goods/Cash Split (% Cash): <input type="number" name="cashSplit" value="100" min="0" max="100" required></label>
+        <label>Estimated Savings (PHP): <input type="number" name="estimatedSavings" value="0"></label>
+        <label>Payout Amount (PHP): <input type="number" name="payoutAmount" readonly></label>
+        <label>Payout Date: <input type="date" name="payoutDate" readonly></label>
+        <button type="submit">Save Member</button>
+      </fieldset>
+    </form>
+
+    <section>
+      <h2>Saved Members</h2>
+      <ul id="member-list"></ul>
+      <button id="clear-data">Clear All Data</button>
+    </section>
+  </main>
+
+  <script>
+    const title = document.getElementById('animated-title');
+    let dots = '';
+    setInterval(() => {
+      dots = dots.length < 3 ? dots + '.' : '';
+      title.textContent = `Pasko Panalo Club${dots}`;
+    }, 500);
+
+    const form = document.getElementById('member-form');
+    const payoutAmountField = form.elements['payoutAmount'];
+    const payoutDateField = form.elements['payoutDate'];
+
+    function updateCalculatedFields() {
+      const weekly = parseFloat(form.elements['weeklyPayment'].value) || 0;
+      const weeks = parseInt(form.elements['totalWeeks'].value) || 0;
+      const split = parseFloat(form.elements['cashSplit'].value) || 0;
+      const signupDate = new Date(form.elements['signupDate'].value);
+
+      const payoutAmount = weekly * weeks * (split / 100);
+      payoutAmountField.value = payoutAmount.toFixed(2);
+
+      if (!isNaN(signupDate)) {
+        const payoutDate = new Date(signupDate);
+        payoutDate.setDate(payoutDate.getDate() + (weeks * 7));
+        payoutDateField.valueAsDate = payoutDate;
+      }
+    }
+
+    form.elements['weeklyPayment'].addEventListener('input', updateCalculatedFields);
+    form.elements['totalWeeks'].addEventListener('input', updateCalculatedFields);
+    form.elements['cashSplit'].addEventListener('input', updateCalculatedFields);
+    form.elements['signupDate'].addEventListener('change', updateCalculatedFields);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const members = JSON.parse(localStorage.getItem('members') || '[]');
+      members.push(data);
+      localStorage.setItem('members', JSON.stringify(members));
+      displayMembers();
+      form.reset();
+    });
+
+    function displayMembers() {
+      const list = document.getElementById('member-list');
+      list.innerHTML = '';
+      const members = JSON.parse(localStorage.getItem('members') || '[]');
+      members.forEach((m, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${m.name} - ${m.weeksPaid}/${m.totalWeeks} weeks paid - Payout: PHP ${m.payoutAmount} on ${m.payoutDate}`;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById('clear-data').addEventListener('click', () => {
+      localStorage.removeItem('members');
+      displayMembers();
+    });
+
+    displayMembers();
+  </script>
+</body>
+</html>

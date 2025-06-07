@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Status - Pasko Panalo Club</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background: linear-gradient(to bottom, #fff5e6, #ffe6e6);
+      font-family: 'Segoe UI', sans-serif;
+      color: #333;
+      padding: 1rem;
+    }
+    .dashboard {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-top: 1rem;
+    }
+    .dashboard h2 {
+      text-align: center;
+      color: #c62828;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .card {
+      background: #fafafa;
+      border-left: 5px solid #4caf50;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+    }
+    .progress-container {
+      margin: 1rem 0;
+    }
+    .progress-bar {
+      background: #ccc;
+      border-radius: 1rem;
+      overflow: hidden;
+      height: 24px;
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(to right, #2e7d32, #66bb6a);
+      width: 0%;
+      transition: width 0.5s;
+    }
+    .motivator {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #388e3c;
+    }
+    .twinkle {
+      animation: twinkle 2s infinite alternate;
+      color: gold;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.3; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.2); }
+    }
+    .parol {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      background: radial-gradient(circle, red, green);
+      border-radius: 50%;
+      animation: spin 6s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">Pasko Panalo Club</div>
+    <button class="nav-toggle">☰</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/members/index.html">Members</a></li>
+      <li><a href="/members/status.html">Status</a></li>
+      <li><a href="/trustee/calculator.html">Calculator</a></li>
+      <li><a href="/trustee/member-data.html">Member Data</a></li>
+      <li><a href="/trustee/reasons.html">Reasons</a></li>
+      <li><a href="/trustee/faqs.html">FAQs</a></li>
+      <li><a href="/trustee/financial-benefits.html">Benefits</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1 class="twinkle">🎄 Welcome to Your Pasko Panalo Status 🎁</h1>
+    <div class="parol"></div>
+
+    <div class="dashboard">
+      <h2 id="member-name">Member: N/A</h2>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress" id="progress-bar"></div>
+        </div>
+        <div class="motivator" id="motivator"></div>
+      </div>
+      <div class="grid" id="member-details"></div>
+    </div>
+  </main>
+
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('show');
+    });
+
+    const member = JSON.parse(localStorage.getItem('members'))?.[0] || {
+      name: 'Maria Santos',
+      signupDate: '2024-10-01',
+      weeklyAmount: 200,
+      totalWeeks: 16,
+      weeksPaid: 6,
+      payoutDate: '2025-01-20',
+      splitCash: 60,
+      splitGoods: 40,
+      payoutAmount: 1920,
+      estimatedSavings: 320,
+      totalSaved: 1200
+    };
+
+    document.getElementById('member-name').textContent = `Member: ${member.name}`;
+    const percent = ((member.weeksPaid / member.totalWeeks) * 100).toFixed(1);
+    document.getElementById('progress-bar').style.width = `${percent}%`;
+
+    const motivator = document.getElementById('motivator');
+    motivator.textContent = percent < 100
+      ? `Keep it up! You're ${percent}% of the way to your ₱8,000 goal! 💪`
+      : `🎉 Congratulations! You've reached your goal! 🏆`;
+
+    const detailFields = [
+      { label: 'Signup Date', value: member.signupDate },
+      { label: 'Weekly Amount', value: `₱${member.weeklyAmount}` },
+      { label: 'Total Weeks', value: member.totalWeeks },
+      { label: 'Weeks Paid', value: member.weeksPaid },
+      { label: 'Payout Date', value: member.payoutDate },
+      { label: 'Cash Split (%)', value: member.splitCash },
+      { label: 'Goods Split (%)', value: member.splitGoods },
+      { label: 'Payout Amount', value: `₱${member.payoutAmount}` },
+      { label: 'Estimated Savings', value: `₱${member.estimatedSavings}` },
+      { label: 'Total Saved', value: `₱${member.totalSaved}` },
+    ];
+
+    const detailContainer = document.getElementById('member-details');
+    detailFields.forEach(field => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<strong>${field.label}:</strong><br>${field.value}`;
+      detailContainer.appendChild(card);
+    });
+  </script>
+</body>
+</html>

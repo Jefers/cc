@@ -1,0 +1,160 @@
+:root {
+    --color-red: #c62828;
+    --color-green: #2e7d32;
+    --color-gold: #ffc107;
+    --color-bg: #fff8f0;
+    --color-text: #333;
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    padding: 1rem;
+  }
+  
+  .navbar {
+    background: linear-gradient(to right, var(--color-red), var(--color-green));
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  
+  .navbar .brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    flex-grow: 1;
+  }
+  
+  .navbar .nav-toggle {
+    font-size: 1.5rem;
+    background: none;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+  }
+  
+  .navbar .nav-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .navbar .nav-links li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  h1#animated-title {
+    text-align: center;
+    margin: 1rem 0;
+    color: var(--color-red);
+    font-size: 2rem;
+  }
+  
+  form {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+  }
+  
+  fieldset {
+    border: 2px solid var(--color-green);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
+  
+  legend {
+    font-weight: bold;
+    color: var(--color-green);
+  }
+  
+  label {
+    display: block;
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+  }
+  
+  input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button[type="submit"] {
+    background-color: var(--color-gold);
+    color: black;
+    font-weight: bold;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 1rem;
+    box-shadow: var(--shadow);
+  }
+  
+  button.toggle {
+    display: block;
+    margin: 1rem auto;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-red);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: var(--shadow);
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  section div {
+    background: white;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+  
+  @media (max-width: 600px) {
+    .navbar .nav-links {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      background-color: var(--color-red);
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 10px;
+    }
+  
+    .navbar .nav-toggle {
+      display: block;
+    }
+  
+    .navbar .nav-links.active {
+      display: flex;
+    }
+  }
+  
