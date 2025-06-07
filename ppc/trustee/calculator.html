@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasko Panalo Club - Trustee Calculator</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            max-width: 200px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .output-section {
+            margin-top: 1.5rem;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        .output-section h3 {
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+        .output-section p {
+            margin: 0.5rem 0;
+        }
+        .toggle-section {
+            margin: 1rem 0;
+        }
+        .toggle-section button {
+            margin-right: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .input-group input, .input-group select {
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="nav">
@@ -26,60 +66,204 @@
             <h1 class="title-animation">🎄 Pasko Panalo Club Calculator <span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span><span class="dot dot4">.</span></h1>
         </header>
         <main>
+            <h2>Trustee Financial Planner 💰</h2>
             <form id="calculator-form">
                 <div class="input-group">
-                    <label for="participants">Number of Participants (max 25):</label>
-                    <input type="number" id="participants" name="participants" min="1" max="25" value="25" required>
+                    <label for="participants">Number of Participants (1-50):</label>
+                    <input type="number" id="participants" name="participants" min="1" max="50" value="25" required>
                 </div>
                 <div class="input-group">
                     <label for="weekly-contribution">Weekly Contribution (PHP):</label>
-                    <input type="number" id="weekly-contribution" name="weekly-contribution" min="1" value="500" required>
+                    <input type="number" id="weekly-contribution" name="weekly-contribution" min="100" value="500" required>
                 </div>
                 <div class="input-group">
-                    <label for="weeks">Number of Weeks:</label>
-                    <input type="number" id="weeks" name="weeks" min="1" value="16" required>
+                    <label for="weeks">Number of Weeks (8-24):</label>
+                    <input type="number" id="weeks" name="weeks" min="8" max="24" value="16" required>
                 </div>
                 <div class="input-group">
                     <label for="joining-fee">Joining Fee per Participant (PHP):</label>
                     <input type="number" id="joining-fee" name="joining-fee" min="0" value="180" required>
                 </div>
-                <button type="submit">Calculate Earnings 💸</button>
+                <div class="input-group">
+                    <label for="discount-rate">Food Bundle Discount Rate (%):</label>
+                    <input type="number" id="discount-rate" name="discount-rate" min="0" max="20" value="10" step="0.1" required>
+                </div>
+                <div class="input-group">
+                    <label for="wholesale-margin">Wholesale Margin (%):</label>
+                    <input type="number" id="wholesale-margin" name="wholesale-margin" min="0" max="10" value="5" step="0.1" required>
+                </div>
+                <div class="input-group">
+                    <label for="investment-return">Investment Return (%):</label>
+                    <input type="number" id="investment-return" name="investment-return" min="0" max="10" value="2.5" step="0.1" required>
+                </div>
+                <div class="input-group">
+                    <label for="late-fee">Late Fee per Week (PHP):</label>
+                    <input type="number" id="late-fee" name="late-fee" min="0" value="50" required>
+                </div>
+                <div class="input-group">
+                    <label for="trustee-commission">Trustee Commission (%):</label>
+                    <input type="number" id="trustee-commission" name="trustee-commission" min="0" max="10" value="2" step="0.1" required>
+                </div>
+                <!-- Food Bundle Costs -->
+                <div class="input-group">
+                    <label for="rice-cost">Cost of Rice per Bundle (PHP):</label>
+                    <input type="number" id="rice-cost" name="rice-cost" min="0" value="200" required>
+                </div>
+                <div class="input-group">
+                    <label for="canned-goods-cost">Cost of Canned Goods per Bundle (PHP):</label>
+                    <input type="number" id="canned-goods-cost" name="canned-goods-cost" min="0" value="300" required>
+                </div>
+                <div class="input-group">
+                    <label for="treats-cost">Cost of Holiday Treats per Bundle (PHP):</label>
+                    <input type="number" id="treats-cost" name="treats-cost" min="0" value="150" required>
+                </div>
+                <div class="input-group">
+                    <label for="packaging-cost">Packaging Cost per Bundle (PHP):</label>
+                    <input type="number" id="packaging-cost" name="packaging-cost" min="0" value="50" required>
+                </div>
+                <button type="submit">Calculate All Scenarios 💸</button>
             </form>
-            <div class="output" id="output">
-                <h2>Trustee Earnings Breakdown</h2>
+
+            <div class="toggle-section">
+                <button id="toggle-cash">Show Cash Breakdown</button>
+                <button id="toggle-food">Show Food Bundle Breakdown</button>
+                <button id="toggle-summary">Show Summary</button>
+            </div>
+
+            <div class="output-section" id="cash-output" style="display: none;">
+                <h3>Cash Savings Breakdown</h3>
+                <p><strong>Total Savings Collected:</strong> <span id="total-savings">₱0</span></p>
                 <p><strong>Total Joining Fees:</strong> <span id="total-joining-fees">₱0</span></p>
                 <p><strong>Wholesale Margins:</strong> <span id="wholesale-margins">₱0</span></p>
                 <p><strong>Investment Returns:</strong> <span id="investment-returns">₱0</span></p>
-                <p><strong>Total Earnings per Cycle:</strong> <span id="total-earnings">₱0</span></p>
+                <p><strong>Late Fees Collected:</strong> <span id="late-fees">₱0</span> (Assumes 10% late)</p>
+                <p><strong>Trustee Commission:</strong> <span id="trustee-commission-earnings">₱0</span></p>
+                <p><strong>Total Trustee Earnings per Cycle:</strong> <span id="total-earnings">₱0</span></p>
                 <p><strong>Annual Earnings (3 Cycles):</strong> <span id="annual-earnings">₱0</span></p>
+            </div>
+
+            <div class="output-section" id="food-output" style="display: none;">
+                <h3>Food Bundle Breakdown</h3>
+                <p><strong>Total Bundles Sold:</strong> <span id="total-bundles">0</span></p>
+                <p><strong>Cost per Bundle:</strong> <span id="total-bundle-cost">₱0</span></p>
+                <p><strong>Market Price per Bundle:</strong> <span id="market-price">₱0</span></p>
+                <p><strong>Discounted Price per Bundle:</strong> <span id="discounted-price">₱0</span></p>
+                <p><strong>Total Revenue from Bundles:</strong> <span id="total-bundle-revenue">₱0</span></p>
+                <p><strong>Total Cost of Bundles:</strong> <span id="total-bundle-costs">₱0</span></p>
+                <p><strong>Food Bundle Profit:</strong> <span id="food-profit">₱0</span></p>
+                <p><strong>Profit Margin (%):</strong> <span id="profit-margin">0%</span></p>
+                <p><strong>Break-Even Participants:</strong> <span id="break-even">0</span> (for food bundle to be profitable)</p>
+            </div>
+
+            <div class="output-section" id="summary-output" style="display: none;">
+                <h3>Overall Summary</h3>
+                <p><strong>Best Option:</strong> <span id="best-option">N/A</span></p>
+                <p><strong>Max Trustee Earnings:</strong> <span id="max-earnings">₱0</span> (Cash: <span id="max-cash"></span>, Food: <span id="max-food"></span>)</p>
+                <p><strong>Recommended Participants:</strong> <span id="recommended-participants">N/A</span> (based on highest profit)</p>
+                <p><strong>Total Cash Payouts:</strong> <span id="total-cash-payouts">₱0</span></p>
+                <p><strong>Total Food Bundle Costs Covered:</strong> <span id="total-food-costs">₱0</span></p>
             </div>
         </main>
     </div>
     <script>
         document.getElementById('calculator-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
+            // Input Variables
             const participants = parseInt(document.getElementById('participants').value);
             const weeklyContribution = parseFloat(document.getElementById('weekly-contribution').value);
             const weeks = parseInt(document.getElementById('weeks').value);
             const joiningFee = parseFloat(document.getElementById('joining-fee').value);
-            
-            const totalJoiningFees = participants * joiningFee;
+            const discountRate = parseFloat(document.getElementById('discount-rate').value) / 100;
+            const wholesaleMargin = parseFloat(document.getElementById('wholesale-margin').value) / 100;
+            const investmentReturn = parseFloat(document.getElementById('investment-return').value) / 100;
+            const lateFee = parseFloat(document.getElementById('late-fee').value);
+            const trusteeCommission = parseFloat(document.getElementById('trustee-commission').value) / 100;
+            const riceCost = parseFloat(document.getElementById('rice-cost').value);
+            const cannedGoodsCost = parseFloat(document.getElementById('canned-goods-cost').value);
+            const treatsCost = parseFloat(document.getElementById('treats-cost').value);
+            const packagingCost = parseFloat(document.getElementById('packaging-cost').value);
+
+            // Cash Side Calculations
             const totalSavings = participants * weeklyContribution * weeks;
-            const wholesaleMargins = totalSavings * 0.05; // 5% margin
-            const investmentReturns = (totalSavings * 0.05) / 2; // Simplified return
-            const totalEarnings = totalJoiningFees + wholesaleMargins + investmentReturns;
-            const annualEarnings = totalEarnings * 3; // 3 cycles per year
-            
+            const totalJoiningFees = participants * joiningFee;
+            const lateFeesAssumed = totalSavings * 0.10 * (lateFee / weeklyContribution); // 10% late assumption
+            const wholesaleMargins = totalSavings * wholesaleMargin;
+            const investmentReturns = totalSavings * investmentReturn;
+            const trusteeCommissionEarnings = totalSavings * trusteeCommission;
+            const totalEarnings = totalJoiningFees + wholesaleMargins + investmentReturns + lateFeesAssumed + trusteeCommissionEarnings;
+            const annualEarnings = totalEarnings * 3;
+
+            // Food Bundle Calculations
+            const costPerBundle = riceCost + cannedGoodsCost + treatsCost + packagingCost;
+            const marketPricePerBundle = costPerBundle / (1 - wholesaleMargin);
+            const discountedPricePerBundle = marketPricePerBundle * (1 - discountRate);
+            const totalBundles = Math.floor(participants * 0.5); // Assuming 50% choose food bundle
+            const totalBundleRevenue = totalBundles * discountedPricePerBundle;
+            const totalBundleCosts = totalBundles * costPerBundle;
+            const foodProfit = totalBundleRevenue - totalBundleCosts;
+            const profitMargin = (foodProfit / totalBundleRevenue) * 100 || 0;
+            const breakEven = Math.ceil(totalBundleCosts / discountedPricePerBundle);
+
+            // Summary Calculations
+            const totalCashPayouts = totalSavings - totalEarnings;
+            const totalFoodCosts = totalBundleCosts;
+            const maxCashEarnings = totalEarnings;
+            const maxFoodEarnings = foodProfit;
+            const bestOption = maxCashEarnings > maxFoodEarnings ? 'Cash Option' : 'Food Bundle Option';
+            const recommendedParticipants = maxCashEarnings > maxFoodEarnings ? participants : Math.max(breakEven * 2, participants); // Double break-even for safety
+
+            // Update Cash Output
+            document.getElementById('total-savings').textContent = `₱${totalSavings.toFixed(2)}`;
             document.getElementById('total-joining-fees').textContent = `₱${totalJoiningFees.toFixed(2)}`;
             document.getElementById('wholesale-margins').textContent = `₱${wholesaleMargins.toFixed(2)}`;
             document.getElementById('investment-returns').textContent = `₱${investmentReturns.toFixed(2)}`;
+            document.getElementById('late-fees').textContent = `₱${lateFeesAssumed.toFixed(2)} (Assumes 10% late)`;
+            document.getElementById('trustee-commission-earnings').textContent = `₱${trusteeCommissionEarnings.toFixed(2)}`;
             document.getElementById('total-earnings').textContent = `₱${totalEarnings.toFixed(2)}`;
             document.getElementById('annual-earnings').textContent = `₱${annualEarnings.toFixed(2)}`;
-            
-            document.getElementById('output').style.display = 'block';
+
+            // Update Food Output
+            document.getElementById('total-bundles').textContent = totalBundles;
+            document.getElementById('total-bundle-cost').textContent = `₱${costPerBundle.toFixed(2)}`;
+            document.getElementById('market-price').textContent = `₱${marketPricePerBundle.toFixed(2)}`;
+            document.getElementById('discounted-price').textContent = `₱${discountedPricePerBundle.toFixed(2)}`;
+            document.getElementById('total-bundle-revenue').textContent = `₱${totalBundleRevenue.toFixed(2)}`;
+            document.getElementById('total-bundle-costs').textContent = `₱${totalBundleCosts.toFixed(2)}`;
+            document.getElementById('food-profit').textContent = `₱${foodProfit.toFixed(2)}`;
+            document.getElementById('profit-margin').textContent = `${profitMargin.toFixed(2)}%`;
+            document.getElementById('break-even').textContent = breakEven;
+
+            // Update Summary Output
+            document.getElementById('best-option').textContent = bestOption;
+            document.getElementById('max-earnings').textContent = `₱${Math.max(maxCashEarnings, maxFoodEarnings).toFixed(2)}`;
+            document.getElementById('max-cash').textContent = `₱${maxCashEarnings.toFixed(2)}`;
+            document.getElementById('max-food').textContent = `₱${maxFoodEarnings.toFixed(2)}`;
+            document.getElementById('recommended-participants').textContent = recommendedParticipants;
+            document.getElementById('total-cash-payouts').textContent = `₱${totalCashPayouts.toFixed(2)}`;
+            document.getElementById('total-food-costs').textContent = `₱${totalFoodCosts.toFixed(2)}`;
+
+            // Show all sections initially
+            document.getElementById('cash-output').style.display = 'block';
+            document.getElementById('food-output').style.display = 'block';
+            document.getElementById('summary-output').style.display = 'block';
         });
 
+        // Toggle Sections
+        document.getElementById('toggle-cash').addEventListener('click', () => {
+            const section = document.getElementById('cash-output');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        });
+        document.getElementById('toggle-food').addEventListener('click', () => {
+            const section = document.getElementById('food-output');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        });
+        document.getElementById('toggle-summary').addEventListener('click', () => {
+            const section = document.getElementById('summary-output');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Navigation Toggle
         const toggle = document.querySelector('.nav-toggle');
         const menu = document.querySelector('.nav-menu');
         toggle.addEventListener('click', () => {

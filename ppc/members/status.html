@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - My Savings Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <style>
+        .dashboard {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+            text-align: center;
+            overflow: hidden;
+        }
+        .header {
+            background: var(--yellow);
+            color: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+        }
+        .header::before {
+            content: '🎄';
+            position: absolute;
+            left: 10px;
+            animation: float 3s infinite;
+        }
+        .header::after {
+            content: '🎁';
+            position: absolute;
+            right: 10px;
+            animation: float 3s infinite 1s;
+        }
+        .progress-section {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: #333;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            margin: 1rem 0;
+        }
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6200, #4db8ff);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+        .progress::after {
+            content: '⭐';
+            position: absolute;
+            right: 5px;
+            animation: twinkle 1.5s infinite;
+        }
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        .detail-item {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border: 1px dashed var(--accent);
+            border-radius: 4px;
+        }
+        .message {
+            font-size: 1.1rem;
+            color: var(--yellow);
+            margin: 1rem 0;
+            animation: fadeIn 2s infinite;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        .parol {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ff4500, #ff8c00);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            animation: rotate 4s infinite linear;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        @keyframes rotate {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+        @media (max-width: 600px) {
+            .dashboard {
+                margin: 1rem;
+                padding: 0.5rem;
+            }
+            .header {
+                padding: 0.5rem;
+            }
+            .progress-bar {
+                height: 25px;
+            }
+            .details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="../trustee/calculator.html">Calculator</a></li>
+                <li><a href="../trustee/reasons.html">Reasons</a></li>
+                <li><a href="../trustee/faqs.html">FAQs</a></li>
+                <li><a href="../trustee/financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="dashboard">
+        <div class="header">
+            <h2>My Pasko Panalo Dashboard! 🎅</h2>
+        </div>
+        <div class="progress-section">
+            <p>Welcome, <span id="member-name">[Member Name]</span>! Your savings are shining!</p>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            <div class="milestone" id="current-savings">Current Savings: ₱0</div>
+            <div class="milestone">Goal: ₱<span id="payout-amount">8000</span></div>
+        </div>
+        <div class="details">
+            <div class="detail-item" id="signup-detail">Signed Up: [Signup Date]</div>
+            <div class="detail-item" id="weeks-detail">Weeks: 0/<span id="total-weeks">16</span></div>
+            <div class="detail-item" id="payout-detail">Payout Date: [Payout Date]</div>
+            <div class="detail-item" id="split-detail">Cash: ₱0 | Goods: ₱0</div>
+            <div class="detail-item" id="savings-detail">Est. Savings: ₱0</div>
+        </div>
+        <div class="message" id="motivation">Keep saving—your Noche Buena is near! 🌟</div>
+        <div class="parol"></div>
+    </div>
+    <footer class="footer">
+        <p>© 2025 Pasko Panalo Savings Club. Designed for community joy.</p>
+    </footer>
+    <script src="https://unpkg.com/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <script>
+        // Load Existing Data
+        let members = localStorage.getItem('memberData') ? JSON.parse(localStorage.getItem('memberData')) : {};
+        let currentMember = Object.keys(members)[0] || 'Sample Member'; // Default to first member or sample
+
+        // Function to Update Status
+        function updateStatus() {
+            const member = members[currentMember] || {
+                signupDate: '2025-06-01',
+                weeklyPayment: 500,
+                totalWeeks: 16,
+                weeksPaid: 5,
+                payoutDate: '2025-12-01',
+                cashSplit: 0.5,
+                goodsSplit: 0.5,
+                payoutAmount: 8000,
+                estimatedSavings: 2000,
+                totalSaved: 0
+            };
+            member.totalSaved = member.weeksPaid * member.weeklyPayment; // Recalculate totalSaved
+            const progress = (member.totalSaved / member.payoutAmount) * 100;
+            const cashPayout = member.payoutAmount * member.cashSplit;
+            const goodsPayout = member.payoutAmount * member.goodsSplit;
+
+            // Update UI
+            document.getElementById('member-name').textContent = currentMember;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('current-savings').textContent = `Current Savings: ₱${member.totalSaved.toFixed(2)}`;
+            document.getElementById('payout-amount').textContent = member.payoutAmount.toFixed(2);
+            document.getElementById('total-weeks').textContent = member.totalWeeks;
+            document.getElementById('signup-detail').textContent = `Signed Up: ${member.signupDate}`;
+            document.getElementById('weeks-detail').textContent = `Weeks: ${member.weeksPaid}/${member.totalWeeks}`;
+            document.getElementById('payout-detail').textContent = `Payout Date: ${member.payoutDate}`;
+            document.getElementById('split-detail').textContent = `Cash: ₱${cashPayout.toFixed(2)} | Goods: ₱${goodsPayout.toFixed(2)}`;
+            document.getElementById('savings-detail').textContent = `Est. Savings: ₱${member.estimatedSavings.toFixed(2)}`;
+            document.getElementById('motivation').textContent = getMotivationMessage(progress);
+        }
+
+        // Motivational Messages
+        function getMotivationMessage(progress) {
+            if (progress >= 100) return "🎉 You've hit your goal—enjoy your Pasko Panalo!";
+            if (progress >= 75) return "🌟 Almost there—your holiday feast awaits!";
+            if (progress >= 50) return "🎄 Halfway to your dream Christmas!";
+            if (progress >= 25) return "🚀 Keep going—your savings are growing!";
+            return "🌱 Start small, save big—your Noche Buena is near!";
+        }
+
+        // ScrollReveal Animation
+        ScrollReveal().reveal('.dashboard', {
+            duration: 1000,
+            distance: '50px',
+            origin: 'bottom',
+            easing: 'ease-in-out',
+            reset: false
+        });
+
+        // Navigation Toggle
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+
+        // Initial Update
+        updateStatus();
+    </script>
+</body>
+</html>

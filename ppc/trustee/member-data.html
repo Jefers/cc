@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Trustee Member Data</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .data-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            max-width: 200px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .member-list {
+            margin-top: 1rem;
+        }
+        .member-list p {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #333;
+            border-radius: 4px;
+        }
+        button {
+            margin-right: 0.5rem;
+        }
+        .calculated {
+            color: var(--accent);
+            font-style: italic;
+        }
+        @media (max-width: 600px) {
+            .input-group input, .input-group select {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../members/index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="../members/index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="reasons.html">Reasons</a></li>
+                <li><a href="faqs.html">FAQs</a></li>
+                <li><a href="financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1 class="title-animation">🎄 Trustee Member Tracker <span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span><span class="dot dot4">.</span></h1>
+        </header>
+        <main>
+            <div class="data-container">
+                <h2>Update Member Savings 🎅</h2>
+                <form id="member-form">
+                    <div class="input-group">
+                        <label for="member-name">Member Name:</label>
+                        <input type="text" id="member-name" name="member-name" value="Sample Member" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="signup-date">Signup Date:</label>
+                        <input type="date" id="signup-date" name="signup-date" value="2025-06-01" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="weekly-payment">Agreed Weekly Payment (PHP):</label>
+                        <input type="number" id="weekly-payment" name="weekly-payment" min="100" value="500" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="total-weeks">Total Weeks to Pay (8-24):</label>
+                        <input type="number" id="total-weeks" name="total-weeks" min="8" max="24" value="16" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="weeks-paid">Weeks Paid So Far (0-24):</label>
+                        <input type="number" id="weeks-paid" name="weeks-paid" min="0" max="24" value="5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="cash-split">Cash Split (%):</label>
+                        <input type="number" id="cash-split" name="cash-split" min="0" max="100" value="50" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="payout-date">Payout Date (Calculated):</label>
+                        <input type="date" id="payout-date" name="payout-date" readonly class="calculated">
+                    </div>
+                    <div class="input-group">
+                        <label for="payout-amount">Payout Amount (Calculated, PHP):</label>
+                        <input type="number" id="payout-amount" name="payout-amount" readonly class="calculated">
+                    </div>
+                    <div class="input-group">
+                        <label for="estimated-savings">Estimated Savings (PHP, e.g., vs. loan):</label>
+                        <input type="number" id="estimated-savings" name="estimated-savings" min="0" value="2000" required>
+                    </div>
+                    <button type="submit">Save Member Data 💾</button>
+                    <button type="button" id="clear-data">Clear All Data 🗑️</button>
+                </form>
+                <div class="member-list" id="member-list">
+                    <h3>Current Members</h3>
+                    <p id="member-status">No data saved yet. Add a member to see their status!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Load Existing Data
+        let members = localStorage.getItem('memberData') ? JSON.parse(localStorage.getItem('memberData')) : {};
+
+        // Dynamic Calculations
+        function updateCalculations() {
+            const weeklyPayment = parseFloat(document.getElementById('weekly-payment').value);
+            const totalWeeks = parseInt(document.getElementById('total-weeks').value);
+            const weeksPaid = parseInt(document.getElementById('weeks-paid').value);
+            const cashSplit = parseInt(document.getElementById('cash-split').value) / 100;
+            const goodsSplit = 1 - cashSplit;
+            const signupDate = new Date(document.getElementById('signup-date').value);
+            const totalSaved = weeksPaid * weeklyPayment;
+            const payoutAmount = weeklyPayment * totalWeeks; // Dynamic base payout
+            const cashPayout = payoutAmount * cashSplit;
+            const goodsPayout = payoutAmount * goodsSplit;
+            const payoutDate = new Date(signupDate);
+            payoutDate.setDate(signupDate.getDate() + totalWeeks * 7); // Add weeks in days
+
+            document.getElementById('payout-date').value = payoutDate.toISOString().split('T')[0];
+            document.getElementById('payout-amount').value = payoutAmount.toFixed(2);
+        }
+
+        // Event Listeners for Real-Time Updates
+        ['weekly-payment', 'total-weeks', 'weeks-paid', 'cash-split', 'signup-date'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCalculations);
+        });
+
+        // Initial Calculation
+        updateCalculations();
+
+        // Save or Update Member Data
+        document.getElementById('member-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('member-name').value;
+            const signupDate = document.getElementById('signup-date').value;
+            const weeklyPayment = parseFloat(document.getElementById('weekly-payment').value);
+            const totalWeeks = parseInt(document.getElementById('total-weeks').value);
+            const weeksPaid = parseInt(document.getElementById('weeks-paid').value);
+            const payoutDate = document.getElementById('payout-date').value;
+            const cashSplit = parseInt(document.getElementById('cash-split').value) / 100;
+            const payoutAmount = parseFloat(document.getElementById('payout-amount').value);
+            const estimatedSavings = parseFloat(document.getElementById('estimated-savings').value);
+            const totalSaved = weeksPaid * weeklyPayment;
+            const goodsSplit = 1 - cashSplit;
+
+            members[name] = {
+                signupDate,
+                weeklyPayment,
+                totalWeeks,
+                weeksPaid,
+                payoutDate,
+                cashSplit,
+                goodsSplit,
+                payoutAmount,
+                estimatedSavings,
+                totalSaved
+            };
+            localStorage.setItem('memberData', JSON.stringify(members));
+
+            updateMemberList();
+            alert(`Saved data for ${name}! Total Saved: ₱${totalSaved.toFixed(2)}`);
+            this.reset();
+            // Set default dates for next entry
+            const nextSignup = new Date(signupDate);
+            nextSignup.setDate(nextSignup.getDate() + 1);
+            document.getElementById('signup-date').value = nextSignup.toISOString().split('T')[0];
+            const nextPayout = new Date(payoutDate);
+            nextPayout.setDate(nextPayout.getDate() + 1);
+            document.getElementById('payout-date').value = nextPayout.toISOString().split('T')[0];
+            updateCalculations(); // Recalculate with new defaults
+        });
+
+        // Clear Data
+        document.getElementById('clear-data').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all member data?')) {
+                localStorage.removeItem('memberData');
+                members = {};
+                updateMemberList();
+                alert('All data cleared!');
+                updateCalculations(); // Reset calculations
+            }
+        });
+
+        // Update Member List Display
+        function updateMemberList() {
+            const list = document.getElementById('member-list');
+            const status = document.getElementById('member-status');
+            if (Object.keys(members).length === 0) {
+                status.textContent = 'No data saved yet. Add a member to see their status!';
+                return;
+            }
+            status.textContent = '';
+            Object.entries(members).forEach(([name, data]) => {
+                const p = document.createElement('p');
+                p.textContent = `${name}: ₱${data.totalSaved.toFixed(2)} saved (${data.weeksPaid}/${data.totalWeeks} weeks, Payout: ₱${data.payoutAmount.toFixed(2)}, Savings: ₱${data.estimatedSavings.toFixed(2)})`;
+                list.appendChild(p);
+            });
+        }
+
+        // Initial Load
+        updateMemberList();
+
+        // Navigation Toggle
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

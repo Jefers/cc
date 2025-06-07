@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Trustee Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../members/index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="../members/index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="reasons.html">Reasons</a></li>
+                <li><a href="faqs.html">FAQs</a></li>
+                <li><a href="financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1 class="title-animation">🎄 Pasko Panalo Club Calculator <span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span><span class="dot dot4">.</span></h1>
+        </header>
+        <main>
+            <form id="calculator-form">
+                <div class="input-group">
+                    <label for="participants">Number of Participants (max 25):</label>
+                    <input type="number" id="participants" name="participants" min="1" max="25" value="25" required>
+                </div>
+                <div class="input-group">
+                    <label for="weekly-contribution">Weekly Contribution (PHP):</label>
+                    <input type="number" id="weekly-contribution" name="weekly-contribution" min="1" value="500" required>
+                </div>
+                <div class="input-group">
+                    <label for="weeks">Number of Weeks:</label>
+                    <input type="number" id="weeks" name="weeks" min="1" value="16" required>
+                </div>
+                <div class="input-group">
+                    <label for="joining-fee">Joining Fee per Participant (PHP):</label>
+                    <input type="number" id="joining-fee" name="joining-fee" min="0" value="180" required>
+                </div>
+                <button type="submit">Calculate Earnings 💸</button>
+            </form>
+            <div class="output" id="output">
+                <h2>Trustee Earnings Breakdown</h2>
+                <p><strong>Total Joining Fees:</strong> <span id="total-joining-fees">₱0</span></p>
+                <p><strong>Wholesale Margins:</strong> <span id="wholesale-margins">₱0</span></p>
+                <p><strong>Investment Returns:</strong> <span id="investment-returns">₱0</span></p>
+                <p><strong>Total Earnings per Cycle:</strong> <span id="total-earnings">₱0</span></p>
+                <p><strong>Annual Earnings (3 Cycles):</strong> <span id="annual-earnings">₱0</span></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.getElementById('calculator-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const participants = parseInt(document.getElementById('participants').value);
+            const weeklyContribution = parseFloat(document.getElementById('weekly-contribution').value);
+            const weeks = parseInt(document.getElementById('weeks').value);
+            const joiningFee = parseFloat(document.getElementById('joining-fee').value);
+            
+            const totalJoiningFees = participants * joiningFee;
+            const totalSavings = participants * weeklyContribution * weeks;
+            const wholesaleMargins = totalSavings * 0.05; // 5% margin
+            const investmentReturns = (totalSavings * 0.05) / 2; // Simplified return
+            const totalEarnings = totalJoiningFees + wholesaleMargins + investmentReturns;
+            const annualEarnings = totalEarnings * 3; // 3 cycles per year
+            
+            document.getElementById('total-joining-fees').textContent = `₱${totalJoiningFees.toFixed(2)}`;
+            document.getElementById('wholesale-margins').textContent = `₱${wholesaleMargins.toFixed(2)}`;
+            document.getElementById('investment-returns').textContent = `₱${investmentReturns.toFixed(2)}`;
+            document.getElementById('total-earnings').textContent = `₱${totalEarnings.toFixed(2)}`;
+            document.getElementById('annual-earnings').textContent = `₱${annualEarnings.toFixed(2)}`;
+            
+            document.getElementById('output').style.display = 'block';
+        });
+
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
