@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div id="content"></div>
+
+  <script>
+    fetch('../assets/trustee-guide.txt')
+      .then(res => res.text())
+      .then(md => {
+        document.getElementById('content').innerHTML = marked.parse(md);
+      });
+  </script>
+
+    <a href="flyer.html">Flyer in English</a>
+    <a href="flyer-tagalog.html">Flyer in Tagalog</a>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+Input Fields Mentioned Throughout the Journey
+
+From trustee/calculator.html:
+Number of Participants (1-50)
+
+Weekly Contribution (PHP, min 100)
+
+Number of Weeks (8-24)
+
+Joining Fee per Participant (PHP)
+
+Late Fee per Week (PHP)
+
+Trustee Commission (%)
+
+Investment Return (%)
+
+Rice RRP per 10Kg Bag (PHP)
+
+Wholesale Discount (% off RRP, 20-50)
+
+Member Discount (% off RRP)
+
+From trustee/member-data.html:
+Member Name
+
+Signup Date
+
+Agreed Weekly Payment (PHP, min 100)
+
+Total Weeks to Pay (8-24)
+
+Weeks Paid So Far (0-24)
+
+Cash Split (%)
+
+Estimated Savings (PHP)
+
+From members/status.html (implied inputs via localStorage sync):
+(No direct inputs, but reflects trustee/member-data.html fields)
+
+Calculations Mentioned So Far
+From trustee/calculator.html:
+Total Savings = Number of Participants * Weekly Contribution * Number of Weeks
+
+Joining Fees = Number of Participants * Joining Fee per Participant
+
+Late Fees = (Number of Participants * 0.10) * Late Fee per Week * Number of Weeks (assuming 10% late)
+
+Trustee Earnings = Total Savings * (Trustee Commission / 100)
+
+Investment Return Earnings = Total Savings * (Investment Return / 100)
+
+Annual Earnings = (Trustee Earnings + Investment Return Earnings + Late Fees) * 3 (3 cycles)
+
+Wholesale Cost per 10Kg Bag = Rice RRP per 10Kg Bag * (1 - Wholesale Discount / 100)
+
+Member Price per 10Kg Bag = Rice RRP per 10Kg Bag * (1 - Member Discount / 100)
+
+Bundles Sold = Floor(Number of Participants * 0.50) (50% choose food)
+
+Food Revenue = Bundles Sold * Member Price per 10Kg Bag
+
+Food Cost = Bundles Sold * Wholesale Cost per 10Kg Bag
+
+Food Profit = Food Revenue - Food Cost
+
+Break-even Participants = Ceiling((Number of Participants * Weekly Contribution * Number of Weeks) / Member Price per 10Kg Bag)
+
+Max Trustee Earnings = Trustee Earnings + Food Profit
+
+Recommended Participants = Min(50, Max(5, Floor(Total Savings / 8000))) (based on 8000 PHP goal)
+
+Payout per Member = Weekly Contribution * Number of Weeks
+
+From trustee/member-data.html:
+Total Saved = Weeks Paid So Far * Agreed Weekly Payment
+
+Payout Amount = Agreed Weekly Payment * Total Weeks to Pay
+
+Goods Split = 1 - (Cash Split / 100)
+
+Cash Payout = Payout Amount * (Cash Split / 100)
+
+Goods Payout = Payout Amount * Goods Split
+
+Payout Date = Signup Date + (Total Weeks to Pay * 7 days)
+
+From members/status.html:
+Progress = (Total Saved / Payout Amount) * 100
+
+Additional Fields That Could Be Included
+Trustee-Related:
+Trustee Name (for record-keeping)
+
+Contact Information (e.g., phone/email for coordination)
+
+Group Location (to track regional schemes)
+
+Cycle Start Date (distinct from member signup for planning)
+
+Maximum Group Size Cap (beyond 50, if expandable)
+
+Administrative Fee per Cycle (for trustee expenses)
+
+Member-Related:
+Member Contact Information (for reminders)
+
+Payment Method (e.g., cash, mobile payment)
+
+Preferred Payout Split (pre-set preference)
+
+Emergency Withdrawal Option (yes/no)
+
+Referral Count (number of new members referred)
+
+Food Bundle-Related:
+Canned Goods RRP per Unit (PHP)
+
+Holiday Treats RRP per Unit (PHP)
+
+Packaging Cost per Bundle (PHP)
+
+Bundle Quantity per Member (e.g., number of 10Kg bags)
+
+Financial/Operational:
+Inflation Adjustment (%)
+
+Insurance Cost per Participant (PHP)
+
+Reserve Fund Contribution (%)
+
+Tax Rate (%)
+
+All Possible Calculations Based on the Entire List
+Based on Input Fields and Mentioned Calculations:
+Total Contributions Collected = Number of Participants * Agreed Weekly Payment * Weeks Paid So Far
+
+Total Potential Earnings = Trustee Earnings + Investment Return Earnings + Food Profit + Late Fees
+
+Average Weekly Earnings = Total Potential Earnings / Number of Weeks
+
+Cost per Participant = (Joining Fee per Participant + Insurance Cost per Participant) + (Weekly Contribution * Number of Weeks * Reserve Fund Contribution / 100)
+
+Net Profit per Cycle = Total Potential Earnings - (Cost per Participant * Number of Participants)
+
+Annual Net Profit = Net Profit per Cycle * 3
+
+Discounted Bundle Value = (Canned Goods RRP per Unit + Holiday Treats RRP per Unit + Rice RRP per 10Kg Bag * Bundle Quantity per Member) * (1 - Member Discount / 100)
+
+Total Bundle Cost = (Wholesale Cost per 10Kg Bag * Bundle Quantity per Member + Canned Goods RRP per Unit * (1 - Wholesale Discount / 100) + Holiday Treats RRP per Unit * (1 - Wholesale Discount / 100) + Packaging Cost per Bundle) * Bundles Sold
+
+Bundle Profit = Discounted Bundle Value * Bundles Sold - Total Bundle Cost
+
+Break-even Contribution = (Total Bundle Cost + Total Savings) / (Number of Participants * Number of Weeks)
+
+Adjusted Payout = Payout per Member * (1 - Inflation Adjustment / 100)
+
+Late Payment Penalty = Late Fee per Week * (Number of Weeks - Weeks Paid So Far) * (Number of Participants - lateParticipants)
+
+Referral Bonus = Referral Count * (Weekly Contribution * Number of Weeks * 0.05) (e.g., 5% of referred member’s contribution)
+
+Emergency Withdrawal Amount = Total Saved * 0.50 (e.g., 50% limit)
+
+Taxable Income = Total Potential Earnings * (Tax Rate / 100)
+
+Net Trustee Income = Total Potential Earnings - Taxable Income - Administrative Fee per Cycle
+
+Community Savings Pool = Total Savings + (Number of Participants * Joining Fee per Participant) - Trustee Earnings
+
+Payout Delay Days = (Number of Weeks - Weeks Paid So Far) * 7
+
+Average Savings per Member = Total Saved / Number of Participants
+
+Cross-Field Combinations:
+Total Administrative Cost = Administrative Fee per Cycle * Ceiling(Number of Weeks / 4) (e.g., quarterly billing)
+
+Insurance Coverage = Number of Participants * Insurance Cost per Participant * Number of Weeks
+
+Adjusted Wholesale Cost = Wholesale Cost per 10Kg Bag * (1 + Inflation Adjustment / 100)
+
+Member Retention Rate = (Weeks Paid So Far / Total Weeks to Pay) * 100
+
+Group Expansion Potential = Maximum Group Size Cap - Number of Participants
+
+Cycle Completion Rate = (Weeks Paid So Far / Number of Weeks) * 100 * Number of Participants
+
+Total Referral Impact = Referral Count * Payout per Member
+
+Net Bundle Profit Margin = (Bundle Profit / Food Revenue) * 100
+
+Notes
+Input Fields: The list captures all explicit fields from the journey, with no duplicates.
+
+Calculations: Includes all mentioned formulas, ensuring accuracy (e.g., member discount fixed at 10% in calculator).
+
+Additional Fields: Suggests practical extensions based on scheme needs (e.g., referral incentives, insurance).
+
+Possible Calculations: Derives new formulas by combining fields logically, assuming typical financial and operational relationships (e.g., inflation, taxes). Some may require further refinement based on real data.
+

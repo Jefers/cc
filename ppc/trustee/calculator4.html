@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Trustee Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .calculator-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            max-width: 200px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .section {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .result {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: var(--yellow);
+        }
+        button {
+            margin-right: 0.5rem;
+            padding: 0.5rem 1rem;
+        }
+        @media (max-width: 600px) {
+            .input-group input, .input-group select {
+                max-width: 100%;
+            }
+            .calculator-container {
+                margin: 1rem;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../members/index.html" class="nav-brand">Pasko Panalo Club <span>🎄</span></a>
+            <span class="nav-toggle">☰</span>
+            <ul class="nav-menu">
+                <li><a href="../members/index.html">Home</a></li>
+                <li><a href="../index.html">Menu</a></li>
+                <li><a href="../members/status.html">My Status</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="member-data.html">Member Data</a></li>
+                <li><a href="reasons.html">Reasons</a></li>
+                <li><a href="faqs.html">FAQs</a></li>
+                <li><a href="financial-benefits.html">Benefits</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1 class="title-animation">🎄 Trustee Calculator <span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span><span class="dot dot4">.</span></h1>
+        </header>
+        <main>
+            <div class="calculator-container">
+                <h2>Plan Your Savings Scheme</h2>
+                <form id="calculator-form">
+                    <div class="input-group">
+                        <label for="participants">Number of Participants (1-50):</label>
+                        <input type="number" id="participants" name="participants" min="1" max="50" value="10" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="weekly-contribution">Weekly Contribution (PHP, min 100):</label>
+                        <input type="number" id="weekly-contribution" name="weekly-contribution" min="100" value="500" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="weeks">Number of Weeks (8-24):</label>
+                        <input type="number" id="weeks" name="weeks" min="8" max="24" value="16" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="joining-fee">Joining Fee per Participant (PHP):</label>
+                        <input type="number" id="joining-fee" name="joining-fee" min="0" value="50" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="late-fee">Late Fee per Week (PHP):</label>
+                        <input type="number" id="late-fee" name="late-fee" min="0" value="20" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="trustee-commission">Trustee Commission (%):</label>
+                        <input type="number" id="trustee-commission" name="trustee-commission" min="0" max="10" value="5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="investment-return">Investment Return (%):</label>
+                        <input type="number" id="investment-return" name="investment-return" min="0" max="10" value="2" required>
+                    </div>
+                    <!-- Rice Discount Calculation Section -->
+                    <div class="input-group">
+                        <label for="rice-rrp">Rice RRP per 10Kg Bag (PHP):</label>
+                        <input type="number" id="rice-rrp" name="rice-rrp" min="500" value="1000" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="wholesale-discount">Wholesale Discount (% off RRP, 20-50):</label>
+                        <input type="number" id="wholesale-discount" name="wholesale-discount" min="20" max="50" value="30" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="member-discount">Member Discount (% off RRP):</label>
+                        <input type="number" id="member-discount" name="member-discount" min="0" max="20" value="10" readonly>
+                    </div>
+                    <button type="submit">Calculate</button>
+                </form>
+                <div>
+                    <button onclick="toggleSection('cash-section')">Toggle Cash Breakdown</button>
+                    <button onclick="toggleSection('food-section')">Toggle Food Bundle Breakdown</button>
+                    <button onclick="toggleSection('summary-section')">Toggle Summary</button>
+                </div>
+                <div id="cash-section" class="section">
+                    <h3>Cash Savings Breakdown</h3>
+                    <p>Total Savings: <span id="total-savings" class="result">0</span> PHP</p>
+                    <p>Joining Fees: <span id="joining-fees" class="result">0</span> PHP</p>
+                    <p>Late Fees (Assumed 10% late): <span id="late-fees" class="result">0</span> PHP</p>
+                    <p>Trustee Commission: <span id="trustee-earnings" class="result">0</span> PHP</p>
+                    <p>Investment Return: <span id="investment-return-earnings" class="result">0</span> PHP</p>
+                    <p>Annual Earnings (3 cycles): <span id="annual-earnings" class="result">0</span> PHP</p>
+                </div>
+                <div id="food-section" class="section">
+                    <h3>Food Bundle Breakdown (Rice Example)</h3>
+                    <p>Wholesale Cost per 10Kg Bag: <span id="wholesale-cost" class="result">0</span> PHP</p>
+                    <p>Member Price per 10Kg Bag (10% Discount): <span id="member-price" class="result">0</span> PHP</p>
+                    <p>Bundles Sold (50% of Participants): <span id="bundles-sold" class="result">0</span></p>
+                    <p>Total Revenue: <span id="food-revenue" class="result">0</span> PHP</p>
+                    <p>Total Cost: <span id="food-cost" class="result">0</span> PHP</p>
+                    <p>Profit: <span id="food-profit" class="result">0</span> PHP</p>
+                    <p>Break-even Participants: <span id="break-even" class="result">0</span></p>
+                </div>
+                <div id="summary-section" class="section">
+                    <h3>Summary</h3>
+                    <p>Best Option: <span id="best-option" class="result">Cash</span></p>
+                    <p>Max Trustee Earnings: <span id="max-earnings" class="result">0</span> PHP</p>
+                    <p>Recommended Participants: <span id="recommended-participants" class="result">10</span></p>
+                    <p>Estimated Payout per Member: <span id="payout-per-member" class="result">0</span> PHP</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Toggle Sections
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            section.classList.toggle('active');
+        }
+
+        // Calculate on Form Submit
+        document.getElementById('calculator-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const participants = parseInt(document.getElementById('participants').value);
+            const weeklyContribution = parseFloat(document.getElementById('weekly-contribution').value);
+            const weeks = parseInt(document.getElementById('weeks').value);
+            const joiningFee = parseFloat(document.getElementById('joining-fee').value);
+            const lateFee = parseFloat(document.getElementById('late-fee').value);
+            const trusteeCommission = parseFloat(document.getElementById('trustee-commission').value) / 100;
+            const investmentReturn = parseFloat(document.getElementById('investment-return').value) / 100;
+            const riceRRP = parseFloat(document.getElementById('rice-rrp').value);
+            const wholesaleDiscount = parseFloat(document.getElementById('wholesale-discount').value) / 100;
+            const memberDiscount = 0.10; // Fixed at 10% as per requirement
+
+            // Cash Calculations
+            const totalSavings = participants * weeklyContribution * weeks;
+            const joiningFees = participants * joiningFee;
+            const lateParticipants = Math.ceil(participants * 0.10); // 10% assumed late
+            const lateFees = lateParticipants * lateFee * weeks;
+            const trusteeEarnings = totalSavings * trusteeCommission;
+            const investmentEarnings = totalSavings * investmentReturn;
+            const annualEarnings = (trusteeEarnings + investmentEarnings + lateFees) * 3; // 3 cycles
+
+            // Food Bundle Calculations (Rice Example)
+            const wholesaleCost = riceRRP * (1 - wholesaleDiscount); // 20%-50% off RRP
+            const memberPrice = riceRRP * (1 - memberDiscount); // 10% discount for members
+            const bundlesSold = Math.floor(participants * 0.50); // 50% choose food
+            const foodRevenue = bundlesSold * memberPrice;
+            const foodCost = bundlesSold * wholesaleCost;
+            const foodProfit = foodRevenue - foodCost;
+            const breakEven = Math.ceil((participants * weeklyContribution * weeks) / memberPrice); // Breakeven point in participants
+
+            // Summary
+            const maxEarnings = trusteeEarnings + foodProfit;
+            const payoutPerMember = weeklyContribution * weeks;
+            const recommendedParticipants = Math.min(50, Math.max(5, Math.floor(totalSavings / 8000))); // Based on 8000 PHP goal
+
+            // Update Results
+            document.getElementById('total-savings').textContent = totalSavings.toFixed(2);
+            document.getElementById('joining-fees').textContent = joiningFees.toFixed(2);
+            document.getElementById('late-fees').textContent = lateFees.toFixed(2);
+            document.getElementById('trustee-earnings').textContent = trusteeEarnings.toFixed(2);
+            document.getElementById('investment-return-earnings').textContent = investmentEarnings.toFixed(2);
+            document.getElementById('annual-earnings').textContent = annualEarnings.toFixed(2);
+            document.getElementById('wholesale-cost').textContent = wholesaleCost.toFixed(2);
+            document.getElementById('member-price').textContent = memberPrice.toFixed(2);
+            document.getElementById('bundles-sold').textContent = bundlesSold;
+            document.getElementById('food-revenue').textContent = foodRevenue.toFixed(2);
+            document.getElementById('food-cost').textContent = foodCost.toFixed(2);
+            document.getElementById('food-profit').textContent = foodProfit.toFixed(2);
+            document.getElementById('break-even').textContent = breakEven;
+            document.getElementById('best-option').textContent = foodProfit > trusteeEarnings ? 'Food Bundles' : 'Cash';
+            document.getElementById('max-earnings').textContent = maxEarnings.toFixed(2);
+            document.getElementById('recommended-participants').textContent = recommendedParticipants;
+            document.getElementById('payout-per-member').textContent = payoutPerMember.toFixed(2);
+        });
+
+        // Navigation Toggle
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        const links = document.querySelectorAll('.nav-menu a');
+        links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
