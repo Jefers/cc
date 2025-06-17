@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Why This Rocks for Jhack! 🎉</title>
+    <link rel="stylesheet" href="trustee/styles.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif; /* Modern, readable font */
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 100%;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem; /* Large, mobile-friendly */
+            color: #ffd700; /* Gold for pop! */
+            text-shadow: 2px 2px 4px #ff4500;
+            animation: bounce 2s infinite;
+        }
+        .reason-section {
+            margin-bottom: 20px;
+            background: rgba(255, 69, 0, 0.8); /* Vibrant orange with transparency */
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        .reason-title {
+            padding: 15px;
+            font-size: 1.5rem; /* Bold and readable */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ff4500; /* Solid orange for contrast */
+            color: #fff;
+        }
+        .reason-title:hover {
+            background: #e03e00;
+        }
+        .reason-content {
+            max-height: 0;
+            padding: 0 15px;
+            font-size: 1.2rem; /* Readable on mobile */
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease;
+        }
+        .reason-content.active {
+            max-height: 500px; /* Adjust based on content */
+            padding: 15px;
+            animation: fadeIn 1s ease-in;
+        }
+        .reason-content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+            animation: bounce 1.5s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media (min-width: 600px) {
+            h1 { font-size: 3rem; }
+            .reason-title { font-size: 1.8rem; }
+            .reason-content { font-size: 1.4rem; }
+            .container { max-width: 800px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Why Pasko Panalo Rocks for Jhack! 🎄💥</h1>
+        <p style="text-align: center; font-size: 1.2rem;">Discover how this fits your skills and life in the Philippines! 🚀</p>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(0)">Leverages Your Payment Management Skills 📊<span class="emoji">😄</span></div>
+            <div class="reason-content" id="reason-0">
+                <p>You’re already a pro at collecting and tracking payments as an area manager—Pasko Panalo lets you use that skill to help people save instead of chasing debts, making it a positive shift! 💸</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(1)">Builds on Community Trust 🤝<span class="emoji">🌟</span></div>
+            <div class="reason-content" id="reason-1">
+                <p>Your loan collection role involves working with locals—trusteeship lets you earn respect by guiding neighbors to a stress-free Christmas, a big deal in the Philippines! 🎁</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(2)">Matches Field Experience 🌴<span class="emoji">👍</span></div>
+            <div class="reason-content" id="reason-2">
+                <p>Managing teams in the field prepares you to coordinate small groups (5-50 members) and handle inquiries—skills that fit perfectly here! 👥</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(3)">Offers Flexible Income 💰<span class="emoji">😊</span></div>
+            <div class="reason-content" id="reason-3">
+                <p>Unlike fixed loan targets, you can earn 5-10% commission and bundle profits, giving you extra income that fits your schedule! 🕒</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(4)">Aligns with Filipino Savings Culture 🇵🇭<span class="emoji">🎉</span></div>
+            <div class="reason-content" id="reason-4">
+                <p>The scheme taps into the paluwagan tradition, making it a natural fit you can promote easily in your area! 🌺</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(5)">Reduces Stressful Debt Focus 🌈<span class="emoji">🙌</span></div>
+            <div class="reason-content" id="reason-5">
+                <p>Moving from loan recovery to helping people avoid loans (saving 2,000 PHP vs. 25% interest) offers a more rewarding role with less pressure! 😌</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(6)">Supports Skill Transition 💻<span class="emoji">🚀</span></div>
+            <div class="reason-content" id="reason-6">
+                <p>Online tools simplify management, letting you transition smoothly with technical support from MJ while building confidence! 🤝</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(7)">Empowers Local Leadership 👑<span class="emoji">🌟</span></div>
+            <div class="reason-content" id="reason-7">
+                <p>Your role as a trustee positions you as a community leader, enhancing your reputation and opening future doors! 🚪</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(8)">Fits Holiday Demand 🎅<span class="emoji">🎄</span></div>
+            <div class="reason-content" id="reason-8">
+                <p>The Christmas focus aligns with Filipino festive needs, giving you a clear purpose from July to December 2025! ⛄</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(9)">Low-Risk Pilot 🛡️<span class="emoji">😄</span></div>
+            <div class="reason-content" id="reason-9">
+                <p>Starting with a small group lets you test it without overwhelm, proving its value before committing fully! ✅</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleReason(index) {
+            const content = document.getElementById(`reason-${index}`);
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                content.style.padding = '0 15px';
+            } else {
+                content.classList.add('active');
+                setTimeout(() => content.style.padding = '15px', 10); // Trigger reflow for animation
+            }
+        }
+    </script>
+</body>
+</html>

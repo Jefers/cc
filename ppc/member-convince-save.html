@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Save BIG as a Member! 💰🎉</title>
+    <link rel="stylesheet" href="trustee/styles.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif; /* Modern, readable font */
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 100%;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem; /* Large, mobile-friendly */
+            color: #ffd700; /* Gold for pop! */
+            text-shadow: 2px 2px 4px #ff4500;
+            animation: bounce 2s infinite;
+        }
+        .reason-section {
+            margin-bottom: 20px;
+            background: rgba(0, 128, 0, 0.8); /* Vibrant green for savings theme */
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        .reason-title {
+            padding: 15px;
+            font-size: 1.5rem; /* Bold and readable */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #00ff00; /* Bright green for contrast */
+            color: #fff;
+        }
+        .reason-title:hover {
+            background: #00cc00;
+        }
+        .reason-content {
+            max-height: 0;
+            padding: 0 15px;
+            font-size: 1.2rem; /* Readable on mobile */
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease;
+        }
+        .reason-content.active {
+            max-height: 500px; /* Adjust based on content */
+            padding: 15px;
+            animation: fadeIn 1s ease-in;
+        }
+        .reason-content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .savings-highlight {
+            font-size: 1.8rem; /* Extra large for savings emphasis */
+            color: #ffd700; /* Gold to pop! */
+            font-weight: bold;
+            text-shadow: 1px 1px 3px #000;
+            animation: pulse 2s infinite;
+        }
+        .small-print {
+            font-size: 0.8rem; /* Small and discreet */
+            color: #ccc;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+            animation: bounce 1.5s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @media (min-width: 600px) {
+            h1 { font-size: 3rem; }
+            .reason-title { font-size: 1.8rem; }
+            .reason-content { font-size: 1.4rem; }
+            .savings-highlight { font-size: 2.2rem; }
+            .container { max-width: 800px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Save MASSIVE with Pasko Panalo! 💸🎄</h1>
+        <p style="text-align: center; font-size: 1.2rem;">See how YOU can save BIG for Christmas! 🚀</p>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(0)">Save a WHOPPING <span class="savings-highlight">2,000 PHP</span> vs. Loans! 💥<span class="emoji">💰</span></div>
+            <div class="reason-content" id="reason-0">
+                <p>Save 500 PHP weekly for 16 weeks to get 8,000 PHP—avoid a 25% loan interest that costs <span class="savings-highlight">2,000 PHP</span> extra! 🎉</p>
+                <p class="small-print">*Costs: 50 PHP joining fee, 20 PHP/week late fee (optional).</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(1)">Save <span class="savings-highlight">1,600 PHP</span> with 100% Produce! 🌽<span class="emoji">🍚</span></div>
+            <div class="reason-content" id="reason-1">
+                <p>Go 100% produce and get 8,000 PHP in discounted bundles (10% off each item)! That’s <span class="savings-highlight">1,600 PHP</span> saved on a full Noche Buena spread! 🎁</p>
+                <p class="small-print">*Costs: 50 PHP joining fee, 20 PHP/week late fee (optional), 50 PHP insurance (optional).</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(2)">No Loan Stress = <span class="savings-highlight">2,000 PHP</span> Saved! 😌<span class="emoji">🌈</span></div>
+            <div class="reason-content" id="reason-2">
+                <p>Skip the loan hassle and keep <span class="savings-highlight">2,000 PHP</span> in your pocket for Christmas joy! 🎄</p>
+                <p class="small-print">*Costs: 50 PHP joining fee, 20 PHP/week late fee (optional).</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(3)">Community Saves You <span class="savings-highlight">100 PHP</span> Per Item! 👥<span class="emoji">💸</span></div>
+            <div class="reason-content" id="reason-3">
+                <p>Group buying power gives you a 10% discount—save <span class="savings-highlight">100 PHP</span> on every bundle item like rice or canned goods! 🍲</p>
+                <p class="small-print">*Costs: 50 PHP joining fee, 20 PHP/week late fee (optional).</p>
+            </div>
+        </div>
+        <div class="reason-section">
+            <div class="reason-title" onclick="toggleReason(4)">Guaranteed 8,000 PHP Payout! 💰<span class="emoji">🎉</span></div>
+            <div class="reason-content" id="reason-4">
+                <p>Save steadily and get 8,000 PHP by December—more than you’d keep with loan interest eating away! 🌟</p>
+                <p class="small-print">*Costs: 50 PHP joining fee, 20 PHP/week late fee (optional).</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleReason(index) {
+            const content = document.getElementById(`reason-${index}`);
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                content.style.padding = '0 15px';
+            } else {
+                content.classList.add('active');
+                setTimeout(() => content.style.padding = '15px', 10); // Trigger reflow for animation
+            }
+        }
+    </script>
+</body>
+</html>

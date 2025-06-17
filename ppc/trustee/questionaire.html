@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Trustee Assessment Questionnaire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+        input[type="radio"], input[type="text"] {
+            margin-right: 10px;
+        }
+        .comment {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            background: #ff4500;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #e03e00;
+        }
+        #result {
+            margin-top: 20px;
+            color: #4db8ff;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pasko Panalo Club - Trustee Assessment Questionnaire 🎄</h1>
+        <p><em>Instructions: Answer the questions below. Save your progress locally and submit via email when done.</em></p>
+        <form id="assessmentForm">
+            <!-- Section 1: Trustworthiness and Integrity -->
+            <div class="question">
+                <h3>1. Trustworthiness and Integrity</h3>
+                <div>
+                    <p>1. How would you handle finding an error in a member’s payment record (e.g., overpayment)?</p>
+                    <label><input type="radio" name="q1" value="3"> a) Notify the member and correct it immediately.</label>
+                    <label><input type="radio" name="q1" value="2"> b) Ask someone else to fix it.</label>
+                    <label><input type="radio" name="q1" value="1"> c) Ignore it if it’s small.</label>
+                    <textarea class="comment" name="q1_comment" placeholder="Comments"></textarea>
+                </div>
+                <div>
+                    <p>2. Have you ever been trusted with managing money or sensitive information for others?</p>
+                    <label><input type="radio" name="q2" value="3"> a) Yes, regularly (e.g., family, group funds).</label>
+                    <label><input type="radio" name="q2" value="2"> b) Yes, once or twice.</label>
+                    <label><input type="radio" name="q2" value="1"> c) No, never.</label>
+                    <textarea class="comment" name="q2_comment" placeholder="Comments"></textarea>
+                </div>
+            </div>
+
+            <!-- Section 2: Communication Skills -->
+            <div class="question">
+                <h3>2. Communication Skills</h3>
+                <div>
+                    <p>3. How comfortable are you explaining a new idea to a group of people?</p>
+                    <label><input type="radio" name="q3" value="3"> a) Very comfortable, I enjoy it.</label>
+                    <label><input type="radio" name="q3" value="2"> b) Somewhat comfortable, with practice.</label>
+                    <label><input type="radio" name="q3" value="1"> c) Not comfortable, I avoid it.</label>
+                    <textarea class="comment" name="q3_comment" placeholder="Comments"></textarea>
+                </div>
+                <div>
+                    <p>4. Can you give an example of a time you helped someone understand something complex?</p>
+                    <textarea class="comment" name="q4_example" placeholder="Example"></textarea>
+                    <textarea class="comment" name="q4_outcome" placeholder="Outcome"></textarea>
+                </div>
+            </div>
+
+            <!-- Section 3: Organizational Ability (continued similarly for all sections) -->
+            <div class="question">
+                <h3>3. Organizational Ability</h3>
+                <div>
+                    <p>5. How do you typically keep track of tasks or deadlines?</p>
+                    <label><input type="radio" name="q5" value="3"> a) Use a planner, app, or list regularly.</label>
+                    <label><input type="radio" name="q5" value="2"> b) Sometimes, but it’s informal.</label>
+                    <label><input type="radio" name="q5" value="1"> c) Rarely, I rely on memory.</label>
+                    <textarea class="comment" name="q5_comment" placeholder="Comments"></textarea>
+                </div>
+                <div>
+                    <p>6. Have you ever organized an event or managed a small group?</p>
+                    <label><input type="radio" name="q6" value="3"> a) Yes, multiple times.</label>
+                    <label><input type="radio" name="q6" value="2"> b) Yes, once.</label>
+                    <label><input type="radio" name="q6" value="1"> c) No, never.</label>
+                    <textarea class="comment" name="q6_details" placeholder="Details"></textarea>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>4. Empathy and Approachability</h3>
+                <div>
+                    <p>7. How would you respond if a member can’t make a payment on time?</p>
+                    <label><input type="radio" name="q7" value="3"> a) Listen, offer a reminder, and suggest a solution.</label>
+                    <label><input type="radio" name="q7" value="2"> b) Be strict and apply the late fee immediately.</label>
+                    <label><input type="radio" name="q7" value="1"> c) Ignore it unless they ask.</label>
+                    <textarea class="comment" name="q7_comment" placeholder="Comments"></textarea>
+                </div>
+                <div>
+                    <p>8. Do people often come to you for advice or support?</p>
+                    <label><input type="radio" name="q8" value="3"> a) Yes, frequently.</label>
+                    <label><input type="radio" name="q8" value="2"> b) Occasionally.</label>
+                    <label><input type="radio" name="q8" value="1"> c) Rarely.</label>
+                    <textarea class="comment" name="q8_comment" placeholder="Comments"></textarea>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>5. Problem-Solving Skills</h3>
+                <div>
+                    <p>9. What would you do if a member disputes their savings total?</p>
+                    <label><input type="radio" name="q9" value="3"> a) Check the records and explain the discrepancy.</label>
+                    <label><input type="radio" name="q9" value="2"> b) Tell them to figure it out.</label>
+                    <label><input type="radio" name="q9" value="1"> c) Assume they’re wrong without checking.</label>
+                    <textarea class="comment" name="q9_comment" placeholder="Comments"></textarea>
+                </div>
+                <div>
+                    <p>10. Describe a time you solved a problem for yourself or others.</p>
+                    <textarea class="comment" name="q10_situation" placeholder="Situation"></textarea>
+                    <textarea class="comment" name="q10_solution" placeholder="Solution"></textarea>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>6. Leadership and Motivation</h3>
+                <div>
+                    <p>11. Have you ever motivated others to work toward a common goal?</p>
+                    <label><input type="radio" name="q11" value="3"> a) Yes, often (e.g., team projects).</label>
+                    <label><input type="radio" name="q11" value="2"> b) Yes, once or twice.</label>
+                    <label><input type="radio" name="q11" value="1"> c) No, never.</label>
+                    <textarea class="comment" name="q11_details" placeholder="Details"></textarea>
+                </div>
+                <div>
+                    <p>12. How would you encourage someone to join the scheme?</p>
+                    <textarea class="comment" name="q12_approach" placeholder="Approach"></textarea>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>7. Financial Literacy</h3>
+                <div>
+                    <p>13. Are you comfortable with basic budgeting or calculating savings?</p>
+                    <label><input type="radio" name="q13" value="3"> a) Yes, I do it regularly.</label>
+                    <label><input type="radio" name="q13" value="2"> b) Somewhat, with help.</label>
+                    <label><input type="radio" name="q13" value="1"> c) No, not at all.</label>
+                    <textarea class="comment" name="q13_comment" placeholder="Comments"></textarea>
+                </div>
+                <div>
+                    <p>14. Can you estimate how much you’d save by avoiding a 25% loan interest on 8,000 PHP?</p>
+                    <label><input type="radio" name="q14" value="3"> a) Yes, about 2,000 PHP.</label>
+                    <label><input type="radio" name="q14" value="2"> b) Maybe, with some thought.</label>
+                    <label><input type="radio" name="q14" value="1"> c) No idea.</label>
+                    <textarea class="comment" name="q14_estimate" placeholder="Estimate"></textarea>
+                </div>
+            </div>
+
+            <button type="button" onclick="saveProgress()">Save Progress</button>
+            <button type="button" onclick="submitForm()">Submit via Email</button>
+            <div id="result"></div>
+        </form>
+    </div>
+
+    <script>
+        // Load saved progress
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('trusteeAssessment');
+            if (saved) {
+                const data = JSON.parse(saved);
+                for (let key in data) {
+                    if (key.includes('q')) {
+                        const radios = document.getElementsByName(key);
+                        radios.forEach(radio => {
+                            if (radio.value === data[key]) radio.checked = true;
+                        });
+                    }
+                    const comment = document.querySelector(`[name="${key}"]`);
+                    if (comment) comment.value = data[key] || '';
+                }
+            }
+        });
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const formData = {};
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'radio' && input.checked) {
+                    formData[input.name] = input.value;
+                } else if (input.type === 'text' || input.type === 'textarea') {
+                    formData[input.name] = input.value;
+                }
+            });
+            localStorage.setItem('trusteeAssessment', JSON.stringify(formData));
+            document.getElementById('result').textContent = 'Progress saved locally!';
+            setTimeout(() => document.getElementById('result').textContent = '', 2000);
+        }
+
+        // Submit via email
+        function submitForm() {
+            const formData = {};
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'radio' && input.checked) {
+                    formData[input.name] = input.value;
+                } else if (input.type === 'text' || input.type === 'textarea') {
+                    formData[input.name] = input.value;
+                }
+            });
+
+            // Convert form data to email body
+            let body = 'Pasko Panalo Club Trustee Assessment Responses\n\n';
+            for (let key in formData) {
+                body += `${key.replace(/_/g, ' ').replace(/q\d+ /, '')}: ${formData[key]}\n`;
+            }
+
+            // Use mailto to open email client
+            const subject = 'Trustee Assessment Submission';
+            const email = 'trustee@paskopanaloclub.com'; // Replace with actual email
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+
+            // Clear localStorage after submission (optional)
+            if (confirm('Submit and clear saved data?')) {
+                localStorage.removeItem('trusteeAssessment');
+                document.getElementById('result').textContent = 'Submitted and data cleared!';
+            } else {
+                document.getElementById('result').textContent = 'Submitted, data retained locally.';
+            }
+            setTimeout(() => document.getElementById('result').textContent = '', 2000);
+        }
+    </script>
+</body>
+</html>
