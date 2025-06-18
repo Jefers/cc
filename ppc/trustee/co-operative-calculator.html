@@ -73,7 +73,6 @@
             padding: 15px;
             border-radius: 10px;
             animation: fadeIn 1s ease-in;
-            display: none; /* Hidden by default, toggled by JS */
         }
         .output {
             font-size: 1.3rem;
@@ -209,9 +208,7 @@
             let myShare = totalPot / members;
             let myROI = ((myShare - myInvestment) / myInvestment) * 100;
 
-            // Display results
-            let outputGroup = document.getElementById('outputGroup');
-            outputGroup.style.display = 'block'; // Explicitly set to block to override any CSS
+            // Update results
             document.getElementById('totalMemberSavings').textContent = `Total Member Savings: ₱${totalMemberSavings.toFixed(2)}`;
             document.getElementById('totalBorrowedMonthly').textContent = `Total Borrowed Monthly: ₱${totalBorrowedMonthly.toFixed(2)}`;
             document.getElementById('totalInterest').textContent = `Total Interest: ₱${totalInterest.toFixed(2)}`;

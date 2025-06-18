@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasko Panalo Club - Main Menu 🎄</title>
+    <title>Pasko Panalo Club - Menu 🎄</title>
     <link rel="stylesheet" href="trustee/styles.css">
     <style>
         body {
@@ -19,105 +19,67 @@
             font-size: var(--font-size-lg);
             color: var(--yellow);
             margin-bottom: var(--spacing-lg);
-            animation: bounce 2s infinite;
         }
-        .nav-container {
+        .menu-container {
             max-width: 600px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
         }
-        .menu-category {
-            margin-bottom: var(--spacing-md);
+        .menu-card {
             background: var(--bg-secondary);
             padding: var(--spacing-md);
             border-radius: 8px;
             box-shadow: 0 2px 8px var(--shadow);
+            text-align: center;
+            transition: transform var(--transition);
         }
-        .menu-category h2 {
-            font-size: var(--font-size-base);
-            color: var(--accent);
-            margin-bottom: var(--spacing-sm);
+        .menu-card:hover {
+            transform: translateY(-5px);
         }
-        .menu {
-            list-style: none;
-            padding: 0;
-        }
-        .menu li {
-            margin-bottom: var(--spacing-sm);
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .menu li::before {
-            content: '➡️';
-            position: absolute;
-            left: 0;
-            color: var(--highlight);
-        }
-        .menu a {
+        .menu-card a {
             color: var(--accent);
             text-decoration: none;
-            font-size: var(--font-size-sm);
-            transition: color var(--transition);
+            font-size: var(--font-size-base);
+            display: block;
+            padding: var(--spacing-sm);
         }
-        .menu a:hover {
+        .menu-card a:hover {
             color: var(--highlight);
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
         }
         @media (max-width: 600px) {
             h1 { font-size: var(--font-size-base); }
-            .menu a { font-size: var(--font-size-sm); }
-            .nav-container { padding: var(--spacing-sm); }
+            .menu-card { padding: var(--spacing-sm); }
+            .menu-card a { font-size: var(--font-size-sm); }
         }
     </style>
 </head>
 <body>
-    <div class="nav-container">
-        <h1>Pasko Panalo Club Menu 🎉</h1>
-        <div class="menu-category">
-            <h2>Home</h2>
-            <ul class="menu">
-                <li><a href="index.html">Home</a></li>
-            </ul>
-        </div>
-        <div class="menu-category">
-            <h2>Members</h2>
-            <ul class="menu">
-                <li><a href="members/index.html">Members Home</a></li>
-                <li><a href="members/status.html">Savings Status</a></li>
-                <li><a href="trustee/member-convince-save.html">Convince to Save</a></li>
-                <li><a href="trustee/member-save-splash.html">Save Splash</a></li>
-            </ul>
-        </div>
-        <div class="menu-category">
-            <h2>Trustee</h2>
-            <ul class="menu">
-                <li><a href="trustee/trustee-convince-jhack.html">Convince Jhack</a></li>
-                <li><a href="trustee/calculator2.html">Calculator 2</a></li>
-                <li><a href="trustee/calculator3.html">Calculator 3</a></li>
-                <li><a href="trustee/calculator4.html">Calculator 4</a></li>
-                <li><a href="trustee/co-operative-calculator.html">Co-operative Calculator</a></li>
-                <li><a href="trustee/faqs.html">FAQs</a></li>
-                <li><a href="trustee/financial-benefits.html">Financial Benefits</a></li>
-                <li><a href="trustee/guide.html">Guide</a></li>
-                <li><a href="trustee/member-data.html">Member Data</a></li>
-                <li><a href="trustee/questionaire.html">Questionnaire</a></li>
-            </ul>
-        </div>
-        <div class="menu-category">
-            <h2>Resources</h2>
-            <ul class="menu">
-                <li><a href="trustee/flyer.html">Flyer</a></li>
-                <li><a href="trustee/flyer-tagalog.html">Flyer (Tagalog)</a></li>
-                <li><a href="trustee/reasons.html">Reasons</a></li>
-            </ul>
-        </div>
+    <h1>Pasko Panalo Club Menu 🎉</h1>
+    <div class="menu-container">
+        <div class="menu-card"><a href="index.html">Home</a></div>
+        <div class="menu-card"><a href="members/index.html">Members Home</a></div>
+        <div class="menu-card"><a href="members/status.html">Savings Status</a></div>
+        <div class="menu-card"><a href="trustee/member-convince-save.html">Convince to Save</a></div>
+        <div class="menu-card"><a href="trustee/member-save-splash.html">Save Splash</a></div>
+        <div class="menu-card"><a href="trustee/trustee-convince-jhack.html">Convince Jhack</a></div>
+        <div class="menu-card"><a href="trustee/calculator2.html">Calculator 2</a></div>
+        <div class="menu-card"><a href="trustee/calculator3.html">Calculator 3</a></div>
+        <div class="menu-card"><a href="trustee/calculator4.html">Calculator 4</a></div>
+        <div class="menu-card"><a href="trustee/co-operative-calculator.html">Co-operative Calculator</a></div>
+        <div class="menu-card"><a href="trustee/faqs.html">FAQs</a></div>
+        <div class="menu-card"><a href="trustee/financial-benefits.html">Financial Benefits</a></div>
+        <div class="menu-card"><a href="trustee/guide.html">Guide</a></div>
+        <div class="menu-card"><a href="trustee/member-data.html">Member Data</a></div>
+        <div class="menu-card"><a href="trustee/questionaire.html">Questionnaire</a></div>
+        <div class="menu-card"><a href="trustee/flyer.html">Flyer</a></div>
+        <div class="menu-card"><a href="trustee/flyer-tagalog.html">Flyer (Tagalog)</a></div>
+        <div class="menu-card"><a href="trustee/reasons.html">Reasons</a></div>
     </div>
 
     <script>
-        // Optional: Add interactivity (e.g., toggle menu) later if needed
+        // Optional: Add interactivity later if needed
     </script>
 </body>
 </html>
