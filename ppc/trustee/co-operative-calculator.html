@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasko Panalo Club - Co-operative Calculator 🎉</title>
+    <link rel="stylesheet" href="../trustee/styles.css"> <!-- Using existing path -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            color: #fff;
+            margin: 0;
+            padding: 15px;
+            overflow-x: hidden;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px #ff4500;
+            animation: bounce 2s infinite;
+            margin-bottom: 20px;
+        }
+        .calculator {
+            background: rgba(255, 69, 0, 0.8); /* Orange background */
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 0 15px #ff4500;
+        }
+        .input-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        label {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+            color: #ffd700;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 5px;
+            background: #fff;
+            color: #333;
+        }
+        .calculate-btn {
+            background: #00ff00;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .calculate-btn:hover {
+            background: #ffd700;
+            color: #ff4500;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #ffd700;
+        }
+        .output-group {
+            margin-top: 20px;
+            background: rgba(0, 128, 0, 0.8); /* Green for contrast */
+            padding: 15px;
+            border-radius: 10px;
+            animation: fadeIn 1s ease-in;
+            display: none; /* Hidden by default, toggled by JS */
+        }
+        .output {
+            font-size: 1.3rem;
+            margin: 10px 0;
+            color: #ffd700;
+            text-shadow: 1px 1px 3px #000;
+            animation: pulse 2s infinite;
+        }
+        .error {
+            color: #ffffff; /* White for contrast on orange */
+            background: #ff0000; /* Red background for visibility */
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-top: 10px;
+            display: none; /* Hidden until error */
+        }
+        .error.show {
+            display: block;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @media (min-width: 600px) {
+            h1 { font-size: 3rem; }
+            .calculator { max-width: 500px; }
+            label { font-size: 1.4rem; }
+            input { font-size: 1.2rem; }
+            .calculate-btn { font-size: 1.8rem; }
+            .output { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Co-operative Calculator 🚀</h1>
+    <div class="calculator">
+        <div class="input-group">
+            <label for="members">Number of Members (5-50) <span style="color: #00ff00;">[Default: 25]</span></label>
+            <input type="number" id="members" value="25" min="5" max="50">
+        </div>
+        <div class="input-group">
+            <label for="weeks">Number of Weeks (4-60) <span style="color: #00ff00;">[Default: 16]</span></label>
+            <input type="number" id="weeks" value="16" min="4" max="60">
+        </div>
+        <div class="input-group">
+            <label for="weeklySaving">Members Avg Weekly Saving (₱100-₱10,000) <span style="color: #00ff00;">[Default: 500]</span></label>
+            <input type="number" id="weeklySaving" value="500" min="100" max="10000">
+        </div>
+        <div class="input-group">
+            <label for="myInvestment">My Total Investment (₱1000-₱100000) <span style="color: #00ff00;">[Default: 8000]</span></label>
+            <input type="number" id="myInvestment" value="8000" min="1000" max="100000">
+        </div>
+        <div class="input-group">
+            <label for="avgBorrowedMonthly">Avg Amount Borrowed Monthly (₱) <span style="color: #00ff00;">[Default: 1000]</span></label>
+            <input type="number" id="avgBorrowedMonthly" value="1000" min="0">
+        </div>
+        <div class="input-group">
+            <label for="totalBorrowed">My Total Amount Borrowed (₱) <span style="color: #00ff00;">[Default: 1000]</span></label>
+            <input type="number" id="totalBorrowed" value="1000" min="0">
+        </div>
+        <button class="calculate-btn" onclick="calculate()">CALCULATE YOUR WIN! 💥</button>
+        <div class="output-group" id="outputGroup">
+            <div class="output" id="totalMemberSavings">Total Member Savings: ₱0</div>
+            <div class="output" id="totalBorrowedMonthly">Total Borrowed Monthly: ₱0</div>
+            <div class="output" id="totalInterest">Total Interest: ₱0</div>
+            <div class="output" id="totalPot">Total Pot at End: ₱0</div>
+            <div class="output" id="myShare">My Share at End: ₱0</div>
+            <div class="output" id="myROI">My ROI: 0%</div>
+        </div>
+        <div class="error" id="errorMsg"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Get input values
+            let members = parseInt(document.getElementById('members').value) || 0;
+            let weeks = parseInt(document.getElementById('weeks').value) || 0;
+            let weeklySaving = parseInt(document.getElementById('weeklySaving').value) || 0;
+            let myInvestment = parseInt(document.getElementById('myInvestment').value) || 0;
+            let avgBorrowedMonthly = parseInt(document.getElementById('avgBorrowedMonthly').value) || 0;
+            let totalBorrowed = parseInt(document.getElementById('totalBorrowed').value) || 0;
+
+            // Validate inputs
+            let errorMsg = document.getElementById('errorMsg');
+            errorMsg.classList.remove('show');
+            if (isNaN(members) || members < 5 || members > 50) {
+                errorMsg.textContent = 'Number of Members must be between 5 and 50!';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (isNaN(weeks) || weeks < 4 || weeks > 60) {
+                errorMsg.textContent = 'Number of Weeks must be between 4 and 60!';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (isNaN(weeklySaving) || weeklySaving < 100 || weeklySaving > 10000) {
+                errorMsg.textContent = 'Weekly Saving must be between ₱100 and ₱10,000!';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (isNaN(myInvestment) || myInvestment < 1000 || myInvestment > 100000) {
+                errorMsg.textContent = 'My Investment must be between ₱1000 and ₱100,000!';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (isNaN(avgBorrowedMonthly) || avgBorrowedMonthly < 0) {
+                errorMsg.textContent = 'Avg Amount Borrowed Monthly cannot be negative!';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (isNaN(totalBorrowed) || totalBorrowed < 0) {
+                errorMsg.textContent = 'Total Amount Borrowed cannot be negative!';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Calculations
+            let totalMemberSavings = members * weeklySaving * weeks;
+            let totalBorrowedMonthly = avgBorrowedMonthly * members;
+            let totalInterest = totalBorrowedMonthly * 0.1 * (weeks / 4); // 10% interest over months
+            let totalPot = totalMemberSavings + totalInterest;
+            let myShare = totalPot / members;
+            let myROI = ((myShare - myInvestment) / myInvestment) * 100;
+
+            // Display results
+            let outputGroup = document.getElementById('outputGroup');
+            outputGroup.style.display = 'block'; // Explicitly set to block to override any CSS
+            document.getElementById('totalMemberSavings').textContent = `Total Member Savings: ₱${totalMemberSavings.toFixed(2)}`;
+            document.getElementById('totalBorrowedMonthly').textContent = `Total Borrowed Monthly: ₱${totalBorrowedMonthly.toFixed(2)}`;
+            document.getElementById('totalInterest').textContent = `Total Interest: ₱${totalInterest.toFixed(2)}`;
+            document.getElementById('totalPot').textContent = `Total Pot at End: ₱${totalPot.toFixed(2)}`;
+            document.getElementById('myShare').textContent = `My Share at End: ₱${myShare.toFixed(2)}`;
+            document.getElementById('myROI').textContent = `My ROI: ${myROI.toFixed(2)}%`;
+        }
+    </script>
+</body>
+</html>
