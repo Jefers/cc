@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullion Count Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .denomination {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+        label {
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        input {
+            font-size: 1em;
+            padding: 5px;
+            margin-right: 10px;
+        }
+        .total {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+        @media (min-width: 600px) {
+            .container {
+                max-width: 500px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bullion Count</h1>
+        <div class="denomination">£20
+            <label>Notes: <input type="number" id="n20" value="0" min="0"></label>
+            <div class="total" id="total20">Total: £0</div>
+        </div>
+        <div class="denomination">£10
+            <label>Notes: <input type="number" id="n10" value="0" min="0"></label>
+            <div class="total" id="total10">Total: £0</div>
+        </div>
+        <div class="denomination">£5
+            <label>Notes: <input type="number" id="n5" value="0" min="0"></label>
+            <div class="total" id="total5">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #800000;">£2
+            <label>Large Bags: <input type="number" id="lb2" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb2" value="0" min="0"></label>
+            <div class="total" id="total2">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #0000FF;">£1
+            <label>Large Bags: <input type="number" id="lb1" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb1" value="0" min="0"></label>
+            <div class="total" id="total1">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #FFFF00;">50p
+            <label>Large Bags: <input type="number" id="lb50p" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb50p" value="0" min="0"></label>
+            <div class="total" id="total50p">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #008000;">20p
+            <label>Large Bags: <input type="number" id="lb20p" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb20p" value="0" min="0"></label>
+            <div class="total" id="total20p">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #FFA500;">10p
+            <label>Large Bags: <input type="number" id="lb10p" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb10p" value="0" min="0"></label>
+            <div class="total" id="total10p">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #FF4500;">5p
+            <label>Large Bags: <input type="number" id="lb5p" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb5p" value="0" min="0"></label>
+            <div class="total" id="total5p">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #FF8C00;">2p
+            <label>Large Bags: <input type="number" id="lb2p" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb2p" value="0" min="0"></label>
+            <div class="total" id="total2p">Total: £0</div>
+        </div>
+        <div class="denomination" style="background-color: #FFA500;">1p
+            <label>Large Bags: <input type="number" id="lb1p" value="0" min="0"></label>
+            <label>Small Bags: <input type="number" id="sb1p" value="0" min="0"></label>
+            <div class="total" id="total1p">Total: £0</div>
+        </div>
+        <div class="total" id="grandTotal">Grand Total: £0</div>
+    </div>
+
+    <script>
+        // Load saved values from localStorage or set defaults
+        function loadValues() {
+            document.getElementById('n20').value = localStorage.getItem('n20') || 0;
+            document.getElementById('n10').value = localStorage.getItem('n10') || 0;
+            document.getElementById('n5').value = localStorage.getItem('n5') || 0;
+            document.getElementById('lb2').value = localStorage.getItem('lb2') || 0;
+            document.getElementById('sb2').value = localStorage.getItem('sb2') || 0;
+            document.getElementById('lb1').value = localStorage.getItem('lb1') || 0;
+            document.getElementById('sb1').value = localStorage.getItem('sb1') || 0;
+            document.getElementById('lb50p').value = localStorage.getItem('lb50p') || 0;
+            document.getElementById('sb50p').value = localStorage.getItem('sb50p') || 0;
+            document.getElementById('lb20p').value = localStorage.getItem('lb20p') || 0;
+            document.getElementById('sb20p').value = localStorage.getItem('sb20p') || 0;
+            document.getElementById('lb10p').value = localStorage.getItem('lb10p') || 0;
+            document.getElementById('sb10p').value = localStorage.getItem('sb10p') || 0;
+            document.getElementById('lb5p').value = localStorage.getItem('lb5p') || 0;
+            document.getElementById('sb5p').value = localStorage.getItem('sb5p') || 0;
+            document.getElementById('lb2p').value = localStorage.getItem('lb2p') || 0;
+            document.getElementById('sb2p').value = localStorage.getItem('sb2p') || 0;
+            document.getElementById('lb1p').value = localStorage.getItem('lb1p') || 0;
+            document.getElementById('sb1p').value = localStorage.getItem('sb1p') || 0;
+            calculateTotals();
+        }
+
+        // Save values to localStorage and calculate totals
+        function saveAndCalculate() {
+            localStorage.setItem('n20', document.getElementById('n20').value);
+            localStorage.setItem('n10', document.getElementById('n10').value);
+            localStorage.setItem('n5', document.getElementById('n5').value);
+            localStorage.setItem('lb2', document.getElementById('lb2').value);
+            localStorage.setItem('sb2', document.getElementById('sb2').value);
+            localStorage.setItem('lb1', document.getElementById('lb1').value);
+            localStorage.setItem('sb1', document.getElementById('sb1').value);
+            localStorage.setItem('lb50p', document.getElementById('lb50p').value);
+            localStorage.setItem('sb50p', document.getElementById('sb50p').value);
+            localStorage.setItem('lb20p', document.getElementById('lb20p').value);
+            localStorage.setItem('sb20p', document.getElementById('sb20p').value);
+            localStorage.setItem('lb10p', document.getElementById('lb10p').value);
+            localStorage.setItem('sb10p', document.getElementById('sb10p').value);
+            localStorage.setItem('lb5p', document.getElementById('lb5p').value);
+            localStorage.setItem('sb5p', document.getElementById('sb5p').value);
+            localStorage.setItem('lb2p', document.getElementById('lb2p').value);
+            localStorage.setItem('sb2p', document.getElementById('sb2p').value);
+            localStorage.setItem('lb1p', document.getElementById('lb1p').value);
+            localStorage.setItem('sb1p', document.getElementById('sb1p').value);
+            calculateTotals();
+        }
+
+        // Calculate denomination totals and grand total
+        function calculateTotals() {
+            // Notes
+            let n20 = parseInt(document.getElementById('n20').value) || 0;
+            let total20 = n20 * 20;
+            document.getElementById('total20').textContent = `Total: £${total20}`;
+
+            let n10 = parseInt(document.getElementById('n10').value) || 0;
+            let total10 = n10 * 10;
+            document.getElementById('total10').textContent = `Total: £${total10}`;
+
+            let n5 = parseInt(document.getElementById('n5').value) || 0;
+            let total5 = n5 * 5;
+            document.getElementById('total5').textContent = `Total: £${total5}`;
+
+            // £2: Large bag = £500, Small bag = £20
+            let lb2 = parseInt(document.getElementById('lb2').value) || 0;
+            let sb2 = parseInt(document.getElementById('sb2').value) || 0;
+            let total2 = (lb2 * 500) + (sb2 * 20);
+            document.getElementById('total2').textContent = `Total: £${total2}`;
+
+            // £1: Large bag = £500, Small bag = £20
+            let lb1 = parseInt(document.getElementById('lb1').value) || 0;
+            let sb1 = parseInt(document.getElementById('sb1').value) || 0;
+            let total1 = (lb1 * 500) + (sb1 * 20);
+            document.getElementById('total1').textContent = `Total: £${total1}`;
+
+            // 50p: Large bag = £250, Small bag = £10
+            let lb50p = parseInt(document.getElementById('lb50p').value) || 0;
+            let sb50p = parseInt(document.getElementById('sb50p').value) || 0;
+            let total50p = (lb50p * 250) + (sb50p * 10);
+            document.getElementById('total50p').textContent = `Total: £${total50p}`;
+
+            // 20p: Large bag = £100, Small bag = £10
+            let lb20p = parseInt(document.getElementById('lb20p').value) || 0;
+            let sb20p = parseInt(document.getElementById('sb20p').value) || 0;
+            let total20p = (lb20p * 100) + (sb20p * 10);
+            document.getElementById('total20p').textContent = `Total: £${total20p}`;
+
+            // 10p: Large bag = £100, Small bag = £5
+            let lb10p = parseInt(document.getElementById('lb10p').value) || 0;
+            let sb10p = parseInt(document.getElementById('sb10p').value) || 0;
+            let total10p = (lb10p * 100) + (sb10p * 5);
+            document.getElementById('total10p').textContent = `Total: £${total10p}`;
+
+            // 5p: Large bag = £100, Small bag = £5
+            let lb5p = parseInt(document.getElementById('lb5p').value) || 0;
+            let sb5p = parseInt(document.getElementById('sb5p').value) || 0;
+            let total5p = (lb5p * 100) + (sb5p * 5);
+            document.getElementById('total5p').textContent = `Total: £${total5p}`;
+
+            // 2p: Large bag = £20, Small bag = £1
+            let lb2p = parseInt(document.getElementById('lb2p').value) || 0;
+            let sb2p = parseInt(document.getElementById('sb2p').value) || 0;
+            let total2p = (lb2p * 20) + (sb2p * 1);
+            document.getElementById('total2p').textContent = `Total: £${total2p}`;
+
+            // 1p: Large bag = £20, Small bag = £1
+            let lb1p = parseInt(document.getElementById('lb1p').value) || 0;
+            let sb1p = parseInt(document.getElementById('sb1p').value) || 0;
+            let total1p = (lb1p * 20) + (sb1p * 1);
+            document.getElementById('total1p').textContent = `Total: £${total1p}`;
+
+            // Grand Total
+            let grandTotal = total20 + total10 + total5 + total2 + total1 + total50p + total20p + total10p + total5p + total2p + total1p;
+            document.getElementById('grandTotal').textContent = `Grand Total: £${grandTotal}`;
+        }
+
+        // Add event listeners to inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', saveAndCalculate);
+        });
+
+        // Load values on page load
+        window.onload = loadValues;
+    </script>
+</body>
+</html>
