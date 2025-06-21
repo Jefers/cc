@@ -21,34 +21,58 @@
         }
         h1 {
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.8em;
+            color: #333;
         }
         .denomination {
             margin-bottom: 15px;
             padding: 10px;
-            background-color: #e0e0e0;
             border-radius: 5px;
+            color: #222;
+            font-size: 1.2em;
         }
         label {
-            font-size: 1em;
+            display: block;
             margin-right: 10px;
         }
         input {
-            font-size: 1em;
+            font-size: 1.2em;
             padding: 5px;
             margin-right: 10px;
+            max-width: 70px;
+            maxlength: 5;
         }
         .total {
             font-weight: bold;
             margin-top: 10px;
-            font-size: 1.2em;
+            font-size: 1.3em;
+            color: #111;
         }
+        /* Pale tints with very low saturation */
+        .denomination:nth-child(4) { background-color: #f5e8e0; } /* £2 (pale brown) */
+        .denomination:nth-child(5) { background-color: #ece0f5; } /* £1 (pale purple) */
+        .denomination:nth-child(6) { background-color: #f5f5e0; } /* 50p (pale yellow) */
+        .denomination:nth-child(7) { background-color: #e0f5e0; } /* 20p (pale green) */
+        .denomination:nth-child(8) { background-color: #f0f0f0; } /* 10p (pale light grey) */
+        .denomination:nth-child(9) { background-color: #f5e0eb; } /* 5p (pale pink) */
+        .denomination:nth-child(10) { background-color: #f5e8d7; } /* 2p (pale orange) */
+        .denomination:nth-child(11) { background-color: #f5e0e0; } /* 1p (pale red) */
+
         @media (min-width: 600px) {
             .container {
                 max-width: 500px;
             }
             h1 {
-                font-size: 2em;
+                font-size: 2.2em;
+            }
+            .denomination {
+                font-size: 1.4em;
+            }
+            input {
+                font-size: 1.4em;
+            }
+            .total {
+                font-size: 1.5em;
             }
         }
     </style>
@@ -57,55 +81,55 @@
     <div class="container">
         <h1>Bullion Count</h1>
         <div class="denomination">£20
-            <label>Notes: <input type="number" id="n20" value="0" min="0"></label>
+            <label>Notes: <input type="number" id="n20" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total20">Total: £0</div>
         </div>
         <div class="denomination">£10
-            <label>Notes: <input type="number" id="n10" value="0" min="0"></label>
+            <label>Notes: <input type="number" id="n10" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total10">Total: £0</div>
         </div>
         <div class="denomination">£5
-            <label>Notes: <input type="number" id="n5" value="0" min="0"></label>
+            <label>Notes: <input type="number" id="n5" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total5">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #800000;">£2
-            <label>Large Bags: <input type="number" id="lb2" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb2" value="0" min="0"></label>
+        <div class="denomination">£2
+            <label>Large Bags: <input type="number" id="lb2" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb2" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total2">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #0000FF;">£1
-            <label>Large Bags: <input type="number" id="lb1" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb1" value="0" min="0"></label>
+        <div class="denomination">£1
+            <label>Large Bags: <input type="number" id="lb1" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb1" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total1">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #FFFF00;">50p
-            <label>Large Bags: <input type="number" id="lb50p" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb50p" value="0" min="0"></label>
+        <div class="denomination">50p
+            <label>Large Bags: <input type="number" id="lb50p" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb50p" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total50p">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #008000;">20p
-            <label>Large Bags: <input type="number" id="lb20p" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb20p" value="0" min="0"></label>
+        <div class="denomination">20p
+            <label>Large Bags: <input type="number" id="lb20p" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb20p" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total20p">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #FFA500;">10p
-            <label>Large Bags: <input type="number" id="lb10p" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb10p" value="0" min="0"></label>
+        <div class="denomination">10p
+            <label>Large Bags: <input type="number" id="lb10p" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb10p" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total10p">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #FF4500;">5p
-            <label>Large Bags: <input type="number" id="lb5p" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb5p" value="0" min="0"></label>
+        <div class="denomination">5p
+            <label>Large Bags: <input type="number" id="lb5p" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb5p" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total5p">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #FF8C00;">2p
-            <label>Large Bags: <input type="number" id="lb2p" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb2p" value="0" min="0"></label>
+        <div class="denomination">2p
+            <label>Large Bags: <input type="number" id="lb2p" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb2p" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total2p">Total: £0</div>
         </div>
-        <div class="denomination" style="background-color: #FFA500;">1p
-            <label>Large Bags: <input type="number" id="lb1p" value="0" min="0"></label>
-            <label>Small Bags: <input type="number" id="sb1p" value="0" min="0"></label>
+        <div class="denomination">1p
+            <label>Large Bags: <input type="number" id="lb1p" value="0" min="0" maxlength="5"></label>
+            <label>Small Bags: <input type="number" id="sb1p" value="0" min="0" maxlength="5"></label>
             <div class="total" id="total1p">Total: £0</div>
         </div>
         <div class="total" id="grandTotal">Grand Total: £0</div>
