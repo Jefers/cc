@@ -10,7 +10,7 @@ body {
 
 h1 {
     text-align: center;
-    font-size: 3rem; /* Super big for readability */
+    font-size: 3rem;
     margin-bottom: 20px;
 }
 
@@ -47,13 +47,13 @@ h1 {
     margin-bottom: 15px;
     border-radius: 5px;
     box-shadow: 0 4px 8px #000000;
-    width: 15rem; /* Approx 2.5in at 16px/rem */
-    height: 21rem; /* Approx 3.5in at 16px/rem */
+    width: 95%; /* Nearly full page width */
+    height: 21rem; /* Fixed height maintained */
     overflow-y: auto;
 }
 
 .card h2, .card p {
-    font-size: 2rem; /* Super big for readability */
+    font-size: 2rem;
     margin: 0.5rem 0;
 }
 
@@ -112,7 +112,7 @@ body.dark-mode {
 
 body.dark-mode .card {
     background-color: #000000;
-    box-shadow: 0 4px 8px #ffffff; /* White shadow for dark mode */
+    box-shadow: 0 4px 8px #ffffff;
 }
 
 body.dark-mode .back-btn {
@@ -137,7 +137,7 @@ body.dark-mode .btn {
     }
 
     .card {
-        max-width: 15rem;
+        width: 95%; /* Maintain nearly full width on larger screens */
         margin: 0 auto 15px;
     }
 }
