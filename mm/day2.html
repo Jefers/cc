@@ -10,14 +10,23 @@
     <a href="index.html" class="back-btn"><</a>
     <h1>Day 2 - Legs</h1>
     <div class="card">
-        <p>Leg extensions (8 - 15 reps)</p>
-        <p>Leg press (8 - 15 reps)</p>
-        <p>Standing calf raises (12 - 20 reps)</p>
+        <p>Leg extensions (8 - 15 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day2-leg-extensions"></p>
+        <p><i>Superset</i></p>
+        <p>Leg press (8 - 15 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day2-leg-press"></p>
+        <p>Standing calf raises (12 - 20 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day2-calf-raises"></p>
     </div>
     <script>
         if (localStorage.getItem('dark-mode') === 'true') {
             document.body.classList.add('dark-mode');
         }
+        document.querySelectorAll('.kg-input').forEach(input => {
+            const key = input.getAttribute('data-key');
+            const savedValue = localStorage.getItem(key);
+            if (savedValue) input.value = savedValue;
+            input.addEventListener('input', () => {
+                localStorage.setItem(key, input.value);
+            });
+        });
     </script>
 </body>
 </html>

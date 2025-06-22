@@ -11,18 +11,28 @@
     <h1>Day 1 - Chest & Back</h1>
     <div class="card">
         <h2>Chest</h2>
-        <p>Peck deck 6 - 10 reps to failure (Superset with Incline Press)</p>
-        <p>Incline Press</p>
+        <p>Peck deck 6 - 10 <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day1-peck-deck"></p>
+        <p><i>Superset</i></p>
+        <p>Incline Press <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day1-incline-press"></p>
+        <p class="note">(use a close grip; flair elbows)</p>
     </div>
     <div class="card">
         <h2>Back</h2>
-        <p>Close grip palms up pull downs</p>
-        <p>Deadlifts</p>
+        <p>Close grip palms up pull downs <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day1-close-grip-pulldowns"></p>
+        <p>Deadlifts <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day1-deadlifts"></p>
     </div>
     <script>
         if (localStorage.getItem('dark-mode') === 'true') {
             document.body.classList.add('dark-mode');
         }
+        document.querySelectorAll('.kg-input').forEach(input => {
+            const key = input.getAttribute('data-key');
+            const savedValue = localStorage.getItem(key);
+            if (savedValue) input.value = savedValue;
+            input.addEventListener('input', () => {
+                localStorage.setItem(key, input.value);
+            });
+        });
     </script>
 </body>
 </html>

@@ -11,19 +11,27 @@
     <h1>Day 3 - Delts & Arms</h1>
     <div class="card">
         <h2>Delts</h2>
-        <p>Dumbbell laterals (6 - 10 reps)</p>
-        <p>Bentover dumbbell laterals (6 - 10 reps) or Reverse peck deck (6 - 10 reps)</p>
+        <p>Dumbbell laterals (6 - 10 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day3-dumbbell-laterals"></p>
+        <p>Bentover dumbbell laterals (6 - 10 reps) or Reverse peck deck (6 - 10 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day3-bentover-laterals"></p>
     </div>
     <div class="card">
         <h2>Arms</h2>
-        <p>Barbell Curls (6 - 10 reps)</p>
-        <p>Tricep press downs (6 - 10 reps)</p>
-        <p>[Superset] Dips (3 - 5 reps)</p>
+        <p>Barbell Curls (6 - 10 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day3-barbell-curls"></p>
+        <p>Tricep press downs (6 - 10 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day3-tricep-press"></p>
+        <p>[Superset] Dips (3 - 5 reps) <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day3-dips"></p>
     </div>
     <script>
         if (localStorage.getItem('dark-mode') === 'true') {
             document.body.classList.add('dark-mode');
         }
+        document.querySelectorAll('.kg-input').forEach(input => {
+            const key = input.getAttribute('data-key');
+            const savedValue = localStorage.getItem(key);
+            if (savedValue) input.value = savedValue;
+            input.addEventListener('input', () => {
+                localStorage.setItem(key, input.value);
+            });
+        });
     </script>
 </body>
 </html>
