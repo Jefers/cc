@@ -48,14 +48,16 @@ h1 {
     border-radius: 5px;
     box-shadow: 0 4px 8px #000000;
     width: 95%;
-    /* Removed fixed height for dynamic adjustment */
     min-height: 10rem; /* Minimum height to avoid collapse */
     overflow-y: visible; /* Ensure no inner scrolling */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Consistent spacing between items */
 }
 
 .card h2, .card p {
     font-size: 2rem;
-    margin: 1rem 0; /* Increased margin for separation between exercises */
+    margin: 0; /* Removed to avoid double margin with gap */
     display: flex;
     align-items: center;
 }
@@ -84,7 +86,7 @@ h1 {
 .superset {
     font-family: 'Dancing Script', cursive; /* Fancy script font */
     font-size: 2rem;
-    margin: 1rem 0; /* More separation */
+    margin: 0; /* Removed to avoid double margin with gap */
 }
 
 .switch {
@@ -171,9 +173,11 @@ body.dark-mode .kg-input {
         flex-direction: row;
         justify-content: center;
         gap: 20px;
+        flex-wrap: wrap; /* Allows wrapping if screen is too narrow */
     }
 
     .btn {
+        flex: 0 0 auto; /* Prevents buttons from growing/shrinking */
         width: 100px;
     }
 
