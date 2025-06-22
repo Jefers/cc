@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 4 Weight Trends</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <a href="index.html" class="back-btn"><</a>
+    <h1>Day 4 Weight Trends</h1>
+    <div>
+        <button id="load-data">Load Data</button>
+        <button id="clear-data">Clear Data</button>
+        <button id="load-dummy-data">Load Dummy Data</button>
+        <button id="clear-chart">Clear Chart</button>
+    </div>
+    <canvas id="weightChart"></canvas>
+    <script>
+        if (localStorage.getItem('dark-mode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        let chart = null;
+        const ctx = document.getElementById('weightChart').getContext('2d');
+
+        function updateChart(data) {
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data[0]?.data.map((_, i) => i + 1),
+                    datasets: data.map((dataset, index) => ({
+                        label: dataset.label,
+                        data: dataset.data.map(d => d.y),
+                        borderColor: `hsl(${index * 90}, 70%, 50%)`,
+                        backgroundColor: 'rgba(0, 0, 0, 0)',
+                        borderWidth: 1,
+                        pointRadius: 2,
+                        tension: 0.1
+                    }))
+                },
+                options: {
+                    scales: { x: { title: { display: true, text: 'Session' } }, y: { title: { display: true, text: 'Weight (Kg)' }, beginAtZero: true } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        document.getElementById('load-data').addEventListener('click', () => {
+            const history = JSON.parse(localStorage.getItem('exerciseHistory') || '{}');
+            const datasets = [];
+            ['day4-leg-extensions', 'day4-squats', 'day4-calf-raises'].forEach(key => {
+                if (history[key]) {
+                    const exerciseName = key.replace('day4-', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const data = history[key].map(entry => ({ y: entry.weight })).sort((a, b) => a.y - b.y);
+                    datasets.push({ label: exerciseName, data });
+                }
+            });
+            updateChart(datasets);
+        });
+
+        document.getElementById('clear-data').addEventListener('click', () => {
+            localStorage.removeItem('exerciseHistory');
+            if (chart) chart.destroy();
+            chart = null;
+        });
+
+        document.getElementById('load-dummy-data').addEventListener('click', () => {
+            const startDate = new Date('2025-06-22T22:23:00Z');
+            const dummyData = { 'day4-leg-extensions': [], 'day4-squats': [], 'day4-calf-raises': [] };
+            for (let i = 0; i < 45; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i * 4);
+                if (i % 4 === 3) { // Only for Day 4
+                    ['day4-leg-extensions', 'day4-squats', 'day4-calf-raises'].forEach((key, index) => {
+                        let weight = 50 + (index % 3) * 10;
+                        if (i > 0 && i % 6 === 0) weight += 5;
+                        if (i > 15 && i % 9 === 0) weight = weight;
+                        dummyData[key].push({ date: currentDate.toISOString().split('T')[0], weight });
+                    });
+                }
+            }
+            const existing = JSON.parse(localStorage.getItem('exerciseHistory') || '{}');
+            localStorage.setItem('exerciseHistory', JSON.stringify({ ...existing, ...dummyData }));
+            document.getElementById('load-data').click();
+        });
+
+        document.getElementById('clear-chart').addEventListener('click', () => {
+            if (chart) chart.destroy();
+            chart = null;
+        });
+    </script>
+</body>
+</html>

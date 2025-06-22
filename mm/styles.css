@@ -21,6 +21,12 @@ h1 {
     margin-bottom: 20px;
 }
 
+.button-container h2 {
+    font-size: 2rem;
+    margin: 10px 0 5px;
+    text-align: center;
+}
+
 .btn {
     display: block;
     padding: 15px;
@@ -44,49 +50,48 @@ h1 {
 .card {
     background-color: #ffffff;
     padding: 10px;
-    margin-bottom: 20px; /* Increased separation between cards */
+    margin-bottom: 20px;
     border-radius: 5px;
     box-shadow: 0 4px 8px #000000;
     width: 95%;
-    min-height: 10rem; /* Minimum height to avoid collapse */
-    overflow-y: visible; /* Ensure no inner scrolling */
+    min-height: 10rem;
+    overflow-y: visible;
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Consistent spacing between items */
+    gap: 1rem;
 }
 
 .card h2, .card p {
     font-size: 2rem;
-    margin: 0; /* Removed to avoid double margin with gap */
+    margin: 0;
     display: flex;
     align-items: center;
 }
 
 .kg-input {
     width: 3ch;
-    height: 2.5rem; /* Large height */
+    height: 2.5rem;
     margin-left: 0.5rem;
     font-size: 2rem;
     padding: 0.2rem;
-    vertical-align: middle; /* Ensure inline alignment */
+    vertical-align: middle;
 }
 
-/* Explicitly set font size for reps and notes with higher specificity */
 .card .reps {
-    font-size: 1.5rem !important; /* Force smaller size */
-    margin-left: 1rem; /* Slight indent */
+    font-size: 1.5rem !important;
+    margin-left: 1rem;
     color: #000000;
 }
 
 .card .note {
-    font-size: 1.5rem !important; /* Force smaller size */
+    font-size: 1.5rem !important;
     color: #000000;
 }
 
 .superset {
-    font-family: 'Dancing Script', cursive; /* Fancy script font */
+    font-family: 'Dancing Script', cursive;
     font-size: 2rem;
-    margin: 0; /* Removed to avoid double margin with gap */
+    margin: 0;
 }
 
 .history-link {
@@ -118,8 +123,8 @@ h1 {
 }
 
 button {
-    display: block;
-    margin: 10px auto;
+    display: inline-block;
+    margin: 10px 5px;
     padding: 10px 20px;
     font-size: 1.5rem;
     background-color: #000000;
@@ -131,6 +136,12 @@ button {
 
 button:hover {
     background-color: #333333;
+}
+
+#weightChart {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
 }
 
 .switch {
@@ -229,24 +240,33 @@ body.dark-mode button:hover {
     background-color: #cccccc;
 }
 
+body.dark-mode #weightChart {
+    background-color: #000000;
+}
+
 /* Tablet and desktop */
 @media (min-width: 768px) {
     .button-container {
         flex-direction: row;
         justify-content: center;
         gap: 20px;
-        flex-wrap: wrap; /* Allows wrapping if screen is too narrow */
+        flex-wrap: wrap;
+    }
+
+    .button-container h2 {
+        width: 100%;
+        text-align: center;
     }
 
     .btn {
-        flex: 0 0 auto; /* Prevents buttons from growing/shrinking */
-        width: 100px;
+        flex: 0 0 auto;
+        width: 150px;
     }
 
     .card {
         width: 95%;
         margin: 0 auto 20px;
-        min-height: 10rem; /* Consistent minimum height for larger screens */
+        min-height: 10rem;
     }
 }
 
