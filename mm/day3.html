@@ -26,16 +26,28 @@
         <p>[Superset] Dips <input type="text" class="kg-input" maxlength="3" placeholder="Kg" data-key="day3-dips"></p>
         <p class="reps"><i>3 - 5 Reps</i></p>
     </div>
+    <a href="history.html" class="history-link">View History</a>
     <script>
         if (localStorage.getItem('dark-mode') === 'true') {
             document.body.classList.add('dark-mode');
         }
+        let history = JSON.parse(localStorage.getItem('exerciseHistory') || '{}');
         document.querySelectorAll('.kg-input').forEach(input => {
             const key = input.getAttribute('data-key');
             const savedValue = localStorage.getItem(key);
             if (savedValue) input.value = savedValue;
             input.addEventListener('input', () => {
                 localStorage.setItem(key, input.value);
+                const weight = parseInt(input.value) || 0;
+                const date = new Date().toISOString().split('T')[0] + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                if (!history[key]) history[key] = [];
+                const existingEntry = history[key].find(entry => entry.date === date);
+                if (existingEntry) {
+                    existingEntry.weight = weight;
+                } else {
+                    history[key].push({ date, weight });
+                }
+                localStorage.setItem('exerciseHistory', JSON.stringify(history));
             });
         });
     </script>

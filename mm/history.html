@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise History</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="index.html" class="back-btn"><</a>
+    <h1>Exercise History</h1>
+    <div id="history-content"></div>
+    <button id="export-json">Export as JSON</button>
+    <button id="export-csv">Export as CSV</button>
+    <script>
+        if (localStorage.getItem('dark-mode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        const history = JSON.parse(localStorage.getItem('exerciseHistory') || '{}');
+        const historyContent = document.getElementById('history-content');
+
+        // Display history
+        Object.keys(history).forEach(key => {
+            const exerciseName = key.replace(/day\d+-/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const entries = history[key].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const section = document.createElement('div');
+            section.innerHTML = `<h2>${exerciseName}</h2><ul>`;
+            entries.forEach(entry => {
+                section.querySelector('ul').innerHTML += `<li>${entry.date}: ${entry.weight} Kg</li>`;
+            });
+            section.innerHTML += `</ul>`;
+            historyContent.appendChild(section);
+        });
+
+        // Export as JSON
+        document.getElementById('export-json').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "exercise_history.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            document.body.removeChild(downloadAnchorNode);
+        });
+
+        // Export as CSV
+        document.getElementById('export-csv').addEventListener('click', () => {
+            let csv = 'Exercise,Date,Weight (Kg)\n';
+            Object.keys(history).forEach(key => {
+                const exerciseName = key.replace(/day\d+-/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                history[key].forEach(entry => {
+                    csv += `${exerciseName},${entry.date},${entry.weight}\n`;
+                });
+            });
+            const dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "exercise_history.csv");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            document.body.removeChild(downloadAnchorNode);
+        });
+    </script>
+</body>
+</html>
