@@ -44,17 +44,46 @@ h1 {
 .card {
     background-color: #ffffff;
     padding: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Increased separation between cards */
     border-radius: 5px;
     box-shadow: 0 4px 8px #000000;
-    width: 95%; /* Nearly full page width */
-    height: 21rem; /* Fixed height maintained */
+    width: 95%;
+    height: 21rem;
     overflow-y: auto;
 }
 
 .card h2, .card p {
     font-size: 2rem;
-    margin: 0.5rem 0;
+    margin: 1rem 0; /* Increased margin for separation between exercises */
+    display: flex;
+    align-items: center;
+}
+
+.kg-input {
+    width: 3ch;
+    height: 2.5rem; /* Large height */
+    margin-left: 0.5rem;
+    font-size: 2rem;
+    padding: 0.2rem;
+    vertical-align: middle; /* Ensure inline alignment */
+}
+
+/* Explicitly set font size for reps and notes with higher specificity */
+.card .reps {
+    font-size: 1.5rem !important; /* Force smaller size */
+    margin-left: 1rem; /* Slight indent */
+    color: #000000;
+}
+
+.card .note {
+    font-size: 1.5rem !important; /* Force smaller size */
+    color: #000000;
+}
+
+.superset {
+    font-family: 'Dancing Script', cursive; /* Fancy script font */
+    font-size: 2rem;
+    margin: 1rem 0; /* More separation */
 }
 
 .switch {
@@ -124,6 +153,17 @@ body.dark-mode .btn {
     color: #000000;
 }
 
+body.dark-mode .reps,
+body.dark-mode .note {
+    color: #ffffff;
+}
+
+body.dark-mode .kg-input {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
 /* Tablet and desktop */
 @media (min-width: 768px) {
     .button-container {
@@ -137,7 +177,10 @@ body.dark-mode .btn {
     }
 
     .card {
-        width: 95%; /* Maintain nearly full width on larger screens */
-        margin: 0 auto 15px;
+        width: 95%;
+        margin: 0 auto 20px;
     }
 }
+
+/* Import fancy script font */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
