@@ -48,8 +48,9 @@ h1 {
     border-radius: 5px;
     box-shadow: 0 4px 8px #000000;
     width: 95%;
-    height: 21rem;
-    overflow-y: auto;
+    /* Removed fixed height for dynamic adjustment */
+    min-height: 10rem; /* Minimum height to avoid collapse */
+    overflow-y: visible; /* Ensure no inner scrolling */
 }
 
 .card h2, .card p {
@@ -179,6 +180,7 @@ body.dark-mode .kg-input {
     .card {
         width: 95%;
         margin: 0 auto 20px;
+        min-height: 10rem; /* Consistent minimum height for larger screens */
     }
 }
 
