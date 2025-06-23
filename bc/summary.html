@@ -29,6 +29,9 @@
             font-size: 1.2em;
             box-sizing: border-box;
         }
+        .figure {
+            color: #ff0000; /* Red font for all figures */
+        }
         a {
             display: block;
             margin-top: 10px;
@@ -68,17 +71,20 @@
             <div class="cell">1p</div>
         </div>
         <div class="row" id="totalsRow">
-            <div class="cell" id="total20">0</div>
-            <div class="cell" id="total10">0</div>
-            <div class="cell" id="total5">0</div>
-            <div class="cell" id="total2">0</div>
-            <div class="cell" id="total1">0</div>
-            <div class="cell" id="total50p">0</div>
-            <div class="cell" id="total20p">0</div>
-            <div class="cell" id="total10p">0</div>
-            <div class="cell" id="total5p">0</div>
-            <div class="cell" id="total2p">0</div>
-            <div class="cell" id="total1p">0</div>
+            <div class="cell"><span class="figure" id="total20">0</span></div>
+            <div class="cell"><span class="figure" id="total10">0</span></div>
+            <div class="cell"><span class="figure" id="total5">0</span></div>
+            <div class="cell"><span class="figure" id="total2">0</span></div>
+            <div class="cell"><span class="figure" id="total1">0</span></div>
+            <div class="cell"><span class="figure" id="total50p">0</span></div>
+            <div class="cell"><span class="figure" id="total20p">0</span></div>
+            <div class="cell"><span class="figure" id="total10p">0</span></div>
+            <div class="cell"><span class="figure" id="total5p">0</span></div>
+            <div class="cell"><span class="figure" id="total2p">0</span></div>
+            <div class="cell"><span class="figure" id="total1p">0</span></div>
+        </div>
+        <div class="row">
+            <div class="cell" colspan="11"><span class="figure" id="grandTotal">0</span></div>
         </div>
         <a href="index.html">Return to Calculator</a>
     </div>
@@ -92,11 +98,25 @@
             document.getElementById('total2').textContent = (parseInt(localStorage.getItem('lb2') || 0) * 500 + parseInt(localStorage.getItem('sb2') || 0) * 20) || 0;
             document.getElementById('total1').textContent = (parseInt(localStorage.getItem('lb1') || 0) * 500 + parseInt(localStorage.getItem('sb1') || 0) * 20) || 0;
             document.getElementById('total50p').textContent = (parseInt(localStorage.getItem('lb50p') || 0) * 250 + parseInt(localStorage.getItem('sb50p') || 0) * 10) || 0;
-            document.getElementById('total20p').textContent = (parseInt(localStorage.getItem('lb20p') || 0) * 250 + parseInt(localStorage.getItem('sb20p') || 0) * 10) || 0; // Updated to £250
+            document.getElementById('total20p').textContent = (parseInt(localStorage.getItem('lb20p') || 0) * 250 + parseInt(localStorage.getItem('sb20p') || 0) * 10) || 0;
             document.getElementById('total10p').textContent = (parseInt(localStorage.getItem('lb10p') || 0) * 100 + parseInt(localStorage.getItem('sb10p') || 0) * 5) || 0;
             document.getElementById('total5p').textContent = (parseInt(localStorage.getItem('lb5p') || 0) * 100 + parseInt(localStorage.getItem('sb5p') || 0) * 5) || 0;
             document.getElementById('total2p').textContent = (parseInt(localStorage.getItem('lb2p') || 0) * 20 + parseInt(localStorage.getItem('sb2p') || 0) * 1) || 0;
             document.getElementById('total1p').textContent = (parseInt(localStorage.getItem('lb1p') || 0) * 20 + parseInt(localStorage.getItem('sb1p') || 0) * 1) || 0;
+
+            // Calculate and display grand total
+            let grandTotal = parseInt(document.getElementById('total20').textContent) +
+                            parseInt(document.getElementById('total10').textContent) +
+                            parseInt(document.getElementById('total5').textContent) +
+                            parseInt(document.getElementById('total2').textContent) +
+                            parseInt(document.getElementById('total1').textContent) +
+                            parseInt(document.getElementById('total50p').textContent) +
+                            parseInt(document.getElementById('total20p').textContent) +
+                            parseInt(document.getElementById('total10p').textContent) +
+                            parseInt(document.getElementById('total5p').textContent) +
+                            parseInt(document.getElementById('total2p').textContent) +
+                            parseInt(document.getElementById('total1p').textContent);
+            document.getElementById('grandTotal').textContent = grandTotal || 0;
         }
 
         // Load totals on page load
