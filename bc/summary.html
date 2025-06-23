@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullion Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #fff;
+            color: #000;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        .row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .cell {
+            flex: 0 0 80px; /* Fixed width to fit 99,999 (approx. 80px for 5 digits + padding) */
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+            font-size: 1.2em;
+            box-sizing: border-box;
+        }
+        a {
+            display: block;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #000;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (min-width: 600px) {
+            .container {
+                max-width: 900px;
+            }
+            .cell {
+                font-size: 1.4em;
+            }
+            a {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="cell">£20</div>
+            <div class="cell">£10</div>
+            <div class="cell">£5</div>
+            <div class="cell">£2</div>
+            <div class="cell">£1</div>
+            <div class="cell">50p</div>
+            <div class="cell">20p</div>
+            <div class="cell">10p</div>
+            <div class="cell">5p</div>
+            <div class="cell">2p</div>
+            <div class="cell">1p</div>
+        </div>
+        <div class="row" id="totalsRow">
+            <div class="cell" id="total20">0</div>
+            <div class="cell" id="total10">0</div>
+            <div class="cell" id="total5">0</div>
+            <div class="cell" id="total2">0</div>
+            <div class="cell" id="total1">0</div>
+            <div class="cell" id="total50p">0</div>
+            <div class="cell" id="total20p">0</div>
+            <div class="cell" id="total10p">0</div>
+            <div class="cell" id="total5p">0</div>
+            <div class="cell" id="total2p">0</div>
+            <div class="cell" id="total1p">0</div>
+        </div>
+        <a href="index.html">Return to Calculator</a>
+    </div>
+
+    <script>
+        // Load totals from localStorage and display
+        function loadTotals() {
+            document.getElementById('total20').textContent = (parseInt(localStorage.getItem('n20') || 0) * 20) || 0;
+            document.getElementById('total10').textContent = (parseInt(localStorage.getItem('n10') || 0) * 10) || 0;
+            document.getElementById('total5').textContent = (parseInt(localStorage.getItem('n5') || 0) * 5) || 0;
+            document.getElementById('total2').textContent = (parseInt(localStorage.getItem('lb2') || 0) * 500 + parseInt(localStorage.getItem('sb2') || 0) * 20) || 0;
+            document.getElementById('total1').textContent = (parseInt(localStorage.getItem('lb1') || 0) * 500 + parseInt(localStorage.getItem('sb1') || 0) * 20) || 0;
+            document.getElementById('total50p').textContent = (parseInt(localStorage.getItem('lb50p') || 0) * 250 + parseInt(localStorage.getItem('sb50p') || 0) * 10) || 0;
+            document.getElementById('total20p').textContent = (parseInt(localStorage.getItem('lb20p') || 0) * 250 + parseInt(localStorage.getItem('sb20p') || 0) * 10) || 0; // Updated to £250
+            document.getElementById('total10p').textContent = (parseInt(localStorage.getItem('lb10p') || 0) * 100 + parseInt(localStorage.getItem('sb10p') || 0) * 5) || 0;
+            document.getElementById('total5p').textContent = (parseInt(localStorage.getItem('lb5p') || 0) * 100 + parseInt(localStorage.getItem('sb5p') || 0) * 5) || 0;
+            document.getElementById('total2p').textContent = (parseInt(localStorage.getItem('lb2p') || 0) * 20 + parseInt(localStorage.getItem('sb2p') || 0) * 1) || 0;
+            document.getElementById('total1p').textContent = (parseInt(localStorage.getItem('lb1p') || 0) * 20 + parseInt(localStorage.getItem('sb1p') || 0) * 1) || 0;
+        }
+
+        // Load totals on page load
+        window.onload = loadTotals;
+    </script>
+</body>
+</html>
