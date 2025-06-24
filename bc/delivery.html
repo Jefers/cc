@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #fff;
+            color: #000;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        .row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .label {
+            flex: 0 0 200px; /* Increased to 200px for more width */
+            padding: 5px;
+            text-align: right;
+            font-size: 1.2em;
+        }
+        .input-cell {
+            flex: 0 0 100px; /* Increased to 100px to display thousands */
+            padding: 5px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .apple-button {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #007AFF;
+            background-color: #fff;
+            border: 1px solid #007AFF;
+            border-radius: 10px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .apple-button:hover {
+            background-color: #E5E5EA;
+            color: #005BB5;
+        }
+        /* Clear button style */
+        .clear-button {
+            display: inline-block;
+            padding: 5px 10px; /* Smaller padding for compact button */
+            font-size: 1em;
+            font-weight: 500;
+            color: #FF2D55; /* Red for clear action */
+            background-color: #fff;
+            border: 1px solid #FF2D55;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        .clear-button:hover {
+            background-color: #FFE5E5; /* Light red on hover */
+            color: #C41E3A;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .clear-button:active {
+            background-color: #FFD5D5;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        @media (min-width: 600px) {
+            .container {
+                max-width: 400px;
+            }
+            .label, .input-cell {
+                font-size: 1.4em;
+            }
+            .apple-button {
+                font-size: 1.4em;
+            }
+            .clear-button {
+                font-size: 1.2em;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Delivery</h1>
+        <div class="row">
+            <div class="label">£20</div>
+            <div class="input-cell"><input type="number" id="delivery_20" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">£10</div>
+            <div class="input-cell"><input type="number" id="delivery_10" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">£5</div>
+            <div class="input-cell"><input type="number" id="delivery_5" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">£2 (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb2" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">£1 (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb1" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">50p (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb50p" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">20p (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb20p" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">10p (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb10p" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">5p (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb5p" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">2p (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb2p" value="0"></div>
+        </div>
+        <div class="row">
+            <div class="label">1p (Large Bag)</div>
+            <div class="input-cell"><input type="number" id="delivery_lb1p" value="0"></div>
+        </div>
+
+        <a href="summary.html" class="apple-button">Save and Return</a>
+        <button class="clear-button" onclick="clearDelivery()">Clear All</button>
+    </div>
+
+    <script>
+        // Save delivery data to localStorage when inputs change
+        document.querySelectorAll('input[id^="delivery_"]').forEach(input => {
+            input.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.value);
+            });
+        });
+
+        // Load saved delivery data on page load
+        window.onload = function() {
+            document.getElementById('delivery_20').value = localStorage.getItem('delivery_20') || 0;
+            document.getElementById('delivery_10').value = localStorage.getItem('delivery_10') || 0;
+            document.getElementById('delivery_5').value = localStorage.getItem('delivery_5') || 0;
+            document.getElementById('delivery_lb2').value = localStorage.getItem('delivery_lb2') || 0;
+            document.getElementById('delivery_lb1').value = localStorage.getItem('delivery_lb1') || 0;
+            document.getElementById('delivery_lb50p').value = localStorage.getItem('delivery_lb50p') || 0;
+            document.getElementById('delivery_lb20p').value = localStorage.getItem('delivery_lb20p') || 0;
+            document.getElementById('delivery_lb10p').value = localStorage.getItem('delivery_lb10p') || 0;
+            document.getElementById('delivery_lb5p').value = localStorage.getItem('delivery_lb5p') || 0;
+            document.getElementById('delivery_lb2p').value = localStorage.getItem('delivery_lb2p') || 0;
+            document.getElementById('delivery_lb1p').value = localStorage.getItem('delivery_lb1p') || 0;
+        };
+
+        // Clear all delivery data
+        function clearDelivery() {
+            const ids = [
+                'delivery_20', 'delivery_10', 'delivery_5', 'delivery_lb2', 'delivery_lb1',
+                'delivery_lb50p', 'delivery_lb20p', 'delivery_lb10p', 'delivery_lb5p',
+                'delivery_lb2p', 'delivery_lb1p'
+            ];
+            ids.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = '0';
+                    localStorage.setItem(id, '0');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

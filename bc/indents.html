@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indents</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            color: #333;
+        }
+        .table {
+            display: grid;
+            grid-template-columns: 1fr repeat(4, minmax(80px, auto));
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .header, .cell {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: clear;
+            font-size: 1.2em;
+        }
+        .header {
+            font-weight: bold;
+            background-color: #f5f5f5;
+        }
+        input {
+            font-size: 1.2em;
+            padding: 5px;
+            width: 100px;
+            text-align: center;
+            maxlength: 5;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #111;
+        }
+        /* Apple-like white button */
+        .apple-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+            color: #0070f0;
+            background-color: #fff;
+            border: 1px solid #d1d1d1;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        .apple-button:hover {
+            background-color: #f5f5f5;
+            color: #005bb5;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .apple-button:active {
+            background-color: #e0e0e0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        /* Clear button style */
+        .clear-button {
+            display: inline-block;
+            padding: 5px 10px; /* Smaller padding for compact button */
+            font-size: 1em;
+            font-weight: 500;
+            color: #FF2D55; /* Red for clear action */
+            background-color: #fff;
+            border: 1px solid #FF2D55;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        .clear-button:hover {
+            background-color: #FFE5E5; /* Light red on hover */
+            color: #C41E3A;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .clear-button:active {
+            background-color: #FFD5D5;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        a.home {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            color: #000;
+            text-decoration: none;
+        }
+        a.home:hover {
+            text-decoration: underline;
+        }
+        @media (min-width: 600px) {
+            .container {
+                max-width: 900px;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            .header, .cell {
+                font-size: 1.4em;
+            }
+            input {
+                font-size: 1.4em;
+            }
+            .total {
+                font-size: 1.5em;
+            }
+            .apple-button {
+                font-size: 1.4em;
+                padding: 12px 25px;
+            }
+            a.home {
+                font-size: 1.4em;
+            }
+            .clear-button {
+                font-size: 1.2em;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="home">Home</a>
+        <h1>Indents</h1>
+        <div class="table">
+            <div class="cell">Section</div>
+            <div class="cell"><input type="text" id="c1_section" value="" maxlength="5"></div>
+            <div class="cell"><input type="text" id="c2_section" value="" maxlength="5"></div>
+            <div class="cell"><input type="text" id="c3_section" value="" maxlength="5"></div>
+            <div class="cell"><input type="text" id="c4_section" value="" maxlength="5"></div>
+
+            <div class="cell">£20</div>
+            <div class="cell"><input type="number" id="c1_20" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_20" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_20" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_20" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">£10</div>
+            <div class="cell"><input type="number" id="c1_10" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_10" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_10" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_10" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">£5</div>
+            <div class="cell"><input type="number" id="c1_5" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_5" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_5" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_5" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">£2</div>
+            <div class="cell"><input type="number" id="c1_2" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_2" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_2" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_2" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">£1</div>
+            <div class="cell"><input type="number" id="c1_1" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_1" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_1" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_1" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">50p</div>
+            <div class="cell"><input type="number" id="c1_50p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_50p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_50p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_50p" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">20p</div>
+            <div class="cell"><input type="number" id="c1_20p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_20p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_20p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_20p" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">10p</div>
+            <div class="cell"><input type="number" id="c1_10p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_10p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_10p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_10p" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">5p</div>
+            <div class="cell"><input type="number" id="c1_5p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_5p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_5p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_5p" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">2p</div>
+            <div class="cell"><input type="number" id="c1_2p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_2p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_2p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_2p" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell">1p</div>
+            <div class="cell"><input type="number" id="c1_1p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c2_1p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c3_1p" value="0" min="0" maxlength="5"></div>
+            <div class="cell"><input type="number" id="c4_1p" value="0" min="0" maxlength="5"></div>
+
+            <div class="cell header">Total</div>
+            <div class="cell total" id="total1">£0</div>
+            <div class="cell total" id="total2">£0</div>
+            <div class="cell total" id="total3">£0</div>
+            <div class="cell total" id="total4">£0</div>
+
+            <!-- New row for clear buttons -->
+            <div class="cell"></div> <!-- Empty for alignment -->
+            <div class="cell"><button class="clear-button" onclick="clearColumn(1)">Clear</button></div>
+            <div class="cell"><button class="clear-button" onclick="clearColumn(2)">Clear</button></div>
+            <div class="cell"><button class="clear-button" onclick="clearColumn(3)">Clear</button></div>
+            <div class="cell"><button class="clear-button" onclick="clearColumn(4)">Clear</button></div>
+        </div>
+        <a href="summary.html" class="apple-button">View Summary</a>
+    </div>
+
+    <script>
+        // Load saved values from localStorage or set defaults
+        function loadValues() {
+            document.getElementById('c1_section').value = localStorage.getItem('indent_c1_section') || '';
+            document.getElementById('c2_section').value = localStorage.getItem('indent_c2_section') || '';
+            document.getElementById('c3_section').value = localStorage.getItem('indent_c3_section') || '';
+            document.getElementById('c4_section').value = localStorage.getItem('indent_c4_section') || '';
+            
+            document.getElementById('c1_20').value = localStorage.getItem('indent_c1_20') || 0;
+            document.getElementById('c2_20').value = localStorage.getItem('indent_c2_20') || 0;
+            document.getElementById('c3_20').value = localStorage.getItem('indent_c3_20') || 0;
+            document.getElementById('c4_20').value = localStorage.getItem('indent_c4_20') || 0;
+            document.getElementById('c1_10').value = localStorage.getItem('indent_c1_10') || 0;
+            document.getElementById('c2_10').value = localStorage.getItem('indent_c2_10') || 0;
+            document.getElementById('c3_10').value = localStorage.getItem('indent_c3_10') || 0;
+            document.getElementById('c4_10').value = localStorage.getItem('indent_c4_10') || 0;
+            document.getElementById('c1_5').value = localStorage.getItem('indent_c1_5') || 0;
+            document.getElementById('c2_5').value = localStorage.getItem('indent_c2_5') || 0;
+            document.getElementById('c3_5').value = localStorage.getItem('indent_c3_5') || 0;
+            document.getElementById('c4_5').value = localStorage.getItem('indent_c4_5') || 0;
+            document.getElementById('c1_2').value = localStorage.getItem('indent_c1_2') || 0;
+            document.getElementById('c2_2').value = localStorage.getItem('indent_c2_2') || 0;
+            document.getElementById('c3_2').value = localStorage.getItem('indent_c3_2') || 0;
+            document.getElementById('c4_2').value = localStorage.getItem('indent_c4_2') || 0;
+            document.getElementById('c1_1').value = localStorage.getItem('indent_c1_1') || 0;
+            document.getElementById('c2_1').value = localStorage.getItem('indent_c2_1') || 0;
+            document.getElementById('c3_1').value = localStorage.getItem('indent_c3_1') || 0;
+            document.getElementById('c4_1').value = localStorage.getItem('indent_c4_1') || 0;
+            document.getElementById('c1_50p').value = localStorage.getItem('indent_c1_50p') || 0;
+            document.getElementById('c2_50p').value = localStorage.getItem('indent_c2_50p') || 0;
+            document.getElementById('c3_50p').value = localStorage.getItem('indent_c3_50p') || 0;
+            document.getElementById('c4_50p').value = localStorage.getItem('indent_c4_50p') || 0;
+            document.getElementById('c1_20p').value = localStorage.getItem('indent_c1_20p') || 0;
+            document.getElementById('c2_20p').value = localStorage.getItem('indent_c2_20p') || 0;
+            document.getElementById('c3_20p').value = localStorage.getItem('indent_c3_20p') || 0;
+            document.getElementById('c4_20p').value = localStorage.getItem('indent_c4_20p') || 0;
+            document.getElementById('c1_10p').value = localStorage.getItem('indent_c1_10p') || 0;
+            document.getElementById('c2_10p').value = localStorage.getItem('indent_c2_10p') || 0;
+            document.getElementById('c3_10p').value = localStorage.getItem('indent_c3_10p') || 0;
+            document.getElementById('c4_10p').value = localStorage.getItem('indent_c4_10p') || 0;
+            document.getElementById('c1_5p').value = localStorage.getItem('indent_c1_5p') || 0;
+            document.getElementById('c2_5p').value = localStorage.getItem('indent_c2_5p') || 0;
+            document.getElementById('c3_5p').value = localStorage.getItem('indent_c3_5p') || 0;
+            document.getElementById('c4_5p').value = localStorage.getItem('indent_c4_5p') || 0;
+            document.getElementById('c1_2p').value = localStorage.getItem('indent_c1_2p') || 0;
+            document.getElementById('c2_2p').value = localStorage.getItem('indent_c2_2p') || 0;
+            document.getElementById('c3_2p').value = localStorage.getItem('indent_c3_2p') || 0;
+            document.getElementById('c4_2p').value = localStorage.getItem('indent_c4_2p') || 0;
+            document.getElementById('c1_1p').value = localStorage.getItem('indent_c1_1p') || 0;
+            document.getElementById('c2_1p').value = localStorage.getItem('indent_c2_1p') || 0;
+            document.getElementById('c3_1p').value = localStorage.getItem('indent_c3_1p') || 0;
+            document.getElementById('c4_1p').value = localStorage.getItem('indent_c4_1p') || 0;
+            calculateTotals();
+        }
+
+        // Save values to localStorage and calculate totals
+        function saveAndCalculate() {
+            localStorage.setItem('indent_c1_section', document.getElementById('c1_section').value);
+            localStorage.setItem('indent_c2_section', document.getElementById('c2_section').value);
+            localStorage.setItem('indent_c3_section', document.getElementById('c3_section').value);
+            localStorage.setItem('indent_c4_section', document.getElementById('c4_section').value);
+            
+            localStorage.setItem('indent_c1_20', document.getElementById('c1_20').value);
+            localStorage.setItem('indent_c2_20', document.getElementById('c2_20').value);
+            localStorage.setItem('indent_c3_20', document.getElementById('c3_20').value);
+            localStorage.setItem('indent_c4_20', document.getElementById('c4_20').value);
+            localStorage.setItem('indent_c1_10', document.getElementById('c1_10').value);
+            localStorage.setItem('indent_c2_10', document.getElementById('c2_10').value);
+            localStorage.setItem('indent_c3_10', document.getElementById('c3_10').value);
+            localStorage.setItem('indent_c4_10', document.getElementById('c4_10').value);
+            localStorage.setItem('indent_c1_5', document.getElementById('c1_5').value);
+            localStorage.setItem('indent_c2_5', document.getElementById('c2_5').value);
+            localStorage.setItem('indent_c3_5', document.getElementById('c3_5').value);
+            localStorage.setItem('indent_c4_5', document.getElementById('c4_5').value);
+            localStorage.setItem('indent_c1_2', document.getElementById('c1_2').value);
+            localStorage.setItem('indent_c2_2', document.getElementById('c2_2').value);
+            localStorage.setItem('indent_c3_2', document.getElementById('c3_2').value);
+            localStorage.setItem('indent_c4_2', document.getElementById('c4_2').value);
+            localStorage.setItem('indent_c1_1', document.getElementById('c1_1').value);
+            localStorage.setItem('indent_c2_1', document.getElementById('c2_1').value);
+            localStorage.setItem('indent_c3_1', document.getElementById('c3_1').value);
+            localStorage.setItem('indent_c4_1', document.getElementById('c4_1').value);
+            localStorage.setItem('indent_c1_50p', document.getElementById('c1_50p').value);
+            localStorage.setItem('indent_c2_50p', document.getElementById('c2_50p').value);
+            localStorage.setItem('indent_c3_50p', document.getElementById('c3_50p').value);
+            localStorage.setItem('indent_c4_50p', document.getElementById('c4_50p').value);
+            localStorage.setItem('indent_c1_20p', document.getElementById('c1_20p').value);
+            localStorage.setItem('indent_c2_20p', document.getElementById('c2_20p').value);
+            localStorage.setItem('indent_c3_20p', document.getElementById('c3_20p').value);
+            localStorage.setItem('indent_c4_20p', document.getElementById('c4_20p').value);
+            localStorage.setItem('indent_c1_10p', document.getElementById('c1_10p').value);
+            localStorage.setItem('indent_c2_10p', document.getElementById('c2_10p').value);
+            localStorage.setItem('indent_c3_10p', document.getElementById('c3_10p').value);
+            localStorage.setItem('indent_c4_10p', document.getElementById('c4_10p').value);
+            localStorage.setItem('indent_c1_5p', document.getElementById('c1_5p').value);
+            localStorage.setItem('indent_c2_5p', document.getElementById('c2_5p').value);
+            localStorage.setItem('indent_c3_5p', document.getElementById('c3_5p').value);
+            localStorage.setItem('indent_c4_5p', document.getElementById('c4_5p').value);
+            localStorage.setItem('indent_c1_2p', document.getElementById('c1_2p').value);
+            localStorage.setItem('indent_c2_2p', document.getElementById('c2_2p').value);
+            localStorage.setItem('indent_c3_2p', document.getElementById('c3_2p').value);
+            localStorage.setItem('indent_c4_2p', document.getElementById('c4_2p').value);
+            localStorage.setItem('indent_c1_1p', document.getElementById('c1_1p').value);
+            localStorage.setItem('indent_c2_1p', document.getElementById('c2_1p').value);
+            localStorage.setItem('indent_c3_1p', document.getElementById('c3_1p').value);
+            localStorage.setItem('indent_c4_1p', document.getElementById('c4_1p').value);
+            calculateTotals();
+        }
+
+        // Calculate totals for each column
+        function calculateTotals() {
+            // Column 1 Total
+            let c1_20 = parseInt(document.getElementById('c1_20').value) || 0;
+            let c1_10 = parseInt(document.getElementById('c1_10').value) || 0;
+            let c1_5 = parseInt(document.getElementById('c1_5').value) || 0;
+            let c1_2 = parseInt(document.getElementById('c1_2').value) || 0;
+            let c1_1 = parseInt(document.getElementById('c1_1').value) || 0;
+            let c1_50p = parseInt(document.getElementById('c1_50p').value) || 0;
+            let c1_20p = parseInt(document.getElementById('c1_20p').value) || 0;
+            let c1_10p = parseInt(document.getElementById('c1_10p').value) || 0;
+            let c1_5p = parseInt(document.getElementById('c1_5p').value) || 0;
+            let c1_2p = parseInt(document.getElementById('c1_2p').value) || 0;
+            let c1_1p = parseInt(document.getElementById('c1_1p').value) || 0;
+            let total1 = c1_20 + c1_10 + c1_5 + c1_2 + c1_1 + c1_50p + c1_20p + c1_10p + c1_5p + c1_2p + c1_1p;
+            document.getElementById('total1').textContent = `£${total1}`;
+
+            // Column 2 Total
+            let c2_20 = parseInt(document.getElementById('c2_20').value) || 0;
+            let c2_10 = parseInt(document.getElementById('c2_10').value) || 0;
+            let c2_5 = parseInt(document.getElementById('c2_5').value) || 0;
+            let c2_2 = parseInt(document.getElementById('c2_2').value) || 0;
+            let c2_1 = parseInt(document.getElementById('c2_1').value) || 0;
+            let c2_50p = parseInt(document.getElementById('c2_50p').value) || 0;
+            let c2_20p = parseInt(document.getElementById('c2_20p').value) || 0;
+            let c2_10p = parseInt(document.getElementById('c2_10p').value) || 0;
+            let c2_5p = parseInt(document.getElementById('c2_5p').value) || 0;
+            let c2_2p = parseInt(document.getElementById('c2_2p').value) || 0;
+            let c2_1p = parseInt(document.getElementById('c2_1p').value) || 0;
+            let total2 = c2_20 + c2_10 + c2_5 + c2_2 + c2_1 + c2_50p + c2_20p + c2_10p + c2_5p + c2_2p + c2_1p;
+            document.getElementById('total2').textContent = `£${total2}`;
+
+            // Column 3 Total
+            let c3_20 = parseInt(document.getElementById('c3_20').value) || 0;
+            let c3_10 = parseInt(document.getElementById('c3_10').value) || 0;
+            let c3_5 = parseInt(document.getElementById('c3_5').value) || 0;
+            let c3_2 = parseInt(document.getElementById('c3_2').value) || 0;
+            let c3_1 = parseInt(document.getElementById('c3_1').value) || 0;
+            let c3_50p = parseInt(document.getElementById('c3_50p').value) || 0;
+            let c3_20p = parseInt(document.getElementById('c3_20p').value) || 0;
+            let c3_10p = parseInt(document.getElementById('c3_10p').value) || 0;
+            let c3_5p = parseInt(document.getElementById('c3_5p').value) || 0;
+            let c3_2p = parseInt(document.getElementById('c3_2p').value) || 0;
+            let c3_1p = parseInt(document.getElementById('c3_1p').value) || 0;
+            let total3 = c3_20 + c3_10 + c3_5 + c3_2 + c3_1 + c3_50p + c3_20p + c3_10p + c3_5p + c3_2p + c3_1p;
+            document.getElementById('total3').textContent = `£${total3}`;
+
+            // Column 4 Total
+            let c4_20 = parseInt(document.getElementById('c4_20').value) || 0;
+            let c4_10 = parseInt(document.getElementById('c4_10').value) || 0;
+            let c4_5 = parseInt(document.getElementById('c4_5').value) || 0;
+            let c4_2 = parseInt(document.getElementById('c4_2').value) || 0;
+            let c4_1 = parseInt(document.getElementById('c4_1').value) || 0;
+            let c4_50p = parseInt(document.getElementById('c4_50p').value) || 0;
+            let c4_20p = parseInt(document.getElementById('c4_20p').value) || 0;
+            let c4_10p = parseInt(document.getElementById('c4_10p').value) || 0;
+            let c4_5p = parseInt(document.getElementById('c4_5p').value) || 0;
+            let c4_2p = parseInt(document.getElementById('c4_2p').value) || 0;
+            let c4_1p = parseInt(document.getElementById('c4_1p').value) || 0;
+            let total4 = c4_20 + c4_10 + c4_5 + c4_2 + c4_1 + c4_50p + c4_20p + c4_10p + c4_5p + c4_2p + c4_1p;
+            document.getElementById('total4').textContent = `£${total4}`;
+        }
+
+        // Clear column data
+        function clearColumn(columnIndex) {
+            const columnIds = {
+                1: ['c1_20', 'c1_10', 'c1_5', 'c1_2', 'c1_1', 'c1_50p', 'c1_20p', 'c1_10p', 'c1_5p', 'c1_2p', 'c1_1p', 'c1_section'],
+                2: ['c2_20', 'c2_10', 'c2_5', 'c2_2', 'c2_1', 'c2_50p', 'c2_20p', 'c2_10p', 'c2_5p', 'c2_2p', 'c2_1p', 'c2_section'],
+                3: ['c3_20', 'c3_10', 'c3_5', 'c3_2', 'c3_1', 'c3_50p', 'c3_20p', 'c3_10p', 'c3_5p', 'c3_2p', 'c3_1p', 'c3_section'],
+                4: ['c4_20', 'c4_10', 'c4_5', 'c4_2', 'c4_1', 'c4_50p', 'c4_20p', 'c4_10p', 'c4_5p', 'c4_2p', 'c4_1p', 'c4_section']
+            };
+
+            const ids = columnIds[columnIndex];
+            if (ids) {
+                ids.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.value = '0'; // Reset to 0 for number inputs
+                        if (id.includes('_section')) input.value = ''; // Reset section to empty
+                        localStorage.setItem(`indent_${id}`, input.value);
+                    }
+                });
+                calculateTotals(); // Recalculate totals after clearing
+            }
+        }
+
+        // Add event listeners to inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', saveAndCalculate);
+        });
+
+        // Load values on page load
+        window.onload = loadValues;
+    </script>
+</body>
+</html>

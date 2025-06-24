@@ -22,7 +22,7 @@
             margin-bottom: 10px;
         }
         .cell {
-            flex: 0 0 80px; /* Fixed width to fit 99,999 (approx. 80px for 5 digits + padding) */
+            flex: 0 0 100px; /* Increased to 100px to display thousands */
             border: 1px solid #000;
             padding: 5px;
             text-align: center;
@@ -30,17 +30,33 @@
             box-sizing: border-box;
         }
         .figure {
-            color: #ff0000; /* Red font for all figures */
+            color: #ff0000; /* Red font for original balance figures */
         }
-        a {
-            display: block;
+        .indentFigure {
+            color: #000; /* Black font for indent figures */
+        }
+        .deliveryFigure {
+            color: #008000; /* Green font for delivery figures */
+        }
+        .denomination {
+            color: #0000FF; /* Blue font for denomination labels */
+        }
+        .apple-button {
+            display: inline-block;
+            padding: 8px 16px;
             margin-top: 10px;
             font-size: 1.2em;
-            color: #000;
+            color: #007AFF;
+            background-color: #fff;
+            border: 1px solid #007AFF;
+            border-radius: 10px;
             text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
         }
-        a:hover {
-            text-decoration: underline;
+        .apple-button:hover {
+            background-color: #E5E5EA;
+            color: #005BB5;
         }
         @media (min-width: 600px) {
             .container {
@@ -49,7 +65,7 @@
             .cell {
                 font-size: 1.4em;
             }
-            a {
+            .apple-button {
                 font-size: 1.4em;
             }
         }
@@ -57,19 +73,23 @@
 </head>
 <body>
     <div class="container">
+        <!-- Top Row with Totals -->
         <div class="row">
-            <div class="cell">£20</div>
-            <div class="cell">£10</div>
-            <div class="cell">£5</div>
-            <div class="cell">£2</div>
-            <div class="cell">£1</div>
-            <div class="cell">50p</div>
-            <div class="cell">20p</div>
-            <div class="cell">10p</div>
-            <div class="cell">5p</div>
-            <div class="cell">2p</div>
-            <div class="cell">1p</div>
+            <div class="cell denomination">£20</div>
+            <div class="cell denomination">£10</div>
+            <div class="cell denomination">£5</div>
+            <div class="cell denomination">£2</div>
+            <div class="cell denomination">£1</div>
+            <div class="cell denomination">50p</div>
+            <div class="cell denomination">20p</div>
+            <div class="cell denomination">10p</div>
+            <div class="cell denomination">5p</div>
+            <div class="cell denomination">2p</div>
+            <div class="cell denomination">1p</div>
+            <div class="cell">Totals</div>
         </div>
+
+        <!-- Balance Row with Total at the End -->
         <div class="row" id="totalsRow">
             <div class="cell"><span class="figure" id="total20">0</span></div>
             <div class="cell"><span class="figure" id="total10">0</span></div>
@@ -82,11 +102,106 @@
             <div class="cell"><span class="figure" id="total5p">0</span></div>
             <div class="cell"><span class="figure" id="total2p">0</span></div>
             <div class="cell"><span class="figure" id="total1p">0</span></div>
+            <div class="cell"><span class="figure" id="grandTotal">0</span></div>
+        </div>
+
+        <!-- Indent Rows with Section and Total at the End -->
+        <div class="row">
+            <div class="cell"><span class="indentFigure" id="indent1_20">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_10">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_5">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_2">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_1">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_50p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_20p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_10p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_5p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_2p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_1p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_total">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent1_section"></span></div>
         </div>
         <div class="row">
-            <div class="cell" colspan="11"><span class="figure" id="grandTotal">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_20">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_10">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_5">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_2">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_1">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_50p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_20p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_10p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_5p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_2p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_1p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_total">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent2_section"></span></div>
         </div>
-        <a href="index.html">Return to Calculator</a>
+        <div class="row">
+            <div class="cell"><span class="indentFigure" id="indent3_20">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_10">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_5">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_2">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_1">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_50p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_20p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_10p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_5p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_2p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_1p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_total">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent3_section"></span></div>
+        </div>
+        <div class="row">
+            <div class="cell"><span class="indentFigure" id="indent4_20">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_10">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_5">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_2">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_1">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_50p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_20p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_10p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_5p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_2p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_1p">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_total">0</span></div>
+            <div class="cell"><span class="indentFigure" id="indent4_section"></span></div>
+        </div>
+
+        <!-- Delivery Row with Green Font -->
+        <div class="row">
+            <div class="cell"><span class="deliveryFigure" id="delivery_20">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_10">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_5">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb2">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb1">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb50p">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb20p">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb10p">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb5p">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb2p">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_lb1p">0</span></div>
+            <div class="cell"><span class="deliveryFigure" id="delivery_total">0</span></div>
+        </div>
+
+        <!-- New Balance Row with Total at the End -->
+        <div class="row">
+            <div class="cell"><span class="figure" id="new_bal_20">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_10">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_5">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_2">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_1">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_50p">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_20p">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_10p">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_5p">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_2p">0</span></div>
+            <div class="cell"><span class="figure" id="new_bal_1p">0</span></div>
+            <div class="cell"><span class="figure" id="newGrandTotal">0</span></div>
+        </div>
+
+        <a href="index.html" class="apple-button">Bullion Count</a>
+        <a href="indents.html" class="apple-button">Edit Indents</a>
+        <a href="delivery.html" class="apple-button">Edit Delivery</a>
     </div>
 
     <script>
@@ -119,8 +234,237 @@
             document.getElementById('grandTotal').textContent = grandTotal || 0;
         }
 
-        // Load totals on page load
-        window.onload = loadTotals;
+        // Load indent data from localStorage and display
+        function loadIndents() {
+            document.getElementById('indent1_section').textContent = localStorage.getItem('indent_c1_section') || '';
+            document.getElementById('indent1_20').textContent = localStorage.getItem('indent_c1_20') || 0;
+            document.getElementById('indent1_10').textContent = localStorage.getItem('indent_c1_10') || 0;
+            document.getElementById('indent1_5').textContent = localStorage.getItem('indent_c1_5') || 0;
+            document.getElementById('indent1_2').textContent = localStorage.getItem('indent_c1_2') || 0;
+            document.getElementById('indent1_1').textContent = localStorage.getItem('indent_c1_1') || 0;
+            document.getElementById('indent1_50p').textContent = localStorage.getItem('indent_c1_50p') || 0;
+            document.getElementById('indent1_20p').textContent = localStorage.getItem('indent_c1_20p') || 0;
+            document.getElementById('indent1_10p').textContent = localStorage.getItem('indent_c1_10p') || 0;
+            document.getElementById('indent1_5p').textContent = localStorage.getItem('indent_c1_5p') || 0;
+            document.getElementById('indent1_2p').textContent = localStorage.getItem('indent_c1_2p') || 0;
+            document.getElementById('indent1_1p').textContent = localStorage.getItem('indent_c1_1p') || 0;
+
+            // Calculate and display indent1 total as straight sum
+            let indent1Total = parseInt(document.getElementById('indent1_20').textContent) +
+                              parseInt(document.getElementById('indent1_10').textContent) +
+                              parseInt(document.getElementById('indent1_5').textContent) +
+                              parseInt(document.getElementById('indent1_2').textContent) +
+                              parseInt(document.getElementById('indent1_1').textContent) +
+                              parseInt(document.getElementById('indent1_50p').textContent) +
+                              parseInt(document.getElementById('indent1_20p').textContent) +
+                              parseInt(document.getElementById('indent1_10p').textContent) +
+                              parseInt(document.getElementById('indent1_5p').textContent) +
+                              parseInt(document.getElementById('indent1_2p').textContent) +
+                              parseInt(document.getElementById('indent1_1p').textContent);
+            document.getElementById('indent1_total').textContent = indent1Total || 0;
+
+            document.getElementById('indent2_section').textContent = localStorage.getItem('indent_c2_section') || '';
+            document.getElementById('indent2_20').textContent = localStorage.getItem('indent_c2_20') || 0;
+            document.getElementById('indent2_10').textContent = localStorage.getItem('indent_c2_10') || 0;
+            document.getElementById('indent2_5').textContent = localStorage.getItem('indent_c2_5') || 0;
+            document.getElementById('indent2_2').textContent = localStorage.getItem('indent_c2_2') || 0;
+            document.getElementById('indent2_1').textContent = localStorage.getItem('indent_c2_1') || 0;
+            document.getElementById('indent2_50p').textContent = localStorage.getItem('indent_c2_50p') || 0;
+            document.getElementById('indent2_20p').textContent = localStorage.getItem('indent_c2_20p') || 0;
+            document.getElementById('indent2_10p').textContent = localStorage.getItem('indent_c2_10p') || 0;
+            document.getElementById('indent2_5p').textContent = localStorage.getItem('indent_c2_5p') || 0;
+            document.getElementById('indent2_2p').textContent = localStorage.getItem('indent_c2_2p') || 0;
+            document.getElementById('indent2_1p').textContent = localStorage.getItem('indent_c2_1p') || 0;
+
+            // Calculate and display indent2 total as straight sum
+            let indent2Total = parseInt(document.getElementById('indent2_20').textContent) +
+                              parseInt(document.getElementById('indent2_10').textContent) +
+                              parseInt(document.getElementById('indent2_5').textContent) +
+                              parseInt(document.getElementById('indent2_2').textContent) +
+                              parseInt(document.getElementById('indent2_1').textContent) +
+                              parseInt(document.getElementById('indent2_50p').textContent) +
+                              parseInt(document.getElementById('indent2_20p').textContent) +
+                              parseInt(document.getElementById('indent2_10p').textContent) +
+                              parseInt(document.getElementById('indent2_5p').textContent) +
+                              parseInt(document.getElementById('indent2_2p').textContent) +
+                              parseInt(document.getElementById('indent2_1p').textContent);
+            document.getElementById('indent2_total').textContent = indent2Total || 0;
+
+            document.getElementById('indent3_section').textContent = localStorage.getItem('indent_c3_section') || '';
+            document.getElementById('indent3_20').textContent = localStorage.getItem('indent_c3_20') || 0;
+            document.getElementById('indent3_10').textContent = localStorage.getItem('indent_c3_10') || 0;
+            document.getElementById('indent3_5').textContent = localStorage.getItem('indent_c3_5') || 0;
+            document.getElementById('indent3_2').textContent = localStorage.getItem('indent_c3_2') || 0;
+            document.getElementById('indent3_1').textContent = localStorage.getItem('indent_c3_1') || 0;
+            document.getElementById('indent3_50p').textContent = localStorage.getItem('indent_c3_50p') || 0;
+            document.getElementById('indent3_20p').textContent = localStorage.getItem('indent_c3_20p') || 0;
+            document.getElementById('indent3_10p').textContent = localStorage.getItem('indent_c3_10p') || 0;
+            document.getElementById('indent3_5p').textContent = localStorage.getItem('indent_c3_5p') || 0;
+            document.getElementById('indent3_2p').textContent = localStorage.getItem('indent_c3_2p') || 0;
+            document.getElementById('indent3_1p').textContent = localStorage.getItem('indent_c3_1p') || 0;
+
+            // Calculate and display indent3 total as straight sum
+            let indent3Total = parseInt(document.getElementById('indent3_20').textContent) +
+                              parseInt(document.getElementById('indent3_10').textContent) +
+                              parseInt(document.getElementById('indent3_5').textContent) +
+                              parseInt(document.getElementById('indent3_2').textContent) +
+                              parseInt(document.getElementById('indent3_1').textContent) +
+                              parseInt(document.getElementById('indent3_50p').textContent) +
+                              parseInt(document.getElementById('indent3_20p').textContent) +
+                              parseInt(document.getElementById('indent3_10p').textContent) +
+                              parseInt(document.getElementById('indent3_5p').textContent) +
+                              parseInt(document.getElementById('indent3_2p').textContent) +
+                              parseInt(document.getElementById('indent3_1p').textContent);
+            document.getElementById('indent3_total').textContent = indent3Total || 0;
+
+            document.getElementById('indent4_section').textContent = localStorage.getItem('indent_c4_section') || '';
+            document.getElementById('indent4_20').textContent = localStorage.getItem('indent_c4_20') || 0;
+            document.getElementById('indent4_10').textContent = localStorage.getItem('indent_c4_10') || 0;
+            document.getElementById('indent4_5').textContent = localStorage.getItem('indent_c4_5') || 0;
+            document.getElementById('indent4_2').textContent = localStorage.getItem('indent_c4_2') || 0;
+            document.getElementById('indent4_1').textContent = localStorage.getItem('indent_c4_1') || 0;
+            document.getElementById('indent4_50p').textContent = localStorage.getItem('indent_c4_50p') || 0;
+            document.getElementById('indent4_20p').textContent = localStorage.getItem('indent_c4_20p') || 0;
+            document.getElementById('indent4_10p').textContent = localStorage.getItem('indent_c4_10p') || 0;
+            document.getElementById('indent4_5p').textContent = localStorage.getItem('indent_c4_5p') || 0;
+            document.getElementById('indent4_2p').textContent = localStorage.getItem('indent_c4_2p') || 0;
+            document.getElementById('indent4_1p').textContent = localStorage.getItem('indent_c4_1p') || 0;
+
+            // Calculate and display indent4 total as straight sum
+            let indent4Total = parseInt(document.getElementById('indent4_20').textContent) +
+                              parseInt(document.getElementById('indent4_10').textContent) +
+                              parseInt(document.getElementById('indent4_5').textContent) +
+                              parseInt(document.getElementById('indent4_2').textContent) +
+                              parseInt(document.getElementById('indent4_1').textContent) +
+                              parseInt(document.getElementById('indent4_50p').textContent) +
+                              parseInt(document.getElementById('indent4_20p').textContent) +
+                              parseInt(document.getElementById('indent4_10p').textContent) +
+                              parseInt(document.getElementById('indent4_5p').textContent) +
+                              parseInt(document.getElementById('indent4_2p').textContent) +
+                              parseInt(document.getElementById('indent4_1p').textContent);
+            document.getElementById('indent4_total').textContent = indent4Total || 0;
+        }
+
+        // Load delivery data from localStorage and display
+        function loadDelivery() {
+            document.getElementById('delivery_20').textContent = localStorage.getItem('delivery_20') || 0;
+            document.getElementById('delivery_10').textContent = localStorage.getItem('delivery_10') || 0;
+            document.getElementById('delivery_5').textContent = localStorage.getItem('delivery_5') || 0;
+            document.getElementById('delivery_lb2').textContent = (parseInt(localStorage.getItem('delivery_lb2') || 0) * 500) || 0;
+            document.getElementById('delivery_lb1').textContent = (parseInt(localStorage.getItem('delivery_lb1') || 0) * 500) || 0;
+            document.getElementById('delivery_lb50p').textContent = (parseInt(localStorage.getItem('delivery_lb50p') || 0) * 250) || 0;
+            document.getElementById('delivery_lb20p').textContent = (parseInt(localStorage.getItem('delivery_lb20p') || 0) * 250) || 0;
+            document.getElementById('delivery_lb10p').textContent = (parseInt(localStorage.getItem('delivery_lb10p') || 0) * 100) || 0;
+            document.getElementById('delivery_lb5p').textContent = (parseInt(localStorage.getItem('delivery_lb5p') || 0) * 100) || 0;
+            document.getElementById('delivery_lb2p').textContent = (parseInt(localStorage.getItem('delivery_lb2p') || 0) * 20) || 0;
+            document.getElementById('delivery_lb1p').textContent = (parseInt(localStorage.getItem('delivery_lb1p') || 0) * 20) || 0;
+
+            // Calculate and display delivery total as straight sum
+            let deliveryTotal = parseInt(document.getElementById('delivery_20').textContent) +
+                               parseInt(document.getElementById('delivery_10').textContent) +
+                               parseInt(document.getElementById('delivery_5').textContent) +
+                               parseInt(document.getElementById('delivery_lb2').textContent) +
+                               parseInt(document.getElementById('delivery_lb1').textContent) +
+                               parseInt(document.getElementById('delivery_lb50p').textContent) +
+                               parseInt(document.getElementById('delivery_lb20p').textContent) +
+                               parseInt(document.getElementById('delivery_lb10p').textContent) +
+                               parseInt(document.getElementById('delivery_lb5p').textContent) +
+                               parseInt(document.getElementById('delivery_lb2p').textContent) +
+                               parseInt(document.getElementById('delivery_lb1p').textContent);
+            document.getElementById('delivery_total').textContent = deliveryTotal || 0;
+        }
+
+        // Load new balance
+        function loadNewBalance() {
+            document.getElementById('new_bal_20').textContent = parseInt(document.getElementById('total20').textContent) +
+                                                              parseInt(document.getElementById('delivery_20').textContent) -
+                                                              (parseInt(localStorage.getItem('indent_c1_20') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c2_20') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c3_20') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c4_20') || 0));
+            document.getElementById('new_bal_10').textContent = parseInt(document.getElementById('total10').textContent) +
+                                                              parseInt(document.getElementById('delivery_10').textContent) -
+                                                              (parseInt(localStorage.getItem('indent_c1_10') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c2_10') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c3_10') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c4_10') || 0));
+            document.getElementById('new_bal_5').textContent = parseInt(document.getElementById('total5').textContent) +
+                                                             parseInt(document.getElementById('delivery_5').textContent) -
+                                                             (parseInt(localStorage.getItem('indent_c1_5') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c2_5') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c3_5') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c4_5') || 0));
+            document.getElementById('new_bal_2').textContent = parseInt(document.getElementById('total2').textContent) +
+                                                             parseInt(document.getElementById('delivery_lb2').textContent) -
+                                                             (parseInt(localStorage.getItem('indent_c1_2') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c2_2') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c3_2') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c4_2') || 0));
+            document.getElementById('new_bal_1').textContent = parseInt(document.getElementById('total1').textContent) +
+                                                             parseInt(document.getElementById('delivery_lb1').textContent) -
+                                                             (parseInt(localStorage.getItem('indent_c1_1') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c2_1') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c3_1') || 0) +
+                                                              parseInt(localStorage.getItem('indent_c4_1') || 0));
+            document.getElementById('new_bal_50p').textContent = parseInt(document.getElementById('total50p').textContent) +
+                                                               parseInt(document.getElementById('delivery_lb50p').textContent) -
+                                                               (parseInt(localStorage.getItem('indent_c1_50p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c2_50p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c3_50p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c4_50p') || 0));
+            document.getElementById('new_bal_20p').textContent = parseInt(document.getElementById('total20p').textContent) +
+                                                               parseInt(document.getElementById('delivery_lb20p').textContent) -
+                                                               (parseInt(localStorage.getItem('indent_c1_20p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c2_20p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c3_20p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c4_20p') || 0));
+            document.getElementById('new_bal_10p').textContent = parseInt(document.getElementById('total10p').textContent) +
+                                                               parseInt(document.getElementById('delivery_lb10p').textContent) -
+                                                               (parseInt(localStorage.getItem('indent_c1_10p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c2_10p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c3_10p') || 0) +
+                                                                parseInt(localStorage.getItem('indent_c4_10p') || 0));
+            document.getElementById('new_bal_5p').textContent = parseInt(document.getElementById('total5p').textContent) +
+                                                              parseInt(document.getElementById('delivery_lb5p').textContent) -
+                                                              (parseInt(localStorage.getItem('indent_c1_5p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c2_5p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c3_5p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c4_5p') || 0));
+            document.getElementById('new_bal_2p').textContent = parseInt(document.getElementById('total2p').textContent) +
+                                                              parseInt(document.getElementById('delivery_lb2p').textContent) -
+                                                              (parseInt(localStorage.getItem('indent_c1_2p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c2_2p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c3_2p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c4_2p') || 0));
+            document.getElementById('new_bal_1p').textContent = parseInt(document.getElementById('total1p').textContent) +
+                                                              parseInt(document.getElementById('delivery_lb1p').textContent) -
+                                                              (parseInt(localStorage.getItem('indent_c1_1p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c2_1p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c3_1p') || 0) +
+                                                               parseInt(localStorage.getItem('indent_c4_1p') || 0));
+
+            // Calculate and display new grand total
+            let newGrandTotal = parseInt(document.getElementById('new_bal_20').textContent) +
+                               parseInt(document.getElementById('new_bal_10').textContent) +
+                               parseInt(document.getElementById('new_bal_5').textContent) +
+                               parseInt(document.getElementById('new_bal_2').textContent) +
+                               parseInt(document.getElementById('new_bal_1').textContent) +
+                               parseInt(document.getElementById('new_bal_50p').textContent) +
+                               parseInt(document.getElementById('new_bal_20p').textContent) +
+                               parseInt(document.getElementById('new_bal_10p').textContent) +
+                               parseInt(document.getElementById('new_bal_5p').textContent) +
+                               parseInt(document.getElementById('new_bal_2p').textContent) +
+                               parseInt(document.getElementById('new_bal_1p').textContent);
+            document.getElementById('newGrandTotal').textContent = newGrandTotal || 0;
+        }
+
+        // Load all data on page load
+        window.onload = function() {
+            loadTotals();
+            loadIndents();
+            loadDelivery();
+            loadNewBalance();
+        };
     </script>
 </body>
 </html>
