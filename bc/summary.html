@@ -12,6 +12,31 @@
             background-color: #fff;
             color: #000;
         }
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-tab {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #F5F0FF; /* Pale Purple for Summary */
+            border: 1px solid #ddd;
+            border-radius: 10px 10px 0 0;
+            text-decoration: none;
+            color: #000;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        .nav-tab:hover {
+            background-color: #E6DFFF; /* Slightly darker purple */
+        }
+        .nav-tab.active {
+            background-color: #D8CCFF; /* Darker shade for active */
+            border-bottom: 2px solid #000;
+            font-weight: bold;
+        }
         .container {
             max-width: 100%;
             margin: 0 auto;
@@ -22,7 +47,7 @@
             margin-bottom: 10px;
         }
         .cell {
-            flex: 0 0 100px; /* Increased to 100px to display thousands */
+            flex: 0 0 100px;
             border: 1px solid #000;
             padding: 5px;
             text-align: center;
@@ -65,6 +90,9 @@
             .cell {
                 font-size: 1.4em;
             }
+            .nav-tab {
+                font-size: 1.4em;
+            }
             .apple-button {
                 font-size: 1.4em;
             }
@@ -72,8 +100,13 @@
     </style>
 </head>
 <body>
+    <div class="nav-tabs">
+        <a href="index.html" class="nav-tab" style="background-color: #FFF9E6;">Bullion</a> <!-- Pale Yellow -->
+        <a href="delivery.html" class="nav-tab" style="background-color: #FFF0F0;">Delivery</a> <!-- Pale Red -->
+        <a href="indents.html" class="nav-tab" style="background-color: #F0FFF0;">Indents</a> <!-- Pale Green -->
+        <a href="summary.html" class="nav-tab active">Summary</a>
+    </div>
     <div class="container">
-        <!-- Top Row with Totals -->
         <div class="row">
             <div class="cell denomination">£20</div>
             <div class="cell denomination">£10</div>
@@ -89,7 +122,6 @@
             <div class="cell">Totals</div>
         </div>
 
-        <!-- Balance Row with Total at the End -->
         <div class="row" id="totalsRow">
             <div class="cell"><span class="figure" id="total20">0</span></div>
             <div class="cell"><span class="figure" id="total10">0</span></div>
@@ -105,7 +137,6 @@
             <div class="cell"><span class="figure" id="grandTotal">0</span></div>
         </div>
 
-        <!-- Indent Rows with Section and Total at the End -->
         <div class="row">
             <div class="cell"><span class="indentFigure" id="indent1_20">0</span></div>
             <div class="cell"><span class="indentFigure" id="indent1_10">0</span></div>
@@ -167,7 +198,6 @@
             <div class="cell"><span class="indentFigure" id="indent4_section"></span></div>
         </div>
 
-        <!-- Delivery Row with Green Font -->
         <div class="row">
             <div class="cell"><span class="deliveryFigure" id="delivery_20">0</span></div>
             <div class="cell"><span class="deliveryFigure" id="delivery_10">0</span></div>
@@ -183,7 +213,6 @@
             <div class="cell"><span class="deliveryFigure" id="delivery_total">0</span></div>
         </div>
 
-        <!-- New Balance Row with Total at the End -->
         <div class="row">
             <div class="cell"><span class="figure" id="new_bal_20">0</span></div>
             <div class="cell"><span class="figure" id="new_bal_10">0</span></div>
@@ -199,13 +228,12 @@
             <div class="cell"><span class="figure" id="newGrandTotal">0</span></div>
         </div>
 
-        <a href="index.html" class="apple-button">Bullion Count</a>
+        <a href="bullion.html" class="apple-button">Bullion Count</a>
         <a href="indents.html" class="apple-button">Edit Indents</a>
         <a href="delivery.html" class="apple-button">Edit Delivery</a>
     </div>
 
     <script>
-        // Load totals from localStorage and display
         function loadTotals() {
             document.getElementById('total20').textContent = (parseInt(localStorage.getItem('n20') || 0) * 20) || 0;
             document.getElementById('total10').textContent = (parseInt(localStorage.getItem('n10') || 0) * 10) || 0;
@@ -219,7 +247,6 @@
             document.getElementById('total2p').textContent = (parseInt(localStorage.getItem('lb2p') || 0) * 20 + parseInt(localStorage.getItem('sb2p') || 0) * 1) || 0;
             document.getElementById('total1p').textContent = (parseInt(localStorage.getItem('lb1p') || 0) * 20 + parseInt(localStorage.getItem('sb1p') || 0) * 1) || 0;
 
-            // Calculate and display grand total
             let grandTotal = parseInt(document.getElementById('total20').textContent) +
                             parseInt(document.getElementById('total10').textContent) +
                             parseInt(document.getElementById('total5').textContent) +
@@ -234,7 +261,6 @@
             document.getElementById('grandTotal').textContent = grandTotal || 0;
         }
 
-        // Load indent data from localStorage and display
         function loadIndents() {
             document.getElementById('indent1_section').textContent = localStorage.getItem('indent_c1_section') || '';
             document.getElementById('indent1_20').textContent = localStorage.getItem('indent_c1_20') || 0;
@@ -249,7 +275,6 @@
             document.getElementById('indent1_2p').textContent = localStorage.getItem('indent_c1_2p') || 0;
             document.getElementById('indent1_1p').textContent = localStorage.getItem('indent_c1_1p') || 0;
 
-            // Calculate and display indent1 total as straight sum
             let indent1Total = parseInt(document.getElementById('indent1_20').textContent) +
                               parseInt(document.getElementById('indent1_10').textContent) +
                               parseInt(document.getElementById('indent1_5').textContent) +
@@ -276,7 +301,6 @@
             document.getElementById('indent2_2p').textContent = localStorage.getItem('indent_c2_2p') || 0;
             document.getElementById('indent2_1p').textContent = localStorage.getItem('indent_c2_1p') || 0;
 
-            // Calculate and display indent2 total as straight sum
             let indent2Total = parseInt(document.getElementById('indent2_20').textContent) +
                               parseInt(document.getElementById('indent2_10').textContent) +
                               parseInt(document.getElementById('indent2_5').textContent) +
@@ -303,7 +327,6 @@
             document.getElementById('indent3_2p').textContent = localStorage.getItem('indent_c3_2p') || 0;
             document.getElementById('indent3_1p').textContent = localStorage.getItem('indent_c3_1p') || 0;
 
-            // Calculate and display indent3 total as straight sum
             let indent3Total = parseInt(document.getElementById('indent3_20').textContent) +
                               parseInt(document.getElementById('indent3_10').textContent) +
                               parseInt(document.getElementById('indent3_5').textContent) +
@@ -330,7 +353,6 @@
             document.getElementById('indent4_2p').textContent = localStorage.getItem('indent_c4_2p') || 0;
             document.getElementById('indent4_1p').textContent = localStorage.getItem('indent_c4_1p') || 0;
 
-            // Calculate and display indent4 total as straight sum
             let indent4Total = parseInt(document.getElementById('indent4_20').textContent) +
                               parseInt(document.getElementById('indent4_10').textContent) +
                               parseInt(document.getElementById('indent4_5').textContent) +
@@ -345,7 +367,6 @@
             document.getElementById('indent4_total').textContent = indent4Total || 0;
         }
 
-        // Load delivery data from localStorage and display
         function loadDelivery() {
             document.getElementById('delivery_20').textContent = localStorage.getItem('delivery_20') || 0;
             document.getElementById('delivery_10').textContent = localStorage.getItem('delivery_10') || 0;
@@ -359,7 +380,6 @@
             document.getElementById('delivery_lb2p').textContent = (parseInt(localStorage.getItem('delivery_lb2p') || 0) * 20) || 0;
             document.getElementById('delivery_lb1p').textContent = (parseInt(localStorage.getItem('delivery_lb1p') || 0) * 20) || 0;
 
-            // Calculate and display delivery total as straight sum
             let deliveryTotal = parseInt(document.getElementById('delivery_20').textContent) +
                                parseInt(document.getElementById('delivery_10').textContent) +
                                parseInt(document.getElementById('delivery_5').textContent) +
@@ -374,7 +394,6 @@
             document.getElementById('delivery_total').textContent = deliveryTotal || 0;
         }
 
-        // Load new balance
         function loadNewBalance() {
             document.getElementById('new_bal_20').textContent = parseInt(document.getElementById('total20').textContent) +
                                                               parseInt(document.getElementById('delivery_20').textContent) -
@@ -443,7 +462,6 @@
                                                                parseInt(localStorage.getItem('indent_c3_1p') || 0) +
                                                                parseInt(localStorage.getItem('indent_c4_1p') || 0));
 
-            // Calculate and display new grand total
             let newGrandTotal = parseInt(document.getElementById('new_bal_20').textContent) +
                                parseInt(document.getElementById('new_bal_10').textContent) +
                                parseInt(document.getElementById('new_bal_5').textContent) +
@@ -458,7 +476,6 @@
             document.getElementById('newGrandTotal').textContent = newGrandTotal || 0;
         }
 
-        // Load all data on page load
         window.onload = function() {
             loadTotals();
             loadIndents();

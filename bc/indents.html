@@ -9,13 +9,39 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 10px;
-            background-color: #f4f4f4;
+            background-color: #fff;
+            color: #000;
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-tab {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #F0FFF0; /* Pale Green for Indents */
+            border: 1px solid #ddd;
+            border-radius: 10px 10px 0 0;
+            text-decoration: none;
+            color: #000;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        .nav-tab:hover {
+            background-color: #D4FFD4; /* Slightly darker green */
+        }
+        .nav-tab.active {
+            background-color: #C2FFC2; /* Darker shade for active */
+            border-bottom: 2px solid #000;
+            font-weight: bold;
         }
         .container {
             max-width: 100%;
             margin: 0 auto;
-            background: #fff;
             padding: 15px;
+            background: #fff;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
@@ -33,7 +59,7 @@
         .header, .cell {
             border: 1px solid #000;
             padding: 5px;
-            text-align: clear;
+            text-align: center;
             font-size: 1.2em;
         }
         .header {
@@ -52,7 +78,6 @@
             font-size: 1.3em;
             color: #111;
         }
-        /* Apple-like white button */
         .apple-button {
             display: inline-block;
             padding: 10px 20px;
@@ -77,13 +102,12 @@
             background-color: #e0e0e0;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
-        /* Clear button style */
         .clear-button {
             display: inline-block;
-            padding: 5px 10px; /* Smaller padding for compact button */
+            padding: 5px 10px;
             font-size: 1em;
             font-weight: 500;
-            color: #FF2D55; /* Red for clear action */
+            color: #FF2D55;
             background-color: #fff;
             border: 1px solid #FF2D55;
             border-radius: 10px;
@@ -93,23 +117,13 @@
             transition: all 0.2s ease;
         }
         .clear-button:hover {
-            background-color: #FFE5E5; /* Light red on hover */
+            background-color: #FFE5E5;
             color: #C41E3A;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         .clear-button:active {
             background-color: #FFD5D5;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        a.home {
-            display: block;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            color: #000;
-            text-decoration: none;
-        }
-        a.home:hover {
-            text-decoration: underline;
         }
         @media (min-width: 600px) {
             .container {
@@ -131,7 +145,7 @@
                 font-size: 1.4em;
                 padding: 12px 25px;
             }
-            a.home {
+            .nav-tab {
                 font-size: 1.4em;
             }
             .clear-button {
@@ -142,8 +156,13 @@
     </style>
 </head>
 <body>
+    <div class="nav-tabs">
+        <a href="index.html" class="nav-tab" style="background-color: #FFF9E6;">Bullion</a> <!-- Pale Yellow -->
+        <a href="delivery.html" class="nav-tab" style="background-color: #FFF0F0;">Delivery</a> <!-- Pale Red -->
+        <a href="indents.html" class="nav-tab active">Indents</a>
+        <a href="summary.html" class="nav-tab" style="background-color: #F5F0FF;">Summary</a> <!-- Pale Purple -->
+    </div>
     <div class="container">
-        <a href="index.html" class="home">Home</a>
         <h1>Indents</h1>
         <div class="table">
             <div class="cell">Section</div>
@@ -224,8 +243,7 @@
             <div class="cell total" id="total3">£0</div>
             <div class="cell total" id="total4">£0</div>
 
-            <!-- New row for clear buttons -->
-            <div class="cell"></div> <!-- Empty for alignment -->
+            <div class="cell"></div>
             <div class="cell"><button class="clear-button" onclick="clearColumn(1)">Clear</button></div>
             <div class="cell"><button class="clear-button" onclick="clearColumn(2)">Clear</button></div>
             <div class="cell"><button class="clear-button" onclick="clearColumn(3)">Clear</button></div>
@@ -235,7 +253,6 @@
     </div>
 
     <script>
-        // Load saved values from localStorage or set defaults
         function loadValues() {
             document.getElementById('c1_section').value = localStorage.getItem('indent_c1_section') || '';
             document.getElementById('c2_section').value = localStorage.getItem('indent_c2_section') || '';
@@ -289,7 +306,6 @@
             calculateTotals();
         }
 
-        // Save values to localStorage and calculate totals
         function saveAndCalculate() {
             localStorage.setItem('indent_c1_section', document.getElementById('c1_section').value);
             localStorage.setItem('indent_c2_section', document.getElementById('c2_section').value);
@@ -343,9 +359,7 @@
             calculateTotals();
         }
 
-        // Calculate totals for each column
         function calculateTotals() {
-            // Column 1 Total
             let c1_20 = parseInt(document.getElementById('c1_20').value) || 0;
             let c1_10 = parseInt(document.getElementById('c1_10').value) || 0;
             let c1_5 = parseInt(document.getElementById('c1_5').value) || 0;
@@ -360,7 +374,6 @@
             let total1 = c1_20 + c1_10 + c1_5 + c1_2 + c1_1 + c1_50p + c1_20p + c1_10p + c1_5p + c1_2p + c1_1p;
             document.getElementById('total1').textContent = `£${total1}`;
 
-            // Column 2 Total
             let c2_20 = parseInt(document.getElementById('c2_20').value) || 0;
             let c2_10 = parseInt(document.getElementById('c2_10').value) || 0;
             let c2_5 = parseInt(document.getElementById('c2_5').value) || 0;
@@ -375,7 +388,6 @@
             let total2 = c2_20 + c2_10 + c2_5 + c2_2 + c2_1 + c2_50p + c2_20p + c2_10p + c2_5p + c2_2p + c2_1p;
             document.getElementById('total2').textContent = `£${total2}`;
 
-            // Column 3 Total
             let c3_20 = parseInt(document.getElementById('c3_20').value) || 0;
             let c3_10 = parseInt(document.getElementById('c3_10').value) || 0;
             let c3_5 = parseInt(document.getElementById('c3_5').value) || 0;
@@ -390,7 +402,6 @@
             let total3 = c3_20 + c3_10 + c3_5 + c3_2 + c3_1 + c3_50p + c3_20p + c3_10p + c3_5p + c3_2p + c3_1p;
             document.getElementById('total3').textContent = `£${total3}`;
 
-            // Column 4 Total
             let c4_20 = parseInt(document.getElementById('c4_20').value) || 0;
             let c4_10 = parseInt(document.getElementById('c4_10').value) || 0;
             let c4_5 = parseInt(document.getElementById('c4_5').value) || 0;
@@ -406,7 +417,6 @@
             document.getElementById('total4').textContent = `£${total4}`;
         }
 
-        // Clear column data
         function clearColumn(columnIndex) {
             const columnIds = {
                 1: ['c1_20', 'c1_10', 'c1_5', 'c1_2', 'c1_1', 'c1_50p', 'c1_20p', 'c1_10p', 'c1_5p', 'c1_2p', 'c1_1p', 'c1_section'],
@@ -420,21 +430,19 @@
                 ids.forEach(id => {
                     const input = document.getElementById(id);
                     if (input) {
-                        input.value = '0'; // Reset to 0 for number inputs
-                        if (id.includes('_section')) input.value = ''; // Reset section to empty
+                        input.value = '0';
+                        if (id.includes('_section')) input.value = '';
                         localStorage.setItem(`indent_${id}`, input.value);
                     }
                 });
-                calculateTotals(); // Recalculate totals after clearing
+                calculateTotals();
             }
         }
 
-        // Add event listeners to inputs
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('input', saveAndCalculate);
         });
 
-        // Load values on page load
         window.onload = loadValues;
     </script>
 </body>

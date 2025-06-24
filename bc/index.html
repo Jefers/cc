@@ -106,8 +106,44 @@
             }
         }
     </style>
+    <!-- Add navigation tabs style -->
+    <style>
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-tab {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #FFF9E6; /* Pale Yellow for Bullion */
+            border: 1px solid #ddd;
+            border-radius: 10px 10px 0 0;
+            text-decoration: none;
+            color: #000;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        .nav-tab:hover {
+            background-color: #FFECC2; /* Slightly darker yellow */
+        }
+        .nav-tab.active {
+            background-color: #FFE8B2; /* Darker shade for active */
+            border-bottom: 2px solid #000;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+    <!-- Add navigation tabs -->
+    <div class="nav-tabs">
+        <a href="index.html" class="nav-tab active">Bullion</a>
+        <a href="delivery.html" class="nav-tab" style="background-color: #FFF0F0;">Delivery</a> <!-- Pale Red -->
+        <a href="indents.html" class="nav-tab" style="background-color: #F0FFF0;">Indents</a> <!-- Pale Green -->
+        <a href="summary.html" class="nav-tab" style="background-color: #F5F0FF;">Summary</a> <!-- Pale Purple -->
+    </div>
+
     <div class="container">
         <h1>Bullion Count</h1>
         <div class="denomination">£20
