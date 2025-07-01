@@ -231,6 +231,8 @@
         <a href="bullion.html" class="apple-button">Bullion Count</a>
         <a href="indents.html" class="apple-button">Edit Indents</a>
         <a href="delivery.html" class="apple-button">Edit Delivery</a>
+        <!-- NEW: Reset Button -->
+        <button class="apple-button" onclick="resetData()">Reset</button>
     </div>
 
     <script>
@@ -273,7 +275,6 @@
             document.getElementById('indent1_10p').textContent = localStorage.getItem('indent_c1_10p') || 0;
             document.getElementById('indent1_5p').textContent = localStorage.getItem('indent_c1_5p') || 0;
             document.getElementById('indent1_2p').textContent = localStorage.getItem('indent_c1_2p') || 0;
-            document.getElementById('indent1_1p').textContent = localStorage.getItem('indent_c1_1p') || 0;
 
             let indent1Total = parseInt(document.getElementById('indent1_20').textContent) +
                               parseInt(document.getElementById('indent1_10').textContent) +
@@ -474,6 +475,89 @@
                                parseInt(document.getElementById('new_bal_2p').textContent) +
                                parseInt(document.getElementById('new_bal_1p').textContent);
             document.getElementById('newGrandTotal').textContent = newGrandTotal || 0;
+        }
+
+        // NEW: Reset Function
+        function resetData() {
+            // Confirm reset action
+            if (!confirm('Are you sure you want to reset all indent and delivery data and update bullion counts? This action cannot be undone.')) {
+                return;
+            }
+
+            // Clear indent data for all sections
+            const indentPrefixes = ['indent_c1', 'indent_c2', 'indent_c3', 'indent_c4'];
+            const denominations = ['20', '10', '5', '2', '1', '50p', '20p', '10p', '5p', '2p', '1p'];
+            indentPrefixes.forEach(prefix => {
+                denominations.forEach(denom => {
+                    localStorage.removeItem(`${prefix}_${denom}`);
+                });
+                localStorage.removeItem(`${prefix}_section`);
+            });
+
+            // Clear delivery data
+            const deliveryKeys = ['delivery_20', 'delivery_10', 'delivery_5', 'delivery_lb2', 'delivery_lb1', 
+                                 'delivery_lb50p', 'delivery_lb20p', 'delivery_lb10p', 'delivery_lb5p', 
+                                 'delivery_lb2p', 'delivery_lb1p'];
+            deliveryKeys.forEach(key => localStorage.removeItem(key));
+
+            // Calculate new bullion counts from new balance
+            const newBalances = {
+                '20': parseInt(document.getElementById('new_bal_20').textContent) || 0,
+                '10': parseInt(document.getElementById('new_bal_10').textContent) || 0,
+                '5': parseInt(document.getElementById('new_bal_5').textContent) || 0,
+                '2': parseInt(document.getElementById('new_bal_2').textContent) || 0,
+                '1': parseInt(document.getElementById('new_bal_1').textContent) || 0,
+                '50p': parseInt(document.getElementById('new_bal_50p').textContent) || 0,
+                '20p': parseInt(document.getElementById('new_bal_20p').textContent) || 0,
+                '10p': parseInt(document.getElementById('new_bal_10p').textContent) || 0,
+                '5p': parseInt(document.getElementById('new_bal_5p').textContent) || 0,
+                '2p': parseInt(document.getElementById('new_bal_2p').textContent) || 0,
+                '1p': parseInt(document.getElementById('new_bal_1p').textContent) || 0
+            };
+
+            // Bag sizes (large and small) for each denomination
+            const bagSizes = {
+                '2': { large: 500, small: 20 },
+                '1': { large: 500, small: 20 },
+                '50p': { large: 250, small: 10 },
+                '20p': { large: 250, small: 10 },
+                '10p': { large: 100, small: 5 },
+                '5p': { large: 100, small: 5 },
+                '2p': { large: 20, small: 1 },
+                '1p': { large: 20, small: 1 }
+            };
+
+            // Update bullion counts
+            // Notes (£20, £10, £5)
+            localStorage.setItem('n20', Math.floor(newBalances['20'] / 20));
+            localStorage.setItem('n10', Math.floor(newBalances['10'] / 10));
+            localStorage.setItem('n5', Math.floor(newBalances['5'] / 5));
+
+            // Coins
+            for (const denom in bagSizes) {
+                const total = newBalances[denom];
+                const largeBagSize = bagSizes[denom].large;
+                const smallBagSize = bagSizes[denom].small;
+
+                const largeBags = Math.floor(total / largeBagSize);
+                const remaining = total % largeBagSize;
+                const smallBags = Math.floor(remaining / smallBagSize);
+
+                localStorage.setItem(`lb${denom}`, largeBags);
+                localStorage.setItem(`sb${denom}`, smallBags);
+            }
+
+            // Clear new balance figures
+            denominations.forEach(denom => {
+                document.getElementById(`new_bal_${denom}`).textContent = 0;
+            });
+            document.getElementById('newGrandTotal').textContent = 0;
+
+            // Reload data to reflect changes
+            loadTotals();
+            loadIndents();
+            loadDelivery();
+            loadNewBalance();
         }
 
         window.onload = function() {
