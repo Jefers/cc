@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bullion Summary</title>
+</head>
+<body>
+  <h1>Summary</h1>
+  <p>Balance 1: <span id="balance1">0</span></p>
+  <p>Balance 2: <span id="balance2">0</span></p>
+  <label>Indent: <input type="number" id="indentField" min="0"></label><br>
+  <label>Delivery: <input type="number" id="deliveryField" min="0"></label><br>
+  <button onclick="updateBalance()">Update Balance</button>
+  <a href="history.html">View History</a>
+
+  <script>
+    window.onload = function () {
+      const balances = JSON.parse(localStorage.getItem("currentBalances") || "{}");
+      document.getElementById("balance1").textContent = balances.balance1 || 0;
+      document.getElementById("balance2").textContent = balances.balance2 || 0;
+    };
+
+    function updateBalance() {
+      const balances = JSON.parse(localStorage.getItem("currentBalances") || "{}");
+      const indent = parseInt(document.getElementById("indentField").value) || 0;
+      const delivery = parseInt(document.getElementById("deliveryField").value) || 0;
+
+      // Calculate new balances (example logic: adjust as needed)
+      const newBalances = {
+        balance1: (balances.balance1 || 0) + indent - delivery,
+        balance2: (balances.balance2 || 0) + delivery
+      };
+
+      // Archive current summary
+      const timestamp = new Date().toLocaleString();
+      const summaryData = { date: timestamp, summary: newBalances };
+      let archived = JSON.parse(localStorage.getItem("archivedSummaries") || "[]");
+      archived.push(summaryData);
+      localStorage.setItem("archivedSummaries", JSON.stringify(archived));
+
+      // Save new balances for index.html
+      localStorage.setItem("newBalances", JSON.stringify(newBalances));
+
+      // Reset indent/delivery
+      document.getElementById("indentField").value = 0;
+      document.getElementById("deliveryField").value = 0;
+
+      // Navigate back to index.html
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
