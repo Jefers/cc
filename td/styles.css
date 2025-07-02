@@ -16,10 +16,10 @@ h1, h2 {
     font-size: 1.5em;
 }
 
-#daySelect {
+#daySelect, #addTrainingDay, #addMuscleGroup, #addExercise {
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
+    margin: 5px 0;
     background-color: #333;
     color: #e0e0e0;
     border: none;
@@ -74,4 +74,15 @@ h1, h2 {
 
 .hidden {
     display: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #4a90e2;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }

@@ -1,20 +1,25 @@
-// Open IndexedDB
 let db;
 const request = indexedDB.open('WorkoutDB', 1);
 
 request.onupgradeneeded = (event) => {
     db = event.target.result;
-    db.createObjectStore('trainingDays', { keyPath: 'id', autoIncrement: true });
-    db.createObjectStore('muscleGroups', { keyPath: 'id', autoIncrement: true });
-    db.createObjectStore('exercises', { keyPath: 'id', autoIncrement: true });
-    db.createObjectStore('exerciseInstances', { keyPath: 'id', autoIncrement: true });
-    db.createObjectStore('supersetGroups', { keyPath: 'id', autoIncrement: true });
-    db.createObjectStore('supersetLinks', { keyPath: 'id', autoIncrement: true });
+    const trainingDays = db.createObjectStore('trainingDays', { keyPath: 'id', autoIncrement: true });
+    const muscleGroups = db.createObjectStore('muscleGroups', { keyPath: 'id', autoIncrement: true });
+    const exercises = db.createObjectStore('exercises', { keyPath: 'id', autoIncrement: true });
+    const exerciseInstances = db.createObjectStore('exerciseInstances', { keyPath: 'id', autoIncrement: true });
+    const supersetGroups = db.createObjectStore('supersetGroups', { keyPath: 'id', autoIncrement: true });
+    const supersetLinks = db.createObjectStore('supersetLinks', { keyPath: 'id', autoIncrement: true });
+
+    // Create indexes
+    exerciseInstances.createIndex('trainingDay', 'trainingDay', { unique: false });
+    exerciseInstances.createIndex('muscleGroup', 'muscleGroup', { unique: false });
+    exerciseInstances.createIndex('exercise', 'exercise', { unique: false });
+    exerciseInstances.createIndex('order', 'order', { unique: false });
 };
 
 request.onsuccess = (event) => {
     db = event.target.result;
-    preloadData();
+    populateDropdowns();
     loadWorkout();
 };
 
@@ -22,30 +27,47 @@ request.onerror = (event) => {
     console.error('IndexedDB error:', event.target.error);
 };
 
-// Preload sample data
-function preloadData() {
-    const transaction = db.transaction(['trainingDays', 'muscleGroups', 'exercises', 'exerciseInstances', 'supersetGroups', 'supersetLinks'], 'readwrite');
-    const exerciseInstances = transaction.objectStore('exerciseInstances');
+// Populate dropdowns
+function populateDropdowns() {
+    const tx = db.transaction(['trainingDays', 'muscleGroups', 'exercises'], 'readonly');
+    const [trainingDaysStore, muscleGroupsStore, exercisesStore] = [
+        tx.objectStore('trainingDays'),
+        tx.objectStore('muscleGroups'),
+        tx.objectStore('exercises')
+    ];
 
-    // Check if data is already loaded
-    const countRequest = exerciseInstances.count();
-    countRequest.onsuccess = () => {
-        if (countRequest.result === 0) {
-            const sampleData = [
-                { trainingDay: 'Day 1', muscleGroup: 'Chest', exercise: 'Peck deck', order: 1, set: 1, weight: 40, reps: 8, note: '6 to 10 Reps to failure', superset: true, date: '2025-07-02' },
-                { trainingDay: 'Day 1', muscleGroup: 'Chest', exercise: 'Incline press', order: 1, set: 2, weight: 45, reps: 8, note: '6 to 10 Reps to failure', superset: true, date: '2025-07-02' },
-                // Add more data as needed (truncated for brevity, add from your spreadsheet)
-                { trainingDay: 'Day 2', muscleGroup: 'Legs', exercise: 'Leg extensions', order: 1, set: 17, weight: 60, reps: 8, note: '8 to 15 Reps to failure', superset: false, date: '2025-07-06' },
-            ];
-            sampleData.forEach(data => exerciseInstances.add(data));
-        }
+    trainingDaysStore.getAll().onsuccess = (e) => {
+        const days = e.target.result;
+        const daySelect = document.getElementById('daySelect');
+        const addTrainingDay = document.getElementById('addTrainingDay');
+        daySelect.innerHTML = '<option value="">Select Day</option>';
+        addTrainingDay.innerHTML = '';
+        days.forEach(day => {
+            daySelect.add(new Option(day.name, day.name));
+            addTrainingDay.add(new Option(day.name, day.name));
+        });
+    };
+
+    muscleGroupsStore.getAll().onsuccess = (e) => {
+        const groups = e.target.result;
+        const addMuscleGroup = document.getElementById('addMuscleGroup');
+        addMuscleGroup.innerHTML = '';
+        groups.forEach(group => addMuscleGroup.add(new Option(group.name, group.name)));
+    };
+
+    exercisesStore.getAll().onsuccess = (e) => {
+        const exercises = e.target.result;
+        const addExercise = document.getElementById('addExercise');
+        addExercise.innerHTML = '';
+        exercises.forEach(ex => addExercise.add(new Option(ex.name, ex.name)));
     };
 }
 
 // Load and display workout
 function loadWorkout() {
     const selectedDay = document.getElementById('daySelect').value;
-    const transaction = db.transaction(['exerciseInstances'], 'readonly');
+    if (!selectedDay) return;
+    const transaction = db.transaction(['exerciseInstances', 'supersetGroups', 'supersetLinks'], 'readonly');
     const exerciseInstances = transaction.objectStore('exerciseInstances');
     const request = exerciseInstances.index('trainingDay').getAll(selectedDay);
 
@@ -61,12 +83,11 @@ function loadWorkout() {
             if (exercise.order !== currentOrder) {
                 if (index > 0) workoutDisplay.appendChild(document.createElement('br'));
                 currentOrder = exercise.order;
-                isSuperset = exercise.superset;
+                isSuperset = exercise.superset; // Simplified for MVP, enhance with supersetLinks later
             }
 
             const group = document.createElement('div');
             group.className = `exercise-group ${isSuperset ? 'superset' : ''}`;
-            group.onclick = () => editExercise(exercise);
 
             const exerciseDiv = document.createElement('div');
             exerciseDiv.className = 'exercise';
@@ -84,52 +105,76 @@ function loadWorkout() {
     };
 }
 
-// Edit exercise
-function editExercise(exercise) {
-    const form = document.getElementById('editForm');
-    document.getElementById('editExercise').value = exercise.exercise;
-    document.getElementById('editSet').value = exercise.set;
-    document.getElementById('editWeight').value = exercise.weight;
-    document.getElementById('editReps').value = exercise.reps;
-    document.getElementById('editNote').value = exercise.note;
-    document.getElementById('editSuperset').value = exercise.superset;
-    form.dataset.id = exercise.id;
-    form.classList.remove('hidden');
+// Show add form
+function showAddForm() {
+    document.getElementById('addForm').classList.remove('hidden');
 }
 
-// Save edited exercise
-function saveEdit() {
-    const id = document.getElementById('editForm').dataset.id;
-    const updatedData = {
-        id: parseInt(id),
-        trainingDay: document.getElementById('daySelect').value,
-        muscleGroup: 'Chest', // Simplify for MVP, enhance with muscleGroup selection later
-        exercise: document.getElementById('editExercise').value,
-        order: 1, // Simplify, calculate based on existing order later
-        set: parseInt(document.getElementById('editSet').value),
-        weight: parseInt(document.getElementById('editWeight').value),
-        reps: parseInt(document.getElementById('editReps').value),
-        note: document.getElementById('editNote').value,
-        superset: document.getElementById('editSuperset').value === 'true',
+// Save new workout
+function saveWorkout() {
+    const data = {
+        trainingDay: document.getElementById('addTrainingDay').value,
+        muscleGroup: document.getElementById('addMuscleGroup').value,
+        exercise: document.getElementById('addExercise').value,
+        order: parseInt(document.getElementById('addOrder').value),
+        set: parseInt(document.getElementById('addSet').value),
+        weight: parseInt(document.getElementById('addWeight').value),
+        reps: parseInt(document.getElementById('addReps').value),
+        note: document.getElementById('addNote').value,
+        superset: document.getElementById('addSuperset').value === 'true',
         date: new Date().toISOString().split('T')[0]
     };
 
-    const transaction = db.transaction(['exerciseInstances'], 'readwrite');
-    const exerciseInstances = transaction.objectStore('exerciseInstances');
-    exerciseInstances.put(updatedData);
+    // Add to respective stores (simplified for MVP)
+    const tx = db.transaction(['trainingDays', 'muscleGroups', 'exercises', 'exerciseInstances'], 'readwrite');
+    const [trainingDays, muscleGroups, exercises, exerciseInstances] = [
+        tx.objectStore('trainingDays'),
+        tx.objectStore('muscleGroups'),
+        tx.objectStore('exercises'),
+        tx.objectStore('exerciseInstances')
+    ];
 
-    transaction.oncomplete = () => {
-        cancelEdit();
+    // Ensure related data exists
+    trainingDays.get(data.trainingDay).onsuccess = (e) => {
+        if (!e.target.result) trainingDays.add({ name: data.trainingDay, date: data.date });
+    };
+    muscleGroups.get(data.muscleGroup).onsuccess = (e) => {
+        if (!e.target.result) muscleGroups.add({ name: data.muscleGroup });
+    };
+    exercises.get(data.exercise).onsuccess = (e) => {
+        if (!e.target.result) exercises.add({ name: data.exercise });
+    };
+
+    exerciseInstances.add(data).onsuccess = () => {
+        cancelAdd();
+        populateDropdowns();
         loadWorkout();
     };
 }
 
-// Cancel edit
-function cancelEdit() {
-    document.getElementById('editForm').classList.add('hidden');
+// Cancel add
+function cancelAdd() {
+    document.getElementById('addForm').classList.add('hidden');
+    document.getElementById('addOrder').value = '';
+    document.getElementById('addSet').value = '';
+    document.getElementById('addWeight').value = '';
+    document.getElementById('addReps').value = '';
+    document.getElementById('addNote').value = '';
 }
 
-// Load default workout on page load
+// Initial setup
 window.onload = () => {
-    if (db) loadWorkout();
+    if (db) {
+        // Preload initial data if empty (optional, remove for pure user input)
+        const tx = db.transaction(['trainingDays', 'muscleGroups', 'exercises'], 'readwrite');
+        const [trainingDays, muscleGroups, exercises] = [
+            tx.objectStore('trainingDays'),
+            tx.objectStore('muscleGroups'),
+            tx.objectStore('exercises')
+        ];
+        ['Day 1', 'Day 2'].forEach(day => trainingDays.add({ name: day, date: '2025-07-02' }));
+        ['Chest', 'Back', 'Legs'].forEach(group => muscleGroups.add({ name: group }));
+        ['Peck deck', 'Incline press', 'Pull downs', 'Deadlifts', 'Leg extensions', 'Leg press', 'Standing calf raises'].forEach(ex => exercises.add({ name: ex }));
+        populateDropdowns();
+    }
 };
