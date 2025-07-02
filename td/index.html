@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout App</title>
+    <title>Workouts</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Workout Plan</h1>
+        <h1>Workouts</h1>
+        <nav>
+            <a href="index.html">Workouts</a> |
+            <a href="trainingdays.html">Training Days</a> |
+            <a href="musclegroups.html">Muscle Groups</a> |
+            <a href="exercises.html">Exercises</a>
+        </nav>
         <select id="daySelect" onchange="loadWorkout()">
             <option value="">Select Day</option>
         </select>
         <div id="workoutDisplay"></div>
-        <div id="addForm" class="edit-form hidden">
-            <h2>Add Workout</h2>
-            <select id="addTrainingDay"></select>
-            <select id="addMuscleGroup"></select>
-            <select id="addExercise"></select>
-            <input type="number" id="addOrder" placeholder="Order">
-            <input type="number" id="addSet" placeholder="Set Number">
-            <input type="number" id="addWeight" placeholder="Weight (lbs)">
-            <input type="number" id="addReps" placeholder="Reps">
-            <input type="text" id="addNote" placeholder="Note">
-            <select id="addSuperset">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+        <div id="crudForm" class="edit-form hidden">
+            <h2 id="formTitle">Add Workout</h2>
+            <label for="crudTrainingDay">Training Day:</label>
+            <select id="crudTrainingDay"></select>
+            <label for="crudMuscleGroup">Muscle Group:</label>
+            <select id="crudMuscleGroup"></select>
+            <label for="crudExercise">Exercise:</label>
+            <select id="crudExercise"></select>
+            <label for="crudOrder">Order:</label>
+            <input type="number" id="crudOrder" placeholder="Order">
+            <label for="crudSet">Set Number:</label>
+            <input type="number" id="crudSet" placeholder="Set Number">
+            <label for="crudWeight">Weight (lbs):</label>
+            <input type="number" id="crudWeight" placeholder="Weight (lbs)">
+            <label for="crudReps">Reps:</label>
+            <input type="number" id="crudReps" placeholder="Reps">
+            <label for="crudNote">Note:</label>
+            <input type="text" id="crudNote" placeholder="Note">
+            <label for="crudSupersetGroup">Superset Group:</label>
+            <select id="crudSupersetGroup">
+                <option value="">No Superset</option>
             </select>
             <button onclick="saveWorkout()">Save</button>
-            <button onclick="cancelAdd()">Cancel</button>
+            <button onclick="cancelCrud()">Cancel</button>
         </div>
-        <button onclick="showAddForm()">Add New Workout</button>
+        <button onclick="showCrudForm()">Add New Workout</button>
     </div>
     <script src="script.js"></script>
 </body>

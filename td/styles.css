@@ -16,7 +16,23 @@ h1, h2 {
     font-size: 1.5em;
 }
 
-#daySelect, #addTrainingDay, #addMuscleGroup, #addExercise {
+nav {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+nav a {
+    color: #4a90e2;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+#daySelect, #crudTrainingDay, #crudMuscleGroup, #crudExercise, #crudSupersetGroup,
+#trainingDayName, #trainingDayDate, #muscleGroupName, #exerciseName {
     width: 100%;
     padding: 10px;
     margin: 5px 0;
@@ -26,16 +42,26 @@ h1, h2 {
     border-radius: 5px;
 }
 
-.exercise-group {
-    margin-bottom: 15px;
+.list-item {
+    margin-bottom: 10px;
     padding: 10px;
     background-color: #2a2a2a;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    cursor: move;
 }
 
-.superset {
-    border-left: 4px solid #4a90e2;
-    padding-left: 10px;
+.list-item.dragging {
+    opacity: 0.5;
+    background-color: #3a3a3a;
+}
+
+.superset-group {
+    border: 2px solid #4a90e2;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .exercise {
@@ -43,10 +69,32 @@ h1, h2 {
     justify-content: space-between;
     padding: 5px 0;
     font-size: 0.9em;
+    cursor: move;
 }
 
-.exercise span {
+.exercise.dragging {
+    opacity: 0.5;
+    background-color: #3a3a3a;
+}
+
+.exercise span, .list-item span {
     margin: 0 5px;
+}
+
+.debug-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.debug-table th, .debug-table td {
+    padding: 8px;
+    border: 1px solid #444;
+    text-align: left;
+}
+
+.debug-table th {
+    background-color: #333;
 }
 
 .edit-form {
@@ -54,6 +102,12 @@ h1, h2 {
     padding: 10px;
     background-color: #2a2a2a;
     border-radius: 5px;
+}
+
+.edit-form label {
+    display: block;
+    margin: 5px 0 2px;
+    font-size: 0.9em;
 }
 
 .edit-form input, .edit-form select, .edit-form button {

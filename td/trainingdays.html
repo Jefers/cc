@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Days</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Training Days</h1>
+        <nav>
+            <a href="index.html">Workouts</a> |
+            <a href="trainingdays.html">Training Days</a> |
+            <a href="musclegroups.html">Muscle Groups</a> |
+            <a href="exercises.html">Exercises</a>
+        </nav>
+        <div id="trainingDaysDisplay"></div>
+        <div id="trainingDayForm" class="edit-form hidden">
+            <h2 id="trainingDayFormTitle">Add Training Day</h2>
+            <label for="trainingDayName">Name:</label>
+            <input type="text" id="trainingDayName" placeholder="e.g., Day 1">
+            <label for="trainingDayDate">Date:</label>
+            <input type="date" id="trainingDayDate" value="2025-07-02">
+            <button onclick="saveTrainingDay()">Save</button>
+            <button onclick="cancelTrainingDay()">Cancel</button>
+        </div>
+        <button onclick="showTrainingDayForm()">Add New Training Day</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

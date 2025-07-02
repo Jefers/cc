@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercises</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Exercises</h1>
+        <nav>
+            <a href="index.html">Workouts</a> |
+            <a href="trainingdays.html">Training Days</a> |
+            <a href="musclegroups.html">Muscle Groups</a> |
+            <a href="exercises.html">Exercises</a>
+        </nav>
+        <div id="exercisesDisplay"></div>
+        <div id="exerciseForm" class="edit-form hidden">
+            <h2 id="exerciseFormTitle">Add Exercise</h2>
+            <label for="exerciseName">Name:</label>
+            <input type="text" id="exerciseName" placeholder="e.g., Incline press">
+            <button onclick="saveExercise()">Save</button>
+            <button onclick="cancelExercise()">Cancel</button>
+        </div>
+        <button onclick="showExerciseForm()">Add New Exercise</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
