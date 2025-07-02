@@ -14,6 +14,20 @@
             <option value="Day 2">Day 2</option>
         </select>
         <div id="workoutDisplay"></div>
+        <div id="editForm" class="edit-form hidden">
+            <h2>Edit Exercise</h2>
+            <input type="text" id="editExercise" placeholder="Exercise Name">
+            <input type="number" id="editSet" placeholder="Set Number">
+            <input type="number" id="editWeight" placeholder="Weight (lbs)">
+            <input type="number" id="editReps" placeholder="Reps">
+            <input type="text" id="editNote" placeholder="Note">
+            <select id="editSuperset">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+            <button onclick="saveEdit()">Save</button>
+            <button onclick="cancelEdit()">Cancel</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
