@@ -1,10 +1,10 @@
-import { strategies } from "./data.js";
-import { saveTimestamp, saveRating, getRating, exportData } from "./storage.js";
+// Use global App namespace
+window.App = window.App || {};
 
-function renderStrategyList() {
+App.renderStrategyList = function () {
   const strategyList = document.getElementById("strategy-list");
   strategyList.innerHTML = "";
-  strategies.forEach((strategy) => {
+  App.strategies.forEach((strategy) => {
     const card = document.createElement("div");
     card.className = "strategy-card";
     card.style.background = `linear-gradient(135deg, ${strategy.color}, ${strategy.color}99)`;
@@ -12,13 +12,13 @@ function renderStrategyList() {
       <h3>${strategy.name}</h3>
       <p>${strategy.description}</p>
     `;
-    card.addEventListener("click", () => showStrategyDetails(strategy.id));
+    card.addEventListener("click", () => App.showStrategyDetails(strategy.id));
     strategyList.appendChild(card);
   });
-}
+};
 
-function renderStrategyDetails(strategyId) {
-  const strategy = strategies.find((s) => s.id === strategyId);
+App.renderStrategyDetails = function (strategyId) {
+  const strategy = App.strategies.find((s) => s.id === strategyId);
   if (!strategy) return;
 
   document.getElementById("strategy-title").textContent = strategy.name;
@@ -33,40 +33,38 @@ function renderStrategyDetails(strategyId) {
     button.textContent = action;
     button.setAttribute("aria-label", `Record ${action} timestamp`);
     button.addEventListener("click", () => {
-      saveTimestamp(strategyId, action);
+      App.saveTimestamp(strategyId, action);
       alert(`${action} recorded at ${new Date().toLocaleString()}`);
     });
     actionButtons.appendChild(button);
   });
 
-  renderRating(strategyId);
+  App.renderRating(strategyId);
   document.getElementById("strategy-list").classList.add("hidden");
   document.getElementById("strategy-details").classList.remove("hidden");
-}
+};
 
-function renderRating(strategyId) {
+App.renderRating = function (strategyId) {
   const stars = document.querySelectorAll(".star");
-  const currentRating = getRating(strategyId);
+  const currentRating = App.getRating(strategyId);
   stars.forEach((star) => {
     const value = parseInt(star.dataset.value);
     star.classList.toggle("selected", value <= currentRating);
     star.addEventListener("click", () => {
-      saveRating(strategyId, value);
-      renderRating(strategyId);
+      App.saveRating(strategyId, value);
+      App.renderRating(strategyId);
     });
   });
-}
+};
 
-function showStrategyList() {
+App.showStrategyList = function () {
   document.getElementById("strategy-details").classList.add("hidden");
   document.getElementById("strategy-list").classList.remove("hidden");
-}
+};
 
-function setupExportButton() {
+App.setupExportButton = function () {
   document.getElementById("export-data").addEventListener("click", () => {
-    const emailBody = exportData();
+    const emailBody = App.exportData();
     window.location.href = `mailto:?subject=Sleep%20Strategies%20Data&body=${emailBody}`;
   });
-}
-
-export { renderStrategyList, renderStrategyDetails, showStrategyList, setupExportButton };
+};

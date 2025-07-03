@@ -1,14 +1,16 @@
-import { renderStrategyList, renderStrategyDetails, showStrategyList, setupExportButton } from "./ui.js";
+// Use global App namespace
+window.App = window.App || {};
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderStrategyList();
-  setupExportButton();
+  console.log("DOM loaded, rendering strategies...");
+  App.renderStrategyList();
+  App.setupExportButton();
 
   // Add back button functionality
   document.addEventListener("click", (e) => {
     if (e.target.id === "strategy-details" || e.target.closest("#strategy-details")) return;
     if (!document.getElementById("strategy-details").classList.contains("hidden")) {
-      showStrategyList();
+      App.showStrategyList();
     }
   });
 });

@@ -1,10 +1,14 @@
-const strategies = [
+// Initialize global App namespace
+window.App = window.App || {};
+
+// Sample data for sleep strategies
+App.strategies = [
   {
     id: 1,
     name: "Progressive Muscle Relaxation",
     description: "Tense and release each muscle group to reduce physical tension before bed.",
     color: "#ff6b6b",
-    actions: ["Last Meal", "Try to Sleep", "Going to CR"],
+    действий: ["Last Meal", "Try to Sleep", "Going to CR"],
   },
   {
     id: 2,
@@ -28,5 +32,3 @@ const strategies = [
     actions: ["Last Meal", "Try to Sleep", "Going to CR"],
   },
 ];
-
-export { strategies };
