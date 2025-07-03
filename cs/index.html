@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Strategy Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .nav-pills {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+        }
+
+        .nav-pill {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+        }
+
+        .nav-pill:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-pill.active {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .strategy-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .strategy-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .strategy-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 480px) {
+            .button-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .action-btn {
+            padding: 1.25rem 2rem;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-meal { background: linear-gradient(45deg, #ff6b6b, #ff8e8e); }
+        .btn-sleep { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
+        .btn-bathroom { background: linear-gradient(45deg, #45b7d1, #96c93d); }
+        .btn-wake { background: linear-gradient(45deg, #f093fb, #f5576c); }
+        .btn-exercise { background: linear-gradient(45deg, #ff9a9e, #fecfef); }
+        .btn-meditation { background: linear-gradient(45deg, #a8edea, #fed6e3); }
+        .btn-temperature { background: linear-gradient(45deg, #ffecd2, #fcb69f); }
+        .btn-breathing { background: linear-gradient(45deg, #667eea, #764ba2); }
+
+        .timestamp-log {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .timestamp-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .timestamp-entry:last-child {
+            border-bottom: none;
+        }
+
+        .export-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .export-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .rating-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .rating-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffd700;
+            transform: scale(1.1);
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            max-width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .home-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .strategy-preview {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .strategy-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .strategy-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .strategy-preview h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .strategy-preview p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 480px) {
+            .notification {
+                right: 10px;
+                left: 10px;
+                transform: translateY(-100px);
+            }
+            
+            .notification.show {
+                transform: translateY(0);
+            }
+        }
+
+        /* Accessibility improvements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for better accessibility */
+        .action-btn:focus,
+        .nav-pill:focus,
+        .export-btn:focus {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .strategy-card,
+            .strategy-preview {
+                border: 2px solid #fff;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Sleep Strategy Tracker</h1>
+            <p>Track your journey to better sleep</p>
+        </header>
+
+        <nav class="nav-pills" role="navigation" aria-label="Main navigation">
+            <button class="nav-pill active" data-screen="home" aria-label="Home">Home</button>
+            <button class="nav-pill" data-screen="strategy1" aria-label="Strategy 1">Sleep Hygiene</button>
+            <button class="nav-pill" data-screen="strategy2" aria-label="Strategy 2">4-7-8 Breathing</button>
+            <button class="nav-pill" data-screen="strategy3" aria-label="Strategy 3">Progressive Muscle</button>
+            <button class="nav-pill" data-screen="strategy4" aria-label="Strategy 4">Temperature Control</button>
+            <button class="nav-pill" data-screen="export" aria-label="Export Data">Export</button>
+        </nav>
+
+        <!-- Home Screen -->
+        <div id="home" class="screen active">
+            <div class="home-grid">
+                <div class="strategy-preview" data-strategy="strategy1">
+                    <div class="strategy-icon">🛏️</div>
+                    <h3>Sleep Hygiene</h3>
+                    <p>Establish healthy sleep routines and environment</p>
+                </div>
+                <div class="strategy-preview" data-strategy="strategy2">
+                    <div class="strategy-icon">🌬️</div>
+                    <h3>4-7-8 Breathing</h3>
+                    <p>Calming breathing technique for better sleep</p>
+                </div>
+                <div class="strategy-preview" data-strategy="strategy3">
+                    <div class="strategy-icon">💪</div>
+                    <h3>Progressive Muscle Relaxation</h3>
+                    <p>Systematic muscle tension and release</p>
+                </div>
+                <div class="strategy-preview" data-strategy="strategy4">
+                    <div class="strategy-icon">🌡️</div>
+                    <h3>Temperature Control</h3>
+                    <p>Optimize your sleep environment temperature</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy 1: Sleep Hygiene -->
+        <div id="strategy1" class="screen">
+            <div class="strategy-card">
+                <h2 class="strategy-title">Sleep Hygiene Strategy</h2>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-strategy="1" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="strategy-description">
+                    Create a consistent bedtime routine and optimize your sleep environment. Track your meals, sleep attempts, and bathroom visits to identify patterns.
+                </p>
+                
+                <div class="button-grid">
+                    <button class="action-btn btn-meal" data-action="last_meal" data-strategy="1">
+                        Last Meal
+                    </button>
+                    <button class="action-btn btn-sleep" data-action="sleep_attempt" data-strategy="1">
+                        Try to Sleep
+                    </button>
+                    <button class="action-btn btn-bathroom" data-action="bathroom" data-strategy="1">
+                        Bathroom Visit
+                    </button>
+                    <button class="action-btn btn-wake" data-action="wake_up" data-strategy="1">
+                        Wake Up
+                    </button>
+                </div>
+
+                <div class="rating-section">
+                    <div class="rating-title">Rate Today's Sleep Quality</div>
+                    <div class="rating-stars" data-strategy="1">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+
+                <div class="timestamp-log" id="log-strategy1">
+                    <h3>Today's Log</h3>
+                    <div class="log-entries"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy 2: 4-7-8 Breathing -->
+        <div id="strategy2" class="screen">
+            <div class="strategy-card">
+                <h2 class="strategy-title">4-7-8 Breathing Technique</h2>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-strategy="2" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="strategy-description">
+                    Practice the 4-7-8 breathing technique: inhale for 4 counts, hold for 7, exhale for 8. Track your sessions and sleep quality.
+                </p>
+                
+                <div class="button-grid">
+                    <button class="action-btn btn-breathing" data-action="breathing_session" data-strategy="2">
+                        Breathing Session
+                    </button>
+                    <button class="action-btn btn-sleep" data-action="sleep_attempt" data-strategy="2">
+                        Try to Sleep
+                    </button>
+                    <button class="action-btn btn-wake" data-action="wake_up" data-strategy="2">
+                        Wake Up
+                    </button>
+                    <button class="action-btn btn-meal" data-action="last_meal" data-strategy="2">
+                        Last Meal
+                    </button>
+                </div>
+
+                <div class="rating-section">
+                    <div class="rating-title">Rate Today's Sleep Quality</div>
+                    <div class="rating-stars" data-strategy="2">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+
+                <div class="timestamp-log" id="log-strategy2">
+                    <h3>Today's Log</h3>
+                    <div class="log-entries"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy 3: Progressive Muscle Relaxation -->
+        <div id="strategy3" class="screen">
+            <div class="strategy-card">
+                <h2 class="strategy-title">Progressive Muscle Relaxation</h2>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-strategy="3" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="strategy-description">
+                    Systematically tense and release muscle groups to promote relaxation. Track your sessions and monitor sleep improvements.
+                </p>
+                
+                <div class="button-grid">
+                    <button class="action-btn btn-meditation" data-action="muscle_relaxation" data-strategy="3">
+                        Muscle Relaxation
+                    </button>
+                    <button class="action-btn btn-sleep" data-action="sleep_attempt" data-strategy="3">
+                        Try to Sleep
+                    </button>
+                    <button class="action-btn btn-wake" data-action="wake_up" data-strategy="3">
+                        Wake Up
+                    </button>
+                    <button class="action-btn btn-exercise" data-action="light_exercise" data-strategy="3">
+                        Light Exercise
+                    </button>
+                </div>
+
+                <div class="rating-section">
+                    <div class="rating-title">Rate Today's Sleep Quality</div>
+                    <div class="rating-stars" data-strategy="3">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+
+                <div class="timestamp-log" id="log-strategy3">
+                    <h3>Today's Log</h3>
+                    <div class="log-entries"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy 4: Temperature Control -->
+        <div id="strategy4" class="screen">
+            <div class="strategy-card">
+                <h2 class="strategy-title">Temperature Control Strategy</h2>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-strategy="4" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="strategy-description">
+                    Optimize your body and room temperature for better sleep. Track temperature adjustments and their impact on sleep quality.
+                </p>
+                
+                <div class="button-grid">
+                    <button class="action-btn btn-temperature" data-action="room_temp_adjust" data-strategy="4">
+                        Room Temperature
+                    </button>
+                    <button class="action-btn btn-sleep" data-action="sleep_attempt" data-strategy="4">
+                        Try to Sleep
+                    </button>
+                    <button class="action-btn btn-wake" data-action="wake_up" data-strategy="4">
+                        Wake Up
+                    </button>
+                    <button class="action-btn btn-temperature" data-action="warm_bath" data-strategy="4">
+                        Warm Bath
+                    </button>
+                </div>
+
+                <div class="rating-section">
+                    <div class="rating-title">Rate Today's Sleep Quality</div>
+                    <div class="rating-stars" data-strategy="4">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+
+                <div class="timestamp-log" id="log-strategy4">
+                    <h3>Today's Log</h3>
+                    <div class="log-entries"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Screen -->
+        <div id="export" class="screen">
+            <div class="strategy-card">
+                <h2 class="strategy-title">Export Your Data</h2>
+                <p class="strategy-description">
+                    Export your sleep tracking data to analyze patterns and share with healthcare providers.
+                </p>
+                
+                <div class="export-section">
+                    <button class="export-btn" onclick="exportData()">
+                        📧 Export Data via Email
+                    </button>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                        Your data will be formatted and prepared for email export
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Application state
+        let sleepData = {
+            strategy1: { logs: [], ratings: [], currentWeek: 1 },
+            strategy2: { logs: [], ratings: [], currentWeek: 1 },
+            strategy3: { logs: [], ratings: [], currentWeek: 1 },
+            strategy4: { logs: [], ratings: [], currentWeek: 1 }
+        };
+
+        // Load data from localStorage on page load
+        function loadData() {
+            const saved = localStorage.getItem('sleepTrackerData');
+            if (saved) {
+                sleepData = JSON.parse(saved);
+            }
+            updateProgressBars();
+            updateAllLogs();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('sleepTrackerData', JSON.stringify(sleepData));
+        }
+
+        // Navigation functionality
+        document.querySelectorAll('.nav-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                const targetScreen = this.getAttribute('data-screen');
+                showScreen(targetScreen);
+                
+                // Update active pill
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Strategy preview cards
+        document.querySelectorAll('.strategy-preview').forEach(preview => {
+            preview.addEventListener('click', function() {
+                const targetStrategy = this.getAttribute('data-strategy');
+                showScreen(targetStrategy);
+                
+                // Update active pill
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                document.querySelector(`[data-screen="${targetStrategy}"]`).classList.add('active');
+            });
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Action button functionality
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.getAttribute('data-action');
+                const strategy = this.getAttribute('data-strategy');
+                recordTimestamp(action, strategy);
+            });
+        });
+
+        function recordTimestamp(action, strategy) {
+            const now = new Date();
+            const timestamp = now.toLocaleString();
+            const actionName = getActionName(action);
+            
+            const strategyKey = `strategy${strategy}`;
+            sleepData[strategyKey].logs.push({
+                action: actionName,
+                timestamp: timestamp,
+                date: now.toDateString()
+            });
+            
+            saveData();
+            updateLog(strategy);
+            updateProgressBars();
+            showNotification(`${actionName} recorded at ${now.toLocaleTimeString()}`);
+        }
+
+        function getActionName(action) {
+            const actionNames = {
+                'last_meal': 'Last Meal',
+                'sleep_attempt': 'Sleep Attempt',
+                'bathroom': 'Bathroom Visit',
+                'wake_up': 'Wake Up',
+                'breathing_session': 'Breathing Session',
+                'muscle_relaxation': 'Muscle Relaxation',
+                'light_exercise': 'Light Exercise',
+                'room_temp_adjust': 'Room Temperature Adjustment',
+                'warm_bath': 'Warm Bath'
+            };
+            return actionNames[action] || action;
+        }
+
+        function updateLog(strategy) {
+            const logContainer = document.querySelector(`#log-strategy${strategy} .log-entries`);
+            const strategyKey = `strategy${strategy}`;
+            const today = new Date().toDateString();
+            
+            // Filter logs for today
+            const todayLogs = sleepData[strategyKey].logs.filter(log => log.date === today);
+            
+            logContainer.innerHTML = '';
+            
+            if (todayLogs.length === 0) {
+                logContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">No entries for today</p>';
+                return;
+            }
+            
+            // Show last 5 entries
+            todayLogs.slice(-5).forEach(log => {
+                const entry = document.createElement('div');
+                entry.className = 'timestamp-entry';
+                entry.innerHTML = `
+                    <span>${log.action}</span>
+                    <span>${new Date(log.timestamp).toLocaleTimeString()}</span>
+                `;
+                logContainer.appendChild(entry);
+            });
+        }
+
+        function updateAllLogs() {
+            for (let i = 1; i <= 4; i++) {
+                updateLog(i);
+            }
+        }
+
+        // Rating functionality
+        document.querySelectorAll('.rating-stars').forEach(starsContainer => {
+            const stars = starsContainer.querySelectorAll('.star');
+            const strategy = starsContainer.getAttribute('data-strategy');
+            
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function() {
+                    const rating = index + 1;
+                    recordRating(strategy, rating);
+                    updateStarDisplay(starsContainer, rating);
+                });
+            });
+        });
+
+        function recordRating(strategy, rating) {
+            const strategyKey = `strategy${strategy}`;
+            const today = new Date().toDateString();
+            
+            // Remove existing rating for today
+            sleepData[strategyKey].ratings = sleepData[strategyKey].ratings.filter(r => r.date !== today);
+            
+            // Add new rating
+            sleepData[strategyKey].ratings.push({
+                rating: rating,
+                date: today,
+                timestamp: new Date().toLocaleString()
+            });
+            
+            saveData();
+            updateProgressBars();
+            showNotification(`Sleep quality rated: ${rating} stars`);
+        }
+
+        function updateStarDisplay(container, rating) {
+            const stars = container.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Progress bar updates
+        function updateProgressBars() {
+            for (let i = 1; i <= 4; i++) {
+                const strategyKey = `strategy${i}`;
+                const progressBar = document.querySelector(`[data-strategy="${i}"].progress-fill`);
+                
+                if (progressBar) {
+                    const logs = sleepData[strategyKey].logs;
+                    const ratings = sleepData[strategyKey].ratings;
+                    
+                    // Calculate progress based on number of days with entries (max 7 days per week)
+                    const uniqueDays = [...new Set(logs.map(log => log.date))].length;
+                    const progress = Math.min((uniqueDays / 7) * 100, 100);
+                    
+                    progressBar.style.width = `${progress}%`;
+                }
+            }
+        }
+
+        // Export functionality
+        function exportData() {
+            const exportText = generateExportText();
+            const subject = encodeURIComponent('Sleep Strategy Tracker Data');
+            const body = encodeURIComponent(exportText);
+            
+            // Create mailto link
+            const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+            window.location.href = mailtoLink;
+            
+            showNotification('Email client opened with your sleep data');
+        }
+
+        function generateExportText() {
+            let exportText = 'SLEEP STRATEGY TRACKER DATA EXPORT\n';
+            exportText += '=====================================\n\n';
+            exportText += `Export Date: ${new Date().toLocaleDateString()}\n\n`;
+
+            const strategies = [
+                { key: 'strategy1', name: 'Sleep Hygiene Strategy' },
+                { key: 'strategy2', name: '4-7-8 Breathing Technique' },
+                { key: 'strategy3', name: 'Progressive Muscle Relaxation' },
+                { key: 'strategy4', name: 'Temperature Control Strategy' }
+            ];
+
+            strategies.forEach(strategy => {
+                const data = sleepData[strategy.key];
+                exportText += `${strategy.name.toUpperCase()}\n`;
+                exportText += '-'.repeat(strategy.name.length) + '\n\n';
+
+                // Log entries
+                exportText += 'Activity Log:\n';
+                if (data.logs.length > 0) {
+                    data.logs.forEach(log => {
+                        exportText += `${log.date} - ${log.action} at ${new Date(log.timestamp).toLocaleTimeString()}\n`;
+                    });
+                } else {
+                    exportText += 'No activity logged\n';
+                }
+
+                // Ratings
+                exportText += '\nSleep Quality Ratings:\n';
+                if (data.ratings.length > 0) {
+                    data.ratings.forEach(rating => {
+                        exportText += `${rating.date} - ${rating.rating}/5 stars\n`;
+                    });
+                } else {
+                    exportText += 'No ratings recorded\n';
+                }
+
+                exportText += '\n' + '='.repeat(50) + '\n\n';
+            });
+
+            // Summary statistics
+            exportText += 'SUMMARY STATISTICS\n';
+            exportText += '==================\n\n';
+
+            strategies.forEach(strategy => {
+                const data = sleepData[strategy.key];
+                const avgRating = data.ratings.length > 0 
+                    ? (data.ratings.reduce((sum, r) => sum + r.rating, 0) / data.ratings.length).toFixed(1)
+                    : 'N/A';
+                const totalActivities = data.logs.length;
+                const uniqueDays = [...new Set(data.logs.map(log => log.date))].length;
+
+                exportText += `${strategy.name}:\n`;
+                exportText += `  - Average Sleep Rating: ${avgRating}/5\n`;
+                exportText += `  - Total Activities Logged: ${totalActivities}\n`;
+                exportText += `  - Days with Activity: ${uniqueDays}\n\n`;
+            });
+
+            return exportText;
+        }
+
+        // Notification system
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Touch and keyboard accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (e.target.classList.contains('action-btn') || 
+                    e.target.classList.contains('nav-pill') || 
+                    e.target.classList.contains('export-btn')) {
+                    e.preventDefault();
+                    e.target.click();
+                }
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // Load saved ratings display
+            for (let i = 1; i <= 4; i++) {
+                const strategyKey = `strategy${i}`;
+                const today = new Date().toDateString();
+                const todayRating = sleepData[strategyKey].ratings.find(r => r.date === today);
+                
+                if (todayRating) {
+                    const starsContainer = document.querySelector(`[data-strategy="${i}"].rating-stars`);
+                    if (starsContainer) {
+                        updateStarDisplay(starsContainer, todayRating.rating);
+                    }
+                }
+            }
+        });
+
+        // Service Worker for offline functionality (optional enhancement)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('SW registered: ', registration);
+                }).catch(function(registrationError) {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+
+        // Handle orientation changes for mobile
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+
+        // Prevent zoom on double tap (iOS Safari)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Handle back button navigation
+        window.addEventListener('popstate', function(event) {
+            // Handle browser back button if needed
+            if (event.state && event.state.screen) {
+                showScreen(event.state.screen);
+            }
+        });
+
+        // Add haptic feedback for mobile devices
+        function vibrate() {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // Add vibration to button clicks
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', vibrate);
+        });
+
+        // Auto-save data every 30 seconds
+        setInterval(saveData, 30000);
+
+        // Add visual feedback for button presses
+        document.querySelectorAll('.action-btn, .nav-pill, .export-btn').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            btn.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

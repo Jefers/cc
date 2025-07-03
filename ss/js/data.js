@@ -8,7 +8,7 @@ App.strategies = [
     name: "Progressive Muscle Relaxation",
     description: "Tense and release each muscle group to reduce physical tension before bed.",
     color: "#ff6b6b",
-    действий: ["Last Meal", "Try to Sleep", "Going to CR"],
+    actions: ["Last Meal", "Try to Sleep", "Going to CR"],
   },
   {
     id: 2,
