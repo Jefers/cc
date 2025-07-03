@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mobile App Prompt Generator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      max-width: 600px;
+      margin: auto;
+      background-color: #f9fafb;
+    }
+    h1 {
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    #output {
+      margin-top: 2rem;
+      background: #eef2ff;
+      padding: 1rem;
+      white-space: pre-wrap;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mobile App Prompt Generator</h1>
+  
+  <form id="promptForm">
+    <label>1. What is the app’s core purpose?</label>
+    <textarea id="purpose" rows="2"></textarea>
+
+    <label>2. Who are the target users?</label>
+    <textarea id="users" rows="2"></textarea>
+
+    <label>3. Key screens or components?</label>
+    <textarea id="screens" rows="2"></textarea>
+
+    <label>4. Must-have features?</label>
+    <textarea id="features" rows="2"></textarea>
+
+    <label>5. Preferred tech stack (optional)</label>
+    <input id="stack" type="text" placeholder="e.g., React Native, Tailwind, Supabase" />
+
+    <label>6. Data model & storage (optional)</label>
+    <textarea id="data" rows="2"></textarea>
+
+    <label>7. Authentication & security (optional)</label>
+    <textarea id="auth" rows="2"></textarea>
+
+    <label>8. Deployment targets (optional)</label>
+    <input id="deploy" type="text" placeholder="e.g., iOS, Android, Web, PWA" />
+
+    <button type="button" onclick="generatePrompt()">Generate Prompt</button>
+  </form>
+
+  <div id="output" style="display:none;">
+    <h2>📋 Copy This Prompt:</h2>
+    <pre id="promptText"></pre>
+  </div>
+
+  <script>
+    function generatePrompt() {
+      const purpose = document.getElementById("purpose").value.trim();
+      const users = document.getElementById("users").value.trim();
+      const screens = document.getElementById("screens").value.trim();
+      const features = document.getElementById("features").value.trim();
+      const stack = document.getElementById("stack").value.trim();
+      const data = document.getElementById("data").value.trim();
+      const auth = document.getElementById("auth").value.trim();
+      const deploy = document.getElementById("deploy").value.trim();
+
+      const prompt = `
+I want to build a **mobile-first responsive web app**.
+
+🧠 Purpose:
+${purpose}
+
+👤 Target Users:
+${users}
+
+🎨 Key Screens / Components:
+${screens}
+
+🧩 Must-Have Features:
+${features}
+
+📱 Mobile-First Design Priorities:
+- Fully responsive layout
+- Touch-optimized interactions
+- Fast load performance
+- Accessible UX (screen reader support)
+
+🧑‍💻 Preferred Tech Stack:
+${stack || "Open to recommendations (mobile-first prioritized)"}
+
+🗂️ Data Model & Storage:
+${data || "Use scalable and secure storage (e.g., Supabase, Firebase, PostgreSQL)"}
+
+🔐 Authentication & Security:
+${auth || "Secure login with email, OAuth or 2FA; safe session handling"}
+
+📦 Deployment Target:
+${deploy || "Mobile-first Web App (consider PWA), iOS/Android optional"}
+
+Please generate clean, production-ready code with sample data if helpful, modular structure, and a responsive mobile-first UI. Use best practices in modern front-end development.
+`;
+
+      document.getElementById("promptText").textContent = prompt.trim();
+      document.getElementById("output").style.display = "block";
+    }
+  </script>
+</body>
+</html>

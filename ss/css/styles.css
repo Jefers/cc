@@ -1,0 +1,157 @@
+/* Mobile-first styles */
+body {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff;
+  line-height: 1.6;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1rem;
+}
+
+.strategy-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(5px);
+  transition: transform 0.3s ease;
+}
+
+.strategy-card:hover {
+  transform: scale(1.02);
+}
+
+.strategy-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.action-button {
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  margin: 0.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.3s ease;
+}
+
+.action-button:hover {
+  background: #ff8787;
+}
+
+#rating-stars {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.star.selected {
+  color: #ffd700;
+}
+
+#export-data {
+  background: #4facfe;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#export-data:hover {
+  background: #6bc4fe;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  margin-top: auto;
+  padding: 1rem 0;
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  body {
+    padding: 2rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  .strategy-card {
+    max-width: 600px;
+    margin: 0 auto 1rem;
+  }
+
+  #strategy-details {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .action-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+  }
+}
+
+/* Accessibility enhancements */
+:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
+}
+
+.s unele {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

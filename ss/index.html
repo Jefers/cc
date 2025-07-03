@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sleep Strategies App for Insomniacs">
+  <title>Sleep Strategies</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Sleep Strategies</h1>
+    <p>Test and rate sleep strategies over four weeks.</p>
+  </header>
+  <main>
+    <section id="strategy-list" aria-label="Sleep Strategies">
+      <!-- Strategy cards will be injected here -->
+    </section>
+    <section id="strategy-details" class="hidden" aria-label="Strategy Details">
+      <h2 id="strategy-title"></h2>
+      <p id="strategy-description"></p>
+      <div id="action-buttons"></div>
+      <div id="rating-section">
+        <h3>Rate This Strategy</h3>
+        <div id="rating-stars" role="radiogroup" aria-label="Rating">
+          <button class="star" data-value="1" aria-label="1 star">★</button>
+          <button class="star" data-value="2" aria-label="2 stars">★</button>
+          <button class="star" data-value="3" aria-label="3 stars">★</button>
+          <button class="star" data-value="4" aria-label="4 stars">★</button>
+          <button class="star" data-value="5" aria-label="5 stars">★</button>
+        </div>
+      </div>
+      <button id="export-data" aria-label="Export Data via Email">Export Data</button>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Sleep Strategies App</p>
+  </footer>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
