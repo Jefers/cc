@@ -1,0 +1,163 @@
+/* CSS Custom Properties for vivid Minecraft colors */
+:root {
+  --grass-green: #55aa55;
+  --dirt-brown: #8b4513;
+  --stone-gray: #808080;
+  --sky-blue: #87ceeb;
+  --button-green: #4caf50;
+  --text-dark: #333;
+  --title-red: #ff5555;
+  --title-yellow: #ffff55;
+  --title-blue: #5555ff;
+}
+
+/* Mobile-first styles */
+body {
+  background: var(--sky-blue);
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.title {
+  font-family: 'Press Start 2P', cursive; /* Pixelated Minecraft-like font */
+  font-size: clamp(3rem, 12vw, 5rem); /* Bigger title */
+  font-weight: 400; /* Lighter weight for pixel font */
+  text-align: center;
+  background: linear-gradient(45deg, var(--title-red), var(--title-yellow), var(--title-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 
+    2px 2px 0 #000, /* Bottom-right shadow */
+    -2px -2px 0 #fff, /* Top-left highlight */
+    2px -2px 0 #000, /* Top-right */
+    -2px 2px 0 #000; /* Bottom-left */
+  margin-bottom: 2rem;
+}
+
+/* Start Screen */
+.start-screen {
+  text-align: center;
+}
+
+.play-button {
+  background: var(--button-green);
+  color: white;
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.play-button:hover,
+.play-button:focus {
+  transform: scale(1.05);
+}
+
+/* Game Screen */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+#gameCanvas {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  border: 2px solid var(--text-dark);
+  background: var(--sky-blue);
+  touch-action: none; /* Optimize for touch */
+}
+
+.inventory {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.inventory-item {
+  background: var(--button-green);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  transition: background 0.2s ease;
+}
+
+.inventory-item[aria-selected="true"] {
+  background: var(--title-yellow);
+  color: var(--text-dark);
+}
+
+.timer {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+}
+
+.pause-button,
+.reset-button {
+  position: fixed;
+  bottom: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  color: white;
+}
+
+.pause-button {
+  left: 1rem;
+  background: #ff4444;
+}
+
+.reset-button {
+  left: 5rem; /* Position next to pause button */
+  background: #ff9900; /* Orange for reset */
+}
+
+/* Tablet and Desktop */
+@media (min-width: 768px) {
+  .game-container {
+    max-width: 800px;
+  }
+
+  #gameCanvas {
+    max-width: 600px;
+    height: 600px;
+  }
+
+  .play-button {
+    font-size: 2rem;
+    padding: 1.5rem 3rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .play-button,
+  .inventory-item,
+  .pause-button,
+  .reset-button {
+    transition: none;
+  }
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pinecraft: Play the game">
+  <title>Pinecraft - Game</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="game-screen">
+    <div class="game-container">
+      <canvas id="gameCanvas" role="region" aria-label="Game world"></canvas>
+      <div class="inventory" role="list" aria-label="Inventory">
+        <button class="inventory-item" data-block="grass" aria-label="Select grass block">Grass</button>
+        <button class="inventory-item" data-block="dirt" aria-label="Select dirt block">Dirt</button>
+        <button class="inventory-item" data-block="stone" aria-label="Select stone block">Stone</button>
+      </div>
+      <div class="timer" aria-live="polite">Time: 00:00</div>
+      <button class="pause-button" aria-label="Pause and save game">Pause</button>
+      <button class="reset-button" aria-label="Reset game and return to home">Reset</button>
+    </div>
+  </main>
+  <script type="module" src="js/game.js"></script>
+  <script type="module" src="js/storage.js"></script>
+  <script type="module" src="js/ui.js"></script>
+</body>
+</html>
