@@ -14,14 +14,13 @@ export class Game {
       dirt: new Image(),
       stone: new Image(),
     };
-    this.textures.grass.src = 'assets/grass.png';
-    this.textures.dirt.src = 'assets/dirt.png';
-    this.textures.stone.src = 'assets/stone.png';
+    this.textures.grass.src = './assets/grass.png';
+    this.textures.dirt.src = './assets/dirt.png';
+    this.textures.stone.src = './assets/stone.png';
     this.init();
   }
 
   init() {
-    // Initialize world (20x20 grid)
     this.world = Array(this.gridSize)
       .fill()
       .map(() => Array(this.gridSize).fill('grass'));
@@ -39,7 +38,6 @@ export class Game {
 
   render() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    // Draw world
     for (let y = 0; y < this.gridSize; y++) {
       for (let x = 0; x < this.gridSize; x++) {
         const block = this.world[y][x];
@@ -47,13 +45,11 @@ export class Game {
         if (img.complete) {
           this.ctx.drawImage(img, x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
         } else {
-          // Fallback colors
           this.ctx.fillStyle = block === 'grass' ? '#55aa55' : block === 'dirt' ? '#8b4513' : '#808080';
           this.ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
         }
       }
     }
-    // Draw player
     this.ctx.fillStyle = '#ff5555';
     this.ctx.fillRect(
       this.player.x * this.cellSize,
