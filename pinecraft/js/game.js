@@ -9,6 +9,14 @@ export class Game {
     this.world = [];
     this.player = { x: 10, y: 10, selectedBlock: 'grass' };
     this.timer = { seconds: 0, running: false };
+    this.textures = {
+      grass: new Image(),
+      dirt: new Image(),
+      stone: new Image(),
+    };
+    this.textures.grass.src = './assets/grass.png';
+    this.textures.dirt.src = './assets/dirt.png';
+    this.textures.stone.src = './assets/stone.png';
     this.init();
   }
 
@@ -33,8 +41,13 @@ export class Game {
     for (let y = 0; y < this.gridSize; y++) {
       for (let x = 0; x < this.gridSize; x++) {
         const block = this.world[y][x];
-        this.ctx.fillStyle = block === 'grass' ? '#55aa55' : block === 'dirt' ? '#8b4513' : '#808080';
-        this.ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        const img = this.textures[block];
+        if (img.complete) {
+          this.ctx.drawImage(img, x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        } else {
+          this.ctx.fillStyle = block === 'grass' ? '#55aa55' : block === 'dirt' ? '#8b4513' : '#808080';
+          this.ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        }
       }
     }
     this.ctx.fillStyle = '#ff5555';
@@ -84,7 +97,7 @@ export class Game {
     this.canvas.addEventListener('click', (e) => {
       const rect = this.canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
-      const y = e.clientX - rect.top;
+      const y = e.clientY - rect.top;
       this.handleInteraction(x, y);
     });
   }
