@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meal & Stock Planner</title>
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #222;
+      --primary: #4CAF50;
+      --secondary: #777;
+      --card: #fff;
+      --border: #ddd;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 80px; /* for nav bar */
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.25rem;
+    }
+
+    .inventory-list {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .item-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-name {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .item-qty {
+      font-size: 0.95rem;
+      color: var(--secondary);
+    }
+
+    .item-category {
+      font-size: 0.8rem;
+      background: #e0e0e0;
+      color: #333;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      margin-top: 0.3rem;
+      width: fit-content;
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0;
+    }
+
+    .nav-item {
+      color: var(--secondary);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    Inventory
+  </header>
+
+  <main class="inventory-list">
+    <div class="item-card">
+      <div class="item-info">
+        <div class="item-name">Beef steak</div>
+        <div class="item-qty">650 g</div>
+        <div class="item-category">Protein</div>
+      </div>
+    </div>
+
+    <div class="item-card">
+      <div class="item-info">
+        <div class="item-name">Greek Yogurt</div>
+        <div class="item-qty">950 g</div>
+        <div class="item-category">Dairy</div>
+      </div>
+    </div>
+
+    <div class="item-card">
+      <div class="item-info">
+        <div class="item-name">Eggs</div>
+        <div class="item-qty">9 pcs</div>
+        <div class="item-category">Protein</div>
+      </div>
+    </div>
+  </main>
+
+  <button class="fab">+</button>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active">Inventory</div>
+    <div class="nav-item">Plan</div>
+    <div class="nav-item">Shopping</div>
+  </nav>
+
+</body>
+</html>

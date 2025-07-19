@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal & Stock Planner</title>
+    <style>
+        :root {
+            /* Light theme */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-light: #334155;
+            --border-medium: #475569;
+            --accent-primary: #60a5fa;
+            --accent-hover: #3b82f6;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app-container {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-medium);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 1rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 428px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--accent-primary);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-medium);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            width: auto;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* Lists */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .item-row:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-details {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .item-quantity {
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 1rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 1000;
+            padding-top: 2rem;
+            display: none;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            padding: 1.5rem;
+            margin: 0 auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Date tabs */
+        .date-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .date-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .date-tab.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        /* Meal slots */
+        .meal-slots {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meal-slot {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-medium);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .meal-slot:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .meal-slot.filled {
+            border: 2px solid var(--accent-primary);
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Shopping list */
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .shopping-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-primary);
+        }
+
+        .shopping-item.checked .item-name {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Low stock warning */
+        .low-stock {
+            color: var(--warning);
+        }
+
+        .out-of-stock {
+            color: var(--danger);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 428px) {
+            .app-container {
+                max-width: 100vw;
+            }
+            
+            .bottom-nav {
+                max-width: 100vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 id="page-title">Meal & Stock Planner</h1>
+            <button class="theme-toggle" id="theme-toggle">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Inventory Screen -->
+            <div class="screen active" id="inventory-screen">
+                <div class="item-list" id="inventory-list">
+                    <div class="empty-state">
+                        <p>No items in your inventory yet.</p>
+                        <p>Tap the + button to add your first item!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Screen -->
+            <div class="screen" id="plan-screen">
+                <div class="date-tabs">
+                    <button class="date-tab active" data-date="0">Today</button>
+                    <button class="date-tab" data-date="1">Tomorrow</button>
+                    <button class="date-tab" data-date="2">Day 3</button>
+                </div>
+                
+                <div class="meal-slots">
+                    <div class="meal-slot" data-slot="0">
+                        <strong>Breakfast</strong>
+                        <div class="meal-content">Tap to add meal</div>
+                    </div>
+                    <div class="meal-slot" data-slot="1">
+                        <strong>Lunch</strong>
+                        <div class="meal-content">Tap to add meal</div>
+                    </div>
+                    <div class="meal-slot" data-slot="2">
+                        <strong>Dinner</strong>
+                        <div class="meal-content">Tap to add meal</div>
+                    </div>
+                    <div class="meal-slot" data-slot="3">
+                        <strong>Snack</strong>
+                        <div class="meal-content">Tap to add meal</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopping Screen -->
+            <div class="screen" id="shopping-screen">
+                <div class="card">
+                    <button class="btn" id="generate-shopping-list">Generate Shopping List</button>
+                </div>
+                
+                <div id="shopping-list">
+                    <div class="empty-state">
+                        <p>No shopping list generated yet.</p>
+                        <p>Create a meal plan first, then generate your shopping list!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-screen="inventory">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                <span>Inventory</span>
+            </div>
+            <div class="nav-item" data-screen="plan">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>Plan</span>
+            </div>
+            <div class="nav-item" data-screen="shopping">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <span>Shopping</span>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" id="add-item-fab">+</button>
+
+        <!-- Add/Edit Item Modal -->
+        <div class="modal" id="item-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="item-modal-title">Add Item</h2>
+                    <button class="close-btn" id="close-item-modal">&times;</button>
+                </div>
+                <form id="item-form">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" id="item-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="item-category">
+                            <option value="protein">Protein</option>
+                            <option value="dairy">Dairy</option>
+                            <option value="pantry">Pantry</option>
+                            <option value="produce">Produce</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select" id="item-unit">
+                            <option value="g">Grams (g)</option>
+                            <option value="ml">Milliliters (ml)</option>
+                            <option value="pcs">Pieces (pcs)</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="l">Liters (l)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-input" id="item-quantity" min="0" step="0.1" required>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn">Save Item</button>
+                        <button type="button" class="btn btn-secondary" id="delete-item" style="display: none;">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Meal Modal -->
+        <div class="modal" id="meal-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Add Meal</h2>
+                    <button class="close-btn" id="close-meal-modal">&times;</button>
+                </div>
+                <div id="meal-ingredients">
+                    <div class="empty-state">
+                        <p>Add ingredients from your inventory to create this meal.</p>
+                    </div>
+                </div>
+                <button class="btn" id="save-meal">Save Meal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage Layer
+        class DataStore {
+            constructor() {
+                this.data = this.loadData();
+            }
+
+            loadData() {
+                const stored = localStorage.getItem('mealPlannerData');
+                if (stored) {
+                    return JSON.parse(stored);
+                }
+                return {
+                    items: [],
+                    meals: [],
+                    plan: this.initializePlan()
+                };
+            }
+
+            saveData() {
+                localStorage.setItem('mealPlannerData', JSON.stringify(this.data));
+            }
+
+            initializePlan() {
+                const plan = [];
+                for (let i = 0; i < 3; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() + i);
+                    plan.push({
+                        date: date.toISOString().split('T')[0],
+                        slots: [null, null, null, null] // breakfast, lunch, dinner, snack
+                    });
+                }
+                return plan;
+            }
+
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+
+            // Items CRUD
+            addItem(item) {
+                item.id = this.generateId();
+                this.data.items.push(item);
+                this.saveData();
+                return item;
+            }
+
+            updateItem(id, updates) {
+                const index = this.data.items.findIndex(item => item.id === id);
+                if (index !== -1) {
+                    this.data.items[index] = { ...this.data.items[index], ...updates };
+                    this.saveData();
+                    return this.data.items[index];
+                }
+                return null;
+            }
+
+            deleteItem(id) {
+                this.data.items = this.data.items.filter(item => item.id !== id);
+                this.saveData();
+            }
+
+            getItems() {
+                return this.data.items;
+            }
+
+            getItem(id) {
+                return this.data.items.find(item => item.id === id);
+            }
+
+            // Plan methods
+            setPlanSlot(dayIndex, slotIndex, mealData) {
+                if (this.data.plan[dayIndex]) {
+                    this.data.plan[dayIndex].slots[slotIndex] = mealData;
+                    this.saveData();
+                }
+            }
+
+            getPlan() {
+                return this.data.plan;
+            }
+        }
+
+        // App Controller
+        class MealPlannerApp {
+            constructor() {
+                this.dataStore = new DataStore();
+                this.currentScreen = 'inventory';
+                this.currentDay = 0;
+                this.editingItemId = null;
+                this.currentMealSlot = null;
+                
+                this.initializeApp();
+            }
+
+            initializeApp() {
+                this.setupEventListeners();
+                this.setupThemeToggle();
+                this.renderCurrentScreen();
+            }
+
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const screen = e.currentTarget.dataset.screen;
+                        this.switchScreen(screen);
+                    });
+                });
+
+                // Theme toggle
+                document.getElementById('theme-toggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+
+                // FAB
+                document.getElementById('add-item-fab').addEventListener('click', () => {
+                    this.openItemModal();
+                });
+
+                // Item modal
+                document.getElementById('close-item-modal').addEventListener('click', () => {
+                    this.closeItemModal();
+                });
+
+                document.getElementById('item-form').addEventListener('submit', (e) => {
+                    this.handleItemSubmit(e);
+                });
+
+                document.getElementById('delete-item').addEventListener('click', () => {
+                    this.deleteCurrentItem();
+                });
+
+                // Meal modal
+                document.getElementById('close-meal-modal').addEventListener('click', () => {
+                    this.closeMealModal();
+                });
+
+                // Date tabs
+                document.querySelectorAll('.date-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.switchDay(parseInt(e.target.dataset.date));
+                    });
+                });
+
+                // Shopping list
+                document.getElementById('generate-shopping-list').addEventListener('click', () => {
+                    this.generateShoppingList();
+                });
+
+                // Modal backdrop
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.classList.remove('show');
+                        }
+                    });
+                });
+            }
+
+            setupThemeToggle() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+
+            switchScreen(screen) {
+                // Update navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-screen="${screen}"]`).classList.add('active');
+
+                // Update screens
+                document.querySelectorAll('.screen').forEach(s => {
+                    s.classList.remove('active');
+                });
+                document.getElementById(`${screen}-screen`).classList.add('active');
+
+                // Update title and FAB
+                const titles = {
+                    inventory: 'Inventory',
+                    plan: 'Meal Plan',
+                    shopping: 'Shopping List'
+                };
+                document.getElementById('page-title').textContent = titles[screen];
+
+                const fab = document.getElementById('add-item-fab');
+                fab.style.display = screen === 'inventory' ? 'block' : 'none';
+
+                this.currentScreen = screen;
+                this.renderCurrentScreen();
+            }
+
+            renderCurrentScreen() {
+                switch (this.currentScreen) {
+                    case 'inventory':
+                        this.renderInventory();
+                        break;
+                    case 'plan':
+                        this.renderPlan();
+                        break;
+                    case 'shopping':
+                        this.renderShopping();
+                        break;
+                }
+            }
+
+            renderInventory() {
+                const items = this.dataStore.getItems();
+                const container = document.getElementById('inventory-list');
+
+                if (items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>No items in your inventory yet.</p>
+                            <p>Tap the + button to add your first item!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const itemsHtml = items.map(item => {
+                    const stockClass = item.quantity <= 0 ? 'out-of-stock' : 
+                                     item.quantity < 10 ? 'low-stock' : '';
+                    
+                    return `
+                        <div class="item-row" data-item-id="${item.id}">
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-details">
+                                    <span class="category-badge">${item.category}</span>
+                                </div>
+                            </div>
+                            <div class="item-quantity ${stockClass}">
+                                ${item.quantity} ${item.unit}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = itemsHtml;
+
+                // Add click listeners
+                container.querySelectorAll('.item-row').forEach(row => {
+                    row.addEventListener('click', (e) => {
+                        const itemId = e.currentTarget.dataset.itemId;
+                        this.openItemModal(itemId);
+                    });
+                });
+            }
+
+            renderPlan() {
+                const plan = this.dataStore.getPlan();
+                const currentPlan = plan[this.currentDay];
+                
+                const mealSlots = document.querySelectorAll('.meal-slot');
+                const mealNames = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+                
+                mealSlots.forEach((slot, index) => {
+                    const mealData = currentPlan.slots[index];
+                    const mealContent = slot.querySelector('.meal-content');
+                    
+                    if (mealData) {
+                        slot.classList.add('filled');
+                        mealContent.textContent = mealData.name || 'Custom Meal';
+                    } else {
+                        slot.classList.remove('filled');
+                        mealContent.textContent = 'Tap to add meal';
+                    }
+                    
+                    // Add click listener
+                    slot.onclick = () => this.openMealSlot(this.currentDay, index);
+                });
+            }
+
+            renderShopping() {
+                // This will be populated when shopping list is generated
+            }
+
+            switchDay(dayIndex) {
+                this.currentDay = dayIndex;
+                
+                document.querySelectorAll('.date-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-date="${dayIndex}"]`).classList.add('active');
+                
+                this.renderPlan();
+            }
+
+            openItemModal(itemId = null) {
+                this.editingItemId = itemId;
+                const modal = document.getElementById('item-modal');
+                const title = document.getElementById('item-modal-title');
+                const deleteBtn = document.getElementById('delete-item');
+                
+                if (itemId) {
+                    const item = this.dataStore.getItem(itemId);
+                    title.textContent = 'Edit Item';
+                    deleteBtn.style.display = 'block';
+                    
+                    document.getElementById('item-name').value = item.name;
+                    document.getElementById('item-category').value = item.category;
+                    document.getElementById('item-unit').value = item.unit;
+                    document.getElementById('item-quantity').value = item.quantity;
+                } else {
+                    title.textContent = 'Add Item';
+                    deleteBtn.style.display = 'none';
+                    document.getElementById('item-form').reset();
+                }
+                
+                modal.classList.add('show');
+            }
+
+            closeItemModal() {
+                document.getElementById('item-modal').classList.remove('show');
+                this.editingItemId = null;
+            }
+
+            handleItemSubmit(e) {
+                e.preventDefault();
+                
+                const itemData = {
+                    name: document.getElementById('item-name').value.trim(),
+                    category: document.getElementById('item-category').value,
+                    unit: document.getElementById('item-unit').value,
+                    quantity: parseFloat(document.getElementById('item-quantity').value)
+                };
+
+                if (this.editingItemId) {
+                    this.dataStore.updateItem(this.editingItemId, itemData);
+                } else {
+                    this.dataStore.addItem(itemData);
+                }
+
+                this.closeItemModal();
+                if (this.currentScreen === 'inventory') {
+                    this.renderInventory();
+                }
+            }
+
+            deleteCurrentItem() {
+                if (this.editingItemId && confirm('Are you sure you want to delete this item?')) {
+                    this.dataStore.deleteItem(this.editingItemId);
+                    this.closeItemModal();
+                    if (this.currentScreen === 'inventory') {
+                        this.renderInventory();
+                    }
+                }
+            }
+
+            openMealSlot(dayIndex, slotIndex) {
+                this.currentMealSlot = { dayIndex, slotIndex };
+                const modal = document.getElementById('meal-modal');
+                const items = this.dataStore.getItems();
+                
+                if (items.length === 0) {
+                    alert('Add some items to your inventory first!');
+                    return;
+                }
+
+                this.renderMealIngredients();
+                modal.classList.add('show');
+            }
+
+            renderMealIngredients() {
+                const container = document.getElementById('meal-ingredients');
+                const items = this.dataStore.getItems();
+                
+                if (items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>No items available in inventory.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const itemsHtml = items.map(item => `
+                    <div class="item-row" style="margin-bottom: 0.5rem;">
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-details">Available: ${item.quantity} ${item.unit}</div>
+                        </div>
+                        <input type="number" 
+                               class="form-input" 
+                               style="width: 80px; padding: 0.25rem;"
+                               placeholder="0"
+                               min="0"
+                               max="${item.quantity}"
+                               step="0.1"
+                               data-item-id="${item.id}">
+                    </div>
+                `).join('');
+
+                container.innerHTML = itemsHtml;
+            }
+
+            closeMealModal() {
+                document.getElementById('meal-modal').classList.remove('show');
+                this.currentMealSlot = null;
+            }
+
+            saveMeal() {
+                if (!this.currentMealSlot) return;
+
+                const inputs = document.querySelectorAll('#meal-ingredients input[data-item-id]');
+                const ingredients = [];
+                let mealName = '';
+
+                inputs.forEach(input => {
+                    const quantity = parseFloat(input.value) || 0;
+                    if (quantity > 0) {
+                        const itemId = input.dataset.itemId;
+                        const item = this.dataStore.getItem(itemId);
+                        ingredients.push({
+                            itemId,
+                            name: item.name,
+                            quantity,
+                            unit: item.unit
+                        });
+                    }
+                });
+
+                if (ingredients.length === 0) {
+                    alert('Please add at least one ingredient to create a meal.');
+                    return;
+                }
+
+                // Create meal name from ingredients
+                mealName = ingredients.map(ing => ing.name).slice(0, 2).join(' & ');
+                if (ingredients.length > 2) {
+                    mealName += ` + ${ingredients.length - 2} more`;
+                }
+
+                const mealData = {
+                    id: this.dataStore.generateId(),
+                    name: mealName,
+                    ingredients
+                };
+
+                // Save to plan
+                this.dataStore.setPlanSlot(
+                    this.currentMealSlot.dayIndex, 
+                    this.currentMealSlot.slotIndex, 
+                    mealData
+                );
+
+                // Update inventory quantities
+                ingredients.forEach(ing => {
+                    const item = this.dataStore.getItem(ing.itemId);
+                    if (item) {
+                        const newQuantity = Math.max(0, item.quantity - ing.quantity);
+                        this.dataStore.updateItem(ing.itemId, { quantity: newQuantity });
+                    }
+                });
+
+                this.closeMealModal();
+                this.renderPlan();
+                
+                // Show confirmation
+                this.showToast(`${mealName} added to your meal plan!`);
+            }
+
+            generateShoppingList() {
+                const plan = this.dataStore.getPlan();
+                const items = this.dataStore.getItems();
+                const shoppingList = new Map();
+
+                // Calculate needed quantities from meal plan
+                plan.forEach(day => {
+                    day.slots.forEach(meal => {
+                        if (meal && meal.ingredients) {
+                            meal.ingredients.forEach(ing => {
+                                const item = this.dataStore.getItem(ing.itemId);
+                                if (item) {
+                                    const key = `${item.name}-${item.unit}`;
+                                    const current = shoppingList.get(key) || {
+                                        name: item.name,
+                                        category: item.category,
+                                        unit: item.unit,
+                                        needed: 0,
+                                        current: item.quantity
+                                    };
+                                    current.needed += ing.quantity;
+                                    shoppingList.set(key, current);
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Calculate what needs to be bought
+                const toBuy = [];
+                shoppingList.forEach(item => {
+                    const deficit = item.needed - item.current;
+                    if (deficit > 0) {
+                        toBuy.push({
+                            ...item,
+                            buyQuantity: Math.ceil(deficit)
+                        });
+                    }
+                });
+
+                this.renderShoppingList(toBuy);
+            }
+
+            renderShoppingList(shoppingItems) {
+                const container = document.getElementById('shopping-list');
+
+                if (shoppingItems.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>🎉 You have everything you need!</p>
+                            <p>Your current inventory covers all planned meals.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Group by category
+                const grouped = {};
+                shoppingItems.forEach(item => {
+                    if (!grouped[item.category]) {
+                        grouped[item.category] = [];
+                    }
+                    grouped[item.category].push(item);
+                });
+
+                let html = '';
+                Object.keys(grouped).forEach(category => {
+                    html += `
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem; text-transform: capitalize; color: var(--accent-primary);">${category}</h3>
+                            ${grouped[category].map(item => `
+                                <div class="shopping-item">
+                                    <input type="checkbox" class="shopping-checkbox" data-item="${item.name}">
+                                    <div class="item-info">
+                                        <div class="item-name">${item.name}</div>
+                                        <div class="item-details">Need: ${item.buyQuantity} ${item.unit}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="card">
+                        <button class="btn" id="mark-purchased">Update Inventory from Purchases</button>
+                    </div>
+                `;
+
+                container.innerHTML = html;
+
+                // Add event listeners for checkboxes
+                container.querySelectorAll('.shopping-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const item = e.target.closest('.shopping-item');
+                        if (e.target.checked) {
+                            item.classList.add('checked');
+                        } else {
+                            item.classList.remove('checked');
+                        }
+                    });
+                });
+
+                // Add listener for update inventory button
+                const updateBtn = document.getElementById('mark-purchased');
+                if (updateBtn) {
+                    updateBtn.addEventListener('click', () => {
+                        this.updateInventoryFromPurchases(shoppingItems);
+                    });
+                }
+            }
+
+            updateInventoryFromPurchases(shoppingItems) {
+                const checkedItems = document.querySelectorAll('.shopping-checkbox:checked');
+                let updatedCount = 0;
+
+                checkedItems.forEach(checkbox => {
+                    const itemName = checkbox.dataset.item;
+                    const shoppingItem = shoppingItems.find(item => item.name === itemName);
+                    
+                    if (shoppingItem) {
+                        const inventoryItem = this.dataStore.getItems().find(item => item.name === itemName);
+                        if (inventoryItem) {
+                            const newQuantity = inventoryItem.quantity + shoppingItem.buyQuantity;
+                            this.dataStore.updateItem(inventoryItem.id, { quantity: newQuantity });
+                            updatedCount++;
+                        }
+                    }
+                });
+
+                if (updatedCount > 0) {
+                    this.showToast(`Updated ${updatedCount} items in inventory!`);
+                    this.generateShoppingList(); // Refresh the list
+                } else {
+                    this.showToast('No items were marked as purchased.');
+                }
+            }
+
+            showToast(message) {
+                // Create toast notification
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: var(--accent-primary);
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    z-index: 1001;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px var(--shadow);
+                    animation: slideDown 0.3s ease;
+                `;
+                toast.textContent = message;
+
+                // Add animation keyframes
+                if (!document.getElementById('toast-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'toast-styles';
+                    style.textContent = `
+                        @keyframes slideDown {
+                            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                document.body.appendChild(toast);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideDown 0.3s ease reverse';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+        }
+
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.mealPlannerApp = new MealPlannerApp();
+            
+            // Add save meal listener
+            document.getElementById('save-meal').addEventListener('click', () => {
+                window.mealPlannerApp.saveMeal();
+            });
+        });
+
+        // Add some demo data on first load
+        document.addEventListener('DOMContentLoaded', () => {
+            const hasData = localStorage.getItem('mealPlannerData');
+            if (!hasData) {
+                setTimeout(() => {
+                    const app = window.mealPlannerApp;
+                    
+                    // Add some sample items
+                    app.dataStore.addItem({
+                        name: 'Chicken Breast',
+                        category: 'protein',
+                        unit: 'g',
+                        quantity: 500
+                    });
+                    
+                    app.dataStore.addItem({
+                        name: 'Rice',
+                        category: 'pantry',
+                        unit: 'g',
+                        quantity: 1000
+                    });
+                    
+                    app.dataStore.addItem({
+                        name: 'Eggs',
+                        category: 'protein',
+                        unit: 'pcs',
+                        quantity: 12
+                    });
+                    
+                    app.dataStore.addItem({
+                        name: 'Milk',
+                        category: 'dairy',
+                        unit: 'ml',
+                        quantity: 1000
+                    });
+                    
+                    app.dataStore.addItem({
+                        name: 'Broccoli',
+                        category: 'produce',
+                        unit: 'g',
+                        quantity: 300
+                    });
+                    
+                    app.renderInventory();
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
