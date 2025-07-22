@@ -1,4 +1,4 @@
-// Default data structure for the meal planner
+// sldata.js - Updated for browser compatibility
 const DEFAULT_DATA = {
     items: [
         // Animal-based proteins
@@ -144,10 +144,13 @@ const DEFAULT_DATA = {
             ingredients: [
                 { itemId: 'beef-steak', name: 'Beef steak', quantity: 150, unit: 'g' },
                 { itemId: 'milk', name: 'Milk', quantity: 200, unit: 'ml' },
-                { itemId: 'butter', name: 'Butter', quantity: 15, unit: 'g' }
+                {
+                    itemId: 'butter',
+                    name: 'Butter',
+                    quantity: 10,
+                    unit: 'g'
+                }
             ]
         }
     ]
-};
-
-module.exports = DEFAULT_DATA;
+};      
