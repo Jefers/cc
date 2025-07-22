@@ -1,4 +1,4 @@
-// app.js - Meal & Stock Planner
+// app.js - Enhanced Meal & Stock Planner with Ingredient Management
 
 class MealPlannerApp {
     constructor() {
@@ -7,6 +7,7 @@ class MealPlannerApp {
         this.currentPlanDay = 0;
         this.editingItem = null;
         this.editingMeal = null;
+        this.mealIngredients = []; // Current meal's ingredients being edited
         
         this.init();
     }
@@ -414,7 +415,7 @@ class MealPlannerApp {
         }
     }
 
-    // Meal management
+    // Enhanced Meal management with ingredient selection
     editMeal(mealId) {
         const meal = this.data.meals.find(m => m.id === mealId);
         if (meal) {
@@ -436,6 +437,7 @@ class MealPlannerApp {
 
     openMealModal(meal, isNew = false) {
         this.editingMeal = { ...meal, isNew };
+        this.mealIngredients = [...(meal.ingredients || [])];
         const modal = document.getElementById('meal-modal');
         
         document.getElementById('meal-name').value = meal.name || '';
@@ -449,32 +451,129 @@ class MealPlannerApp {
     closeMealModal() {
         document.getElementById('meal-modal').style.display = 'none';
         this.editingMeal = null;
+        this.mealIngredients = [];
     }
 
     renderMealIngredients() {
-        // Simplified ingredient management for now
         const container = document.getElementById('meal-ingredients');
-        const ingredients = this.editingMeal.ingredients || [];
         
-        if (ingredients.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <p>No ingredients added yet.</p>
-                    <p>Feature to add ingredients coming soon!</p>
-                </div>
-            `;
-        } else {
-            let html = '';
-            ingredients.forEach(ingredient => {
-                html += `
-                    <div class="ingredient-row">
-                        <span>${ingredient.name}</span>
-                        <span>${ingredient.quantity} ${ingredient.unit}</span>
+        let html = `
+            <div class="ingredient-management">
+                <div class="add-ingredient-section">
+                    <h4>Add Ingredients</h4>
+                    <div class="ingredient-selector">
+                        <select id="ingredient-select" class="form-select">
+                            <option value="">Select an ingredient...</option>
+                            ${this.data.items.map(item => 
+                                `<option value="${item.id}">${item.name}</option>`
+                            ).join('')}
+                        </select>
+                        <input type="number" id="ingredient-quantity" class="form-input" placeholder="Quantity" min="0" step="0.1">
+                        <span id="ingredient-unit" class="unit-display">-</span>
+                        <button type="button" onclick="app.addIngredientToMeal()" class="btn btn-small">Add</button>
                     </div>
-                `;
-            });
-            container.innerHTML = html;
+                </div>
+                
+                <div class="current-ingredients">
+                    <h4>Current Ingredients</h4>
+                    <div class="ingredients-list">
+                        ${this.mealIngredients.length === 0 ? 
+                            '<p class="empty-state">No ingredients added yet.</p>' :
+                            this.mealIngredients.map((ingredient, index) => `
+                                <div class="ingredient-item">
+                                    <span class="ingredient-info">${ingredient.quantity}${ingredient.unit} ${ingredient.name}</span>
+                                    <button type="button" onclick="app.removeIngredientFromMeal(${index})" class="btn-remove">×</button>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+
+        // Update unit display when ingredient is selected
+        const select = document.getElementById('ingredient-select');
+        const unitDisplay = document.getElementById('ingredient-unit');
+        
+        select.addEventListener('change', (e) => {
+            const item = this.data.items.find(i => i.id === e.target.value);
+            unitDisplay.textContent = item ? item.unit : '-';
+        });
+    }
+
+    addIngredientToMeal() {
+        const selectEl = document.getElementById('ingredient-select');
+        const quantityEl = document.getElementById('ingredient-quantity');
+        
+        const itemId = selectEl.value;
+        const quantity = parseFloat(quantityEl.value);
+        
+        if (!itemId || !quantity || quantity <= 0) {
+            alert('Please select an ingredient and enter a valid quantity.');
+            return;
         }
+
+        const item = this.data.items.find(i => i.id === itemId);
+        if (!item) {
+            alert('Selected ingredient not found.');
+            return;
+        }
+
+        // Check if ingredient already exists in meal
+        const existingIndex = this.mealIngredients.findIndex(ing => ing.itemId === itemId);
+        if (existingIndex !== -1) {
+            // Update existing ingredient quantity
+            this.mealIngredients[existingIndex].quantity += quantity;
+        } else {
+            // Add new ingredient
+            this.mealIngredients.push({
+                itemId: itemId,
+                name: item.name,
+                quantity: quantity,
+                unit: item.unit
+            });
+        }
+
+        // Reset form
+        selectEl.value = '';
+        quantityEl.value = '';
+        document.getElementById('ingredient-unit').textContent = '-';
+
+        this.renderMealIngredients();
+        this.updateMealCalories();
+    }
+
+    removeIngredientFromMeal(index) {
+        this.mealIngredients.splice(index, 1);
+        this.renderMealIngredients();
+        this.updateMealCalories();
+    }
+
+    updateMealCalories() {
+        // Simple calorie estimation based on typical values
+        const calorieEstimates = {
+            'beef-steak': 2.5, // per gram
+            'eggs': 70, // per piece
+            'milk': 0.6, // per ml
+            'sardines': 2, // per gram
+            'butter': 7, // per gram
+            'greek-yogurt': 1, // per gram
+            'white-rice': 3.5, // per gram
+            'porridge-oats': 3.8, // per gram
+            'honey': 3, // per gram
+            'satsumas': 35, // per piece
+            'banana': 90 // per piece
+        };
+
+        let totalCalories = 0;
+        this.mealIngredients.forEach(ingredient => {
+            const caloriePerUnit = calorieEstimates[ingredient.itemId] || 2;
+            totalCalories += ingredient.quantity * caloriePerUnit;
+        });
+
+        document.getElementById('meal-calories').value = Math.round(totalCalories);
     }
 
     saveMeal() {
@@ -482,8 +581,14 @@ class MealPlannerApp {
         const calories = parseInt(document.getElementById('meal-calories').value) || 0;
         const notes = document.getElementById('meal-notes').value;
 
+        if (!name.trim()) {
+            alert('Please enter a meal name.');
+            return;
+        }
+
         this.editingMeal.name = name;
         this.editingMeal.calories = calories;
+        this.editingMeal.ingredients = [...this.mealIngredients];
         if (notes) this.editingMeal.notes = notes;
 
         if (this.editingMeal.isNew) {

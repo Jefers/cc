@@ -173,7 +173,7 @@
             </div>
         </div>
 
-        <!-- Meal Modal -->
+        <!-- Meal Modal --><!-- Enhanced Meal Modal with Ingredient Management -->
         <div class="modal" id="meal-modal">
             <div class="modal-content modal-large">
                 <div class="modal-header">
@@ -186,7 +186,7 @@
                         <input type="text" class="form-input" id="meal-name" placeholder="Enter meal name">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Calories (optional)</label>
+                        <label class="form-label">Calories (auto-calculated)</label>
                         <input type="number" class="form-input" id="meal-calories" placeholder="e.g., 550">
                     </div>
                     <div class="form-group">
@@ -194,11 +194,9 @@
                         <textarea class="form-input" id="meal-notes" placeholder="e.g., work lunch, home dinner" rows="2"></textarea>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Ingredients</label>
+                        <label class="form-label">Manage Ingredients</label>
                         <div id="meal-ingredients" class="scrollable-content">
-                            <div class="empty-state">
-                                <p>Add ingredients from your inventory to create this meal.</p>
-                            </div>
+                            <!-- Ingredient management interface will be rendered here -->
                         </div>
                     </div>
                 </div>
