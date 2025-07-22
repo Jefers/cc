@@ -1,24 +1,62 @@
-// app.js - Enhanced Meal & Stock Planner with Ingredient Management
+// Enhanced app.js - Learning from the original's simplicity and effectiveness
 
 class MealPlannerApp {
     constructor() {
-        this.data = { ...DEFAULT_DATA };
-        this.currentScreen = 'inventory';
-        this.currentPlanDay = 0;
-        this.editingItem = null;
-        this.editingMeal = null;
-        this.mealIngredients = []; // Current meal's ingredients being edited
+        // Load the default data from sldata.js if available, otherwise start fresh
+        this.data = window.DEFAULT_DATA ? { ...DEFAULT_DATA } : {
+            items: [],
+            meals: [],
+            plan: this.initializePlan()
+        };
         
+        this.currentScreen = 'inventory';
+        this.currentDay = 0;
+        this.editingItem = null;
+        this.currentMealSlot = null;
+        this.selectedIngredients = new Map(); // For building meals
+        
+        this.loadSavedData();
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.loadData();
-        this.renderInventory();
-        this.renderPlan();
-        this.renderSupplements();
-        this.updateActiveScreen();
+        this.setupThemeToggle();
+        this.renderCurrentScreen();
+    }
+
+    initializePlan() {
+        const plan = [];
+        for (let i = 0; i < 3; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() + i);
+            plan.push({
+                date: date.toISOString().split('T'),
+                slots: [null, null, null, null] // breakfast, lunch, dinner, snack
+            });
+        }
+        return plan;
+    }
+
+    loadSavedData() {
+        const saved = localStorage.getItem('mealPlannerData');
+        if (saved) {
+            try {
+                const savedData = JSON.parse(saved);
+                // Merge saved data with default data, preserving user changes
+                this.data = {
+                    items: savedData.items || this.data.items,
+                    meals: savedData.meals || this.data.meals,
+                    plan: savedData.plan || this.data.plan || this.initializePlan()
+                };
+            } catch (e) {
+                console.error('Failed to load saved data, using defaults');
+            }
+        }
+    }
+
+    saveData() {
+        localStorage.setItem('mealPlannerData', JSON.stringify(this.data));
     }
 
     setupEventListeners() {
@@ -33,8 +71,7 @@ class MealPlannerApp {
         // Date tabs
         document.querySelectorAll('.date-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
-                const day = parseInt(e.target.dataset.date);
-                this.switchPlanDay(day);
+                this.switchDay(parseInt(e.target.dataset.date));
             });
         });
 
@@ -54,12 +91,11 @@ class MealPlannerApp {
         });
 
         document.getElementById('item-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveItem();
+            this.handleItemSubmit(e);
         });
 
         document.getElementById('delete-item').addEventListener('click', () => {
-            this.deleteItem();
+            this.deleteCurrentItem();
         });
 
         // Meal modal
@@ -76,7 +112,7 @@ class MealPlannerApp {
             this.generateShoppingList();
         });
 
-        // Close modals on background click
+        // Modal backdrop clicks
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
@@ -86,95 +122,113 @@ class MealPlannerApp {
         });
     }
 
+    setupThemeToggle() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    // Screen management
     switchScreen(screen) {
-        this.currentScreen = screen;
-        this.updateActiveScreen();
-        
-        // Update nav highlighting
+        // Update navigation
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
         });
         document.querySelector(`[data-screen="${screen}"]`).classList.add('active');
-    }
 
-    updateActiveScreen() {
-        document.querySelectorAll('.screen').forEach(screen => {
-            screen.classList.remove('active');
+        // Update screens
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
         });
-        document.getElementById(`${this.currentScreen}-screen`).classList.add('active');
+        document.getElementById(`${screen}-screen`).classList.add('active');
+
+        // Update title and FAB
+        const titles = {
+            inventory: 'Inventory',
+            plan: 'Meal Plan',
+            shopping: 'Shopping List'
+        };
+        document.getElementById('page-title').textContent = titles[screen] || 'Meal & Stock Planner';
+
+        const fab = document.getElementById('add-item-fab');
+        fab.style.display = screen === 'inventory' ? 'block' : 'none';
+
+        this.currentScreen = screen;
+        this.renderCurrentScreen();
     }
 
-    switchPlanDay(day) {
-        this.currentPlanDay = day;
+    renderCurrentScreen() {
+        switch (this.currentScreen) {
+            case 'inventory':
+                this.renderInventory();
+                break;
+            case 'plan':
+                this.renderPlan();
+                break;
+            case 'shopping':
+                break; // Shopping is rendered on demand
+        }
+    }
+
+    switchDay(dayIndex) {
+        this.currentDay = dayIndex;
         
-        // Update tab highlighting
         document.querySelectorAll('.date-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        document.querySelector(`[data-date="${day}"]`).classList.add('active');
+        document.querySelector(`[data-date="${dayIndex}"]`).classList.add('active');
         
         this.renderPlan();
     }
 
-    toggleTheme() {
-        document.body.classList.toggle('dark-theme');
-        this.saveData();
-    }
-
-    // Data management
-    loadData() {
-        const saved = localStorage.getItem('mealPlannerData');
-        if (saved) {
-            try {
-                this.data = JSON.parse(saved);
-            } catch (e) {
-                console.error('Failed to load saved data, using defaults');
-            }
-        }
-        
-        const theme = localStorage.getItem('mealPlannerTheme');
-        if (theme === 'dark') {
-            document.body.classList.add('dark-theme');
-        }
-    }
-
-    saveData() {
-        localStorage.setItem('mealPlannerData', JSON.stringify(this.data));
-        const isDark = document.body.classList.contains('dark-theme');
-        localStorage.setItem('mealPlannerTheme', isDark ? 'dark' : 'light');
-    }
-
-    // Inventory rendering
+    // Inventory management
     renderInventory() {
         const container = document.getElementById('inventory-list');
         
         if (this.data.items.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <p>No items in inventory</p>
-                    <p>Add items using the + button below</p>
+                    <p>No items in your inventory yet.</p>
+                    <p>Tap the + button to add your first item!</p>
                 </div>
             `;
             return;
         }
 
+        // Group by category
         const grouped = this.groupItemsByCategory();
         let html = '';
 
         Object.keys(grouped).forEach(category => {
-            html += `<div class="category-section">
-                <h3 class="category-title">${this.formatCategoryName(category)}</h3>
+            html += `<div style="margin-bottom: 1.5rem;">
+                <h3 style="color: var(--accent-primary); margin-bottom: 0.5rem; text-transform: capitalize;">${category}</h3>
             `;
             
             grouped[category].forEach(item => {
-                const lowStock = item.quantity < 50; // Simple low stock indicator
+                const stockClass = item.quantity <= 0 ? 'out-of-stock' : 
+                                 item.quantity < 10 ? 'low-stock' : '';
+                
                 html += `
-                    <div class="item-card ${lowStock ? 'low-stock' : ''}" onclick="app.editItem('${item.id}')">
+                    <div class="item-row" data-item-id="${item.id}">
                         <div class="item-info">
-                            <h4 class="item-name">${item.name}</h4>
-                            <span class="item-quantity">${item.quantity} ${item.unit}</span>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-details">
+                                <span class="category-badge">${item.category}</span>
+                            </div>
                         </div>
-                        ${lowStock ? '<div class="low-stock-indicator">!</div>' : ''}
+                        <div class="item-quantity ${stockClass}">
+                            ${item.quantity} ${item.unit}
+                        </div>
                     </div>
                 `;
             });
@@ -183,6 +237,14 @@ class MealPlannerApp {
         });
 
         container.innerHTML = html;
+
+        // Add click listeners
+        container.querySelectorAll('.item-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                const itemId = e.currentTarget.dataset.itemId;
+                this.openItemModal(itemId);
+            });
+        });
     }
 
     groupItemsByCategory() {
@@ -196,164 +258,112 @@ class MealPlannerApp {
         return grouped;
     }
 
-    formatCategoryName(category) {
-        return category.charAt(0).toUpperCase() + category.slice(1);
-    }
-
-    // Plan rendering
+    // Plan management
     renderPlan() {
-        const dayMeals = this.getMealsForDay(this.currentPlanDay);
-        const mealSlots = ['breakfast', 'lunch', 'dinner', 'snack'];
+        const mealSlots = document.querySelectorAll('.meal-slot');
+        const mealNames = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
         
-        document.querySelectorAll('.meal-slot').forEach((slot, index) => {
-            const meal = dayMeals[index];
-            const content = slot.querySelector('.meal-content');
+        // Check if we have predefined meals from sldata.js for this day
+        const dayPrefix = `day${this.currentDay + 1}`;
+        
+        mealSlots.forEach((slot, index) => {
+            const mealType = mealNames[index].toLowerCase();
+            const mealId = `${dayPrefix}-${mealType}`;
             
-            if (meal) {
-                content.innerHTML = `
-                    <div class="meal-card" onclick="app.editMeal('${meal.id}')">
-                        <h4 class="meal-name">${meal.name}</h4>
-                        <span class="meal-calories">${meal.calories} kcal</span>
-                        ${meal.notes ? `<p class="meal-notes">${meal.notes}</p>` : ''}
-                        <div class="meal-ingredients">
-                            ${meal.ingredients.map(ing => 
-                                `<span class="ingredient-tag">${ing.quantity}${ing.unit} ${ing.name}</span>`
-                            ).join('')}
-                        </div>
-                    </div>
-                `;
-            } else {
-                content.innerHTML = `
-                    <div class="empty-meal" onclick="app.addMeal(${this.currentPlanDay}, ${index})">
-                        <p>+ Add ${mealSlots[index]}</p>
-                    </div>
-                `;
+            // Look for predefined meal first, then user-created meal
+            let mealData = this.data.meals.find(m => m.id === mealId);
+            if (!mealData && this.data.plan && this.data.plan[this.currentDay]) {
+                mealData = this.data.plan[this.currentDay].slots[index];
             }
-        });
-
-        this.updateDailyTotals(dayMeals);
-    }
-
-    getMealsForDay(day) {
-        const dayPrefix = `day${day + 1}`;
-        const mealOrder = ['breakfast', 'lunch', 'dinner', 'snack'];
-        
-        return mealOrder.map(mealType => {
-            return this.data.meals.find(meal => 
-                meal.id.startsWith(dayPrefix) && meal.id.includes(mealType)
-            );
-        });
-    }
-
-    updateDailyTotals(meals) {
-        const totalCalories = meals.reduce((sum, meal) => {
-            return sum + (meal ? meal.calories : 0);
-        }, 0);
-        
-        document.querySelector('.calorie-total').textContent = `~${totalCalories} kcal`;
-    }
-
-    // Shopping list
-    generateShoppingList() {
-        const needed = this.calculateNeededItems();
-        const container = document.getElementById('shopping-list');
-        
-        if (Object.keys(needed).length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <p>You have everything you need!</p>
-                </div>
-            `;
-            return;
-        }
-
-        let html = '<div class="card"><h3>Shopping List</h3>';
-        
-        Object.entries(needed).forEach(([itemId, amount]) => {
-            const item = this.data.items.find(i => i.id === itemId);
-            if (item) {
-                html += `
-                    <div class="shopping-item">
-                        <span class="shopping-item-name">${item.name}</span>
-                        <span class="shopping-item-amount">${amount} ${item.unit}</span>
-                    </div>
+            
+            const mealContent = slot.querySelector('.meal-content');
+            
+            if (mealData) {
+                slot.classList.add('filled');
+                let contentHtml = `<div class="meal-card">
+                    <h4 style="margin-bottom: 0.5rem;">${mealData.name}</h4>
                 `;
-            }
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    calculateNeededItems() {
-        const needed = {};
-        const totalNeeded = {};
-        
-        // Calculate total needed for all meals
-        this.data.meals.forEach(meal => {
-            meal.ingredients.forEach(ingredient => {
-                if (!totalNeeded[ingredient.itemId]) {
-                    totalNeeded[ingredient.itemId] = 0;
+                
+                if (mealData.calories) {
+                    contentHtml += `<span style="color: var(--accent-primary); font-weight: bold;">${mealData.calories} kcal</span>`;
                 }
-                totalNeeded[ingredient.itemId] += ingredient.quantity;
-            });
+                
+                if (mealData.notes) {
+                    contentHtml += `<p style="color: var(--text-secondary); margin: 0.25rem 0; font-size: 0.875rem;">${mealData.notes}</p>`;
+                }
+                
+                if (mealData.ingredients && mealData.ingredients.length > 0) {
+                    contentHtml += '<div style="margin-top: 0.5rem;">';
+                    mealData.ingredients.slice(0, 3).forEach(ing => {
+                        contentHtml += `<span class="category-badge" style="margin-right: 0.25rem; margin-bottom: 0.25rem; display: inline-block;">${ing.quantity}${ing.unit} ${ing.name}</span>`;
+                    });
+                    if (mealData.ingredients.length > 3) {
+                        contentHtml += `<span class="category-badge">+${mealData.ingredients.length - 3} more</span>`;
+                    }
+                    contentHtml += '</div>';
+                }
+                
+                contentHtml += '</div>';
+                mealContent.innerHTML = contentHtml;
+            } else {
+                slot.classList.remove('filled');
+                mealContent.innerHTML = 'Tap to add meal';
+            }
+            
+            // Add click listener
+            slot.onclick = () => this.openMealSlot(this.currentDay, index);
         });
 
-        // Compare with current inventory
-        Object.entries(totalNeeded).forEach(([itemId, neededAmount]) => {
-            const item = this.data.items.find(i => i.id === itemId);
-            if (item && item.quantity < neededAmount) {
-                needed[itemId] = Math.ceil(neededAmount - item.quantity);
+        // Update daily totals
+        this.updateDailyTotals();
+    }
+
+    updateDailyTotals() {
+        const dayPrefix = `day${this.currentDay + 1}`;
+        let totalCalories = 0;
+        
+        // Count calories from predefined meals
+        this.data.meals.forEach(meal => {
+            if (meal.id.startsWith(dayPrefix) && meal.calories) {
+                totalCalories += meal.calories;
             }
         });
-
-        return needed;
+        
+        // Add calories from user-created meals
+        if (this.data.plan && this.data.plan[this.currentDay]) {
+            this.data.plan[this.currentDay].slots.forEach(meal => {
+                if (meal && meal.calories && !meal.id.startsWith(dayPrefix)) {
+                    totalCalories += meal.calories;
+                }
+            });
+        }
+        
+        // Update display if element exists
+        const totalElement = document.querySelector('.calorie-total');
+        if (totalElement) {
+            totalElement.textContent = `~${totalCalories} kcal`;
+        }
     }
 
-    // Supplements
-    renderSupplements() {
-        const supplements = [
-            { name: 'Multivitamin', description: 'General vitamin and mineral support' },
-            { name: 'Vitamin D3', description: 'Bone health and immune function' },
-            { name: 'Omega-3', description: 'Heart and brain health' },
-            { name: 'Magnesium', description: 'Muscle function and sleep' },
-            { name: 'Vitamin C', description: 'Immune support (missing fresh produce)' },
-            { name: 'B-Complex', description: 'Energy metabolism' }
-        ];
-
-        const container = document.getElementById('supplements-list');
-        let html = '';
-
-        supplements.forEach(supplement => {
-            html += `
-                <div class="supplement-item">
-                    <strong>${supplement.name}</strong>
-                    <p>${supplement.description}</p>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    }
-
-    // Item management
-    openItemModal(item = null) {
-        this.editingItem = item;
+    // Item modal management
+    openItemModal(itemId = null) {
+        this.editingItem = itemId ? this.data.items.find(item => item.id === itemId) : null;
         const modal = document.getElementById('item-modal');
         const title = document.getElementById('item-modal-title');
         const deleteBtn = document.getElementById('delete-item');
         
-        if (item) {
+        if (this.editingItem) {
             title.textContent = 'Edit Item';
-            document.getElementById('item-name').value = item.name;
-            document.getElementById('item-category').value = item.category;
-            document.getElementById('item-unit').value = item.unit;
-            document.getElementById('item-quantity').value = item.quantity;
             deleteBtn.style.display = 'block';
+            
+            document.getElementById('item-name').value = this.editingItem.name;
+            document.getElementById('item-category').value = this.editingItem.category;
+            document.getElementById('item-unit').value = this.editingItem.unit;
+            document.getElementById('item-quantity').value = this.editingItem.quantity;
         } else {
             title.textContent = 'Add Item';
-            document.getElementById('item-form').reset();
             deleteBtn.style.display = 'none';
+            document.getElementById('item-form').reset();
         }
         
         modal.style.display = 'flex';
@@ -364,249 +374,358 @@ class MealPlannerApp {
         this.editingItem = null;
     }
 
-    saveItem() {
-        const name = document.getElementById('item-name').value;
-        const category = document.getElementById('item-category').value;
-        const unit = document.getElementById('item-unit').value;
-        const quantity = parseFloat(document.getElementById('item-quantity').value);
+    handleItemSubmit(e) {
+        e.preventDefault();
+        
+        const itemData = {
+            name: document.getElementById('item-name').value.trim(),
+            category: document.getElementById('item-category').value,
+            unit: document.getElementById('item-unit').value,
+            quantity: parseFloat(document.getElementById('item-quantity').value)
+        };
 
         if (this.editingItem) {
             // Update existing item
-            const index = this.data.items.findIndex(i => i.id === this.editingItem.id);
+            const index = this.data.items.findIndex(item => item.id === this.editingItem.id);
             if (index !== -1) {
-                this.data.items[index] = {
-                    ...this.editingItem,
-                    name,
-                    category,
-                    unit,
-                    quantity
-                };
+                this.data.items[index] = { ...this.editingItem, ...itemData };
             }
         } else {
             // Add new item
-            const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-            this.data.items.push({
-                id,
-                name,
-                category,
-                unit,
-                quantity
-            });
+            itemData.id = this.generateId();
+            this.data.items.push(itemData);
         }
 
         this.saveData();
-        this.renderInventory();
         this.closeItemModal();
-    }
-
-    deleteItem() {
-        if (this.editingItem && confirm('Delete this item?')) {
-            this.data.items = this.data.items.filter(i => i.id !== this.editingItem.id);
-            this.saveData();
+        if (this.currentScreen === 'inventory') {
             this.renderInventory();
+        }
+    }
+
+    deleteCurrentItem() {
+        if (this.editingItem && confirm('Are you sure you want to delete this item?')) {
+            this.data.items = this.data.items.filter(item => item.id !== this.editingItem.id);
+            this.saveData();
             this.closeItemModal();
+            if (this.currentScreen === 'inventory') {
+                this.renderInventory();
+            }
         }
     }
 
-    editItem(itemId) {
-        const item = this.data.items.find(i => i.id === itemId);
-        if (item) {
-            this.openItemModal(item);
-        }
-    }
-
-    // Enhanced Meal management with ingredient selection
-    editMeal(mealId) {
-        const meal = this.data.meals.find(m => m.id === mealId);
-        if (meal) {
-            this.openMealModal(meal);
-        }
-    }
-
-    addMeal(day, slot) {
-        const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
-        const mealType = mealTypes[slot];
-        const newMeal = {
-            id: `day${day + 1}-${mealType}`,
-            name: `New ${mealType}`,
-            calories: 0,
-            ingredients: []
-        };
-        this.openMealModal(newMeal, true);
-    }
-
-    openMealModal(meal, isNew = false) {
-        this.editingMeal = { ...meal, isNew };
-        this.mealIngredients = [...(meal.ingredients || [])];
-        const modal = document.getElementById('meal-modal');
+    // Meal management
+    openMealSlot(dayIndex, slotIndex) {
+        this.currentMealSlot = { dayIndex, slotIndex };
+        this.selectedIngredients.clear();
         
-        document.getElementById('meal-name').value = meal.name || '';
-        document.getElementById('meal-calories').value = meal.calories || '';
-        document.getElementById('meal-notes').value = meal.notes || '';
+        if (this.data.items.length === 0) {
+            this.showToast('Add some items to your inventory first!');
+            return;
+        }
+
+        this.renderMealModal();
+        document.getElementById('meal-modal').style.display = 'flex';
+    }
+
+    renderMealModal() {
+        const container = document.getElementById('meal-ingredients');
         
-        this.renderMealIngredients();
-        modal.style.display = 'flex';
+        let html = `
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem;">Select Ingredients:</h4>
+                <div id="ingredient-list">
+        `;
+        
+        this.data.items.forEach(item => {
+            const isSelected = this.selectedIngredients.has(item.id);
+            const selectedQuantity = isSelected ? this.selectedIngredients.get(item.id) : 0;
+            
+            html += `
+                <div class="item-row" style="margin-bottom: 0.5rem; ${isSelected ? 'background: var(--bg-tertiary);' : ''}">
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">Available: ${item.quantity} ${item.unit}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="number" 
+                            class="form-input ingredient-quantity" 
+                            style="width: 80px; padding: 0.5rem;"
+                            placeholder="0"
+                            value="${selectedQuantity || ''}"
+                            min="0"
+                            max="${item.quantity}"
+                            step="0.1"
+                            data-item-id="${item.id}"
+                            data-item-name="${item.name}"
+                            data-item-unit="${item.unit}">
+                        <span style="font-size: 0.875rem; color: var(--text-secondary);">${item.unit}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+        
+        // Selected ingredients preview
+        if (this.selectedIngredients.size > 0) {
+            html += `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="margin-bottom: 0.5rem;">Selected Ingredients:</h4>
+                    <div>
+            `;
+            this.selectedIngredients.forEach((quantity, itemId) => {
+                const item = this.data.items.find(i => i.id === itemId);
+                if (item && quantity > 0) {
+                    html += `<span class="category-badge" style="margin-right: 0.25rem; margin-bottom: 0.25rem;">${quantity}${item.unit} ${item.name}</span>`;
+                }
+            });
+            html += `</div></div>`;
+        }
+        
+        container.innerHTML = html;
+        
+        // Add input listeners
+        container.querySelectorAll('.ingredient-quantity').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const itemId = e.target.dataset.itemId;
+                const quantity = parseFloat(e.target.value) || 0;
+                
+                if (quantity > 0) {
+                    this.selectedIngredients.set(itemId, quantity);
+                } else {
+                    this.selectedIngredients.delete(itemId);
+                }
+                
+                this.renderMealModal(); // Re-render to show selection
+            });
+        });
     }
 
     closeMealModal() {
         document.getElementById('meal-modal').style.display = 'none';
-        this.editingMeal = null;
-        this.mealIngredients = [];
-    }
-
-    renderMealIngredients() {
-        const container = document.getElementById('meal-ingredients');
-        
-        let html = `
-            <div class="ingredient-management">
-                <div class="add-ingredient-section">
-                    <h4>Add Ingredients</h4>
-                    <div class="ingredient-selector">
-                        <select id="ingredient-select" class="form-select">
-                            <option value="">Select an ingredient...</option>
-                            ${this.data.items.map(item => 
-                                `<option value="${item.id}">${item.name}</option>`
-                            ).join('')}
-                        </select>
-                        <input type="number" id="ingredient-quantity" class="form-input" placeholder="Quantity" min="0" step="0.1">
-                        <span id="ingredient-unit" class="unit-display">-</span>
-                        <button type="button" onclick="app.addIngredientToMeal()" class="btn btn-small">Add</button>
-                    </div>
-                </div>
-                
-                <div class="current-ingredients">
-                    <h4>Current Ingredients</h4>
-                    <div class="ingredients-list">
-                        ${this.mealIngredients.length === 0 ? 
-                            '<p class="empty-state">No ingredients added yet.</p>' :
-                            this.mealIngredients.map((ingredient, index) => `
-                                <div class="ingredient-item">
-                                    <span class="ingredient-info">${ingredient.quantity}${ingredient.unit} ${ingredient.name}</span>
-                                    <button type="button" onclick="app.removeIngredientFromMeal(${index})" class="btn-remove">×</button>
-                                </div>
-                            `).join('')
-                        }
-                    </div>
-                </div>
-            </div>
-        `;
-
-        container.innerHTML = html;
-
-        // Update unit display when ingredient is selected
-        const select = document.getElementById('ingredient-select');
-        const unitDisplay = document.getElementById('ingredient-unit');
-        
-        select.addEventListener('change', (e) => {
-            const item = this.data.items.find(i => i.id === e.target.value);
-            unitDisplay.textContent = item ? item.unit : '-';
-        });
-    }
-
-    addIngredientToMeal() {
-        const selectEl = document.getElementById('ingredient-select');
-        const quantityEl = document.getElementById('ingredient-quantity');
-        
-        const itemId = selectEl.value;
-        const quantity = parseFloat(quantityEl.value);
-        
-        if (!itemId || !quantity || quantity <= 0) {
-            alert('Please select an ingredient and enter a valid quantity.');
-            return;
-        }
-
-        const item = this.data.items.find(i => i.id === itemId);
-        if (!item) {
-            alert('Selected ingredient not found.');
-            return;
-        }
-
-        // Check if ingredient already exists in meal
-        const existingIndex = this.mealIngredients.findIndex(ing => ing.itemId === itemId);
-        if (existingIndex !== -1) {
-            // Update existing ingredient quantity
-            this.mealIngredients[existingIndex].quantity += quantity;
-        } else {
-            // Add new ingredient
-            this.mealIngredients.push({
-                itemId: itemId,
-                name: item.name,
-                quantity: quantity,
-                unit: item.unit
-            });
-        }
-
-        // Reset form
-        selectEl.value = '';
-        quantityEl.value = '';
-        document.getElementById('ingredient-unit').textContent = '-';
-
-        this.renderMealIngredients();
-        this.updateMealCalories();
-    }
-
-    removeIngredientFromMeal(index) {
-        this.mealIngredients.splice(index, 1);
-        this.renderMealIngredients();
-        this.updateMealCalories();
-    }
-
-    updateMealCalories() {
-        // Simple calorie estimation based on typical values
-        const calorieEstimates = {
-            'beef-steak': 2.5, // per gram
-            'eggs': 70, // per piece
-            'milk': 0.6, // per ml
-            'sardines': 2, // per gram
-            'butter': 7, // per gram
-            'greek-yogurt': 1, // per gram
-            'white-rice': 3.5, // per gram
-            'porridge-oats': 3.8, // per gram
-            'honey': 3, // per gram
-            'satsumas': 35, // per piece
-            'banana': 90 // per piece
-        };
-
-        let totalCalories = 0;
-        this.mealIngredients.forEach(ingredient => {
-            const caloriePerUnit = calorieEstimates[ingredient.itemId] || 2;
-            totalCalories += ingredient.quantity * caloriePerUnit;
-        });
-
-        document.getElementById('meal-calories').value = Math.round(totalCalories);
+        this.currentMealSlot = null;
+        this.selectedIngredients.clear();
     }
 
     saveMeal() {
-        const name = document.getElementById('meal-name').value;
-        const calories = parseInt(document.getElementById('meal-calories').value) || 0;
-        const notes = document.getElementById('meal-notes').value;
-
-        if (!name.trim()) {
-            alert('Please enter a meal name.');
+        if (!this.currentMealSlot || this.selectedIngredients.size === 0) {
+            this.showToast('Please add at least one ingredient to create a meal.');
             return;
         }
 
-        this.editingMeal.name = name;
-        this.editingMeal.calories = calories;
-        this.editingMeal.ingredients = [...this.mealIngredients];
-        if (notes) this.editingMeal.notes = notes;
+        const ingredients = [];
+        let mealName = '';
+        let estimatedCalories = 0;
 
-        if (this.editingMeal.isNew) {
-            this.data.meals.push(this.editingMeal);
-        } else {
-            const index = this.data.meals.findIndex(m => m.id === this.editingMeal.id);
-            if (index !== -1) {
-                this.data.meals[index] = this.editingMeal;
+        // Build ingredients array and estimate calories
+        this.selectedIngredients.forEach((quantity, itemId) => {
+            const item = this.data.items.find(i => i.id === itemId);
+            if (item && quantity > 0) {
+                ingredients.push({
+                    itemId,
+                    name: item.name,
+                    quantity,
+                    unit: item.unit
+                });
+                
+                // Simple calorie estimation
+                const calorieEstimates = {
+                    'beef-steak': 2.5, 'eggs': 70, 'milk': 0.6, 'sardines': 2,
+                    'butter': 7, 'greek-yogurt': 1, 'white-rice': 3.5,
+                    'porridge-oats': 3.8, 'honey': 3, 'satsumas': 35, 'banana': 90
+                };
+                const caloriePerUnit = calorieEstimates[itemId] || 2;
+                estimatedCalories += quantity * caloriePerUnit;
             }
+        });
+
+        // Create meal name from ingredients
+        mealName = ingredients.map(ing => ing.name).slice(0, 2).join(' & ');
+        if (ingredients.length > 2) {
+            mealName += ` + ${ingredients.length - 2} more`;
         }
 
+        const mealData = {
+            id: this.generateId(),
+            name: mealName,
+            ingredients,
+            calories: Math.round(estimatedCalories)
+        };
+
+        // Initialize plan if needed
+        if (!this.data.plan) {
+            this.data.plan = this.initializePlan();
+        }
+
+        // Save to plan
+        this.data.plan[this.currentMealSlot.dayIndex].slots[this.currentMealSlot.slotIndex] = mealData;
+
+        // Update inventory quantities
+        ingredients.forEach(ing => {
+            const itemIndex = this.data.items.findIndex(item => item.id === ing.itemId);
+            if (itemIndex !== -1) {
+                this.data.items[itemIndex].quantity = Math.max(0, this.data.items[itemIndex].quantity - ing.quantity);
+            }
+        });
+
         this.saveData();
-        this.renderPlan();
         this.closeMealModal();
+        this.renderPlan();
+        this.showToast(`${mealName} added to your meal plan!`);
+    }
+
+    // Shopping list
+    generateShoppingList() {
+        const needed = this.calculateNeededItems();
+        const container = document.getElementById('shopping-list');
+        
+        if (Object.keys(needed).length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>🎉 You have everything you need!</p>
+                    <p>Your current inventory covers all planned meals.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Group by category
+        const grouped = {};
+        Object.entries(needed).forEach(([itemId, amount]) => {
+            const item = this.data.items.find(i => i.id === itemId);
+            if (item) {
+                if (!grouped[item.category]) {
+                    grouped[item.category] = [];
+                }
+                grouped[item.category].push({
+                    name: item.name,
+                    amount: Math.ceil(amount),
+                    unit: item.unit
+                });
+            }
+        });
+
+        let html = '';
+        Object.keys(grouped).forEach(category => {
+            html += `
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem; text-transform: capitalize; color: var(--accent-primary);">${category}</h3>
+                    ${grouped[category].map(item => `
+                        <div class="shopping-item">
+                            <input type="checkbox" class="shopping-checkbox">
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-details">Need: ${item.amount} ${item.unit}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Add checkbox listeners
+        container.querySelectorAll('.shopping-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const item = e.target.closest('.shopping-item');
+                item.classList.toggle('checked', e.target.checked);
+            });
+        });
+    }
+
+    calculateNeededItems() {
+        const needed = {};
+        const totalNeeded = {};
+        
+        // Calculate from predefined meals
+        this.data.meals.forEach(meal => {
+            if (meal.ingredients) {
+                meal.ingredients.forEach(ingredient => {
+                    if (!totalNeeded[ingredient.itemId]) {
+                        totalNeeded[ingredient.itemId] = 0;
+                    }
+                    totalNeeded[ingredient.itemId] += ingredient.quantity;
+                });
+            }
+        });
+
+        // Calculate from user-created meals in plan
+        if (this.data.plan) {
+            this.data.plan.forEach(day => {
+                if (day.slots) {
+                    day.slots.forEach(meal => {
+                        if (meal && meal.ingredients) {
+                            meal.ingredients.forEach(ingredient => {
+                                if (!totalNeeded[ingredient.itemId]) {
+                                    totalNeeded[ingredient.itemId] = 0;
+                                }
+                                totalNeeded[ingredient.itemId] += ingredient.quantity;
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Compare with current inventory
+        Object.entries(totalNeeded).forEach(([itemId, neededAmount]) => {
+            const item = this.data.items.find(i => i.id === itemId);
+            if (item && item.quantity < neededAmount) {
+                needed[itemId] = neededAmount - item.quantity;
+            }
+        });
+
+        return needed;
+    }
+
+    // Utility functions
+    showToast(message) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            z-index: 1001;
+            font-weight: 500;
+            box-shadow: 0 4px 12px var(--shadow);
+            animation: slideDown 0.3s ease;
+        `;
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideDown 0.3s ease reverse';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
     }
 }
 
-// Initialize the app when the DOM is loaded
+// Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Add toast animation styles
+    if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
     window.app = new MealPlannerApp();
 });
