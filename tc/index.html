@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Till Banking</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            background: #f5f5f5;
+            padding: 10px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .f30-header { background: #d4f4d4; }
+        .g60-header { background: #fff2cc; }
+        .g22-header { background: #e6e6e6; }
+        .f34-header { background: #fff2cc; }
+        .g42-header { background: #e6e6e6; }
+
+        .till-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .till-row {
+            display: contents;
+        }
+
+        .till-number {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .till-input {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: right;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .till-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+
+        .section-total {
+            background: #f8f9fa;
+            border: 2px solid #28a745;
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .grand-total {
+            background: #007bff;
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        @media (min-width: 480px) {
+            .till-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .till-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- F30 Section -->
+    <div class="section">
+        <div class="section-header f30-header">F30</div>
+        <div class="till-grid">
+            <div class="till-row">
+                <div class="till-number">701</div>
+                <input type="number" class="till-input" data-till="701" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">702</div>
+                <input type="number" class="till-input" data-till="702" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">703</div>
+                <input type="number" class="till-input" data-till="703" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">704</div>
+                <input type="number" class="till-input" data-till="704" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">723</div>
+                <input type="number" class="till-input" data-till="723" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">724</div>
+                <input type="number" class="till-input" data-till="724" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">725</div>
+                <input type="number" class="till-input" data-till="725" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">726</div>
+                <input type="number" class="till-input" data-till="726" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">727</div>
+                <input type="number" class="till-input" data-till="727" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">728</div>
+                <input type="number" class="till-input" data-till="728" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">214</div>
+                <input type="number" class="till-input" data-till="214" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">232</div>
+                <input type="number" class="till-input" data-till="232" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">233</div>
+                <input type="number" class="till-input" data-till="233" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">238</div>
+                <input type="number" class="till-input" data-till="238" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">221</div>
+                <input type="number" class="till-input" data-till="221" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+        </div>
+        <div class="section-total" id="f30-total">F30 Total: £0.00</div>
+        <button class="clear-btn" onclick="clearSection('f30')">Clear F30</button>
+    </div>
+
+    <!-- G60 Section -->
+    <div class="section">
+        <div class="section-header g60-header">G60</div>
+        <div class="till-grid">
+            <div class="till-row">
+                <div class="till-number">202</div>
+                <input type="number" class="till-input" data-till="202" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">235</div>
+                <input type="number" class="till-input" data-till="235" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">203</div>
+                <input type="number" class="till-input" data-till="203" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">204</div>
+                <input type="number" class="till-input" data-till="204" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">213</div>
+                <input type="number" class="till-input" data-till="213" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">236</div>
+                <input type="number" class="till-input" data-till="236" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">208</div>
+                <input type="number" class="till-input" data-till="208" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">209</div>
+                <input type="number" class="till-input" data-till="209" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">211</div>
+                <input type="number" class="till-input" data-till="211" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">210</div>
+                <input type="number" class="till-input" data-till="210" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+        </div>
+        <div class="section-total" id="g60-total">G60 Total: £0.00</div>
+        <button class="clear-btn" onclick="clearSection('g60')">Clear G60</button>
+    </div>
+
+    <!-- G22 Section -->
+    <div class="section">
+        <div class="section-header g22-header">G22</div>
+        <div class="till-grid">
+            <div class="till-row">
+                <div class="till-number">224</div>
+                <input type="number" class="till-input" data-till="224" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">205</div>
+                <input type="number" class="till-input" data-till="205" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">229</div>
+                <input type="number" class="till-input" data-till="229" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">206</div>
+                <input type="number" class="till-input" data-till="206" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">207</div>
+                <input type="number" class="till-input" data-till="207" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+        </div>
+        <div class="section-total" id="g22-total">G22 Total: £0.00</div>
+        <button class="clear-btn" onclick="clearSection('g22')">Clear G22</button>
+    </div>
+
+    <!-- F34 Section -->
+    <div class="section">
+        <div class="section-header f34-header">F34</div>
+        <div class="till-grid">
+            <div class="till-row">
+                <div class="till-number">237</div>
+                <input type="number" class="till-input" data-till="237" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">223</div>
+                <input type="number" class="till-input" data-till="223" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">215</div>
+                <input type="number" class="till-input" data-till="215" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+        </div>
+        <div class="section-total" id="f34-total">F34 Total: £0.00</div>
+        <button class="clear-btn" onclick="clearSection('f34')">Clear F34</button>
+    </div>
+
+    <!-- G42 Section -->
+    <div class="section">
+        <div class="section-header g42-header">G42</div>
+        <div class="till-grid">
+            <div class="till-row">
+                <div class="till-number">234</div>
+                <input type="number" class="till-input" data-till="234" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">231</div>
+                <input type="number" class="till-input" data-till="231" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">226</div>
+                <input type="number" class="till-input" data-till="226" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+            <div class="till-row">
+                <div class="till-number">239</div>
+                <input type="number" class="till-input" data-till="239" step="0.01" min="0" max="999.99" placeholder="0.00">
+            </div>
+        </div>
+        <div class="section-total" id="g42-total">G42 Total: £0.00</div>
+        <button class="clear-btn" onclick="clearSection('g42')">Clear G42</button>
+    </div>
+
+    <!-- Grand Total -->
+    <div class="grand-total" id="grand-total">
+        Grand Total: £0.00
+    </div>
+
+    <script>
+        const sections = {
+            f30: [701, 702, 703, 704, 723, 724, 725, 726, 727, 728, 214, 232, 233, 238, 221],
+            g60: [202, 235, 203, 204, 213, 236, 208, 209, 211, 210],
+            g22: [224, 205, 229, 206, 207],
+            f34: [237, 223, 215],
+            g42: [234, 231, 226, 239]
+        };
+
+        function saveToStorage(tillNumber, value) {
+            const data = JSON.parse(localStorage.getItem('tillData') || '{}');
+            data[tillNumber] = value;
+            localStorage.setItem('tillData', JSON.stringify(data));
+        }
+
+        function loadFromStorage(tillNumber) {
+            const data = JSON.parse(localStorage.getItem('tillData') || '{}');
+            return data[tillNumber] || 0;
+        }
+
+        function formatCurrency(amount) {
+            return `£${parseFloat(amount).toFixed(2)}`;
+        }
+
+        function updateSectionTotal(sectionName) {
+            const tillNumbers = sections[sectionName];
+            let total = 0;
+            
+            tillNumbers.forEach(tillNumber => {
+                const input = document.querySelector(`[data-till="${tillNumber}"]`);
+                const value = parseFloat(input.value) || 0;
+                total += value;
+            });
+            
+            document.getElementById(`${sectionName}-total`).textContent = 
+                `${sectionName.toUpperCase()} Total: ${formatCurrency(total)}`;
+            
+            updateGrandTotal();
+        }
+
+        function updateGrandTotal() {
+            let grandTotal = 0;
+            
+            Object.keys(sections).forEach(sectionName => {
+                const tillNumbers = sections[sectionName];
+                tillNumbers.forEach(tillNumber => {
+                    const input = document.querySelector(`[data-till="${tillNumber}"]`);
+                    const value = parseFloat(input.value) || 0;
+                    grandTotal += value;
+                });
+            });
+            
+            document.getElementById('grand-total').textContent = 
+                `Grand Total: ${formatCurrency(grandTotal)}`;
+        }
+
+        function clearSection(sectionName) {
+            if (confirm(`Are you sure you want to clear all ${sectionName.toUpperCase()} values?`)) {
+                const tillNumbers = sections[sectionName];
+                tillNumbers.forEach(tillNumber => {
+                    const input = document.querySelector(`[data-till="${tillNumber}"]`);
+                    input.value = '';
+                    saveToStorage(tillNumber, 0);
+                });
+                updateSectionTotal(sectionName);
+            }
+        }
+
+        function initializeApp() {
+            // Load saved data
+            Object.values(sections).flat().forEach(tillNumber => {
+                const input = document.querySelector(`[data-till="${tillNumber}"]`);
+                const savedValue = loadFromStorage(tillNumber);
+                if (savedValue > 0) {
+                    input.value = savedValue.toFixed(2);
+                }
+            });
+
+            // Add event listeners
+            document.querySelectorAll('.till-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const tillNumber = this.dataset.till;
+                    const value = parseFloat(this.value) || 0;
+                    saveToStorage(tillNumber, value);
+                    
+                    // Find which section this till belongs to
+                    for (const [sectionName, tillNumbers] of Object.entries(sections)) {
+                        if (tillNumbers.includes(parseInt(tillNumber))) {
+                            updateSectionTotal(sectionName);
+                            break;
+                        }
+                    }
+                });
+
+                // Format on blur
+                input.addEventListener('blur', function() {
+                    if (this.value) {
+                        this.value = parseFloat(this.value).toFixed(2);
+                    }
+                });
+            });
+
+            // Initial calculations
+            Object.keys(sections).forEach(sectionName => {
+                updateSectionTotal(sectionName);
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
