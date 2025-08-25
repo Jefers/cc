@@ -114,6 +114,31 @@
             background: #c82333;
         }
 
+        .export-btn {
+            background: #ff8c00;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(255,140,0,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .export-btn:hover {
+            background: #e67e00;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(255,140,0,0.4);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
         @media (min-width: 480px) {
             .till-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -326,6 +351,9 @@
         Grand Total: £0.00
     </div>
 
+    <!-- Export Button -->
+    <button class="export-btn" onclick="exportToCSV()">Export Data</button>
+
     <script>
         const sections = {
             f30: [701, 702, 703, 704, 723, 724, 725, 726, 727, 728, 214, 232, 233, 238, 221],
@@ -391,6 +419,58 @@
                     saveToStorage(tillNumber, 0);
                 });
                 updateSectionTotal(sectionName);
+            }
+        }
+
+        function exportToCSV() {
+            const data = JSON.parse(localStorage.getItem('tillData') || '{}');
+            const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            
+            let csvContent = 'Section,Till Number,Amount\n';
+            let grandTotal = 0;
+            
+            // Add data for each section
+            Object.entries(sections).forEach(([sectionName, tillNumbers]) => {
+                tillNumbers.forEach(tillNumber => {
+                    const amount = data[tillNumber] || 0;
+                    csvContent += `${sectionName.toUpperCase()},${tillNumber},${amount.toFixed(2)}\n`;
+                    grandTotal += parseFloat(amount);
+                });
+            });
+            
+            // Add section totals
+            csvContent += '\nSection Totals:\n';
+            Object.entries(sections).forEach(([sectionName, tillNumbers]) => {
+                let sectionTotal = 0;
+                tillNumbers.forEach(tillNumber => {
+                    sectionTotal += parseFloat(data[tillNumber] || 0);
+                });
+                csvContent += `${sectionName.toUpperCase()} Total,,${sectionTotal.toFixed(2)}\n`;
+            });
+            
+            // Add grand total
+            csvContent += `\nGrand Total,,${grandTotal.toFixed(2)}\n`;
+            csvContent += `\nExported on:,${timestamp}\n`;
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `till_banking_${new Date().toISOString().slice(0, 10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show success message
+                const originalText = document.querySelector('.export-btn').textContent;
+                document.querySelector('.export-btn').textContent = 'Exported! ✓';
+                setTimeout(() => {
+                    document.querySelector('.export-btn').textContent = originalText;
+                }, 2000);
             }
         }
 
