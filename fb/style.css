@@ -43,6 +43,45 @@ h2, h3 {
     margin-bottom: 1rem;
 }
 
+#reminder-list, #badge-list, #goal-items {
+    list-style: none;
+}
+
+.reminder-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+}
+
+.badge-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    border-radius: 4px;
+}
+
+.goal-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    height: 20px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress {
+    background-color: #28a745; /* Green for progress */
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
 #weekly-calendar {
     width: 100%;
     border-collapse: collapse;
@@ -64,6 +103,9 @@ h2, h3 {
     padding: 0.25rem;
     margin-bottom: 0.25rem;
     border-left: 4px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .transaction-item.income {
@@ -72,6 +114,16 @@ h2, h3 {
 
 .transaction-item.expense {
     border-color: #dc3545; /* Red for expense */
+}
+
+.transaction-item button {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    background-color: #6c757d;
+}
+
+.transaction-item button:hover {
+    background-color: #5a6268;
 }
 
 #category-chart {
@@ -137,7 +189,7 @@ button:hover {
         grid-column: span 2;
     }
 
-    #recurring-day {
+    #recurring-day, #estimated-amount, #goal-name, #goal-target, #goal-date {
         grid-column: span 1;
     }
 
