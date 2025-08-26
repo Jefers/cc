@@ -156,6 +156,22 @@ h2, h3 {
     border-radius: 6px;
 }
 
+#settings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+#settings button, #settings input[type="file"] {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 6px;
+}
+
+#settings input[type="file"] {
+    border: 1px solid #d1d5db;
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -215,13 +231,13 @@ button:active {
         padding: 2rem;
     }
 
-    form {
+    form, #settings {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
     }
 
-    textarea, button {
+    textarea, button, #export-csv, #import-csv {
         grid-column: span 2;
     }
 

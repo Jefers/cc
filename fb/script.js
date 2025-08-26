@@ -6,6 +6,22 @@ let savingsStreak = { weeks: [], badgeAwarded: false };
 let whatIfAdjustments = {};
 let dismissedPopups = JSON.parse(localStorage.getItem('dismissedPopups')) || [];
 
+// Sample CSV Data for Testing
+/*
+budget.csv content:
+id,type,category,amount,estimatedAmount,date,description,recurring,recurringDay,goalId
+1,income,Job Income,₱12000,₱0,2025-08-01,Salary,false,,null
+2,income,Job Income,₱3000,₱0,2025-08-03,Freelance,false,,null
+3,expense,Rent,₱5000,₱0,2025-08-10,,true,10,null
+4,expense,Utilities,₱1000,₱1200,2025-08-10,Electricity,true,10,null
+5,expense,Worker Wages,₱2000,₱0,2025-08-10,Juan,true,10,null
+6,expense,Worker Wages,₱1500,₱0,2025-08-10,Maria,true,10,null
+7,expense,Food,₱400,₱0,2025-08-15,Groceries,false,,null
+8,expense,Big Expense,₱5000,₱0,2025-08-20,Dental Work,false,,null
+9,expense,Savings Transfer,₱1000,₱0,2025-08-25,Emergency Buffer,false,,1
+10,expense,Food,₱300,₱0,2025-08-22,Restaurant,false,,null
+*/
+
 // Initialize data and setup
 function init() {
     loadData();
@@ -31,7 +47,8 @@ function loadTestData() {
         { id: 6, type: 'expense', category: 'Worker Wages', amount: 1500, estimatedAmount: 0, date: '2025-08-10', description: 'Maria', recurring: true, recurringDay: '10', goalId: null },
         { id: 7, type: 'expense', category: 'Food', amount: 400, estimatedAmount: 0, date: '2025-08-15', description: 'Groceries', recurring: false, recurringDay: '', goalId: null },
         { id: 8, type: 'expense', category: 'Big Expense', amount: 5000, estimatedAmount: 0, date: '2025-08-20', description: 'Dental Work', recurring: false, recurringDay: '', goalId: null },
-        { id: 9, type: 'expense', category: 'Savings Transfer', amount: 1000, estimatedAmount: 0, date: '2025-08-25', description: 'Emergency Buffer', recurring: false, recurringDay: '', goalId: 1 }
+        { id: 9, type: 'expense', category: 'Savings Transfer', amount: 1000, estimatedAmount: 0, date: '2025-08-25', description: 'Emergency Buffer', recurring: false, recurringDay: '', goalId: 1 },
+        { id: 10, type: 'expense', category: 'Food', amount: 300, estimatedAmount: 0, date: '2025-08-22', description: 'Restaurant', recurring: false, recurringDay: '', goalId: null }
     ];
     savingsGoals = [
         { id: 1, name: 'Emergency Buffer', targetAmount: 10000, targetDate: '2025-11-26', currentAmount: 1000 }
@@ -69,6 +86,8 @@ function setupFormListeners() {
     const estimatedLabel = document.querySelector('label[for="estimated-amount"]');
     const horizonSelect = document.getElementById('forecast-horizon');
     const eduDismiss = document.getElementById('edu-dismiss');
+    const exportCsvButton = document.getElementById('export-csv');
+    const importCsvInput = document.getElementById('import-csv');
 
     recurringCheckbox.addEventListener('change', () => {
         const isChecked = recurringCheckbox.checked;
@@ -102,6 +121,9 @@ function setupFormListeners() {
         popup.classList.add('hidden');
     });
 
+    exportCsvButton.addEventListener('click', exportToCsv);
+    importCsvInput.addEventListener('change', handleImportCsv);
+
     transactionForm.addEventListener('submit', handleAddTransaction);
     savingsGoalForm.addEventListener('submit', handleAddSavingsGoal);
     whatIfForm.addEventListener('submit', handleWhatIfSimulation);
@@ -129,6 +151,162 @@ function loadData() {
     if (savedProjections) projections = JSON.parse(savedProjections);
     if (savedStreak) savingsStreak = JSON.parse(savedStreak);
     if (savedDismissedPopups) dismissedPopups = JSON.parse(savedDismissedPopups);
+}
+
+// Export transactions to CSV
+function exportToCsv() {
+    const headers = ['id', 'type', 'category', 'amount', 'estimatedAmount', 'date', 'description', 'recurring', 'recurringDay', 'goalId'];
+    const csvRows = [headers.join(',')];
+
+    transactions.forEach(t => {
+        const row = [
+            t.id,
+            t.type,
+            t.category,
+            `₱${t.amount.toFixed(2)}`,
+            `₱${t.estimatedAmount.toFixed(2)}`,
+            t.date,
+            `"${t.description.replace(/"/g, '""')}"`, // Escape quotes
+            t.recurring,
+            t.recurringDay || '',
+            t.goalId || 'null'
+        ];
+        csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'budget.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// Import transactions from CSV
+function handleImportCsv(event) {
+    const file = event.target.files[0];
+    if (!file) {
+        alert('Please select a CSV file.');
+        return;
+    }
+
+    if (!file.name.endsWith('.csv')) {
+        alert('Please upload a valid CSV file.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const text = e.target.result;
+            const rows = text.split('\n').map(row => row.trim()).filter(row => row);
+            if (rows.length < 1) {
+                alert('Empty CSV file.');
+                return;
+            }
+
+            const headers = rows[0].split(',').map(h => h.trim());
+            const expectedHeaders = ['id', 'type', 'category', 'amount', 'estimatedAmount', 'date', 'description', 'recurring', 'recurringDay', 'goalId'];
+            if (!headers.every((h, i) => h === expectedHeaders[i])) {
+                alert('Invalid CSV format: Incorrect headers.');
+                return;
+            }
+
+            const validCategories = ['Job Income', 'Worker Wages', 'Rent', 'Utilities', 'Food', 'Big Expense', 'Savings Transfer'];
+            const newTransactions = [];
+
+            for (let i = 1; i < rows.length; i++) {
+                const cols = rows[i].split(',').map(col => col.trim());
+                if (cols.length !== headers.length) {
+                    alert(`Invalid CSV format: Row ${i + 1} has incorrect number of columns.`);
+                    return;
+                }
+
+                const transaction = {
+                    id: parseInt(cols[0]),
+                    type: cols[1],
+                    category: cols[2],
+                    amount: parseFloat(cols[3].replace('₱', '')),
+                    estimatedAmount: parseFloat(cols[4].replace('₱', '')),
+                    date: cols[5],
+                    description: cols[6].replace(/^"|"$/g, '').replace(/""/g, '"'),
+                    recurring: cols[7] === 'true',
+                    recurringDay: cols[8] || '',
+                    goalId: cols[9] === 'null' ? null : parseInt(cols[9])
+                };
+
+                // Validation
+                if (isNaN(transaction.id)) {
+                    alert(`Invalid ID in row ${i + 1}.`);
+                    return;
+                }
+                if (!['income', 'expense'].includes(transaction.type)) {
+                    alert(`Invalid type in row ${i + 1}.`);
+                    return;
+                }
+                if (!validCategories.includes(transaction.category)) {
+                    alert(`Invalid category in row ${i + 1}.`);
+                    return;
+                }
+                if (isNaN(transaction.amount) || transaction.amount <= 0) {
+                    alert(`Amount must be greater than 0 in row ${i + 1}.`);
+                    return;
+                }
+                if (isNaN(transaction.estimatedAmount) || transaction.estimatedAmount < 0) {
+                    alert(`Estimated amount cannot be negative in row ${i + 1}.`);
+                    return;
+                }
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(transaction.date) || new Date(transaction.date) > new Date()) {
+                    alert(`Invalid date in row ${i + 1}.`);
+                    return;
+                }
+                if (transaction.category === 'Worker Wages' && !transaction.description) {
+                    alert(`Worker name required for Worker Wages in row ${i + 1}.`);
+                    return;
+                }
+                if (transaction.recurring && !transaction.recurringDay) {
+                    alert(`Recurring day required for recurring transaction in row ${i + 1}.`);
+                    return;
+                }
+                if (transaction.goalId !== null && !savingsGoals.some(g => g.id === transaction.goalId)) {
+                    alert(`Invalid goal ID in row ${i + 1}.`);
+                    return;
+                }
+
+                newTransactions.push(transaction);
+            }
+
+            // Update savings goals for Savings Transfer transactions
+            newTransactions.forEach(t => {
+                if (t.category === 'Savings Transfer' && t.goalId) {
+                    const goal = savingsGoals.find(g => g.id === t.goalId);
+                    if (goal) {
+                        const prevProgress = goal.currentAmount / goal.targetAmount * 100;
+                        goal.currentAmount = (goal.currentAmount || 0) + t.amount;
+                        const newProgress = goal.currentAmount / goal.targetAmount * 100;
+                        checkGoalMilestones(goal, prevProgress, newProgress);
+                    }
+                }
+            });
+
+            transactions.push(...newTransactions);
+            saveData();
+            updateDashboard();
+            updateSavingsGoals();
+            checkReminders();
+            checkSavingsStreak();
+            updateForecast();
+            alert('Transactions imported successfully!');
+            importCsvInput.value = ''; // Reset file input
+        } catch (error) {
+            alert('Error importing CSV: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
 }
 
 // Handle adding a new transaction with error handling
