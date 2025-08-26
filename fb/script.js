@@ -4,6 +4,24 @@ let savingsGoals = [];
 let projections = { weekly: 0, monthly: 0 };
 let savingsStreak = { weeks: [], badgeAwarded: false };
 let whatIfAdjustments = {};
+let dismissedPopups = JSON.parse(localStorage.getItem('dismissedPopups')) || [];
+
+// Sample Data for Testing
+/*
+transactions = [
+    { id: 1, type: 'income', category: 'Job Income', amount: 15000, estimatedAmount: 0, date: '2025-08-01', description: 'Salary', recurring: false, recurringDay: '', goalId: null },
+    { id: 2, type: 'expense', category: 'Rent', amount: 5000, estimatedAmount: 0, date: '2025-08-01', description: '', recurring: true, recurringDay: '1', goalId: null },
+    { id: 3, type: 'expense', category: 'Worker Wages', amount: 2000, estimatedAmount: 0, date: '2025-08-05', description: 'Juan', recurring: true, recurringDay: '5', goalId: null },
+    { id: 4, type: 'income', category: 'Job Income', amount: 5000, estimatedAmount: 0, date: '2025-08-10', description: 'Freelance', recurring: false, recurringDay: '', goalId: null },
+    { id: 5, type: 'expense', category: 'Utilities', amount: 1000, estimatedAmount: 1200, date: '2025-08-15', description: 'Electricity', recurring: true, recurringDay: '15', goalId: null },
+    { id: 6, type: 'expense', category: 'Food', amount: 300, estimatedAmount: 0, date: '2025-08-20', description: '', recurring: false, recurringDay: '', goalId: null },
+    { id: 7, type: 'expense', category: 'Big Expense', amount: 6000, estimatedAmount: 0, date: '2025-08-25', description: 'Car Repair', recurring: false, recurringDay: '', goalId: null },
+    { id: 8, type: 'expense', category: 'Savings Transfer', amount: 1000, estimatedAmount: 0, date: '2025-08-25', description: 'Emergency Buffer', recurring: false, recurringDay: '', goalId: 1 }
+];
+savingsGoals = [
+    { id: 1, name: 'Emergency Buffer', targetAmount: 10000, targetDate: '2025-12-31', currentAmount: 1000 }
+];
+*/
 
 // Initialize data from localStorage and set up forms
 function init() {
@@ -46,6 +64,7 @@ function setupFormListeners() {
     const estimatedAmountInput = document.getElementById('estimated-amount');
     const estimatedLabel = document.querySelector('label[for="estimated-amount"]');
     const horizonSelect = document.getElementById('forecast-horizon');
+    const eduDismiss = document.getElementById('edu-dismiss');
 
     // Show/hide recurring day select
     recurringCheckbox.addEventListener('change', () => {
@@ -74,6 +93,15 @@ function setupFormListeners() {
     // Update forecast on horizon change
     horizonSelect.addEventListener('change', updateForecast);
 
+    // Dismiss educational pop-up
+    eduDismiss.addEventListener('click', () => {
+        const popup = document.getElementById('edu-popup');
+        const message = document.getElementById('edu-message').textContent;
+        dismissedPopups.push(message);
+        localStorage.setItem('dismissedPopups', JSON.stringify(dismissedPopups));
+        popup.classList.add('hidden');
+    });
+
     transactionForm.addEventListener('submit', handleAddTransaction);
     savingsGoalForm.addEventListener('submit', handleAddSavingsGoal);
     whatIfForm.addEventListener('submit', handleWhatIfSimulation);
@@ -85,6 +113,7 @@ function saveData() {
     localStorage.setItem('savingsGoals', JSON.stringify(savingsGoals));
     localStorage.setItem('projections', JSON.stringify(projections));
     localStorage.setItem('savingsStreak', JSON.stringify(savingsStreak));
+    localStorage.setItem('dismissedPopups', JSON.stringify(dismissedPopups));
 }
 
 // Load data from localStorage
@@ -93,11 +122,13 @@ function loadData() {
     const savedGoals = localStorage.getItem('savingsGoals');
     const savedProjections = localStorage.getItem('projections');
     const savedStreak = localStorage.getItem('savingsStreak');
+    const savedDismissedPopups = localStorage.getItem('dismissedPopups');
 
     if (savedTransactions) transactions = JSON.parse(savedTransactions);
     if (savedGoals) savingsGoals = JSON.parse(savedGoals);
     if (savedProjections) projections = JSON.parse(savedProjections);
     if (savedStreak) savingsStreak = JSON.parse(savedStreak);
+    if (savedDismissedPopups) dismissedPopups = JSON.parse(savedDismissedPopups);
 }
 
 // Handle adding a new transaction
@@ -139,7 +170,10 @@ function handleAddTransaction(event) {
         const goal = savingsGoals.find(g => g.name.toLowerCase() === goalName?.toLowerCase());
         if (goal) {
             transaction.goalId = goal.id;
+            const prevProgress = goal.currentAmount / goal.targetAmount * 100;
             goal.currentAmount = (goal.currentAmount || 0) + amount;
+            const newProgress = goal.currentAmount / goal.targetAmount * 100;
+            checkGoalMilestones(goal, prevProgress, newProgress);
         } else if (goalName) {
             alert('Invalid goal name. Transaction added without allocation.');
         }
@@ -153,11 +187,14 @@ function handleAddTransaction(event) {
     checkSavingsStreak();
     updateForecast();
 
-    // Suggest allocating 10% for income
+    // Proactive UX: Suggest savings transfer for income
     if (type === 'income' && savingsGoals.length > 0) {
         const suggestedAmount = amount * 0.1;
         const defaultGoal = savingsGoals.find(g => g.name.toLowerCase().includes('buffer')) || savingsGoals[0];
-        if (confirm(`Allocate ₱${suggestedAmount.toFixed(2)} (10%) to ${defaultGoal.name}?`)) {
+        const goalNames = savingsGoals.map(g => g.name).join(', ');
+        const goalName = prompt(`Save ₱${suggestedAmount.toFixed(2)} (10%) to a goal? (${goalNames})`, defaultGoal.name);
+        const goal = savingsGoals.find(g => g.name.toLowerCase() === goalName?.toLowerCase());
+        if (goal) {
             const savingsTransaction = {
                 id: Date.now() + 1,
                 type: 'expense',
@@ -165,12 +202,15 @@ function handleAddTransaction(event) {
                 amount: suggestedAmount,
                 estimatedAmount: 0,
                 date,
-                description: `Auto-allocated to ${defaultGoal.name}`,
+                description: `Auto-allocated to ${goal.name}`,
                 recurring: false,
                 recurringDay: '',
-                goalId: defaultGoal.id
+                goalId: goal.id
             };
-            defaultGoal.currentAmount = (defaultGoal.currentAmount || 0) + suggestedAmount;
+            const prevProgress = goal.currentAmount / goal.targetAmount * 100;
+            goal.currentAmount = (goal.currentAmount || 0) + suggestedAmount;
+            const newProgress = goal.currentAmount / goal.targetAmount * 100;
+            checkGoalMilestones(goal, prevProgress, newProgress);
             transactions.push(savingsTransaction);
             saveData();
             updateDashboard();
@@ -315,6 +355,21 @@ function checkSavingsStreak() {
     }
 }
 
+// Check savings goal milestones for confetti
+function checkGoalMilestones(goal, prevProgress, newProgress) {
+    const milestones = [25, 50, 75, 100];
+    milestones.forEach(m => {
+        if (prevProgress < m && newProgress >= m) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff6f91', '#00cc99', '#6b48ff', '#ffab00']
+            });
+        }
+    });
+}
+
 // Update savings goals display
 function updateSavingsGoals() {
     const goalList = document.getElementById('goal-items');
@@ -334,7 +389,7 @@ function updateSavingsGoals() {
     });
 }
 
-// Calculate forecast
+// Calculate forecast with educational tips
 function calculateForecast(horizonDays) {
     const today = new Date();
     const currentBalance = transactions.reduce((total, t) => {
@@ -357,7 +412,7 @@ function calculateForecast(horizonDays) {
             categoryAverages[t.category] = (categoryAverages[t.category] || 0) + t.amount;
         });
     for (let category in categoryAverages) {
-        categoryAverages[category] /= 30; // Average daily expense per category
+        categoryAverages[category] /= 30;
     }
 
     // Apply what-if adjustments
@@ -377,14 +432,12 @@ function calculateForecast(horizonDays) {
         currentDate.setDate(today.getDate() + i);
         let dailyExpense = 0;
 
-        // Add recurring expenses
         recurringExpenses.forEach(t => {
             if (parseInt(t.recurringDay) === currentDate.getDate()) {
                 dailyExpense += t.amount;
             }
         });
 
-        // Add variable expenses
         for (let category in categoryAverages) {
             dailyExpense += categoryAverages[category] || 0;
         }
@@ -393,12 +446,19 @@ function calculateForecast(horizonDays) {
         balances.push(dailyBalance);
     }
 
-    // Generate warnings
+    // Generate warnings and educational tips
     const warnings = [];
+    const monthlyExpenses = transactions
+        .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === today.getMonth())
+        .reduce((total, t) => total + t.amount, 0);
+    const bufferTip = `Build a buffer for surprises: Aim for ₱${monthlyExpenses.toFixed(2)} (1 month's expenses).`;
     if (horizonDays >= 30) {
         const endBalance = balances[balances.length - 1];
         if (endBalance < 0) {
             warnings.push(`At current rate, short ₱${Math.abs(endBalance).toFixed(2)} in ${horizonDays} days`);
+        }
+        if (!dismissedPopups.includes(bufferTip)) {
+            warnings.push(bufferTip);
         }
     }
 
@@ -422,16 +482,14 @@ function updateForecast() {
     const height = canvas.height;
     const step = width / (horizonDays + 1);
 
-    // Draw axes
     ctx.beginPath();
     ctx.moveTo(0, height - 10);
     ctx.lineTo(width, height - 10);
     ctx.strokeStyle = '#333';
     ctx.stroke();
 
-    // Draw balance line
     ctx.beginPath();
-    ctx.strokeStyle = '#28a745';
+    ctx.strokeStyle = '#00cc99'; // Teal for line
     ctx.lineWidth = 2;
     balances.forEach((balance, i) => {
         const x = i * step;
@@ -444,14 +502,21 @@ function updateForecast() {
     });
     ctx.stroke();
 
-    // Display warnings
+    // Display warnings and educational tips
     const warningList = document.getElementById('forecast-warnings');
     warningList.innerHTML = '';
+    const popup = document.getElementById('edu-popup');
+    const eduMessage = document.getElementById('edu-message');
     warnings.forEach(w => {
-        const li = document.createElement('li');
-        li.className = 'warning-item';
-        li.textContent = w;
-        warningList.appendChild(li);
+        if (w.includes('Build a buffer')) {
+            eduMessage.textContent = w;
+            popup.classList.remove('hidden');
+        } else {
+            const li = document.createElement('li');
+            li.className = 'warning-item';
+            li.textContent = w;
+            warningList.appendChild(li);
+        }
     });
 }
 
@@ -535,7 +600,7 @@ function updateCategoryChart() {
     const amounts = Object.values(categoryTotals);
     const total = amounts.reduce((sum, val) => sum + val, 0);
 
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'];
+    const colors = ['#ff6f91', '#00cc99', '#6b48ff', '#ffab00', '#ff4d4d', '#c3e6ff', '#f4c2ff'];
     let startAngle = 0;
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;

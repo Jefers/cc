@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Francine's Budget App</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6f91">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <header>
@@ -25,6 +28,10 @@
                 </select>
                 <canvas id="forecast-chart" width="300" height="150"></canvas>
                 <ul id="forecast-warnings"></ul>
+                <div id="edu-popup" class="edu-popup hidden">
+                    <p id="edu-message"></p>
+                    <button id="edu-dismiss">Got It!</button>
+                </div>
             </div>
             <div id="what-if-simulator">
                 <h3>What-If Simulator</h3>
@@ -37,7 +44,7 @@
                         <option value="Worker Wages">Worker Wages</option>
                         <option value="Big Expense">Big Expense</option>
                     </select>
-                    <label for="adjust-amount">Adjust Amount (PHP/day):</label>
+                    <label for="adjust-amount">Adjust Amount (₱/day):</label>
                     <input type="number" id="adjust-amount" name="adjust-amount" step="0.01" placeholder="e.g., -100">
                     <button type="submit">Simulate</button>
                 </form>
@@ -82,9 +89,9 @@
                     <option value="Big Expense">Big Expense</option>
                     <option value="Savings Transfer">Savings Transfer</option>
                 </select>
-                <label for="amount">Amount (PHP):</label>
+                <label for="amount">Amount (₱):</label>
                 <input type="number" id="amount" name="amount" step="0.01" min="0" required>
-                <label for="estimated-amount" class="estimated-field hidden">Estimated Amount (PHP):</label>
+                <label for="estimated-amount" class="estimated-field hidden">Estimated Amount (₱):</label>
                 <input type="number" id="estimated-amount" name="estimated-amount" step="0.01" min="0" class="estimated-field hidden">
                 <label for="date">Date:</label>
                 <input type="date" id="date" name="date" required>
@@ -136,7 +143,7 @@
             <form id="savings-goal-form">
                 <label for="goal-name">Goal Name:</label>
                 <input type="text" id="goal-name" name="goal-name" required>
-                <label for="goal-target">Target Amount (PHP):</label>
+                <label for="goal-target">Target Amount (₱):</label>
                 <input type="number" id="goal-target" name="goal-target" step="0.01" min="0" required>
                 <label for="goal-date">Target Date:</label>
                 <input type="date" id="goal-date" name="goal-date" required>

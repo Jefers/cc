@@ -1,4 +1,4 @@
-/* Mobile-first, responsive design */
+/* Mobile-first, vibrant and engaging design */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,14 +6,14 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     line-height: 1.6;
-    background-color: #f4f4f4;
+    background-color: #f0e6ff; /* Soft lavender background */
     color: #333;
 }
 
 header {
-    background-color: #2c3e50;
+    background-color: #ff6f91; /* Bright pink header */
     color: white;
     text-align: center;
     padding: 1rem;
@@ -29,18 +29,19 @@ section {
     margin-bottom: 1.5rem;
     padding: 1rem;
     background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 h2, h3 {
     margin-bottom: 0.5rem;
-    color: #2c3e50;
+    color: #6b48ff; /* Vibrant purple for headings */
 }
 
 #dashboard #balance, #dashboard #burn-rate {
     font-size: 1.5rem;
     margin-bottom: 1rem;
+    color: #ff4d4d; /* Bright red for key metrics */
 }
 
 #reminder-list, #badge-list, #goal-items, #forecast-warnings {
@@ -50,16 +51,16 @@ h2, h3 {
 .reminder-item, .warning-item {
     padding: 0.5rem;
     margin-bottom: 0.5rem;
-    background-color: #fff3cd;
-    border-left: 4px solid #ffc107;
+    background-color: #fff0c2; /* Warm yellow for alerts */
+    border-left: 4px solid #ffab00; /* Amber border */
     border-radius: 4px;
 }
 
 .badge-item {
     padding: 0.5rem;
     margin-bottom: 0.5rem;
-    background-color: #d4edda;
-    border-left: 4px solid #28a745;
+    background-color: #c8f7c5; /* Light green for achievements */
+    border-left: 4px solid #00cc99; /* Teal border */
     border-radius: 4px;
 }
 
@@ -77,7 +78,7 @@ h2, h3 {
 }
 
 .progress {
-    background-color: #28a745; /* Green for progress */
+    background-color: #00cc99; /* Teal for progress */
     height: 100%;
     transition: width 0.3s ease;
 }
@@ -95,7 +96,7 @@ h2, h3 {
 }
 
 #weekly-calendar th {
-    background-color: #2c3e50;
+    background-color: #6b48ff; /* Purple header */
     color: white;
 }
 
@@ -109,33 +110,51 @@ h2, h3 {
 }
 
 .transaction-item.income {
-    border-color: #28a745; /* Green for income */
+    border-color: #00cc99; /* Teal for income */
 }
 
 .transaction-item.expense {
-    border-color: #dc3545; /* Red for expense */
+    border-color: #ff4d4d; /* Red for expense */
 }
 
 .transaction-item button {
     padding: 0.2rem 0.5rem;
     font-size: 0.8rem;
-    background-color: #6c757d;
+    background-color: #ff6f91; /* Pink buttons */
+    color: white;
 }
 
 .transaction-item button:hover {
-    background-color: #5a6268;
+    background-color: #ff4d4d; /* Red on hover */
 }
 
 .big-expense-flag::after {
     content: '⚠️';
     margin-left: 0.5rem;
-    color: #dc3545;
+    color: #ff4d4d;
 }
 
 #category-chart, #forecast-chart {
     max-width: 100%;
     display: block;
     margin: 1rem auto;
+}
+
+.edu-popup {
+    position: relative;
+    padding: 1rem;
+    background-color: #c3e6ff; /* Light blue for pop-ups */
+    border: 2px solid #00aaff; /* Bright blue border */
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+.edu-popup button {
+    background-color: #00aaff;
+}
+
+.edu-popup button:hover {
+    background-color: #007acc;
 }
 
 form {
@@ -146,6 +165,7 @@ form {
 
 label {
     font-weight: bold;
+    color: #6b48ff;
 }
 
 input, select, textarea, button {
@@ -161,14 +181,14 @@ textarea {
 }
 
 button {
-    background-color: #2c3e50;
+    background-color: #ff6f91; /* Pink buttons */
     color: white;
     border: none;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #34495e;
+    background-color: #ff4d4d; /* Red on hover */
 }
 
 .hidden {
