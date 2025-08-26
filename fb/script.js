@@ -3,6 +3,7 @@ let transactions = [];
 let savingsGoals = [];
 let projections = { weekly: 0, monthly: 0 };
 let savingsStreak = { weeks: [], badgeAwarded: false };
+let whatIfAdjustments = {};
 
 // Initialize data from localStorage and set up forms
 function init() {
@@ -13,6 +14,7 @@ function init() {
     requestNotificationPermission();
     checkReminders();
     updateSavingsGoals();
+    updateForecast();
 }
 
 // Request browser notification permission
@@ -36,12 +38,14 @@ function setDefaultDate() {
 function setupFormListeners() {
     const transactionForm = document.getElementById('transaction-form');
     const savingsGoalForm = document.getElementById('savings-goal-form');
+    const whatIfForm = document.getElementById('what-if-form');
     const recurringCheckbox = document.getElementById('recurring');
     const recurringDaySelect = document.getElementById('recurring-day');
     const recurringLabel = document.querySelector('label[for="recurring-day"]');
     const categorySelect = document.getElementById('category');
     const estimatedAmountInput = document.getElementById('estimated-amount');
     const estimatedLabel = document.querySelector('label[for="estimated-amount"]');
+    const horizonSelect = document.getElementById('forecast-horizon');
 
     // Show/hide recurring day select
     recurringCheckbox.addEventListener('change', () => {
@@ -67,8 +71,12 @@ function setupFormListeners() {
         }
     });
 
+    // Update forecast on horizon change
+    horizonSelect.addEventListener('change', updateForecast);
+
     transactionForm.addEventListener('submit', handleAddTransaction);
     savingsGoalForm.addEventListener('submit', handleAddSavingsGoal);
+    whatIfForm.addEventListener('submit', handleWhatIfSimulation);
 }
 
 // Save data to localStorage
@@ -121,7 +129,7 @@ function handleAddTransaction(event) {
         description,
         recurring,
         recurringDay,
-        goalId: null // For Savings Transfer allocation
+        goalId: null
     };
 
     // Handle Savings Transfer allocation
@@ -143,6 +151,7 @@ function handleAddTransaction(event) {
     checkReminders();
     updateSavingsGoals();
     checkSavingsStreak();
+    updateForecast();
 
     // Suggest allocating 10% for income
     if (type === 'income' && savingsGoals.length > 0) {
@@ -167,6 +176,7 @@ function handleAddTransaction(event) {
             updateDashboard();
             updateSavingsGoals();
             checkSavingsStreak();
+            updateForecast();
         }
     }
 
@@ -212,9 +222,21 @@ function editTransactionDueDate(transactionId) {
         saveData();
         updateDashboard();
         checkReminders();
+        updateForecast();
     } else if (newDay !== null) {
         alert('Please enter a valid day (1-31).');
     }
+}
+
+// Handle what-if simulation
+function handleWhatIfSimulation(event) {
+    event.preventDefault();
+    const form = event.target;
+    const category = form['category-adjust'].value;
+    const adjustAmount = parseFloat(form['adjust-amount'].value) || 0;
+    whatIfAdjustments[category] = adjustAmount;
+    updateForecast();
+    form.reset();
 }
 
 // Check for upcoming reminders
@@ -243,13 +265,11 @@ function checkReminders() {
         const amount = r.transaction.category === 'Utilities' && r.transaction.estimatedAmount ? r.transaction.estimatedAmount : r.transaction.amount;
         const message = `${r.transaction.category} due in ${r.daysUntilDue} day${r.daysUntilDue === 1 ? '' : 's'} - Prepare ₱${amount.toFixed(2)}`;
 
-        // Dashboard reminder
         const li = document.createElement('li');
         li.className = 'reminder-item';
         li.textContent = message;
         reminderList.appendChild(li);
 
-        // Browser notification
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification(message);
         }
@@ -261,7 +281,6 @@ function checkSavingsStreak() {
     const today = new Date();
     const weekNumber = Math.floor((today.getTime() / (1000 * 60 * 60 * 24 * 7)) % 52);
 
-    // Track weeks with savings transfers
     const hasSavingsThisWeek = transactions.some(t => 
         t.category === 'Savings Transfer' && 
         Math.floor((new Date(t.date).getTime() / (1000 * 60 * 60 * 24 * 7)) % 52) === weekNumber
@@ -272,7 +291,6 @@ function checkSavingsStreak() {
         savingsStreak.weeks = [...new Set(savingsStreak.weeks)].sort((a, b) => a - b);
     }
 
-    // Check for consecutive weeks (3 weeks for badge)
     let consecutiveWeeks = 0;
     for (let i = 1; i < savingsStreak.weeks.length; i++) {
         if (savingsStreak.weeks[i] === savingsStreak.weeks[i - 1] + 1) {
@@ -287,7 +305,6 @@ function checkSavingsStreak() {
         saveData();
     }
 
-    // Update badge display
     const badgeList = document.getElementById('badge-list');
     badgeList.innerHTML = '';
     if (savingsStreak.badgeAwarded) {
@@ -305,7 +322,7 @@ function updateSavingsGoals() {
 
     savingsGoals.forEach(goal => {
         const li = document.createElement('li');
-        li.className = ' goal-item';
+        li.className = 'goal-item';
         const progress = goal.currentAmount / goal.targetAmount * 100;
         li.innerHTML = `
             ${goal.name}: ₱${goal.currentAmount.toFixed(2)} / ₱${goal.targetAmount.toFixed(2)} (Due ${goal.targetDate})
@@ -317,15 +334,134 @@ function updateSavingsGoals() {
     });
 }
 
-// Update dashboard with balance, burn rate, weekly calendar, and pie chart
+// Calculate forecast
+function calculateForecast(horizonDays) {
+    const today = new Date();
+    const currentBalance = transactions.reduce((total, t) => {
+        return t.type === 'income' ? total + t.amount : total - t.amount;
+    }, 0);
+
+    // Calculate average daily income (last 30 days)
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    const recentIncomes = transactions
+        .filter(t => t.type === 'income' && new Date(t.date) >= thirtyDaysAgo)
+        .reduce((total, t) => total + t.amount, 0);
+    const avgDailyIncome = recentIncomes / 30;
+
+    // Calculate recurring and variable expenses
+    const categoryAverages = {};
+    transactions
+        .filter(t => t.type === 'expense' && new Date(t.date) >= thirtyDaysAgo)
+        .forEach(t => {
+            categoryAverages[t.category] = (categoryAverages[t.category] || 0) + t.amount;
+        });
+    for (let category in categoryAverages) {
+        categoryAverages[category] /= 30; // Average daily expense per category
+    }
+
+    // Apply what-if adjustments
+    for (let category in whatIfAdjustments) {
+        categoryAverages[category] = (categoryAverages[category] || 0) + whatIfAdjustments[category];
+    }
+
+    // Calculate recurring expenses
+    const recurringExpenses = transactions
+        .filter(t => t.recurring && t.type === 'expense' && t.recurringDay)
+        .map(t => ({ ...t, amount: t.category === 'Utilities' && t.estimatedAmount ? t.estimatedAmount : t.amount }));
+
+    // Forecast daily balances
+    const balances = [currentBalance];
+    let currentDate = new Date(today);
+    for (let i = 1; i <= horizonDays; i++) {
+        currentDate.setDate(today.getDate() + i);
+        let dailyExpense = 0;
+
+        // Add recurring expenses
+        recurringExpenses.forEach(t => {
+            if (parseInt(t.recurringDay) === currentDate.getDate()) {
+                dailyExpense += t.amount;
+            }
+        });
+
+        // Add variable expenses
+        for (let category in categoryAverages) {
+            dailyExpense += categoryAverages[category] || 0;
+        }
+
+        const dailyBalance = balances[i - 1] + avgDailyIncome - dailyExpense;
+        balances.push(dailyBalance);
+    }
+
+    // Generate warnings
+    const warnings = [];
+    if (horizonDays >= 30) {
+        const endBalance = balances[balances.length - 1];
+        if (endBalance < 0) {
+            warnings.push(`At current rate, short ₱${Math.abs(endBalance).toFixed(2)} in ${horizonDays} days`);
+        }
+    }
+
+    return { balances, warnings };
+}
+
+// Update forecast chart and warnings
+function updateForecast() {
+    const horizonDays = parseInt(document.getElementById('forecast-horizon').value);
+    const { balances, warnings } = calculateForecast(horizonDays);
+
+    // Draw forecast chart
+    const canvas = document.getElementById('forecast-chart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const maxBalance = Math.max(...balances, currentBalance);
+    const minBalance = Math.min(...balances, currentBalance);
+    const range = maxBalance - minBalance || 1;
+    const width = canvas.width;
+    const height = canvas.height;
+    const step = width / (horizonDays + 1);
+
+    // Draw axes
+    ctx.beginPath();
+    ctx.moveTo(0, height - 10);
+    ctx.lineTo(width, height - 10);
+    ctx.strokeStyle = '#333';
+    ctx.stroke();
+
+    // Draw balance line
+    ctx.beginPath();
+    ctx.strokeStyle = '#28a745';
+    ctx.lineWidth = 2;
+    balances.forEach((balance, i) => {
+        const x = i * step;
+        const y = height - 10 - ((balance - minBalance) / range) * (height - 20);
+        if (i === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+    ctx.stroke();
+
+    // Display warnings
+    const warningList = document.getElementById('forecast-warnings');
+    warningList.innerHTML = '';
+    warnings.forEach(w => {
+        const li = document.createElement('li');
+        li.className = 'warning-item';
+        li.textContent = w;
+        warningList.appendChild(li);
+    });
+}
+
+// Update dashboard
 function updateDashboard() {
-    // Calculate current balance
     const balance = transactions.reduce((total, t) => {
         return t.type === 'income' ? total + t.amount : total - t.amount;
     }, 0);
     document.getElementById('balance').textContent = `Current Balance: ₱${balance.toFixed(2)}`;
 
-    // Calculate monthly burn rate
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
@@ -336,20 +472,17 @@ function updateDashboard() {
     const burnRate = daysInMonth > 0 ? monthlyExpenses / daysInMonth : 0;
     document.getElementById('burn-rate').textContent = `Monthly Burn Rate: ₱${burnRate.toFixed(2)}/day`;
 
-    // Weekly calendar
     updateWeeklyCalendar();
-
-    // Category pie chart
     updateCategoryChart();
+    updateForecast();
 }
 
-// Update weekly calendar
+// Update weekly calendar with big expense flagging
 function updateWeeklyCalendar() {
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Start on Sunday
+    startOfWeek.setDate(today.getDate() - today.getDay());
 
-    // Generate header with dates
     const headerRow = document.getElementById('calendar-header');
     headerRow.innerHTML = '';
     for (let i = 0; i < 7; i++) {
@@ -360,7 +493,6 @@ function updateWeeklyCalendar() {
         headerRow.appendChild(th);
     }
 
-    // Group transactions by day
     const bodyRow = document.getElementById('calendar-body');
     bodyRow.innerHTML = '<tr></tr>';
     const row = bodyRow.querySelector('tr');
@@ -374,7 +506,7 @@ function updateWeeklyCalendar() {
         const td = document.createElement('td');
         dayTransactions.forEach(t => {
             const div = document.createElement('div');
-            div.className = `transaction-item ${t.type}`;
+            div.className = `transaction-item ${t.type} ${t.amount > 5000 ? 'big-expense-flag' : ''}`;
             div.innerHTML = `${t.category}: ₱${t.amount.toFixed(2)} ${t.description ? `(${t.description})` : ''}`;
             if (t.recurring && t.type === 'expense') {
                 const editButton = document.createElement('button');
@@ -394,7 +526,6 @@ function updateCategoryChart() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Aggregate amounts by category
     const categoryTotals = {};
     transactions.forEach(t => {
         categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
@@ -404,12 +535,7 @@ function updateCategoryChart() {
     const amounts = Object.values(categoryTotals);
     const total = amounts.reduce((sum, val) => sum + val, 0);
 
-    // Define colors for categories
-    const colors = [
-        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'
-    ];
-
-    // Draw pie chart
+    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'];
     let startAngle = 0;
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -424,7 +550,6 @@ function updateCategoryChart() {
         ctx.fill();
         startAngle += sliceAngle;
 
-        // Draw label
         const labelAngle = startAngle - sliceAngle / 2;
         const labelX = centerX + (radius + 20) * Math.cos(labelAngle);
         const labelY = centerY + (radius + 20) * Math.sin(labelAngle);
