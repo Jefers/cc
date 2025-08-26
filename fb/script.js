@@ -6,11 +6,40 @@ let projections = {
     monthly: 0
 };
 
-// Initialize data from localStorage
+// Initialize data from localStorage and set up form
 function init() {
     loadData();
     updateDashboard();
-    document.getElementById('transaction-form').addEventListener('submit', handleAddTransaction);
+    setDefaultDate();
+    setupFormListeners();
+}
+
+// Set default date to today
+function setDefaultDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+}
+
+// Set up form event listeners
+function setupFormListeners() {
+    const form = document.getElementById('transaction-form');
+    const recurringCheckbox = document.getElementById('recurring');
+    const recurringDaySelect = document.getElementById('recurring-day');
+    const recurringLabel = document.querySelector('label[for="recurring-day"]');
+
+    // Show/hide recurring day select based on checkbox
+    recurringCheckbox.addEventListener('change', () => {
+        const isChecked = recurringCheckbox.checked;
+        recurringDaySelect.classList.toggle('hidden', !isChecked);
+        recurringLabel.classList.toggle('hidden', !isChecked);
+        if (isChecked) {
+            recurringDaySelect.setAttribute('required', 'true');
+        } else {
+            recurringDaySelect.removeAttribute('required');
+        }
+    });
+
+    form.addEventListener('submit', handleAddTransaction);
 }
 
 // Save data to localStorage
@@ -39,7 +68,15 @@ function handleAddTransaction(event) {
     const category = form.category.value;
     const amount = parseFloat(form.amount.value);
     const date = form.date.value;
-    const note = form.note.value;
+    const description = form.description.value.trim();
+    const recurring = form.recurring.checked;
+    const recurringDay = recurring ? form['recurring-day'].value : '';
+
+    // Validate Worker Wages note
+    if (category === 'Worker Wages' && !description) {
+        alert('Please provide a worker name for Worker Wages.');
+        return;
+    }
 
     const transaction = {
         id: Date.now(), // Unique ID based on timestamp
@@ -47,13 +84,16 @@ function handleAddTransaction(event) {
         category,
         amount,
         date,
-        note
+        description,
+        recurring,
+        recurringDay
     };
 
     transactions.push(transaction);
     saveData();
     updateDashboard();
     form.reset();
+    setDefaultDate(); // Reset date to today
 }
 
 // Update dashboard with current balance and recent transactions
@@ -71,7 +111,7 @@ function updateDashboard() {
     transactions.slice(-5).reverse().forEach(t => {
         const li = document.createElement('li');
         li.className = `transaction-item ${t.type}`;
-        li.textContent = `${t.date} | ${t.category} | ₱${t.amount.toFixed(2)} | ${t.note || '-'}`;
+        li.textContent = `${t.date} | ${t.category} | ₱${t.amount.toFixed(2)} | ${t.description || '-'} ${t.recurring ? `(Recurring on day ${t.recurringDay})` : ''}`;
         transactionList.appendChild(li);
     });
 }
