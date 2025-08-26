@@ -33,23 +33,36 @@ section {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+h2, h3 {
     margin-bottom: 0.5rem;
     color: #2c3e50;
 }
 
-#dashboard #balance {
+#dashboard #balance, #dashboard #burn-rate {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
-#transaction-list {
-    list-style: none;
+#weekly-calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#weekly-calendar th, #weekly-calendar td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+#weekly-calendar th {
+    background-color: #2c3e50;
+    color: white;
 }
 
 .transaction-item {
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0.25rem;
+    margin-bottom: 0.25rem;
     border-left: 4px solid;
 }
 
@@ -59,6 +72,12 @@ h2 {
 
 .transaction-item.expense {
     border-color: #dc3545; /* Red for expense */
+}
+
+#category-chart {
+    max-width: 100%;
+    display: block;
+    margin: 1rem auto;
 }
 
 form {
@@ -120,5 +139,14 @@ button:hover {
 
     #recurring-day {
         grid-column: span 1;
+    }
+
+    #weekly-calendar th, #weekly-calendar td {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    #category-chart {
+        max-width: 400px;
     }
 }

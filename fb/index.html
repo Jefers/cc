@@ -14,9 +14,19 @@
         <section id="dashboard">
             <h2>Dashboard</h2>
             <div id="balance">Current Balance: ₱0.00</div>
+            <div id="burn-rate">Monthly Burn Rate: ₱0.00/day</div>
             <div id="recent-transactions">
-                <h3>Recent Transactions</h3>
-                <ul id="transaction-list"></ul>
+                <h3>Weekly Transactions</h3>
+                <table id="weekly-calendar">
+                    <thead>
+                        <tr id="calendar-header"></tr>
+                    </thead>
+                    <tbody id="calendar-body"></tbody>
+                </table>
+            </div>
+            <div id="category-analysis">
+                <h3>Category Distribution</h3>
+                <canvas id="category-chart" width="300" height="300"></canvas>
             </div>
         </section>
         <section id="add-transaction">
@@ -41,7 +51,7 @@
                 <input type="number" id="amount" name="amount" step="0.01" min="0" required>
                 <label for="date">Date:</label>
                 <input type="date" id="date" name="date" required>
-                <label for="note">Note (Worker Name for Wages):</label>
+                <label for="description">Note (Worker Name for Wages):</label>
                 <textarea id="description" name="description"></textarea>
                 <label for="recurring">
                     <input type="checkbox" id="recurring" name="recurring"> Recurring Monthly
@@ -49,7 +59,6 @@
                 <label for="recurring-day" class="recurring-field hidden">Day of Month:</label>
                 <select id="recurring-day" name="recurring-day" class="recurring-field hidden">
                     <option value="">Select Day</option>
-                    <!-- Days 1 to 31 -->
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
