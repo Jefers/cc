@@ -1,22 +1,24 @@
-/* Mobile-first, vibrant and engaging design */
+/* Mobile-first, sophisticated and modern design */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
 }
 
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     line-height: 1.6;
-    background-color: #f0e6ff; /* Soft lavender background */
-    color: #333;
+    background-color: #f5f0ff; /* Soft lilac background */
+    color: #2d2d2d;
+    overscroll-behavior: none; /* Prevent overscroll bounce */
 }
 
 header {
-    background-color: #ff6f91; /* Bright pink header */
+    background-color: #ff8e9e; /* Soft pink header */
     color: white;
     text-align: center;
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 main {
@@ -27,21 +29,22 @@ main {
 
 section {
     margin-bottom: 1.5rem;
-    padding: 1rem;
+    padding: 1.5rem;
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 h2, h3 {
-    margin-bottom: 0.5rem;
-    color: #6b48ff; /* Vibrant purple for headings */
+    margin-bottom: 0.75rem;
+    color: #7c3aed; /* Deep violet for headings */
+    font-weight: 600;
 }
 
 #dashboard #balance, #dashboard #burn-rate {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin-bottom: 1rem;
-    color: #ff4d4d; /* Bright red for key metrics */
+    color: #ff4d6a; /* Coral for key metrics */
 }
 
 #reminder-list, #badge-list, #goal-items, #forecast-warnings {
@@ -49,36 +52,36 @@ h2, h3 {
 }
 
 .reminder-item, .warning-item {
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin-bottom: 0.5rem;
-    background-color: #fff0c2; /* Warm yellow for alerts */
-    border-left: 4px solid #ffab00; /* Amber border */
-    border-radius: 4px;
+    background-color: #fef9c3; /* Pale yellow for alerts */
+    border-left: 4px solid #facc15; /* Golden yellow border */
+    border-radius: 6px;
 }
 
 .badge-item {
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin-bottom: 0.5rem;
-    background-color: #c8f7c5; /* Light green for achievements */
-    border-left: 4px solid #00cc99; /* Teal border */
-    border-radius: 4px;
+    background-color: #ccfbf1; /* Mint green for achievements */
+    border-left: 4px solid #14b8a6; /* Teal border */
+    border-radius: 6px;
 }
 
 .goal-item {
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
 }
 
 .progress-bar {
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    height: 20px;
+    background-color: #e5e7eb; /* Light gray */
+    border-radius: 6px;
+    height: 24px;
     overflow: hidden;
     margin-top: 0.5rem;
 }
 
 .progress {
-    background-color: #00cc99; /* Teal for progress */
+    background-color: #14b8a6; /* Teal for progress */
     height: 100%;
     transition: width 0.3s ease;
 }
@@ -89,20 +92,20 @@ h2, h3 {
 }
 
 #weekly-calendar th, #weekly-calendar td {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 #weekly-calendar th {
-    background-color: #6b48ff; /* Purple header */
+    background-color: #7c3aed; /* Violet header */
     color: white;
 }
 
 .transaction-item {
-    padding: 0.25rem;
-    margin-bottom: 0.25rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
     border-left: 4px solid;
     display: flex;
     justify-content: space-between;
@@ -110,28 +113,26 @@ h2, h3 {
 }
 
 .transaction-item.income {
-    border-color: #00cc99; /* Teal for income */
+    border-color: #14b8a6; /* Teal for income */
 }
 
 .transaction-item.expense {
-    border-color: #ff4d4d; /* Red for expense */
+    border-color: #ff4d6a; /* Coral for expense */
 }
 
 .transaction-item button {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.8rem;
-    background-color: #ff6f91; /* Pink buttons */
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background-color: #ff8e9e; /* Soft pink */
     color: white;
-}
-
-.transaction-item button:hover {
-    background-color: #ff4d4d; /* Red on hover */
+    border-radius: 6px;
+    touch-action: manipulation; /* Prevent double-tap zoom */
 }
 
 .big-expense-flag::after {
     content: '⚠️';
     margin-left: 0.5rem;
-    color: #ff4d4d;
+    color: #ff4d6a;
 }
 
 #category-chart, #forecast-chart {
@@ -143,56 +144,65 @@ h2, h3 {
 .edu-popup {
     position: relative;
     padding: 1rem;
-    background-color: #c3e6ff; /* Light blue for pop-ups */
-    border: 2px solid #00aaff; /* Bright blue border */
-    border-radius: 4px;
-    margin-top: 0.5rem;
+    background-color: #e0f2fe; /* Sky blue for pop-ups */
+    border: 2px solid #38bdf8; /* Bright blue border */
+    border-radius: 6px;
+    margin-top: 0.75rem;
 }
 
 .edu-popup button {
-    background-color: #00aaff;
-}
-
-.edu-popup button:hover {
-    background-color: #007acc;
+    background-color: #38bdf8;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 label {
-    font-weight: bold;
-    color: #6b48ff;
+    font-weight: 500;
+    color: #7c3aed;
 }
 
 input, select, textarea, button {
-    padding: 0.5rem;
+    padding: 0.75rem;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    touch-action: manipulation;
 }
 
 textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
 }
 
 button {
-    background-color: #ff6f91; /* Pink buttons */
+    background-color: #ff8e9e; /* Soft pink */
     color: white;
     border: none;
     cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 1rem;
 }
 
-button:hover {
-    background-color: #ff4d4d; /* Red on hover */
+button:active {
+    background-color: #ff4d6a; /* Coral on tap */
 }
 
 .hidden {
     display: none;
+}
+
+/* Touch-friendly adjustments for iPhone */
+@media (hover: none) {
+    button, .transaction-item button {
+        min-height: 44px; /* Minimum touch target size */
+    }
 }
 
 /* Responsive design for larger screens */
@@ -202,7 +212,7 @@ button:hover {
     }
 
     section {
-        padding: 1.5rem;
+        padding: 2rem;
     }
 
     form {
@@ -220,7 +230,7 @@ button:hover {
     }
 
     #weekly-calendar th, #weekly-calendar td {
-        padding: 0.75rem;
+        padding: 1rem;
         font-size: 1rem;
     }
 
