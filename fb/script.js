@@ -26,7 +26,7 @@ id,type,category,amount,estimatedAmount,date,description,recurring,recurringDay,
 function init() {
     loadData();
     // Uncomment to load test data for Francine's scenarios
-    // loadTestData();
+    loadTestData();
     updateDashboard();
     setDefaultDate();
     setupFormListeners();
