@@ -17,6 +17,7 @@
     <main>
         <section id="dashboard">
             <h2>Dashboard</h2>
+            <button id="view-history">View History</button>
             <div id="balance">Current Balance: ₱0.00</div>
             <div id="burn-rate">Monthly Burn Rate: ₱0.00/day</div>
             <div id="forecast">
@@ -99,11 +100,11 @@
                 <label for="description">Note (Worker Name for Wages):</label>
                 <textarea id="description" name="description"></textarea>
                 <label for="recurring">
-                    <input type="checkbox" id="recurring" name="recurring"> Recurring Monthly
+                    <input type="checkbox" id="recurring" name="recurring"> Recurring
                 </label>
-                <label for="recurring-day" class="recurring-field hidden">Day of Month:</label>
+                <label for="recurring-day" class="recurring-field hidden">Day of Month or Frequency:</label>
                 <select id="recurring-day" name="recurring-day" class="recurring-field hidden">
-                    <option value="">Select Day</option>
+                    <option value="">Select Day/Frequency</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -135,6 +136,7 @@
                     <option value="29">29</option>
                     <option value="30">30</option>
                     <option value="31">31</option>
+                    <option value="weekly">Weekly</option>
                 </select>
                 <button type="submit">Add Transaction</button>
             </form>
@@ -155,11 +157,110 @@
                 <ul id="goal-items"></ul>
             </div>
         </section>
-        <section id="settings">
-            <h2>Settings</h2>
+        <section id="history" class="hidden">
+            <h2>Transaction History</h2>
+            <button id="back-to-dashboard">Back to Dashboard</button>
+            <p>Upload budget.csv with headers: id,type,amount,date,category,description,dueDate,isBig,recurring. Example: 1,income,2500,2025-06-01,Job Income,Client payment,,false,</p>
             <button id="export-csv">Export to CSV</button>
             <label for="import-csv">Import from CSV:</label>
             <input type="file" id="import-csv" accept=".csv">
+            <div id="clear-data-container" class="hidden">
+                <p><strong>Testing Only:</strong> Clears all transactions and goals.</p>
+                <button id="clear-data">Clear All Data</button>
+            </div>
+            <div class="table-container">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Is Big</th>
+                            <th>Recurring</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
+            <form id="edit-transaction-form" class="hidden">
+                <h3>Edit Transaction</h3>
+                <input type="hidden" id="edit-id" name="edit-id">
+                <label for="edit-type">Type:</label>
+                <select id="edit-type" name="edit-type" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <label for="edit-category">Category:</label>
+                <select id="edit-category" name="edit-category" required>
+                    <option value="Job Income">Job Income</option>
+                    <option value="Worker Wages">Worker Wages</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Food">Food</option>
+                    <option value="Big Expense">Big Expense</option>
+                    <option value="Savings Transfer">Savings Transfer</option>
+                </select>
+                <label for="edit-amount">Amount (₱):</label>
+                <input type="number" id="edit-amount" name="edit-amount" step="0.01" min="0.01" required>
+                <label for="edit-estimated-amount" class="estimated-field hidden">Estimated Amount (₱):</label>
+                <input type="number" id="edit-estimated-amount" name="edit-estimated-amount" step="0.01" min="0" class="estimated-field hidden">
+                <label for="edit-date">Date:</label>
+                <input type="date" id="edit-date" name="edit-date" required>
+                <label for="edit-description">Note (Worker Name for Wages):</label>
+                <textarea id="edit-description" name="edit-description"></textarea>
+                <label for="edit-recurring">
+                    <input type="checkbox" id="edit-recurring" name="edit-recurring"> Recurring
+                </label>
+                <label for="edit-recurring-day" class="recurring-field hidden">Day of Month or Frequency:</label>
+                <select id="edit-recurring-day" name="edit-recurring-day" class="recurring-field hidden">
+                    <option value="">Select Day/Frequency</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                    <option value="weekly">Weekly</option>
+                </select>
+                <button type="submit">Save Changes</button>
+                <button type="button" id="cancel-edit">Cancel</button>
+            </form>
+        </section>
+        <section id="settings" class="hidden">
+            <h2>Settings</h2>
+            <button id="export-csv-settings">Export to CSV</button>
+            <label for="import-csv-settings">Import from CSV:</label>
+            <input type="file" id="import-csv-settings" accept=".csv">
         </section>
         <section id="projections">
             <h2>Projections</h2>

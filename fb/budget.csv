@@ -1,0 +1,49 @@
+id,type,amount,date,category,description,dueDate,isBig,recurring
+1,income,2500,2025-06-01,Job Income,Client payment for project,,false,
+2,expense,1200,2025-06-01,Big Expense,20kg rice purchase,,true,
+3,expense,1000,2025-06-01,Bottle Gas,Bottle gas refill,,true,every 3 months
+4,expense,480,2025-06-01,Food,Daily food (market),,false,
+5,income,1500,2025-06-02,Job Income,Freelance task,,false,
+6,expense,510,2025-06-02,Food,Daily food (street vendor),,false,
+7,expense,1000,2025-06-03,Worker Wages,Paid Maria for weekly target,2025-06-03,false,weekly
+8,expense,520,2025-06-03,Food,Daily food,,false,
+9,income,3000,2025-06-04,Job Income,Client payment,,false,
+10,expense,500,2025-06-04,Food,Daily food,,false,
+11,expense,6000,2025-06-10,Rent,Monthly rent,2025-06-10,true,true,10
+12,expense,7200,2025-06-10,Utilities,Electricity bill,2025-06-10,true,true,10
+13,expense,1250,2025-06-10,Utilities,Water bill,2025-06-10,false,true,10
+14,expense,1400,2025-06-10,Utilities,Internet bill,2025-06-10,false,true,10
+15,expense,1500,2025-06-15,Family Support,Support to parents,,false,true,15
+16,expense,490,2025-06-15,Food,Daily food,,false,
+17,expense,1200,2025-06-17,Worker Wages,Paid Juan for weekly target,2025-06-17,false,weekly
+18,expense,200,2025-06-20,Transport,Grab ride,,false,
+19,expense,2000,2025-06-25,Entertainment,Starbucks coffee date,2025-06-25,false,true,25
+20,expense,500,2025-06-30,Savings Transfer,Buffer contribution,,false,
+21,income,2000,2025-07-01,Job Income,Client payment,,false,
+22,expense,470,2025-07-01,Food,Daily food,,false,
+23,expense,1500,2025-07-02,Worker Wages,Paid Maria for weekly target,2025-07-02,false,weekly
+24,income,1000,2025-07-03,Job Income,Small task payment,,false,
+25,expense,6000,2025-07-05,Big Expense,Phone repair,,true,
+26,expense,510,2025-07-05,Food,Daily food,,false,
+27,expense,6000,2025-07-10,Rent,Monthly rent,2025-07-10,true,true,10
+28,expense,6800,2025-07-10,Utilities,Electricity bill,2025-07-10,true,true,10
+29,expense,1400,2025-07-10,Utilities,Water bill,2025-07-10,false,true,10
+30,expense,1400,2025-07-10,Utilities,Internet bill,2025-07-10,false,true,10
+31,expense,1500,2025-07-15,Family Support,Support to parents,,false,true,15
+32,expense,500,2025-07-15,Savings Transfer,Buffer contribution,,false,
+33,expense,200,2025-07-20,Transport,Taxi ride,,false,
+34,expense,2000,2025-07-25,Entertainment,Starbucks coffee date,2025-07-25,false,true,25
+35,income,3500,2025-08-01,Job Income,Client payment,,false,
+36,expense,1200,2025-08-01,Big Expense,20kg rice purchase,,true,
+37,expense,490,2025-08-01,Food,Daily food,,false,
+38,expense,1000,2025-08-03,Worker Wages,Paid Juan for weekly target,2025-08-03,false,weekly
+39,income,2000,2025-08-05,Job Income,Freelance project,,false,
+40,expense,520,2025-08-05,Food,Daily food,,false,
+41,expense,6000,2025-08-10,Rent,Monthly rent,2025-08-10,true,true,10
+42,expense,7100,2025-08-10,Utilities,Electricity bill,2025-08-10,true,true,10
+43,expense,1300,2025-08-10,Utilities,Water bill,2025-08-10,false,true,10
+44,expense,1400,2025-08-10,Utilities,Internet bill,2025-08-10,false,true,10
+45,expense,1500,2025-08-15,Family Support,Support to parents,,false,true,15
+46,expense,500,2025-08-15,Savings Transfer,Buffer contribution,,false,
+47,expense,2000,2025-08-25,Entertainment,Starbucks coffee date,2025-08-25,false,true,25
+48,expense,1100,2025-08-30,Worker Wages,Paid Ana for weekly target,2025-08-30,false,weekly

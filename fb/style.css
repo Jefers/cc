@@ -86,19 +86,19 @@ h2, h3 {
     transition: width 0.3s ease;
 }
 
-#weekly-calendar {
+#weekly-calendar, #history-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-#weekly-calendar th, #weekly-calendar td {
+#weekly-calendar th, #weekly-calendar td, #history-table th, #history-table td {
     border: 1px solid #e5e7eb;
     padding: 0.75rem;
     text-align: left;
     font-size: 0.95rem;
 }
 
-#weekly-calendar th {
+#weekly-calendar th, #history-table th {
     background-color: #7c3aed; /* Violet header */
     color: white;
 }
@@ -120,13 +120,14 @@ h2, h3 {
     border-color: #ff4d6a; /* Coral for expense */
 }
 
-.transaction-item button {
+.transaction-item button, #history-table button {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     background-color: #ff8e9e; /* Soft pink */
     color: white;
     border-radius: 6px;
     touch-action: manipulation; /* Prevent double-tap zoom */
+    margin-right: 0.5rem;
 }
 
 .big-expense-flag::after {
@@ -156,20 +157,29 @@ h2, h3 {
     border-radius: 6px;
 }
 
-#settings {
+#settings, #history {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-#settings button, #settings input[type="file"] {
+#settings button, #settings input[type="file"], #history button, #history input[type="file"] {
     padding: 0.75rem;
     font-size: 1rem;
     border-radius: 6px;
 }
 
-#settings input[type="file"] {
+#settings input[type="file"], #history input[type="file"] {
     border: 1px solid #d1d5db;
+}
+
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+#history-table {
+    min-width: 800px; /* Ensure table is wide enough for all columns */
 }
 
 form {
@@ -210,13 +220,21 @@ button:active {
     background-color: #ff4d6a; /* Coral on tap */
 }
 
+#cancel-edit {
+    background-color: #d1d5db; /* Gray for cancel */
+}
+
+#cancel-edit:active {
+    background-color: #9ca3af;
+}
+
 .hidden {
     display: none;
 }
 
 /* Touch-friendly adjustments for iPhone */
 @media (hover: none) {
-    button, .transaction-item button {
+    button, .transaction-item button, #history-table button {
         min-height: 44px; /* Minimum touch target size */
     }
 }
@@ -231,26 +249,30 @@ button:active {
         padding: 2rem;
     }
 
-    form, #settings {
+    form, #settings, #history {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
     }
 
-    textarea, button, #export-csv, #import-csv {
+    textarea, button, #export-csv, #import-csv, #export-csv-settings, #import-csv-settings, #clear-data {
         grid-column: span 2;
     }
 
-    #recurring-day, #estimated-amount, #goal-name, #goal-target, #goal-date, #category-adjust, #adjust-amount {
+    #edit-recurring-day, #edit-estimated-amount, #edit-amount, #edit-date, #edit-type, #edit-category {
         grid-column: span 1;
     }
 
-    #weekly-calendar th, #weekly-calendar td {
+    #weekly-calendar th, #weekly-calendar td, #history-table th, #history-table td {
         padding: 1rem;
         font-size: 1rem;
     }
 
     #category-chart, #forecast-chart {
         max-width: 400px;
+    }
+
+    #history-table {
+        min-width: auto; /* Adjust for larger screens */
     }
 }
