@@ -6,7 +6,9 @@
   <meta name="description" content="Meter Reader">
   <title>Meter Reader</title>
   <link rel="stylesheet" href="/src/css/styles.css">
-  <link rel="stylesheet" href="/node_modules/cropperjs/dist/cropper.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <meta name="theme-color" content="#3b82f6">
   <link rel="manifest" href="/manifest.json">
 </head>
@@ -33,7 +35,7 @@
             <div class="text-gray-600">Total Readings</div>
           </div>
           <div class="text-center">
-            <div class="font-bold text-2xl text-green-600" id="lastReading">-</div>
+            <div class="font-bold text-2xl text-blue-600" id="lastReading">-</div>
             <div class="text-gray-600">Last Reading</div>
           </div>
         </div>

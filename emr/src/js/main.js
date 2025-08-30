@@ -1,7 +1,6 @@
 import { processImage } from './ocr.js';
 import { saveReading, loadReadings, renderReadings, clearReadings } from './storage.js';
 import { showError, showSuccess, showScreen, updateStats } from './ui.js';
-import Cropper from 'cropperjs';
 
 document.addEventListener('DOMContentLoaded', () => {
   let cropper;
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const reading = await Promise.race([
         processImage(blob),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('OCR processing timed out')), 15000)),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('OCR processing timed out')), 20000)),
       ]);
 
       document.getElementById('croppedPreview').src = URL.createObjectURL(blob);
@@ -90,7 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cropper.destroy();
     } catch (error) {
       showError(`Failed to extract reading: ${error.message}. Enter manually.`);
+      document.getElementById('croppedPreview').src = URL.createObjectURL(blob);
       document.getElementById('readingInput').value = '';
+      const now = new Date();
+      document.getElementById('currentDate').textContent = now.toLocaleDateString();
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString();
       showScreen('confirmScreen');
     }
   });

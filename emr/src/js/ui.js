@@ -1,3 +1,5 @@
+import { loadReadings } from './storage.js';
+
 export function showScreen(screenId) {
   const screens = ['mainScreen', 'cameraScreen', 'cropScreen', 'ocrScreen', 'confirmScreen'];
   screens.forEach(id => {
