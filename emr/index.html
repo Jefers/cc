@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Electricity Meter Reader App">
+  <title>Electricity Meter Reader</title>
+  <link rel="stylesheet" href="/src/css/styles.css">
+  <link rel="stylesheet" href="/node_modules/cropperjs/dist/cropper.min.css">
+  <meta name="theme-color" content="#1e40af">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <main class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold text-center mb-6">Electricity Meter Reader</h1>
+    <section class="flex flex-col items-center">
+      <button id="readMeterBtn" class="bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold mb-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Take meter reading photo">
+        Read Meter
+      </button>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" aria-hidden="true">
+      <div id="preview" class="hidden mb-4">
+        <img id="meterImage" alt="Meter photo preview" class="max-w-full max-h-[300px] h-auto object-contain rounded shadow">
+      </div>
+      <div id="result" class="text-center mb-4" role="alert"></div>
+      <div id="confirmReading" class="hidden mb-4 w-full">
+        <label for="ocrResult" class="block text-sm font-medium">Confirm or Enter Meter Reading:</label>
+        <input type="number" id="ocrResult" class="p-2 border rounded w-full max-w-[200px] mb-2" placeholder="Enter reading">
+        <div class="flex justify-end space-x-2">
+          <button id="saveReadingBtn" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700" aria-label="Save meter reading">Save</button>
+          <button id="recropBtn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600" aria-label="Recrop image">Recrop</button>
+        </div>
+      </div>
+      <div id="history" class="w-full">
+        <h2 class="text-xl font-semibold mb-2">Reading History</h2>
+        <ul id="readingList" class="space-y-2"></ul>
+      </div>
+    </section>
+    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+      <div class="bg-white p-4 rounded-lg max-w-[90%] max-h-[80%] overflow-auto">
+        <p class="text-sm mb-2">Crop tightly around the meter reading digits.</p>
+        <img id="cropImage" alt="Image to crop" class="max-w-full h-auto">
+        <div class="mt-4 flex justify-end space-x-2">
+          <button id="cancelCropBtn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600" aria-label="Cancel cropping">Cancel</button>
+          <button id="cropBtn" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700" aria-label="Crop and process image">Crop & Process</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="/node_modules/cropperjs/dist/cropper.min.js"></script>
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>

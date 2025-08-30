@@ -1,0 +1,21 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Vite build output
+dist/
+
+# Environment files
+.env
+.env.*
+
+# IDE-specific files (VS Code)
+.vscode/
+
+# Logs and temporary files
+*.log
+*.log.*
+*.cache
+
+# PWA assets (if not needed in repo)
+assets/icon-*.png

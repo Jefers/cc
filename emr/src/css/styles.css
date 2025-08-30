@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+}
+
+.container {
+  max-width: 640px;
+}
+
+button {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.hidden {
+  display: none;
+}
+
+.reading-item {
+  @apply bg-white p-4 rounded-lg shadow flex justify-between items-center;
+}
+
+#cropModal {
+  z-index: 50;
+}
+
+#cropImage {
+  max-width: 100%;
+  max-height: 500px;
+  height: auto;
+}
+
+#confirmReading input {
+  max-width: 200px;
+}
