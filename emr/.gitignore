@@ -19,3 +19,6 @@ dist/
 
 # PWA assets (if not needed in repo)
 assets/icon-*.png
+
+# MacOS specific files
+.DS_Store

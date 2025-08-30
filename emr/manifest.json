@@ -1,20 +1,15 @@
 {
-  "name": "Electricity Meter Reader",
-  "short_name": "Meter Reader",
+  "name": "Meter Reader",
+  "short_name": "MeterReader",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f3f4f6",
-  "theme_color": "#1e40af",
+  "background_color": "#1f2f38",
+  "theme_color": "#3b82f6",
   "icons": [
     {
-      "src": "/assets/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/icon-512x512.png",
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik01MTIgMjU2QzQwMi42IDI1NiAzMTIgMTY1LjQgMzEyIDU2czkwLjYgLTIwMCAyMDAgLTIwMHMxOTkuNCA5MC42IDE5OS40IDIwMFM2MjEuNCAyNTYgNTEyIDI1NiBaTTUxMiA3NjhDNDQ4LjggNzY4IDM4NCA3MDMuMiAzODQgNjQwaC0yNTZ2LTg4YzAgLTg4IDcxLjIgLTE2MCAxNjAgLTE2MGM4OC44IDAgMTYwIDcxLjIgMTYwIDE2MHY4OGgtMjU2YzAgNjMuMi02NC44IDEyOC0xMjggMTI4WiIgZmlsbD0iIzAwMDAwMCIvPjwvc3ZnPg==",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml"
     }
   ]
 }

@@ -3,50 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Electricity Meter Reader App">
-  <title>Electricity Meter Reader</title>
+  <meta name="description" content="Meter Reader">
+  <title>Meter Reader</title>
   <link rel="stylesheet" href="/src/css/styles.css">
   <link rel="stylesheet" href="/node_modules/cropperjs/dist/cropper.min.css">
-  <meta name="theme-color" content="#1e40af">
+  <meta name="theme-color" content="#3b82f6">
   <link rel="manifest" href="/manifest.json">
 </head>
-<body>
-  <main class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold text-center mb-6">Electricity Meter Reader</h1>
-    <section class="flex flex-col items-center">
-      <button id="readMeterBtn" class="bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold mb-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Take meter reading photo">
-        Read Meter
-      </button>
-      <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" aria-hidden="true">
-      <div id="preview" class="hidden mb-4">
-        <img id="meterImage" alt="Meter photo preview" class="max-w-full max-h-[300px] h-auto object-contain rounded shadow">
+<body class="bg-gray-50 min-h-screen">
+  <div id="app" class="container mx-auto max-w-md px-4 py-6">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">⚡ Meter Reader</h1>
+      <p class="text-gray-600">Track your electricity meter readings</p>
+    </header>
+
+    <!-- Main Screen -->
+    <div id="mainScreen" class="space-y-6">
+      <div class="text-center">
+        <button id="readMeterBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl text-lg shadow-lg transform transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300" aria-label="Start meter reading process">
+          📷 Read Meter
+        </button>
       </div>
-      <div id="result" class="text-center mb-4" role="alert"></div>
-      <div id="confirmReading" class="hidden mb-4 w-full">
-        <label for="ocrResult" class="block text-sm font-medium">Confirm or Enter Meter Reading:</label>
-        <input type="number" id="ocrResult" class="p-2 border rounded w-full max-w-[200px] mb-2" placeholder="Enter reading">
-        <div class="flex justify-end space-x-2">
-          <button id="saveReadingBtn" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700" aria-label="Save meter reading">Save</button>
-          <button id="recropBtn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600" aria-label="Recrop image">Recrop</button>
+      <div id="quickStats" class="bg-white rounded-xl p-4 shadow-md">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">📊 Quick Stats</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="text-center">
+            <div class="font-bold text-2xl text-blue-600" id="totalReadings">0</div>
+            <div class="text-gray-600">Total Readings</div>
+          </div>
+          <div class="text-center">
+            <div class="font-bold text-2xl text-green-600" id="lastReading">-</div>
+            <div class="text-gray-600">Last Reading</div>
+          </div>
         </div>
       </div>
-      <div id="history" class="w-full">
-        <h2 class="text-xl font-semibold mb-2">Reading History</h2>
-        <ul id="readingList" class="space-y-2"></ul>
-      </div>
-    </section>
-    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
-      <div class="bg-white p-4 rounded-lg max-w-[90%] max-h-[80%] overflow-auto">
-        <p class="text-sm mb-2">Crop tightly around the meter reading digits.</p>
-        <img id="cropImage" alt="Image to crop" class="max-w-full h-auto">
-        <div class="mt-4 flex justify-end space-x-2">
-          <button id="cancelCropBtn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600" aria-label="Cancel cropping">Cancel</button>
-          <button id="cropBtn" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700" aria-label="Crop and process image">Crop & Process</button>
+      <div class="bg-white rounded-xl p-4 shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-800">📋 Recent Readings</h2>
+          <button id="clearHistoryBtn" class="text-red-500 text-sm hover:text-red-700 focus:outline-none">
+            Clear All
+          </button>
+        </div>
+        <div id="readingsList" class="space-y-3">
+          <div class="text-gray-500 text-center py-8">No readings yet. Take your first photo!</div>
         </div>
       </div>
     </div>
-  </main>
-  <script src="/node_modules/cropperjs/dist/cropper.min.js"></script>
+
+    <!-- Camera Screen -->
+    <div id="cameraScreen" class="hidden">
+      <div class="text-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">📷 Capture Meter Photo</h2>
+        <p class="text-gray-600 text-sm mt-2">Position the meter display in the frame</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md mb-4">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="text-xs text-gray-500 mt-2">💡 Tip: Ensure good lighting and clear view of digits</div>
+      </div>
+      <div class="flex gap-3">
+        <button id="cancelCameraBtn" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Crop Screen -->
+    <div id="cropScreen" class="hidden">
+      <div class="text-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">✂️ Crop Meter Digits</h2>
+        <p class="text-gray-600 text-sm mt-2">Select the area with the meter reading</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md mb-4">
+        <div class="cropper-container">
+          <img id="cropImage" style="max-width: 100%; display: block;">
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button id="cancelCropBtn" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg">
+          Back
+        </button>
+        <button id="confirmCropBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg">
+          Extract Reading
+        </button>
+      </div>
+    </div>
+
+    <!-- OCR Processing Screen -->
+    <div id="ocrScreen" class="hidden">
+      <div class="text-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">🔍 Extracting Reading...</h2>
+        <div class="flex justify-center items-center mt-4">
+          <div class="loading-spinner"></div>
+          <span class="ml-3 text-gray-600">Processing image...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Reading Screen -->
+    <div id="confirmScreen" class="hidden">
+      <div class="text-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">✅ Confirm Reading</h2>
+        <p class="text-gray-600 text-sm mt-2">Verify or correct the extracted value</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md mb-4">
+        <div class="mb-4">
+          <img id="croppedPreview" class="w-full max-h-32 object-contain rounded-lg border">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Meter Reading (kWh):</label>
+          <input type="number" id="readingInput" class="w-full p-3 text-xl text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter reading">
+          <div class="text-xs text-gray-500 mt-1">Edit if OCR reading is incorrect</div>
+        </div>
+        <div class="text-sm text-gray-600 mb-4">
+          <div>📅 Date: <span id="currentDate"></span></div>
+          <div>🕐 Time: <span id="currentTime"></span></div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button id="cancelConfirmBtn" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg">
+          Cancel
+        </button>
+        <button id="saveReadingBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg">
+          Save Reading
+        </button>
+      </div>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div id="errorMessage" class="hidden fixed top-4 left-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50">
+      <div class="flex justify-between items-center">
+        <span id="errorText"></span>
+        <button id="closeError" class="text-white hover:text-gray-200 text-xl">&times;</button>
+      </div>
+    </div>
+    <div id="successMessage" class="hidden fixed top-4 left-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50">
+      <div class="flex justify-between items-center">
+        <span id="successText"></span>
+        <button id="closeSuccess" class="text-white hover:text-gray-200 text-xl">&times;</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/src/js/main.js"></script>
 </body>
 </html>

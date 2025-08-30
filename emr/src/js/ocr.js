@@ -1,22 +1,22 @@
-import { createWorker } from 'tesseract.js';
-
 export async function processImage(file) {
-  const worker = await createWorker({ logger: (m) => console.log(m) });
   try {
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
-
-    // Preprocess image and pass blob directly
+    // Preprocess image
     const processedImage = await preprocessImage(file);
-    const { data: { text } } = await worker.recognize(processedImage);
+    
+    // Perform OCR with Tesseract.js
+    const { data: { text } } = await Tesseract.recognize(processedImage, 'eng', {
+      logger: (m) => console.log(m),
+      tessedit_char_whitelist: '0123456789', // Restrict to digits
+      tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK, // Single block for meter readings
+    });
     console.log('OCR Raw Text:', text);
-    const numbers = text.match(/\b\d{4,}\b/g); // Match numbers with 4+ digits
-    if (!numbers) throw new Error('No numbers found in image');
+
+    // Clean and validate result
+    const numbers = text.match(/\b\d{4,}\b/g); // Match 4+ digits
+    if (!numbers) throw new Error('No valid meter reading found in image');
     return numbers[0];
   } catch (error) {
     throw new Error('OCR processing failed: ' + error.message);
-  } finally {
-    await worker.terminate();
   }
 }
 
@@ -26,7 +26,7 @@ function preprocessImage(file) {
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      const maxWidth = 1000;
+      const maxWidth = 800;
       const scale = img.width > maxWidth ? maxWidth / img.width : 1;
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;

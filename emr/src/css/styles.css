@@ -4,35 +4,57 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f3f4f6;
 }
 
-.container {
-  max-width: 640px;
+.loading-spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
 }
 
-button {
-  transition: background-color 0.2s ease-in-out;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.hidden {
-  display: none;
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cropper-container {
+  max-height: 400px;
 }
 
 .reading-item {
-  @apply bg-white p-4 rounded-lg shadow flex justify-between items-center;
+  transition: all 0.2s ease;
 }
 
-#cropModal {
-  z-index: 50;
+.reading-item:hover {
+  transform: translateX(4px);
 }
 
-#cropImage {
-  max-width: 100%;
-  max-height: 500px;
-  height: auto;
+.offline::before {
+  content: "📡 Offline - Data saved locally";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #f59e0b;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-size: 14px;
+  z-index: 100;
 }
 
-#confirmReading input {
-  max-width: 200px;
+.offline {
+  padding-top: 40px;
 }
