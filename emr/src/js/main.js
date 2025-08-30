@@ -71,9 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     showScreen('ocrScreen');
+    let blob;
     try {
       const canvas = cropper.getCroppedCanvas({ maxWidth: 800, maxHeight: 400 });
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+      blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.9));
 
       const reading = await Promise.race([
         processImage(blob),
@@ -86,15 +87,17 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('currentDate').textContent = now.toLocaleDateString();
       document.getElementById('currentTime').textContent = now.toLocaleTimeString();
       showScreen('confirmScreen');
-      cropper.destroy();
     } catch (error) {
+      console.error('OCR processing error:', error.message);
       showError(`Failed to extract reading: ${error.message}. Enter manually.`);
       document.getElementById('croppedPreview').src = URL.createObjectURL(blob);
       document.getElementById('readingInput').value = '';
       const now = new Date();
       document.getElementById('currentDate').textContent = now.toLocaleDateString();
       document.getElementById('currentTime').textContent = now.toLocaleTimeString();
-      showScreen('confirmScreen');
+      showScreen('confirmScreen'); // Ensure confirmScreen is shown
+    } finally {
+      if (cropper) cropper.destroy();
     }
   });
 
