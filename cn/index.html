@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #333333; /* Dark grey background */
+            background: linear-gradient(135deg, #191f39 0%, #08050b 100%);
             min-height: 100vh;
             padding: 1rem;
             color: #333;
@@ -28,43 +28,25 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             min-height: calc(100vh - 2rem);
-            margin-top: 60px; /* Space for fixed header */
         }
 
         .header {
-            background: #1a1a1a; /* Dark black background */
-            color: #ffd700; /* Yellow text */
-            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #060c12 0%, #0a2728 100%);
+            color: rgb(251, 241, 41);
+            padding: 2rem 1.5rem 1.5rem;
             text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 60px;
-        }
-
-        .header-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
+            position: relative;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            flex-grow: 1;
-            text-align: center;
+            margin-bottom: 0.5rem;
         }
 
-        .hamburger-menu {
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
         }
 
         .search-bar {
@@ -93,21 +75,16 @@
         }
 
         .add-client-btn {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            width: 50px;
-            height: 50px;
             background: linear-gradient(135deg, #ff6b6b, #ee5a52);
             color: white;
             border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%;
+            margin-bottom: 1.5rem;
             box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
             transition: all 0.3s ease;
         }
@@ -140,7 +117,8 @@
         }
 
         .client-card.expanded {
-            border: 2px solid #4facfe;
+            background: #f8faff;
+            border: 2px solid #08131c;
         }
 
         .client-header {
@@ -153,7 +131,7 @@
         .client-name {
             font-size: 1.2rem;
             font-weight: 600;
-            color: white; /* Changed to white */
+            color: #2d3748;
         }
 
         .client-actions {
@@ -193,13 +171,13 @@
         }
 
         .client-notes {
-            color: white; /* Changed to white */
+            color: #efefef;
             line-height: 1.6;
             white-space: pre-wrap;
         }
 
         .client-notes.empty {
-            color: #cccccc; /* Lighter white for empty state */
+            color: #999;
             font-style: italic;
         }
 
@@ -353,6 +331,30 @@
             opacity: 0.5;
         }
 
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
         .mood-container {
             display: flex;
             align-items: center;
@@ -432,7 +434,7 @@
             }
             
             .header {
-                padding: 0.5rem;
+                padding: 1.5rem 1rem 1rem;
             }
             
             .main-content {
@@ -468,14 +470,25 @@
 <body>
     <div class="app-container">
         <header class="header">
-            <img src="logo.png" alt="Logo" class="header-logo">
-            <h1>CC Client Cards</h1>
-            <div class="hamburger-menu" aria-label="Menu">☰</div>
+            <h1> CC Client Cards</h1>
+            <p>Fitness Coach Dashboard</p>
+     <!--        <div class="stats">
+                <div class="stat">
+                    <span class="stat-number" id="total-clients">0</span>
+                    <span class="stat-label">Clients</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="notes-count">0</span>
+                    <span class="stat-label">Notes</span>
+                </div>
+            </div> -->
+            <input type="text" class="search-bar" placeholder="Search clients..." id="search-input" aria-label="Search clients">
         </header>
 
         <main class="main-content">
-            <input type="text" class="search-bar" placeholder="Search clients..." id="search-input" aria-label="Search clients">
-            <button class="add-client-btn" id="add-client-btn" aria-label="Add new client">+</button>
+            <button class="add-client-btn" id="add-client-btn" aria-label="Add new client">
+                ➕ Add New Client
+            </button>
 
             <div class="client-cards" id="client-cards">
                 <!-- Client cards will be inserted here -->
@@ -484,7 +497,7 @@
             <div class="empty-state" id="empty-state" style="display: none;">
                 <div class="empty-state-icon">👤</div>
                 <h3>No clients yet</h3>
-                <p>Tap "+" to get started</p>
+                <p>Tap "Add New Client" to get started</p>
             </div>
         </main>
     </div>
@@ -731,7 +744,8 @@
             }
 
             updateStats() {
-                // No longer needed since stats div is removed
+                this.elements.totalClients.textContent = this.clients.length;
+                this.elements.notesCount.textContent = this.clients.filter(c => c.notes.trim()).length;
             }
 
             updateMoodLabel(moodValue) {
@@ -781,7 +795,7 @@
                         this.elements.emptyState.innerHTML = `
                             <div class="empty-state-icon">👤</div>
                             <h3>No clients yet</h3>
-                            <p>Tap "+" to get started</p>
+                            <p>Tap "Add New Client" to get started</p>
                         `;
                     }
                     return;
