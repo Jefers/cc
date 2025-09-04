@@ -57,7 +57,7 @@
             width: 100%;
             color: white;
             font-size: 1rem;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
             backdrop-filter: blur(10px);
         }
 
@@ -355,6 +355,74 @@
             opacity: 0.8;
         }
 
+        .mood-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mood-slider {
+            width: 100px;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            appearance: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .mood-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #4a5568;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .mood-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #4a5568;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .client-card[data-mood="0"] {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+        }
+        .client-card[data-mood="1"] {
+            background: linear-gradient(135deg, #5b21b6, #7c3aed);
+        }
+        .client-card[data-mood="2"] {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        }
+        .client-card[data-mood="3"] {
+            background: linear-gradient(135deg, #22c55e, #4ade80);
+        }
+        .client-card[data-mood="4"] {
+            background: linear-gradient(135deg, #f97316, #fb923c);
+        }
+        .client-card[data-mood="5"] {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+        }
+
+        .form-group.mood-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mood-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 0.5rem;
@@ -379,7 +447,6 @@
             }
         }
 
-        /* Accessibility improvements */
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
@@ -403,7 +470,8 @@
 <body>
     <div class="app-container">
         <header class="header">
-            <h1>Client Notes Dashboard</h1>
+            <h1>Coach Christian Client Cards</h1>
+            <p>Fitness Coach Dashboard</p>
             <div class="stats">
                 <div class="stat">
                     <span class="stat-number" id="total-clients">0</span>
@@ -434,7 +502,6 @@
         </main>
     </div>
 
-    <!-- Modal -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal" role="dialog" aria-labelledby="modal-title" aria-modal="true">
             <div class="modal-header">
@@ -453,6 +520,13 @@
                     <label class="form-label" for="client-notes">Notes</label>
                     <textarea class="form-textarea" id="client-notes" placeholder="Training goals, preferences, medical notes, etc." aria-describedby="notes-help"></textarea>
                     <small id="notes-help" class="sr-only">Enter any relevant notes about this client</small>
+                </div>
+
+                <div class="form-group mood-group">
+                    <label class="form-label" for="client-mood">Mood</label>
+                    <input type="range" class="mood-slider" id="client-mood" min="0" max="5" value="3" aria-describedby="mood-help">
+                    <span class="mood-label" id="mood-label">Good/positive</span>
+                    <small id="mood-help" class="sr-only">Select client's current mood from 0 (Low/stressed) to 5 (Excellent/energized)</small>
                 </div>
                 
                 <div class="modal-actions">
@@ -484,6 +558,8 @@
                     clientForm: document.getElementById('client-form'),
                     clientName: document.getElementById('client-name'),
                     clientNotes: document.getElementById('client-notes'),
+                    clientMood: document.getElementById('client-mood'),
+                    moodLabel: document.getElementById('mood-label'),
                     closeModal: document.getElementById('close-modal'),
                     cancelBtn: document.getElementById('cancel-btn'),
                     saveBtn: document.getElementById('save-btn'),
@@ -500,13 +576,13 @@
                 this.elements.cancelBtn.addEventListener('click', () => this.closeModal());
                 this.elements.clientForm.addEventListener('submit', (e) => this.handleSubmit(e));
                 this.elements.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+                this.elements.clientMood.addEventListener('input', () => this.updateMoodLabel(this.elements.clientMood.value));
                 this.elements.modalOverlay.addEventListener('click', (e) => {
                     if (e.target === this.elements.modalOverlay) {
                         this.closeModal();
                     }
                 });
 
-                // Keyboard navigation
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape' && this.elements.modalOverlay.classList.contains('active')) {
                         this.closeModal();
@@ -516,49 +592,61 @@
 
             loadClients() {
                 try {
-                    const stored = JSON.parse(JSON.stringify([
+                    const stored = localStorage.getItem('clients');
+                    if (stored) {
+                        return JSON.parse(stored);
+                    }
+                    return [
                         {
                             id: '1',
                             name: 'Sarah Johnson',
-                            notes: 'Goals: Weight loss, improve cardiovascular health\nPreferences: Early morning sessions\nMedical: No restrictions\nProgress: Lost 12 lbs in 6 weeks'
+                            notes: 'Goals: Weight loss, improve cardiovascular health\nPreferences: Early morning sessions\nMedical: No restrictions\nProgress: Lost 12 lbs in 6 weeks',
+                            mood: 4
                         },
                         {
                             id: '2',
-                            name: 'Mike Chen',
-                            notes: 'Goals: Build muscle mass, strength training\nPreferences: Evening workouts\nMedical: Previous knee injury - avoid high impact\nProgress: Bench press increased from 135 to 165 lbs'
+                            name: 'Mike Smith',
+                            notes: 'Goals: Build muscle mass, strength training\nPreferences: Evening workouts\nMedical: Previous knee injury - avoid high impact\nProgress: Bench press increased from 135 to 165 lbs',
+                            mood: 3
                         },
                         {
                             id: '3',
                             name: 'Emma Wilson',
-                            notes: 'Goals: Marathon training, endurance\nPreferences: Outdoor running when possible\nMedical: Asthma - keep inhaler nearby\nProgress: Half marathon in 1:58, targeting 1:50'
+                            notes: 'Goals: Marathon training, endurance\nPreferences: Outdoor running when possible\nMedical: Asthma - keep inhaler nearby\nProgress: Half marathon in 1:58, targeting 1:50',
+                            mood: 2
                         }
-                    ]));
-                    return stored || [];
+                    ];
                 } catch {
                     return [
                         {
                             id: '1',
                             name: 'Sarah Johnson',
-                            notes: 'Goals: Weight loss, improve cardiovascular health\nPreferences: Early morning sessions\nMedical: No restrictions\nProgress: Lost 12 lbs in 6 weeks'
+                            notes: 'Goals: Weight loss, improve cardiovascular health\nPreferences: Early morning sessions\nMedical: No restrictions\nProgress: Lost 12 lbs in 6 weeks',
+                            mood: 4
                         },
                         {
                             id: '2',
-                            name: 'Mike Chen',
-                            notes: 'Goals: Build muscle mass, strength training\nPreferences: Evening workouts\nMedical: Previous knee injury - avoid high impact\nProgress: Bench press increased from 135 to 165 lbs'
+                            name: 'Mike Smith',
+                            notes: 'Goals: Build muscle mass, strength training\nPreferences: Evening workouts\nMedical: Previous knee injury - avoid high impact\nProgress: Bench press increased from 135 to 165 lbs',
+                            mood: 3
                         },
                         {
                             id: '3',
                             name: 'Emma Wilson',
-                            notes: 'Goals: Marathon training, endurance\nPreferences: Outdoor running when possible\nMedical: Asthma - keep inhaler nearby\nProgress: Half marathon in 1:58, targeting 1:50'
+                            notes: 'Goals: Marathon training, endurance\nPreferences: Outdoor running when possible\nMedical: Asthma - keep inhaler nearby\nProgress: Half marathon in 1:58, targeting 1:50',
+                            mood: 2
                         }
                     ];
                 }
             }
 
             saveClients() {
-                // Note: In a real implementation, this would save to localStorage
-                // For demo purposes, we'll store in memory only
-                console.log('Clients saved:', this.clients);
+                try {
+                    localStorage.setItem('clients', JSON.stringify(this.clients));
+                    console.log('Clients saved successfully:', this.clients);
+                } catch (error) {
+                    console.error('Error saving clients:', error);
+                }
             }
 
             generateId() {
@@ -572,12 +660,16 @@
                     this.elements.modalTitle.textContent = 'Edit Client';
                     this.elements.clientName.value = client.name;
                     this.elements.clientNotes.value = client.notes;
+                    this.elements.clientMood.value = client.mood || 3;
                     this.elements.saveBtn.textContent = 'Update Client';
+                    this.updateMoodLabel(client.mood || 3);
                 } else {
                     this.elements.modalTitle.textContent = 'Add New Client';
                     this.elements.clientName.value = '';
                     this.elements.clientNotes.value = '';
+                    this.elements.clientMood.value = 3;
                     this.elements.saveBtn.textContent = 'Save Client';
+                    this.updateMoodLabel(3);
                 }
 
                 this.elements.modalOverlay.classList.add('active');
@@ -594,6 +686,7 @@
                 
                 const name = this.elements.clientName.value.trim();
                 const notes = this.elements.clientNotes.value.trim();
+                const mood = parseInt(this.elements.clientMood.value);
 
                 if (!name) {
                     alert('Please enter a client name');
@@ -601,21 +694,21 @@
                 }
 
                 if (this.currentEditId) {
-                    // Update existing client
                     const clientIndex = this.clients.findIndex(c => c.id === this.currentEditId);
                     if (clientIndex !== -1) {
                         this.clients[clientIndex] = {
                             ...this.clients[clientIndex],
                             name,
-                            notes
+                            notes,
+                            mood
                         };
                     }
                 } else {
-                    // Add new client
                     const newClient = {
                         id: this.generateId(),
                         name,
-                        notes
+                        notes,
+                        mood
                     };
                     this.clients.unshift(newClient);
                 }
@@ -655,6 +748,38 @@
                 this.elements.notesCount.textContent = this.clients.filter(c => c.notes.trim()).length;
             }
 
+            updateMoodLabel(moodValue) {
+                const moodLabels = {
+                    0: 'Low/stressed',
+                    1: 'Below average',
+                    2: 'Calm/neutral',
+                    3: 'Good/positive',
+                    4: 'Very good/motivated',
+                    5: 'Excellent/energized'
+                };
+                this.elements.moodLabel.textContent = moodLabels[moodValue];
+            }
+
+            updateMood(clientId, moodValue) {
+                const clientIndex = this.clients.findIndex(c => c.id === clientId);
+                if (clientIndex !== -1) {
+                    this.clients[clientIndex].mood = parseInt(moodValue);
+                    this.saveClients();
+                    
+                    const filteredIndex = this.filteredClients.findIndex(c => c.id === clientId);
+                    if (filteredIndex !== -1) {
+                        this.filteredClients[filteredIndex].mood = parseInt(moodValue);
+                    }
+                    
+                    const card = document.querySelector(`[data-id="${clientId}"]`);
+                    if (card) {
+                        card.setAttribute('data-mood', moodValue);
+                    }
+                    
+                    console.log(`Mood updated for client ${clientId}: ${moodValue}`);
+                }
+            }
+
             render() {
                 if (this.filteredClients.length === 0) {
                     this.elements.clientCards.style.display = 'none';
@@ -680,9 +805,14 @@
                 this.elements.emptyState.style.display = 'none';
 
                 this.elements.clientCards.innerHTML = this.filteredClients.map(client => `
-                    <div class="client-card" data-id="${client.id}">
+                    <div class="client-card" data-id="${client.id}" data-mood="${client.mood || 3}">
                         <div class="client-header">
-                            <div class="client-name">${this.escapeHtml(client.name)}</div>
+                            <div class="mood-container">
+                                <div class="client-name">${this.escapeHtml(client.name)}</div>
+                                <input type="range" class="mood-slider" min="0" max="5" value="${client.mood || 3}" 
+                                       onchange="app.updateMood('${client.id}', this.value)"
+                                       aria-label="Mood for ${this.escapeHtml(client.name)}">
+                            </div>
                             <div class="client-actions">
                                 <button class="action-btn edit-btn" onclick="app.openModal(${JSON.stringify(client).replace(/"/g, '&quot;')})" aria-label="Edit ${this.escapeHtml(client.name)}">
                                     ✏️
@@ -706,10 +836,8 @@
             }
         }
 
-        // Initialize the app
         const app = new ClientNotesApp();
 
-        // Register service worker for offline functionality (if needed)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(() => {
