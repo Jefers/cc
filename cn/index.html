@@ -389,23 +389,13 @@
             border: 2px solid #4a5568;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         .client-card[data-mood="0"] {
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-        }
-        .client-card[data-mood="1"] {
-            background: linear-gradient(135deg, #5b21b6, #7c3aed);
-        }
-        .client-card[data-mood="2"] {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
-        }
-        .client-card[data-mood="3"] {
             background: linear-gradient(135deg, #22c55e, #4ade80);
         }
-        .client-card[data-mood="4"] {
+        .client-card[data-mood="1"] {
             background: linear-gradient(135deg, #f97316, #fb923c);
         }
-        .client-card[data-mood="5"] {
+        .client-card[data-mood="2"] {
             background: linear-gradient(135deg, #ef4444, #f87171);
         }
 
@@ -470,7 +460,7 @@
 <body>
     <div class="app-container">
         <header class="header">
-            <h1>Coach Christian Client Cards</h1>
+            <h1>CC Client Cards</h1>
             <p>Fitness Coach Dashboard</p>
             <div class="stats">
                 <div class="stat">
@@ -524,9 +514,9 @@
 
                 <div class="form-group mood-group">
                     <label class="form-label" for="client-mood">Mood</label>
-                    <input type="range" class="mood-slider" id="client-mood" min="0" max="5" value="3" aria-describedby="mood-help">
+                    <input type="range" class="mood-slider" id="client-mood" min="0" max="2" value="2" aria-describedby="mood-help">
                     <span class="mood-label" id="mood-label">Good/positive</span>
-                    <small id="mood-help" class="sr-only">Select client's current mood from 0 (Low/stressed) to 5 (Excellent/energized)</small>
+                    <small id="mood-help" class="sr-only">Select client's current mood from 0 (Excellent/energized) to 2 (Low/stressed)</small>
                 </div>
                 
                 <div class="modal-actions">
@@ -601,19 +591,19 @@
                             id: '1',
                             name: 'Sarah Johnson',
                             notes: 'Goals: Weight loss, improve cardiovascular health\nPreferences: Early morning sessions\nMedical: No restrictions\nProgress: Lost 12 lbs in 6 weeks',
-                            mood: 4
+                            mood: 2
                         },
                         {
                             id: '2',
                             name: 'Mike Smith',
                             notes: 'Goals: Build muscle mass, strength training\nPreferences: Evening workouts\nMedical: Previous knee injury - avoid high impact\nProgress: Bench press increased from 135 to 165 lbs',
-                            mood: 3
+                            mood: 1
                         },
                         {
                             id: '3',
                             name: 'Emma Wilson',
                             notes: 'Goals: Marathon training, endurance\nPreferences: Outdoor running when possible\nMedical: Asthma - keep inhaler nearby\nProgress: Half marathon in 1:58, targeting 1:50',
-                            mood: 2
+                            mood: 0
                         }
                     ];
                 } catch {
@@ -622,19 +612,19 @@
                             id: '1',
                             name: 'Sarah Johnson',
                             notes: 'Goals: Weight loss, improve cardiovascular health\nPreferences: Early morning sessions\nMedical: No restrictions\nProgress: Lost 12 lbs in 6 weeks',
-                            mood: 4
+                            mood: 2
                         },
                         {
                             id: '2',
                             name: 'Mike Smith',
                             notes: 'Goals: Build muscle mass, strength training\nPreferences: Evening workouts\nMedical: Previous knee injury - avoid high impact\nProgress: Bench press increased from 135 to 165 lbs',
-                            mood: 3
+                            mood: 1
                         },
                         {
                             id: '3',
                             name: 'Emma Wilson',
                             notes: 'Goals: Marathon training, endurance\nPreferences: Outdoor running when possible\nMedical: Asthma - keep inhaler nearby\nProgress: Half marathon in 1:58, targeting 1:50',
-                            mood: 2
+                            mood: 0
                         }
                     ];
                 }
@@ -660,16 +650,16 @@
                     this.elements.modalTitle.textContent = 'Edit Client';
                     this.elements.clientName.value = client.name;
                     this.elements.clientNotes.value = client.notes;
-                    this.elements.clientMood.value = client.mood || 3;
+                    this.elements.clientMood.value = client.mood || 0;
                     this.elements.saveBtn.textContent = 'Update Client';
-                    this.updateMoodLabel(client.mood || 3);
+                    this.updateMoodLabel(client.mood || 0);
                 } else {
                     this.elements.modalTitle.textContent = 'Add New Client';
                     this.elements.clientName.value = '';
                     this.elements.clientNotes.value = '';
-                    this.elements.clientMood.value = 3;
+                    this.elements.clientMood.value = 0;
                     this.elements.saveBtn.textContent = 'Save Client';
-                    this.updateMoodLabel(3);
+                    this.updateMoodLabel(0);
                 }
 
                 this.elements.modalOverlay.classList.add('active');
@@ -750,12 +740,9 @@
 
             updateMoodLabel(moodValue) {
                 const moodLabels = {
-                    0: 'Low/stressed',
-                    1: 'Below average',
-                    2: 'Calm/neutral',
-                    3: 'Good/positive',
-                    4: 'Very good/motivated',
-                    5: 'Excellent/energized'
+                    0: 'Excellent/energized',
+                    1: 'Good/positive',
+                    2: 'Below average'
                 };
                 this.elements.moodLabel.textContent = moodLabels[moodValue];
             }
@@ -805,11 +792,11 @@
                 this.elements.emptyState.style.display = 'none';
 
                 this.elements.clientCards.innerHTML = this.filteredClients.map(client => `
-                    <div class="client-card" data-id="${client.id}" data-mood="${client.mood || 3}">
+                    <div class="client-card" data-id="${client.id}" data-mood="${client.mood || 0}">
                         <div class="client-header">
                             <div class="mood-container">
                                 <div class="client-name">${this.escapeHtml(client.name)}</div>
-                                <input type="range" class="mood-slider" min="0" max="5" value="${client.mood || 3}" 
+                                <input type="range" class="mood-slider" min="0" max="2" value="${client.mood || 0}" 
                                        onchange="app.updateMood('${client.id}', this.value)"
                                        aria-label="Mood for ${this.escapeHtml(client.name)}">
                             </div>
