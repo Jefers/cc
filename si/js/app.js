@@ -44,4 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
         Till.save(start, end);
         e.target.reset();
     });
+
+    // Export data
+    document.getElementById('export-btn').addEventListener('click', () => {
+        Storage.exportData();
+    });
+
+    // Import data
+    document.getElementById('import-file').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            Storage.importData(file);
+            e.target.value = ''; // Reset file input
+        }
+    });
 });

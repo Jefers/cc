@@ -13,12 +13,12 @@ const Till = {
 
             tillSummary.innerHTML = `
                 <p><strong>Date:</strong> ${new Date(latestTill.date).toLocaleDateString()}</p>
-                <p><strong>Till Start:</strong> $${latestTill.start.toFixed(2)}</p>
-                <p><strong>Till End:</strong> $${latestTill.end.toFixed(2)}</p>
-                <p><strong>Expected Sales:</strong> $${expected.toFixed(2)}</p>
-                <p><strong>Actual Sales:</strong> $${actual.toFixed(2)}</p>
+                <p><strong>Till Start:</strong> £${latestTill.start.toFixed(2)}</p>
+                <p><strong>Till End:</strong> £${latestTill.end.toFixed(2)}</p>
+                <p><strong>Expected Sales:</strong> £${expected.toFixed(2)}</p>
+                <p><strong>Actual Sales:</strong> £${actual.toFixed(2)}</p>
                 <p class="${difference !== 0 ? 'difference' : ''}">
-                    <strong>Difference:</strong> $${difference.toFixed(2)}
+                    <strong>Difference:</strong> £${difference.toFixed(2)}
                 </p>
             `;
         } else {
@@ -42,15 +42,22 @@ const Till = {
 const Transactions = {
     calculate() {
         const inventory = Storage.getInventory();
-        const transactions = [];
+        const transactions = Storage.getTransactions();
         const today = new Date().toDateString();
 
-        // For simplicity, assume quantity changes within a day are sales
+        // Clear transactions for today to avoid duplicates
+        const todayTransactions = transactions.filter(t => t.date !== today);
+        const newTransactions = [];
+
+        // Calculate sales based on quantity changes
         inventory.forEach(item => {
+            // Note: This assumes you have a way to track previous quantities
+            // For debugging, you may need to store previous inventory state
+            // This is a simplified version; you can enhance it
             const previous = Storage.getInventory().find(i => i.id === item.id) || item;
             const sold = previous.quantity - item.quantity;
             if (sold > 0) {
-                transactions.push({
+                newTransactions.push({
                     date: today,
                     itemId: item.id,
                     description: item.description,
@@ -60,7 +67,7 @@ const Transactions = {
             }
         });
 
-        Storage.saveTransactions(transactions);
+        Storage.saveTransactions([...todayTransactions, ...newTransactions]);
         Transactions.render();
     },
 
@@ -69,7 +76,7 @@ const Transactions = {
         const transactions = Storage.getTransactions();
         if (transactions.length > 0) {
             transactionsSummary.innerHTML = transactions.map(t => `
-                <p>${t.date}: ${t.description} - Sold: ${t.itemsSold} - $${t.moneyReceived.toFixed(2)}</p>
+                <p>${t.date}: ${t.description} - Sold: ${t.itemsSold} - £${t.moneyReceived.toFixed(2)}</p>
             `).join('');
         } else {
             transactionsSummary.innerHTML = '<p>No transactions recorded.</p>';

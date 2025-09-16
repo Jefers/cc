@@ -10,6 +10,11 @@
 <body>
     <header>
         <h1>Shop Inventory & Till</h1>
+        <div class="header-actions">
+            <button id="export-btn" aria-label="Export data">Export Data</button>
+            <label for="import-file" class="import-btn">Import Data</label>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+        </div>
     </header>
     <main>
         <!-- Inventory Section -->
@@ -23,9 +28,9 @@
         <section id="till-section">
             <h2>Till Count</h2>
             <form id="till-form">
-                <label for="till-start">Till Start ($):</label>
+                <label for="till-start">Till Start (£):</label>
                 <input type="number" id="till-start" step="0.01" min="0" required aria-label="Till start amount">
-                <label for="till-end">Till End ($):</label>
+                <label for="till-end">Till End (£):</label>
                 <input type="number" id="till-end" step="0.01" min="0" required aria-label="Till end amount">
                 <button type="submit">Save Till Count</button>
             </form>
@@ -45,7 +50,7 @@
             <h2>Add/Edit Item</h2>
             <label for="item-description">Description:</label>
             <input type="text" id="item-description" required aria-label="Item description">
-            <label for="item-price">Price ($):</label>
+            <label for="item-price">Price (£):</label>
             <input type="number" id="item-price" step="0.01" min="0" required aria-label="Item price">
             <label for="item-quantity">Quantity:</label>
             <input type="number" id="item-quantity" min="0" required aria-label="Item quantity">

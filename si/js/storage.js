@@ -13,7 +13,7 @@ const Storage = {
         if (!localStorage.getItem('till')) {
             localStorage.setItem('till', JSON.stringify([]));
         }
-        if (!localStorage.getItem('transactions')) {
+        if (!localStorage.getItem('till')) {
             localStorage.setItem('transactions', JSON.stringify([]));
         }
     },
@@ -43,5 +43,42 @@ const Storage = {
 
     saveTransactions(transactions) {
         localStorage.setItem('transactions', JSON.stringify(transactions));
+    },
+
+    // Export all data as JSON
+    exportData() {
+        const data = {
+            inventory: Storage.getInventory(),
+            till: Storage.getTill(),
+            transactions: Storage.getTransactions()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `shop-data-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    },
+
+    // Import data from JSON
+    importData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.inventory) Storage.saveInventory(data.inventory);
+                if (data.till) Storage.saveTill(data.till);
+                if (data.transactions) Storage.saveTransactions(data.transactions);
+                // Re-render UI after import
+                Inventory.render();
+                Till.render();
+                Transactions.render();
+                alert('Data imported successfully!');
+            } catch (error) {
+                alert('Error importing data: Invalid JSON file');
+            }
+        };
+        reader.readAsText(file);
     }
 };

@@ -10,7 +10,7 @@ const Inventory = {
             li.setAttribute('draggable', true);
             li.setAttribute('data-id', item.id);
             li.innerHTML = `
-                ${item.description} - $${item.price.toFixed(2)} - Qty: ${item.quantity}
+                ${item.description} - £${item.price.toFixed(2)} - Qty: ${item.quantity}
                 <div>
                     <button onclick="Inventory.edit('${item.id}')" aria-label="Edit ${item.description}">Edit</button>
                     <button onclick="Inventory.delete('${item.id}')" aria-label="Delete ${item.description}">Delete</button>
