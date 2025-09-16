@@ -9,9 +9,10 @@
       --bg: linear-gradient(180deg,#fffaf0 0%, #fff3e8 50%, #f7fff6 100%);
       --card:#ffffff;
       --muted:#6b6b6b;
-      --accent1:#ff8a65; /* warm coral */
-      --accent2:#ffd54f; /* sunny */
-      --accent3:#66d9b8; /* mint */
+      --accent1:#ff8a65;
+      --accent2:#ffd54f;
+      --accent3:#66d9b8;
+      --glass: rgba(255,255,255,0.6);
       --radius: 18px;
       --shadow: 0 6px 20px rgba(16,24,40,0.08);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
@@ -20,31 +21,48 @@
     html,body{height:100%;margin:0;background:var(--bg);color:#111}
     .app{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 16px 24px;gap:14px}
 
-    header{width:100%;max-width:520px;display:flex;align-items:center;justify-content:space-between}
+    header{width:100%;max-width:720px;display:flex;align-items:center;justify-content:space-between}
     h1{margin:0;font-size:20px;letter-spacing:-0.2px}
     .subtitle{font-size:12px;color:var(--muted)}
 
-    main{width:100%;max-width:520px;display:grid;grid-template-columns:1fr;gap:12px}
+    main{width:100%;max-width:720px;display:grid;grid-template-columns:1fr;gap:12px}
 
-    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+    .card.happy{background: linear-gradient(135deg, rgba(255,138,101,0.06), rgba(102,217,184,0.04));}
 
     .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .section-title h2{margin:0;font-size:14px}
     .small{font-size:12px;color:var(--muted)}
 
     .tasks{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-    .task{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(250,250,250,0.8)}
-    .task label{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer}
-    .task input[type="checkbox"]{appearance:none;width:22px;height:22px;border-radius:6px;border:2px solid rgba(0,0,0,0.15);display:grid;place-items:center;transition:all .18s}
-    .task input[type="checkbox"]:checked{background:linear-gradient(135deg,var(--accent1),var(--accent3));border:0;color:white}
-    .task input[type="checkbox"]:checked::after{content:'✓';font-weight:700}
+    .task{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(250,250,250,0.8);}
+    .task .left{display:flex;align-items:center;gap:10px;flex:1}
+    .task label{display:flex;align-items:center;gap:12px;cursor:pointer;flex:1}
+    .task input[type="checkbox"]{appearance:none;width:26px;height:26px;border-radius:8px;border:2px solid rgba(0,0,0,0.08);display:inline-grid;place-items:center;background:transparent;transition:all .18s}
+    .task input[type="checkbox"]:checked{background:linear-gradient(135deg,var(--accent1),var(--accent3));border:0;box-shadow:0 6px 18px rgba(102,217,184,0.18)}
+    .task input[type="checkbox"]:checked::after{content:'✓';color:white;font-weight:700}
     .task .title{font-size:15px}
+    .task .meta{font-size:12px;color:var(--muted)}
+    .task .actions{display:flex;gap:8px}
+    .btn{border:0;background:transparent;padding:8px;border-radius:10px;cursor:pointer}
 
     .add-row{display:flex;gap:8px;margin-top:8px}
     .add-row input{flex:1;padding:10px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);font-size:15px}
-    .add-row button{padding:10px 12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent3));color:white;font-weight:700;cursor:pointer}
+    .add-row button{padding:10px 12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent3));color:white;font-weight:700}
 
-    .progress{margin-top:12px;font-size:14px}
+    .progress-row{display:flex;align-items:center;gap:12px}
+    .ring{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;position:relative}
+    .ring svg{transform:rotate(-90deg)}
+    .ring .val{position:absolute;font-weight:700}
+
+    footer{width:100%;max-width:720px;display:flex;justify-content:center;padding:20px 0}
+
+    @media(min-width:720px){.app{padding:28px}.card{padding:18px}}
+
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.04);font-size:12px}
+    .fade-in{animation:fadeIn .45s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
@@ -52,119 +70,310 @@
     <header>
       <div>
         <h1>Happy Days</h1>
-        <div class="subtitle">Alignment • Contentment • Control</div>
+        <div class="subtitle">Build alignment • invite contentment • strengthen inner control</div>
+      </div>
+      <div class="topbar">
+        <div class="pill" id="date-pill"></div>
       </div>
     </header>
 
     <main>
-      <section class="card">
+      <section class="card happy fade-in" aria-labelledby="today-stats">
         <div class="section-title">
-          <h2>Progress</h2>
-          <div class="small" id="progress-text">0 / 0 tasks</div>
+          <div>
+            <h2 id="today-stats">Today</h2>
+            <div class="small">Quick view: your daily progress toward happiness</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="small muted">Streak: <strong id="streak">0</strong></div>
+            <button class="btn" id="daily-reset" title="Reset today's checks">Reset</button>
+          </div>
         </div>
-        <div class="progress" id="progress-bar">0%</div>
+
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div class="progress-row">
+            <div class="ring" role="img" aria-label="daily progress">
+              <svg id="progress-svg" width="72" height="72" viewBox="0 0 36 36">
+                <path stroke="rgba(0,0,0,0.06)" stroke-width="2.5" fill="none" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32" />
+                <path id="progress-path" stroke="#000" stroke-width="2.6" stroke-linecap="round" fill="none" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32" stroke-dasharray="0 100" />
+              </svg>
+              <div class="val" id="progress-val">0%</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column">
+              <div class="small">Completion</div>
+              <div style="font-weight:700;font-size:15px" id="summary-count">0 / 0 tasks</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <div class="section-title"><h2>Alignment</h2></div>
+      <section class="card fade-in" aria-labelledby="align-title">
+        <div class="section-title">
+          <h2 id="align-title">Alignment</h2>
+          <div class="small">Live by your values — small actions add up</div>
+        </div>
+
         <div class="tasks" id="align-list"></div>
+
         <div class="add-row">
-          <input id="align-input" placeholder="Add alignment habit" />
+          <input id="align-input" placeholder="Add alignment habit (e.g. 'Speak honestly')" />
           <button id="align-add">Add</button>
         </div>
       </section>
 
-      <section class="card">
-        <div class="section-title"><h2>Contentment</h2></div>
+      <section class="card fade-in" aria-labelledby="content-title">
+        <div class="section-title">
+          <h2 id="content-title">Contentment</h2>
+          <div class="small">Do things that bring calm and peace</div>
+        </div>
+
         <div class="tasks" id="content-list"></div>
+
         <div class="add-row">
-          <input id="content-input" placeholder="Add calming activity" />
+          <input id="content-input" placeholder="Add calming activity (e.g. '10-min walk')" />
           <button id="content-add">Add</button>
         </div>
       </section>
 
-      <section class="card">
-        <div class="section-title"><h2>Control</h2></div>
+      <section class="card fade-in" aria-labelledby="control-title">
+        <div class="section-title">
+          <h2 id="control-title">Control (Inner)</h2>
+          <div class="small">Practice inner tools — breath, reframe, pause</div>
+        </div>
+
         <div class="tasks" id="control-list"></div>
+
         <div class="add-row">
-          <input id="control-input" placeholder="Add inner practice" />
+          <input id="control-input" placeholder="Add an inner practice (e.g. '3 breaths')" />
           <button id="control-add">Add</button>
         </div>
       </section>
+
+      <section class="card fade-in" aria-labelledby="tips-title">
+        <div class="section-title">
+          <h2 id="tips-title">Quick exercises</h2>
+          <div class="small">Tiny practices you can do anytime</div>
+        </div>
+        <ul style="margin:10px 0 0 18px;color:var(--muted)">
+          <li><strong>Alignment:</strong> Tonight — pick 1 choice that matches a value.</li>
+          <li><strong>Contentment:</strong> Do one 10-minute activity without your phone.</li>
+          <li><strong>Control:</strong> Pause for 3 seconds before responding to something stressful.</li>
+        </ul>
+      </section>
+
     </main>
+
+    <footer>
+      <div class="small muted">Made with ☀️ — Keep it simple, keep it kind.</div>
+    </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = 'happy-days-data';
-    let state = {alignment:[], contentment:[], control:[], checks:{}};
+    (function(){
+      const STORAGE_KEY = 'happy-days:v1';
+      const LEGACY_KEYS = ['happy-days-data','happy-days-data-v2','happy-days'];
 
-    function save(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
+      const defaults = {
+        alignment:[{id:genId(),title:'Speak honestly',hint:'Small honest moments'},{id:genId(),title:'Choose one brave yes',hint:'Say yes to something meaningful'}],
+        contentment:[{id:genId(),title:'10-min walk',hint:'Outside if possible'},{id:genId(),title:'Read for 15 minutes',hint:'A pleasant book'}],
+        control:[{id:genId(),title:'5 deep breaths',hint:'Slow inhales'},{id:genId(),title:'Pause before reply',hint:'3-second pause'}]
+      };
 
-    function load(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw) state = JSON.parse(raw);
-    }
+      const stateTemplate = ()=>({lists:{alignment:[],contentment:[],control:[]},checks:{},meta:{streak:0,lastCompleteDate:''}});
+      const state = stateTemplate();
 
-    function genId(){ return Math.random().toString(36).substr(2,9); }
+      // DOM refs
+      const datePill = qs('#date-pill');
+      const progressPath = qs('#progress-path');
+      const progressVal = qs('#progress-val');
+      const summaryCount = qs('#summary-count');
+      const streakEl = qs('#streak');
 
-    function addTask(listKey, inputEl){
-      const val = inputEl.value.trim();
-      if(!val) return;
-      state[listKey].push({id:genId(), title:val});
-      inputEl.value='';
-      save();
-      render();
-    }
+      const alignList = qs('#align-list');
+      const contentList = qs('#content-list');
+      const controlList = qs('#control-list');
 
-    function toggleCheck(id, checked){
-      if(checked) state.checks[id]=true; else delete state.checks[id];
-      save();
-      updateProgress();
-    }
+      const alignInput = qs('#align-input'); const alignAdd = qs('#align-add');
+      const contentInput = qs('#content-input'); const contentAdd = qs('#content-add');
+      const controlInput = qs('#control-input'); const controlAdd = qs('#control-add');
 
-    function render(){
-      ['alignment','contentment','control'].forEach(key=>{
-        const container = document.getElementById(key+'-list');
-        container.innerHTML='';
-        state[key].forEach(item=>{
-          const div=document.createElement('div');
-          div.className='task';
-          const label=document.createElement('label');
-          const cb=document.createElement('input');
-          cb.type='checkbox';
-          cb.checked=!!state.checks[item.id];
-          cb.addEventListener('change', ()=>toggleCheck(item.id,cb.checked));
-          const span=document.createElement('span');
-          span.className='title';
-          span.textContent=item.title;
-          label.appendChild(cb);
-          label.appendChild(span);
-          div.appendChild(label);
-          container.appendChild(div);
+      const dailyReset = qs('#daily-reset');
+
+      init();
+
+      function init(){
+        migrateAndLoad();
+        if(isEmptyState()){
+          state.lists = JSON.parse(JSON.stringify(defaults));
+          save();
+        }
+        renderDate();
+        bind();
+        renderAll();
+        updateProgress();
+      }
+
+      function migrateAndLoad(){
+        // Try main key first
+        let raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){ try{ const p = JSON.parse(raw); if(validState(p)){ Object.assign(state,p); return; } }catch(e){} }
+        // Try legacy keys
+        for(const k of LEGACY_KEYS){
+          raw = localStorage.getItem(k);
+          if(!raw) continue;
+          try{
+            const p = JSON.parse(raw);
+            if(!p) continue;
+            // older shape: maybe lists are top-level
+            if(p.lists && validState(p)){
+              Object.assign(state,p);
+              save();
+              return;
+            }
+            if(Array.isArray(p.alignment) || Array.isArray(p.contentment) || Array.isArray(p.control)){
+              state.lists.alignment = p.alignment || [];
+              state.lists.contentment = p.contentment || [];
+              state.lists.control = p.control || [];
+              state.checks = p.checks || {};
+              state.meta = p.meta || state.meta;
+              save();
+              return;
+            }
+          }catch(e){console.warn('migrate failed',e)}
+        }
+        // nothing found
+      }
+
+      function validState(obj){
+        return obj && obj.lists && obj.lists.alignment && obj.lists.contentment && obj.lists.control;
+      }
+
+      function save(){
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){console.warn('save failed',e)}
+      }
+
+      function bind(){
+        alignAdd.addEventListener('click', ()=>addTask('alignment', alignInput));
+        contentAdd.addEventListener('click', ()=>addTask('contentment', contentInput));
+        controlAdd.addEventListener('click', ()=>addTask('control', controlInput));
+
+        [alignInput,contentInput,controlInput].forEach(inp=>{
+          inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); inp.nextElementSibling.click(); } });
         });
-      });
-      updateProgress();
-    }
 
-    function updateProgress(){
-      const allTasks=[...state.alignment,...state.contentment,...state.control];
-      const total=allTasks.length;
-      const done=allTasks.filter(t=>state.checks[t.id]).length;
-      document.getElementById('progress-text').textContent=`${done} / ${total} tasks`;
-      document.getElementById('progress-bar').textContent = total? Math.round(done/total*100)+"%": "0%";
-    }
+        dailyReset.addEventListener('click', ()=>{
+          if(confirm("Reset today's checks?\n(Will clear today's completed boxes but keep your tasks.)")){
+            state.checks = {};
+            // Optionally ask to reset streak
+            if(confirm('Also reset streak to 0?')){ state.meta.streak = 0; state.meta.lastCompleteDate = ''; }
+            save(); renderAll(); updateProgress();
+          }
+        });
+      }
 
-    function bind(){
-      document.getElementById('align-add').onclick=()=>addTask('alignment',document.getElementById('align-input'));
-      document.getElementById('content-add').onclick=()=>addTask('contentment',document.getElementById('content-input'));
-      document.getElementById('control-add').onclick=()=>addTask('control',document.getElementById('control-input'));
-    }
+      function addTask(listKey, inputEl){
+        const v = inputEl.value.trim(); if(!v) { inputEl.focus(); return; }
+        const item = {id:genId(), title:v, hint:''};
+        state.lists[listKey].unshift(item);
+        inputEl.value='';
+        save(); renderAll(); updateProgress();
+      }
 
-    load();
-    bind();
-    render();
+      function renderAll(){
+        renderList('alignment', alignList);
+        renderList('contentment', contentList);
+        renderList('control', controlList);
+        updateSummary();
+      }
+
+      function renderList(key, container){
+        container.innerHTML='';
+        const list = state.lists[key] || [];
+        if(!list.length){ const p=document.createElement('div'); p.className='small muted'; p.textContent='No items yet — add one below.'; container.appendChild(p); return; }
+        list.forEach(item=>{
+          const el = document.createElement('div'); el.className='task';
+          const left = document.createElement('div'); left.className='left';
+
+          const label = document.createElement('label');
+          const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = !!state.checks[item.id]; cb.addEventListener('change', ()=>toggleCheck(item.id, cb.checked));
+          const title = document.createElement('div'); title.className='title'; title.textContent = item.title;
+          label.appendChild(cb); label.appendChild(title);
+          left.appendChild(label);
+
+          const actions = document.createElement('div'); actions.className='actions';
+          const editBtn = document.createElement('button'); editBtn.className='btn'; editBtn.title='Edit'; editBtn.innerHTML='✏️'; editBtn.addEventListener('click', ()=>editItem(key, item));
+          const delBtn = document.createElement('button'); delBtn.className='btn'; delBtn.title='Delete'; delBtn.innerHTML='🗑️'; delBtn.addEventListener('click', ()=>{ if(confirm('Delete this item?')) deleteItem(key,item.id); });
+          actions.appendChild(editBtn); actions.appendChild(delBtn);
+
+          el.appendChild(left); el.appendChild(actions);
+          container.appendChild(el);
+        });
+      }
+
+      function editItem(listKey,item){
+        const newTitle = prompt('Edit task title', item.title);
+        if(newTitle===null) return;
+        item.title = newTitle.trim() || item.title;
+        save(); renderAll();
+      }
+
+      function deleteItem(listKey,id){
+        state.lists[listKey] = state.lists[listKey].filter(i=>i.id!==id);
+        if(state.checks[id]) delete state.checks[id];
+        save(); renderAll(); updateProgress();
+      }
+
+      function toggleCheck(id, checked){
+        if(checked) state.checks[id]=true; else delete state.checks[id];
+        save(); updateProgress();
+      }
+
+      function updateProgress(){
+        const allIds = Object.values(state.lists).flat().map(i=>i.id);
+        const total = allIds.length;
+        const done = allIds.filter(id=>state.checks[id]).length;
+        const pct = total===0?0:Math.round((done/total)*100);
+
+        // animate ring properly using path length
+        try{
+          const length = progressPath.getTotalLength();
+          const draw = (pct/100)*length;
+          progressPath.setAttribute('stroke-dasharray', `${draw} ${length}`);
+        }catch(e){ progressPath.setAttribute('stroke-dasharray', pct + ' ' + 100); }
+
+        progressVal.textContent = pct + '%';
+        summaryCount.textContent = `${done} / ${total} tasks`;
+
+        // streak: if all tasks completed for today, and not already marked completed today, update streak
+        const today = todayKey();
+        if(total>0 && done === total){
+          if(state.meta.lastCompleteDate !== today){
+            const yesterday = yesterdayKey();
+            if(state.meta.lastCompleteDate === yesterday){ state.meta.streak = (state.meta.streak||0)+1; }
+            else { state.meta.streak = 1; }
+            state.meta.lastCompleteDate = today;
+            save();
+          }
+        }
+
+        streakEl.textContent = state.meta.streak || 0;
+      }
+
+      function renderDate(){
+        datePill.textContent = new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+      }
+
+      function isEmptyState(){ return Object.values(state.lists).flat().length === 0; }
+      function genId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+      function qs(sel){ return document.querySelector(sel); }
+      function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+      function yesterdayKey(){ const d=new Date(); d.setDate(d.getDate()-1); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+      // expose small helper for debugging
+      window.HappyDays = {state, save, load: ()=>{save(); renderAll(); updateProgress();}};
+
+    })();
   </script>
 </body>
 </html>
