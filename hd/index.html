@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Happy Days</title>
+  <style>
+    :root{
+      --bg: linear-gradient(180deg,#fffaf0 0%, #fff3e8 50%, #f7fff6 100%);
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --accent1:#ff8a65; /* warm coral */
+      --accent2:#ffd54f; /* sunny */
+      --accent3:#66d9b8; /* mint */
+      --glass: rgba(255,255,255,0.6);
+      --radius: 18px;
+      --shadow: 0 6px 20px rgba(16,24,40,0.08);
+      --glass-shadow: 0 8px 30px rgba(16,24,40,0.06);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    /* Mobile first layout */
+    html,body{height:100%;margin:0;background:var(--bg);color:#111}
+    .app{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 16px 24px;gap:14px}
+
+    header{width:100%;max-width:520px;display:flex;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:20px;letter-spacing:-0.2px}
+    .subtitle{font-size:12px;color:var(--muted)}
+
+    .topbar{display:flex;gap:10px;align-items:center}
+    .avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent3));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--glass-shadow)}
+
+    main{width:100%;max-width:520px;display:grid;grid-template-columns:1fr;gap:12px}
+
+    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+    .card.happy{background: linear-gradient(135deg, rgba(255,138,101,0.08), rgba(102,217,184,0.06));}
+
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .section-title h2{margin:0;font-size:14px}
+    .small{font-size:12px;color:var(--muted)}
+
+    /* task list */
+    .tasks{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .task{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:rgba(250,250,250,0.8);}
+    .task .left{display:flex;align-items:center;gap:10px;flex:1}
+    .task label{display:flex;align-items:center;gap:12px;cursor:pointer;flex:1}
+    .task input[type="checkbox"]{appearance:none;width:26px;height:26px;border-radius:8px;border:2px solid rgba(0,0,0,0.08);display:inline-grid;place-items:center;background:transparent;transition:all .18s}
+    .task input[type="checkbox"]:checked{background:linear-gradient(135deg,var(--accent1),var(--accent3));border:0;box-shadow:0 6px 18px rgba(102,217,184,0.18)}
+    .task input[type="checkbox"]:checked::after{content:'✓';color:white;font-weight:700}
+    .task .title{font-size:15px}
+    .task .meta{font-size:12px;color:var(--muted)}
+    .task .actions{display:flex;gap:8px}
+    .btn{border:0;background:transparent;padding:8px;border-radius:10px;cursor:pointer}
+
+    .add-row{display:flex;gap:8px;margin-top:8px}
+    .add-row input{flex:1;padding:10px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);font-size:15px}
+    .add-row button{padding:10px 12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent3));color:white;font-weight:700}
+
+    /* progress */
+    .progress-row{display:flex;align-items:center;gap:12px}
+    .ring{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;position:relative}
+    .ring svg{transform:rotate(-90deg)}
+    .ring .val{position:absolute;font-weight:700}
+
+    footer{width:100%;max-width:520px;display:flex;justify-content:center;padding:20px 0}
+
+    /* responsive */
+    @media(min-width:720px){.app{padding:28px}.card{padding:18px}}
+
+    /* small helpers */
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.04);font-size:12px}
+
+    /* subtle animation */
+    .fade-in{animation:fadeIn .45s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Happy Days</h1>
+        <div class="subtitle">Build alignment • invite contentment • strengthen inner control</div>
+      </div>
+      <div class="topbar">
+        <div class="avatar">HD</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Summary card -->
+      <section class="card happy fade-in" aria-labelledby="today-stats">
+        <div class="section-title">
+          <div>
+            <h2 id="today-stats">Today</h2>
+            <div class="small">Quick view: your daily progress toward happiness</div>
+          </div>
+          <div class="pill" id="date-pill"></div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div class="progress-row">
+            <div class="ring" role="img" aria-label="daily progress">
+              <svg width="72" height="72" viewBox="0 0 36 36">
+                <path stroke="rgba(0,0,0,0.06)" stroke-width="2.5" fill="none" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32" />
+                <path id="progress-path" stroke="url(#g1)" stroke-width="2.6" stroke-linecap="round" fill="none" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32" stroke-dasharray="0 100" />
+                <defs>
+                  <linearGradient id="g1" x1="0%" x2="100%"><stop offset="0%" stop-color="#ff8a65"/><stop offset="50%" stop-color="#ffd54f"/><stop offset="100%" stop-color="#66d9b8"/></linearGradient>
+                </defs>
+              </svg>
+              <div class="val" id="progress-val">0%</div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div class="small">Completion</div>
+              <div style="font-weight:700;font-size:15px" id="summary-count">0 / 0 tasks</div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <button class="btn" id="daily-reset" title="Reset today's checks">Reset</button>
+            <div class="small muted">Streak: <span id="streak">0</span> days</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Three ingredient cards -->
+      <section class="card fade-in" aria-labelledby="align-title">
+        <div class="section-title">
+          <h2 id="align-title">Alignment</h2>
+          <div class="small">Live by your values — small actions add up</div>
+        </div>
+
+        <div class="tasks" id="align-list"></div>
+
+        <div class="add-row">
+          <input id="align-input" placeholder="Add alignment habit (e.g. 'Speak honestly')" />
+          <button id="align-add">Add</button>
+        </div>
+      </section>
+
+      <section class="card fade-in" aria-labelledby="content-title">
+        <div class="section-title">
+          <h2 id="content-title">Contentment</h2>
+          <div class="small">Do things that bring calm and peace</div>
+        </div>
+
+        <div class="tasks" id="content-list"></div>
+
+        <div class="add-row">
+          <input id="content-input" placeholder="Add calming activity (e.g. '10-min walk')" />
+          <button id="content-add">Add</button>
+        </div>
+      </section>
+
+      <section class="card fade-in" aria-labelledby="control-title">
+        <div class="section-title">
+          <h2 id="control-title">Control (Inner)</h2>
+          <div class="small">Practice inner tools — breath, reframe, pause</div>
+        </div>
+
+        <div class="tasks" id="control-list"></div>
+
+        <div class="add-row">
+          <input id="control-input" placeholder="Add an inner practice (e.g. '3 breaths')" />
+          <button id="control-add">Add</button>
+        </div>
+      </section>
+
+      <!-- Tips card -->
+      <section class="card fade-in" aria-labelledby="tips-title">
+        <div class="section-title">
+          <h2 id="tips-title">Quick exercises</h2>
+          <div class="small">Tiny practices you can do anytime</div>
+        </div>
+        <ul style="margin:10px 0 0 18px;color:var(--muted)">
+          <li><strong>Alignment:</strong> Tonight — pick 1 choice that matches a value.</li>
+          <li><strong>Contentment:</strong> Do one 10-minute activity without your phone.</li>
+          <li><strong>Control:</strong> Pause for 3 seconds before responding to something stressful.</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="small muted">Made with ☀️ — Keep it simple, keep it kind.</div>
+    </footer>
+  </div>
+
+  <script>
+    /* Happy Days app - single-file JavaScript
+       Features:
+         - Mobile-first layout
+         - Three categories: alignment, contentment, control
+         - Add / check / edit / delete tasks
+         - LocalStorage persistence per-day
+         - Daily reset & streak tracking
+    */
+
+    (function(){
+      const STORAGE_KEY = 'happy-days:v1';
+      const state = {lists:{alignment:[],contentment:[],control:[]},checks:{},meta:{streak:0,lastDate:''}};
+
+      // Default tasks to help the user start
+      const defaults = {
+        alignment:[{id:genId(),title:'Speak honestly',hint:'Small honest moments'}, {id:genId(),title:'Choose one brave yes',hint:'Say yes to something meaningful'}],
+        contentment:[{id:genId(),title:'10-min walk',hint:'Outside if possible'},{id:genId(),title:'Read for 15 minutes',hint:'A pleasant book'}],
+        control:[{id:genId(),title:'5 deep breaths',hint:'Slow inhales'}, {id:genId(),title:'Pause before reply',hint:'3-second pause'}]
+      };
+
+      // DOM refs
+      const datePill = qs('#date-pill');
+      const progressPath = qs('#progress-path');
+      const progressVal = qs('#progress-val');
+      const summaryCount = qs('#summary-count');
+      const streakEl = qs('#streak');
+
+      // lists
+      const alignList = qs('#align-list');
+      const contentList = qs('#content-list');
+      const controlList = qs('#control-list');
+
+      // inputs
+      const alignInput = qs('#align-input'); const alignAdd = qs('#align-add');
+      const contentInput = qs('#content-input'); const contentAdd = qs('#content-add');
+      const controlInput = qs('#control-input'); const controlAdd = qs('#control-add');
+
+      const dailyReset = qs('#daily-reset');
+
+      // init
+      init();
+
+      function init(){
+        load();
+        // if no data, seed defaults
+        if(!Object.keys(state.lists.alignment||{}).length && isEmptyState()){
+          state.lists = JSON.parse(JSON.stringify(defaults));
+        }
+        renderDate();
+        bind();
+        renderAll();
+        updateProgress();
+      }
+
+      function bind(){
+        alignAdd.addEventListener('click', ()=>addTask('alignment', alignInput.value.trim(), alignInput));
+        contentAdd.addEventListener('click', ()=>addTask('contentment', contentInput.value.trim(), contentInput));
+        controlAdd.addEventListener('click', ()=>addTask('control', controlInput.value.trim(), controlInput));
+
+        dailyReset.addEventListener('click', ()=>{
+          if(confirm('Reset today\'s checks?')){state.checks = {}; save(); renderAll(); updateProgress();}
+        });
+
+        // allow enter key to add
+        [alignInput,contentInput,controlInput].forEach(inp=>{
+          inp.addEventListener('keydown', (e)=>{if(e.key==='Enter'){e.preventDefault(); e.target.nextElementSibling.click();}})
+        });
+      }
+
+      function addTask(listKey, title, inputEl){
+        if(!title) return inputEl.focus();
+        const item = {id:genId(),title:title, hint:''};
+        state.lists[listKey].unshift(item);
+        save(); renderAll(); updateProgress(); inputEl.value='';
+      }
+
+      function renderAll(){
+        renderList('alignment', alignList);
+        renderList('contentment', contentList);
+        renderList('control', controlList);
+        updateSummary();
+      }
+
+      function renderList(key, container){
+        container.innerHTML='';
+        const list = state.lists[key];
+        if(!list || !list.length){
+          const p = document.createElement('div'); p.className='small muted'; p.textContent='No items yet — add one below.'; container.appendChild(p); return;
+        }
+        list.forEach(item=>{
+          const el = document.createElement('div'); el.className='task';
+          const left = document.createElement('div'); left.className='left';
+          const label = document.createElement('label');
+          const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = !!state.checks[item.id]; cb.addEventListener('change', ()=>toggleCheck(item.id, cb.checked));
+          const title = document.createElement('div'); title.className='title'; title.textContent=item.title;
+          const meta = document.createElement('div'); meta.className='meta'; meta.textContent=item.hint||'';
+          label.appendChild(cb); label.appendChild(title);
+          left.appendChild(label);
+          const actions = document.createElement('div'); actions.className='actions';
+          const editBtn = document.createElement('button'); editBtn.className='btn'; editBtn.title='Edit'; editBtn.innerHTML='✏️'; editBtn.addEventListener('click', ()=>editItem(key,item));
+          const delBtn = document.createElement('button'); delBtn.className='btn'; delBtn.title='Delete'; delBtn.innerHTML='🗑️'; delBtn.addEventListener('click', ()=>{
+            if(confirm('Delete this item?')){ deleteItem(key,item.id); }
+          });
+          actions.appendChild(editBtn); actions.appendChild(delBtn);
+          el.appendChild(left); el.appendChild(actions);
+          container.appendChild(el);
+        });
+      }
+
+      function editItem(listKey,item){
+        const newTitle = prompt('Edit task title', item.title);
+        if(newTitle===null) return; // cancelled
+        item.title = newTitle.trim() || item.title;
+        save(); renderAll();
+      }
+
+      function deleteItem(listKey,id){
+        state.lists[listKey] = state.lists[listKey].filter(i=>i.id!==id);
+        delete state.checks[id];
+        save(); renderAll(); updateProgress();
+      }
+
+      function toggleCheck(id, checked){
+        if(checked) state.checks[id]=true; else delete state.checks[id];
+        save(); updateProgress();
+      }
+
+      function updateProgress(){
+        const allIds = Object.values(state.lists).flat().map(i=>i.id);
+        const total = allIds.length;
+        const done = allIds.filter(id=>state.checks[id]).length;
+        const pct = total===0?0:Math.round((done/total)*100);
+        const dash = pct + ' ' + (100-pct);
+        progressPath.setAttribute('stroke-dasharray', pct + ' ' + 100);
+        progressVal.textContent = pct + '%';
+        summaryCount.textContent = done + ' / ' + total + ' tasks';
+        // streak logic: if all tasks done, advance streak for today
+        const today = todayKey();
+        if(state.meta.lastDate!==today){
+          // new day, only compute streak when all tasks are done for previous day - keep as is
+        }
+        // update streak display
+        streakEl.textContent = state.meta.streak||0;
+      }
+
+      function updateSummary(){
+        // fill date
+        datePill.textContent = new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+      }
+
+      function save(){
+        // persist
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){console.warn('save failed',e)}
+      }
+
+      function load(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if(raw){
+            const parsed = JSON.parse(raw);
+            // basic migration or validation
+            if(parsed && parsed.lists) Object.assign(state, parsed);
+            // if lists missing, ensure keys exist
+            state.lists = state.lists || {alignment:[],contentment:[],control:[]};
+            state.checks = state.checks || {};
+            state.meta = state.meta || {streak:0,lastDate:''};
+            // daily rollover: if stored date !== today, clear checks but remember streak if completed prev day
+            const today = todayKey();
+            if(state.meta.lastDate && state.meta.lastDate !== today){
+              // if previous day had all tasks checked, increment streak
+              const prevAll = checkIfAllForDate(state.meta.lastDate);
+              if(prevAll){ state.meta.streak = (state.meta.streak||0)+1; }
+              // clear today's checks
+              state.checks = {};
+              state.meta.lastDate = today;
+              save();
+            } else if(!state.meta.lastDate){ state.meta.lastDate = today; save(); }
+          } else {
+            state.meta.lastDate = todayKey(); save();
+          }
+        }catch(e){ console.warn('load failed', e); state.meta.lastDate = todayKey(); }
+      }
+
+      function checkIfAllForDate(dateStr){
+        // rudimentary: treat current checks as "prev day" checks only during rollover; if all items were checked, return true
+        const allIds = Object.values(state.lists).flat().map(i=>i.id);
+        if(allIds.length===0) return false;
+        return allIds.every(id=>state.checks[id]);
+      }
+
+      function isEmptyState(){
+        return Object.values(state.lists).flat().length===0;
+      }
+
+      function todayKey(){
+        const d = new Date();
+        return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+      }
+
+      function genId(){ return Math.random().toString(36).slice(2,9); }
+      function qs(sel){ return document.querySelector(sel); }
+
+      // expose a small dev helper in window for debugging (optional)
+      window.HappyDays = {state,save,load};
+
+    })();
+  </script>
+</body>
+</html>
