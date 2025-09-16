@@ -36,13 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('item-modal').close();
     });
 
-    // Handle till form submission
+    // Auto-save till start
+    document.getElementById('till-start').addEventListener('change', (e) => {
+        const start = e.target.value;
+        if (start) {
+            Till.saveStart(start);
+        }
+    });
+
+    // Handle till form submission for end of shift
     document.getElementById('till-form').addEventListener('submit', (e) => {
         e.preventDefault();
-        const start = document.getElementById('till-start').value;
         const end = document.getElementById('till-end').value;
-        Till.save(start, end);
-        e.target.reset();
+        if (end) {
+            Till.saveEnd(end);
+            e.target.reset();
+        }
     });
 
     // Export data

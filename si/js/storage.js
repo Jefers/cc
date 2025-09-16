@@ -9,12 +9,18 @@ const Storage = {
                 { id: '3', description: 'Pen', price: 1.25, quantity: 20 }
             ];
             localStorage.setItem('inventory', JSON.stringify(sampleInventory));
+            // Initialize previous inventory as a copy of sample data
+            localStorage.setItem('previousInventory', JSON.stringify(sampleInventory));
         }
         if (!localStorage.getItem('till')) {
             localStorage.setItem('till', JSON.stringify([]));
         }
-        if (!localStorage.getItem('till')) {
+        if (!localStorage.getItem('transactions')) {
             localStorage.setItem('transactions', JSON.stringify([]));
+        }
+        // Initialize current till start if not set
+        if (!localStorage.getItem('currentTillStart')) {
+            localStorage.setItem('currentTillStart', JSON.stringify(null));
         }
     },
 
@@ -24,7 +30,14 @@ const Storage = {
     },
 
     saveInventory(inventory) {
+        // Save current inventory as previous before updating
+        const currentInventory = Storage.getInventory();
+        localStorage.setItem('previousInventory', JSON.stringify(currentInventory));
         localStorage.setItem('inventory', JSON.stringify(inventory));
+    },
+
+    getPreviousInventory() {
+        return JSON.parse(localStorage.getItem('previousInventory')) || [];
     },
 
     // Till storage
@@ -34,6 +47,15 @@ const Storage = {
 
     saveTill(till) {
         localStorage.setItem('till', JSON.stringify(till));
+    },
+
+    // Current till start
+    getCurrentTillStart() {
+        return JSON.parse(localStorage.getItem('currentTillStart'));
+    },
+
+    saveCurrentTillStart(amount) {
+        localStorage.setItem('currentTillStart', JSON.stringify(amount));
     },
 
     // Transactions storage
@@ -49,7 +71,9 @@ const Storage = {
     exportData() {
         const data = {
             inventory: Storage.getInventory(),
+            previousInventory: Storage.getPreviousInventory(),
             till: Storage.getTill(),
+            currentTillStart: Storage.getCurrentTillStart(),
             transactions: Storage.getTransactions()
         };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -68,7 +92,9 @@ const Storage = {
             try {
                 const data = JSON.parse(e.target.result);
                 if (data.inventory) Storage.saveInventory(data.inventory);
+                if (data.previousInventory) localStorage.setItem('previousInventory', JSON.stringify(data.previousInventory));
                 if (data.till) Storage.saveTill(data.till);
+                if (data.currentTillStart !== undefined) Storage.saveCurrentTillStart(data.currentTillStart);
                 if (data.transactions) Storage.saveTransactions(data.transactions);
                 // Re-render UI after import
                 Inventory.render();

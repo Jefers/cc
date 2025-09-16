@@ -5,13 +5,18 @@ const Till = {
         const till = Storage.getTill();
         const transactions = Storage.getTransactions();
         const latestTill = till[till.length - 1];
+        const currentTillStart = Storage.getCurrentTillStart();
 
+        tillSummary.innerHTML = '';
+        if (currentTillStart !== null) {
+            tillSummary.innerHTML += `<p><strong>Current Till Start:</strong> £${currentTillStart.toFixed(2)}</p>`;
+        }
         if (latestTill) {
             const expected = transactions.reduce((sum, t) => sum + t.moneyReceived, 0);
             const actual = latestTill.end - latestTill.start;
             const difference = actual - expected;
 
-            tillSummary.innerHTML = `
+            tillSummary.innerHTML += `
                 <p><strong>Date:</strong> ${new Date(latestTill.date).toLocaleDateString()}</p>
                 <p><strong>Till Start:</strong> £${latestTill.start.toFixed(2)}</p>
                 <p><strong>Till End:</strong> £${latestTill.end.toFixed(2)}</p>
@@ -21,19 +26,30 @@ const Till = {
                     <strong>Difference:</strong> £${difference.toFixed(2)}
                 </p>
             `;
-        } else {
+        } else if (currentTillStart === null) {
             tillSummary.innerHTML = '<p>No till data recorded.</p>';
         }
     },
 
-    save(start, end) {
+    saveStart(start) {
+        Storage.saveCurrentTillStart(parseFloat(start));
+        Till.render();
+    },
+
+    saveEnd(end) {
+        const start = Storage.getCurrentTillStart();
+        if (start === null) {
+            alert('Please enter a till start amount first.');
+            return;
+        }
         const till = Storage.getTill();
         till.push({
             date: new Date().toISOString(),
-            start: parseFloat(start),
+            start: start,
             end: parseFloat(end)
         });
         Storage.saveTill(till);
+        Storage.saveCurrentTillStart(null); // Reset start after saving
         Till.render();
         Transactions.calculate();
     }
@@ -42,6 +58,7 @@ const Till = {
 const Transactions = {
     calculate() {
         const inventory = Storage.getInventory();
+        const previousInventory = Storage.getPreviousInventory();
         const transactions = Storage.getTransactions();
         const today = new Date().toDateString();
 
@@ -51,10 +68,7 @@ const Transactions = {
 
         // Calculate sales based on quantity changes
         inventory.forEach(item => {
-            // Note: This assumes you have a way to track previous quantities
-            // For debugging, you may need to store previous inventory state
-            // This is a simplified version; you can enhance it
-            const previous = Storage.getInventory().find(i => i.id === item.id) || item;
+            const previous = previousInventory.find(i => i.id === item.id) || { quantity: item.quantity };
             const sold = previous.quantity - item.quantity;
             if (sold > 0) {
                 newTransactions.push({
