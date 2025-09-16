@@ -1,0 +1,150 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    padding: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    touch-action: manipulation;
+    margin: 0.5rem 0;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Inventory List */
+#inventory-list {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+#inventory-list li {
+    background: white;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#inventory-list li button {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+}
+
+/* Forms */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Modal */
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Till and Transactions */
+#till-summary, #transactions-summary {
+    background: white;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.difference {
+    color: red;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (min-width: 600px) {
+    body {
+        padding: 2rem;
+    }
+
+    #inventory-list li {
+        padding: 1rem;
+    }
+
+    button {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}

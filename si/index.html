@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shop inventory and till management app">
+    <title>Shop Inventory App</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Shop Inventory & Till</h1>
+    </header>
+    <main>
+        <!-- Inventory Section -->
+        <section id="inventory-section">
+            <h2>Inventory</h2>
+            <button id="add-item-btn" aria-label="Add new item">+ New Item</button>
+            <ul id="inventory-list" role="list"></ul>
+        </section>
+
+        <!-- Till Section -->
+        <section id="till-section">
+            <h2>Till Count</h2>
+            <form id="till-form">
+                <label for="till-start">Till Start ($):</label>
+                <input type="number" id="till-start" step="0.01" min="0" required aria-label="Till start amount">
+                <label for="till-end">Till End ($):</label>
+                <input type="number" id="till-end" step="0.01" min="0" required aria-label="Till end amount">
+                <button type="submit">Save Till Count</button>
+            </form>
+            <div id="till-summary" role="region" aria-live="polite"></div>
+        </section>
+
+        <!-- Transactions Section -->
+        <section id="transactions-section">
+            <h2>Transactions</h2>
+            <div id="transactions-summary" role="region" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <!-- Modal for Adding/Editing Items -->
+    <dialog id="item-modal">
+        <form id="item-form">
+            <h2>Add/Edit Item</h2>
+            <label for="item-description">Description:</label>
+            <input type="text" id="item-description" required aria-label="Item description">
+            <label for="item-price">Price ($):</label>
+            <input type="number" id="item-price" step="0.01" min="0" required aria-label="Item price">
+            <label for="item-quantity">Quantity:</label>
+            <input type="number" id="item-quantity" min="0" required aria-label="Item quantity">
+            <button type="submit">Save Item</button>
+            <button type="button" id="cancel-item-btn">Cancel</button>
+        </form>
+    </dialog>
+
+    <script src="js/storage.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/till.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
