@@ -457,17 +457,78 @@
             renderCategories();
         });
 
-        // Data management
+        // Data management with better error handling
         function loadData() {
-            const saved = JSON.parse(localStorage.getItem('mdcData') || '{}');
-            appData.categories = saved.categories || [];
+            try {
+                const saved = localStorage.getItem('mdcData');
+                if (saved) {
+                    const parsedData = JSON.parse(saved);
+                    appData.categories = parsedData.categories || [];
+                    console.log('Loaded data:', appData.categories.length, 'categories');
+                } else {
+                    appData.categories = [];
+                    console.log('No existing data found');
+                }
+            } catch (error) {
+                console.error('Error loading data from localStorage:', error);
+                appData.categories = [];
+                // Show user-friendly error
+                showMessage('Error loading saved data. Starting fresh.', 'error');
+            }
         }
 
         function saveData() {
-            const dataToSave = {
-                categories: appData.categories
-            };
-            localStorage.setItem('mdcData', JSON.stringify(dataToSave));
+            try {
+                const dataToSave = {
+                    categories: appData.categories,
+                    lastSaved: new Date().toISOString()
+                };
+                localStorage.setItem('mdcData', JSON.stringify(dataToSave));
+                console.log('Data saved successfully:', appData.categories.length, 'categories');
+                showMessage('Data saved!', 'success');
+            } catch (error) {
+                console.error('Error saving data to localStorage:', error);
+                showMessage('Error saving data!', 'error');
+            }
+        }
+
+        // Show temporary messages to user
+        function showMessage(text, type = 'info') {
+            const existingMessage = document.querySelector('.toast-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const message = document.createElement('div');
+            message.className = `toast-message ${type}`;
+            message.textContent = text;
+            message.style.cssText = `
+                position: fixed;
+                bottom: 90px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#ff4757' : type === 'success' ? '#2ed573' : '#5352ed'};
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                z-index: 1001;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            `;
+
+            document.body.appendChild(message);
+            
+            // Animate in
+            setTimeout(() => message.style.opacity = '1', 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 300);
+            }, 3000);
         }
 
         // Navigation
@@ -638,32 +699,18 @@
             }
         });
 
-        // Add some sample data for demonstration
-        if (appData.categories.length === 0) {
+        // Only add sample data if no localStorage data exists at all
+        const hasExistingData = localStorage.getItem('mdcData');
+        if (!hasExistingData && appData.categories.length === 0) {
+            // Add minimal sample data only on first visit
             appData.categories = [
                 {
-                    id: '1',
-                    name: 'Programming Notes',
+                    id: 'sample-1',
+                    name: 'Welcome',
                     cards: [
                         {
-                            id: '1-1',
-                            content: '# JavaScript Basics\n\n## Variables\n\nJavaScript has three ways to declare variables:\n\n* `var` - function scoped\n* `let` - block scoped\n* `const` - block scoped, immutable\n\n```javascript\nconst greeting = "Hello World";\nlet count = 0;\n```\n\n**Best Practice:** Use `const` by default, `let` when you need to reassign.',
-                            created: new Date().toISOString()
-                        },
-                        {
-                            id: '1-2',
-                            content: '# CSS Grid Layout\n\nCSS Grid is a powerful layout system:\n\n```css\n.grid-container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}\n```\n\n## Key Properties\n\n* `grid-template-columns` - defines column sizes\n* `grid-template-rows` - defines row sizes\n* `gap` - spacing between items',
-                            created: new Date().toISOString()
-                        }
-                    ]
-                },
-                {
-                    id: '2',
-                    name: 'Study Materials',
-                    cards: [
-                        {
-                            id: '2-1',
-                            content: '# Photosynthesis\n\n**Definition:** The process by which plants convert light energy into chemical energy.\n\n## Equation\n\n6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂\n\n> This process occurs in the chloroplasts of plant cells.\n\n## Key Points\n\n1. Occurs in two stages: light reactions and Calvin cycle\n2. Produces glucose and oxygen\n3. Essential for life on Earth',
+                            id: 'welcome-1',
+                            content: '# Welcome to MarkDownCards! 🎉\n\nThis is a sample card to get you started.\n\n## How to use:\n\n1. **Create categories** using the + button on the home screen\n2. **Add cards** by tapping a category, then using the + button\n3. **Write in markdown** - headers, lists, code, and more!\n\n*You can delete this category once you\'ve created your own.*\n\n```markdown\n# This is how markdown works\n**Bold text**\n*Italic text*\n```',
                             created: new Date().toISOString()
                         }
                     ]
