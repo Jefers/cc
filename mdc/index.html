@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkDownCards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .home-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .home-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Main content */
+        .main {
+            padding: 2rem 1rem;
+            flex: 1;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Category buttons */
+        .categories-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-btn {
+            background: linear-gradient(135deg, var(--color), var(--color-dark));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-btn:active {
+            transform: translateY(0);
+        }
+
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Add button */
+        .add-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Cards */
+        .cards-container {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-content h1, .card-content h2, .card-content h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .card-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .card-content code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-content pre {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+
+        .card-content ul, .card-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-content blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: #e1e5e9;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5d9;
+        }
+
+        /* Back button */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive design */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .main {
+                padding: 2rem;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+
+            .cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            }
+        }
+
+        /* Color variables for category buttons */
+        .color-1 { --color: #ff6b6b; --color-dark: #ee5a5a; }
+        .color-2 { --color: #4ecdc4; --color-dark: #45b7aa; }
+        .color-3 { --color: #45b7d1; --color-dark: #3a9bc1; }
+        .color-4 { --color: #96ceb4; --color-dark: #85c1a3; }
+        .color-5 { --color: #ffeaa7; --color-dark: #fdcb6e; }
+        .color-6 { --color: #dda0dd; --color-dark: #d8bfd8; }
+        .color-7 { --color: #98d8c8; --color-dark: #82c4b0; }
+        .color-8 { --color: #f7b731; --color-dark: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <button class="home-btn" onclick="showHome()" aria-label="Home">🏠</button>
+                <h1 class="title">MarkDownCards</h1>
+            </div>
+            <button class="hamburger" aria-label="Menu">☰</button>
+        </header>
+
+        <main class="main">
+            <!-- Home Screen -->
+            <div id="homeScreen" class="screen active">
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Categories will be loaded here -->
+                </div>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <h3>No categories yet</h3>
+                    <p>Tap the + button to create your first category</p>
+                </div>
+            </div>
+
+            <!-- Category Screen -->
+            <div id="categoryScreen" class="screen">
+                <button class="back-btn" onclick="showHome()">← Back to Categories</button>
+                <h2 id="categoryTitle" style="color: white; margin-bottom: 1.5rem;"></h2>
+                <div class="cards-container" id="cardsContainer">
+                    <!-- Cards will be loaded here -->
+                </div>
+                <div class="empty-state" id="emptyCards" style="display: none;">
+                    <h3>No cards yet</h3>
+                    <p>Tap the + button to create your first card</p>
+                </div>
+            </div>
+        </main>
+
+        <button class="add-btn" id="addBtn" onclick="showAddModal()">+</button>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Category</h2>
+            <div class="form-group">
+                <label for="categoryName">Category Name</label>
+                <input type="text" id="categoryName" placeholder="Enter category name">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addCategory()">Add Category</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Card Modal -->
+    <div id="addCardModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Card</h2>
+            <div class="form-group">
+                <label for="cardContent">Markdown Content</label>
+                <textarea id="cardContent" placeholder="Paste your markdown content here..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addCard()">Save Card</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let appData = {
+            categories: [],
+            currentCategory: null
+        };
+
+        let currentModal = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            renderCategories();
+        });
+
+        // Data management
+        function loadData() {
+            const saved = JSON.parse(localStorage.getItem('mdcData') || '{}');
+            appData.categories = saved.categories || [];
+        }
+
+        function saveData() {
+            const dataToSave = {
+                categories: appData.categories
+            };
+            localStorage.setItem('mdcData', JSON.stringify(dataToSave));
+        }
+
+        // Navigation
+        function showHome() {
+            document.getElementById('homeScreen').classList.add('active');
+            document.getElementById('categoryScreen').classList.remove('active');
+            appData.currentCategory = null;
+            renderCategories();
+        }
+
+        function showCategory(categoryId) {
+            const category = appData.categories.find(c => c.id === categoryId);
+            if (!category) return;
+
+            appData.currentCategory = category;
+            document.getElementById('homeScreen').classList.remove('active');
+            document.getElementById('categoryScreen').classList.add('active');
+            document.getElementById('categoryTitle').textContent = category.name;
+            renderCards();
+        }
+
+        // Rendering
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (appData.categories.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            grid.innerHTML = appData.categories.map((category, index) => `
+                <button class="category-btn color-${(index % 8) + 1}" onclick="showCategory('${category.id}')">
+                    ${category.name}
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+                        ${category.cards.length} card${category.cards.length !== 1 ? 's' : ''}
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            const emptyState = document.getElementById('emptyCards');
+
+            if (!appData.currentCategory || appData.currentCategory.cards.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = appData.currentCategory.cards.map(card => `
+                <div class="card">
+                    <div class="card-content">${markdownToHtml(card.content)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Modal management
+        function showAddModal() {
+            if (appData.currentCategory) {
+                currentModal = document.getElementById('addCardModal');
+                document.getElementById('cardContent').value = '';
+            } else {
+                currentModal = document.getElementById('addCategoryModal');
+                document.getElementById('categoryName').value = '';
+            }
+            currentModal.classList.add('active');
+        }
+
+        function closeModal() {
+            if (currentModal) {
+                currentModal.classList.remove('active');
+                currentModal = null;
+            }
+        }
+
+        // Data operations
+        function addCategory() {
+            const name = document.getElementById('categoryName').value.trim();
+            if (!name) return;
+
+            const category = {
+                id: Date.now().toString(),
+                name: name,
+                cards: []
+            };
+
+            appData.categories.push(category);
+            saveData();
+            closeModal();
+            renderCategories();
+        }
+
+        function addCard() {
+            const content = document.getElementById('cardContent').value.trim();
+            if (!content || !appData.currentCategory) return;
+
+            const card = {
+                id: Date.now().toString(),
+                content: content,
+                created: new Date().toISOString()
+            };
+
+            appData.currentCategory.cards.push(card);
+            saveData();
+            closeModal();
+            renderCards();
+        }
+
+        // Simple markdown parser
+        function markdownToHtml(markdown) {
+            let html = markdown;
+
+            // Headers
+            html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+            // Bold and italic
+            html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+            // Lists
+            html = html.replace(/^\* (.*$)/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+            html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ol>$1</ol>');
+
+            // Blockquotes
+            html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+
+            // Line breaks
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            
+            // Wrap in paragraphs if not already wrapped
+            if (!html.startsWith('<')) {
+                html = '<p>' + html + '</p>';
+            }
+
+            return html;
+        }
+
+        // Close modal on outside click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Add some sample data for demonstration
+        if (appData.categories.length === 0) {
+            appData.categories = [
+                {
+                    id: '1',
+                    name: 'Programming Notes',
+                    cards: [
+                        {
+                            id: '1-1',
+                            content: '# JavaScript Basics\n\n## Variables\n\nJavaScript has three ways to declare variables:\n\n* `var` - function scoped\n* `let` - block scoped\n* `const` - block scoped, immutable\n\n```javascript\nconst greeting = "Hello World";\nlet count = 0;\n```\n\n**Best Practice:** Use `const` by default, `let` when you need to reassign.',
+                            created: new Date().toISOString()
+                        },
+                        {
+                            id: '1-2',
+                            content: '# CSS Grid Layout\n\nCSS Grid is a powerful layout system:\n\n```css\n.grid-container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}\n```\n\n## Key Properties\n\n* `grid-template-columns` - defines column sizes\n* `grid-template-rows` - defines row sizes\n* `gap` - spacing between items',
+                            created: new Date().toISOString()
+                        }
+                    ]
+                },
+                {
+                    id: '2',
+                    name: 'Study Materials',
+                    cards: [
+                        {
+                            id: '2-1',
+                            content: '# Photosynthesis\n\n**Definition:** The process by which plants convert light energy into chemical energy.\n\n## Equation\n\n6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂\n\n> This process occurs in the chloroplasts of plant cells.\n\n## Key Points\n\n1. Occurs in two stages: light reactions and Calvin cycle\n2. Produces glucose and oxygen\n3. Essential for life on Earth',
+                            created: new Date().toISOString()
+                        }
+                    ]
+                }
+            ];
+            saveData();
+        }
+    </script>
+</body>
+</html>
