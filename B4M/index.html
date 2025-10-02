@@ -36,7 +36,7 @@
 
         .dumbbell {
             position: absolute;
-            opacity: 0.33;
+            opacity: 0.33; /* Increased from 0.03 */
             width: 40px;
             height: 40px;
         }
@@ -91,7 +91,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.33;
+            opacity: 0.33; /* Increased from 0.03 */
             pointer-events: none;
         }
 
@@ -183,22 +183,6 @@
             display: block;
         }
 
-        .trainer-image::before {
-            content: "Coach Christian";
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #333;
-            color: #ffdd00;
-            font-size: 1.5rem;
-            font-weight: bold;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
         /* ====== THE BIG PLASTIC BUTTON WITH SHIMMER ====== */
         .cta-container {
             text-align: center;
@@ -260,6 +244,116 @@
             100% { left: 100%; }
         }
 
+        /* ====== LEAD CAPTURE FORM ====== */
+        #lead-capture {
+            background-color: #111111;
+            color: #ffffff;
+            padding: 3rem 1rem;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #1a1a1a;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-title {
+            color: #ffdd00;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .form-description {
+            color: #ffdd00;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffdd00;
+            box-shadow: 0 0 0 2px rgba(255, 221, 0, 0.2);
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #111111;
+            background-color: #ffdd00;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 0 #e6c500, 0 15px 30px rgba(255, 221, 0, 0.4);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-button:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #e6c500, 0 8px 20px rgba(255, 221, 0, 0.3);
+        }
+
+        .submit-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transition: none;
+        }
+
+        .submit-button:hover::after {
+            animation: shimmer 1.5s ease-in-out;
+        }
+
+        .success-message {
+            display: none;
+            background-color: #1a3a1a;
+            color: #90ee90;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
         /* ====== FOOTER ====== */
         .footer {
             text-align: center;
@@ -292,18 +386,48 @@
             <div class="trainer-section">
                 <img src="https://placehold.co/600x800/333333/ffdd00?text=Coach+Christian" alt="Coach Christian - Lisburn Personal Trainer" class="trainer-image">
             </div>
-        </main>
 
-        <div class="cta-container">
-            <a href="#book-session" class="cta-button">Book Your Free Session</a>
-        </div>
+            <div class="cta-container">
+                <a href="#lead-capture" class="cta-button" id="show-form-button">Book Your Free Session</a>
+            </div>
+        </main>
     </div>
 
+    <!-- Lead Capture Form Section -->
+    <section id="lead-capture">
+        <div class="form-container">
+            <h2 class="form-title">Ready for More?</h2>
+            <p class="form-description">Get started today. Book your free session.</p>
+            
+            <form id="prospect-form">
+                <div class="form-group">
+                    <label for="user-name" class="form-label">Full Name</label>
+                    <input type="text" id="user-name" name="user-name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user-email" class="form-label">Email Address</label>
+                    <input type="email" id="user-email" name="user-email" class="form-input" required>
+                </div>
+
+                <button type="submit" class="submit-button">Get My Free Session</button>
+                
+                <div class="success-message" id="success-message">
+                    <h3>Thank you for your interest!</h3>
+                    <p>We've sent a confirmation email with your onboarding link.</p>
+                </div>
+            </form>
+        </div>
+    </section>
+
     <footer class="footer">
-        &copy; 2023 Coach Christian. All rights reserved.
+        &copy; <span id="current-year"></span> Coach Christian. All rights reserved.
     </footer>
 
     <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
         // Create animated dumbbell SVGs
         const bgElements = document.getElementById('backgroundElements');
         
@@ -359,6 +483,65 @@
             }
             
             bgText.appendChild(word);
+        }
+
+        // Form handling
+        document.getElementById('show-form-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('lead-capture').style.display = 'block';
+            document.getElementById('lead-capture').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('prospect-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            
+            // In a real implementation, you would send this data to your server
+            // For this demo, we'll just show a success message
+            console.log('Form submitted:', { name, email });
+            
+            // Show success message
+            document.getElementById('success-message').style.display = 'block';
+            
+            // Reset form
+            document.getElementById('prospect-form').reset();
+            
+            // In a real implementation, you would:
+            // 1. Send the data to your backend
+            // 2. Trigger an email service (like SendGrid, Mailchimp, etc.)
+            // 3. Send the acknowledgment email with onboarding link
+            
+            // Example of what the email service would do:
+            // sendAcknowledgmentEmail(name, email);
+        });
+
+        // Function to simulate sending acknowledgment email
+        function sendAcknowledgmentEmail(name, email) {
+            // This would be handled by your backend or email service
+            // Example using a service like SendGrid, Mailchimp, or a simple SMTP service
+            
+            const emailData = {
+                to: email,
+                subject: "Your Free Session with Coach Christian - Next Steps!",
+                html: `
+                    <p>Hi ${name},</p>
+                    <p>This email confirms that we've received your request for a free personal training session. Thank you for your interest in working with Coach Christian!</p>
+                    <p><strong>Your Next Step:</strong></p>
+                    <p>Please complete our brief onboarding form here to help us tailor your session:</p>
+                    <p><a href="https://yourwebsite.com/onboarding-form">Complete Your Onboarding Form</a></p>
+                    <p>Completing this form will allow us to make the most of our time together.</p>
+                    <p>We will be in touch within 24 hours to confirm your session time.</p>
+                    <p><strong>Built for more,</strong></p>
+                    <p>Coach Christian<br>Lisburn Personal Trainer</p>
+                `
+            };
+            
+            // This would be an API call to your email service
+            // fetch('/api/send-email', { method: 'POST', body: JSON.stringify(emailData) })
+            console.log('Acknowledgment email would be sent to:', email);
         }
     </script>
 </body>
