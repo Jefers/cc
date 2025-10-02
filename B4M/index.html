@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lisburn Personal Trainer - Coach Christian | Built for More!</title>
+    <style>
+        /* ====== CSS RESET & BASE STYLES ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #111111;
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ====== ANIMATED BACKGROUND ELEMENTS ====== */
+        .background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .fitness-icon {
+            position: absolute;
+            font-size: 1.2rem;
+            color: #ffdd00;
+            opacity: 0;
+        }
+
+        /* Different animation patterns for variety */
+        .icon-1 { animation: float 25s linear infinite; }
+        .icon-2 { animation: float 30s linear infinite reverse; }
+        .icon-3 { animation: float 35s linear infinite; }
+        .icon-4 { animation: float 40s linear infinite reverse; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ====== BACKGROUND TEXT ELEMENTS ====== */
+        .background-text {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .bg-word {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #ffdd00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Horizontal words */
+        .bg-word.horizontal {
+            writing-mode: horizontal-tb;
+        }
+
+        /* Vertical words */
+        .bg-word.vertical {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        /* ====== MAIN LAYOUT ====== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* ====== HEADER & LOGO ====== */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #ffdd00;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        /* ====== HERO CONTENT ====== */
+        .hero-content {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .strap-line {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: #ffdd00;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        /* ====== TRAINER IMAGE ====== */
+        .trainer-section {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 2rem auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .trainer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .trainer-image::before {
+            content: "Coach Christian";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            color: #ffdd00;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ====== THE BIG PLASTIC BUTTON ====== */
+        .cta-container {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 20px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 22px 45px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #111111;
+            background-color: #ffdd00;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 0 #e6c500,
+                        0 15px 30px rgba(255, 221, 0, 0.4);
+            transition: all 0.1s ease-in-out;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-button:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #e6c500,
+                        0 8px 20px rgba(255, 221, 0, 0.3);
+        }
+
+        /* ====== FOOTER ====== */
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="background-elements" id="backgroundElements">
+        <!-- Fitness icons will be generated by JavaScript -->
+    </div>
+
+    <!-- Background Text Elements -->
+    <div class="background-text" id="backgroundText">
+        <!-- Background words will be generated by JavaScript -->
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">COACH CHRISTIAN</div>
+        </header>
+
+        <main class="hero-content">
+            <h1>Lisburn Personal Trainer</h1>
+            <p class="strap-line">Built for more!</p>
+
+            <div class="trainer-section">
+                <img src="https://placehold.co/600x800/333333/ffdd00?text=Coach+Christian" alt="Coach Christian - Lisburn Personal Trainer" class="trainer-image">
+            </div>
+        </main>
+
+        <div class="cta-container">
+            <a href="#book-session" class="cta-button">Book Your Free Session</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        &copy; 2023 Coach Christian. All rights reserved.
+    </footer>
+
+    <script>
+        // Fitness icons for background animation
+        const fitnessIcons = ['🏋️', '💪', '🔥', '⚡', '🏃', '🚴', '🤸', '🧘', '🥊', '🏅'];
+        
+        // Motivational words for background text
+        const motivationalWords = [
+            'STRENGTH', 'RESULTS', 'ENERGY', 'POWER', 'FOCUS', 'DRIVE',
+            'VICTORY', 'GROWTH', 'PUSH', 'GRIT', 'WIN', 'FUEL', 'FORGE',
+            'IMPACT', 'RISE', 'CLIMB', 'EARNED', 'PRIME', 'PEAK', 'ELITE'
+        ];
+
+        // Create animated fitness icons
+        const bgElements = document.getElementById('backgroundElements');
+        for (let i = 0; i < 15; i++) {
+            const icon = document.createElement('div');
+            icon.className = `fitness-icon icon-${(i % 4) + 1}`;
+            icon.textContent = fitnessIcons[Math.floor(Math.random() * fitnessIcons.length)];
+            
+            // Random position across the width
+            icon.style.left = `${Math.random() * 100}%`;
+            
+            // Random delay so they don't all start at once
+            icon.style.animationDelay = `${Math.random() * 20}s`;
+            
+            bgElements.appendChild(icon);
+        }
+
+        // Create background text elements
+        const bgText = document.getElementById('backgroundText');
+        for (let i = 0; i < 25; i++) {
+            const word = document.createElement('div');
+            word.className = `bg-word ${Math.random() > 0.5 ? 'horizontal' : 'vertical'}`;
+            word.textContent = motivationalWords[Math.floor(Math.random() * motivationalWords.length)];
+            
+            // Random positioning
+            word.style.left = `${Math.random() * 100}%`;
+            word.style.top = `${Math.random() * 100}%`;
+            
+            // Slight random rotation for horizontal words
+            if (word.classList.contains('horizontal')) {
+                word.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg)`;
+            }
+            
+            bgText.appendChild(word);
+        }
+    </script>
+</body>
+</html>
