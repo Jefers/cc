@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funnel Quest: Build Your Client Acquisition System</title>
+    <style>
+        :root {
+            --primary: #8B4513;
+            --secondary: #D2691E;
+            --accent: #FFD700;
+            --light: #F5F5DC;
+            --dark: #2F1B0C;
+            --success: #228B22;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+        
+        body {
+            background: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(245, 245, 220, 0.95);
+            border: 8px solid var(--primary);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .game-header {
+            background: linear-gradient(to bottom, var(--primary), var(--dark));
+            color: var(--accent);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+        
+        .game-header h1 {
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5px;
+        }
+        
+        .game-header p {
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+        
+        .game-content {
+            padding: 25px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .scene {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .scene.active {
+            display: block;
+        }
+        
+        .scene-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+        }
+        
+        .scene-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .option-btn {
+            background: linear-gradient(to bottom, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .option-btn:hover {
+            background: linear-gradient(to bottom, var(--primary), var(--dark));
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(to bottom, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: linear-gradient(to bottom, var(--primary), var(--dark));
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary), var(--success));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .character-sheet {
+            background-color: rgba(139, 69, 19, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .character-sheet h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .character-sheet p {
+            margin: 5px 0;
+        }
+        
+        .final-plan {
+            background-color: white;
+            border: 2px solid var(--success);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .final-plan h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+        
+        .final-plan ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .final-plan li {
+            margin-bottom: 8px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .achievement {
+            background-color: var(--accent);
+            color: var(--dark);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 600px) {
+            .game-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .game-content {
+                padding: 15px;
+            }
+            
+            .option-btn, .nav-btn {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Funnel Quest</h1>
+            <p>Build Your Client Acquisition System</p>
+        </div>
+        
+        <div class="game-content">
+            <!-- Scene 0: Introduction -->
+            <div class="scene active" id="scene0">
+                <h2 class="scene-title">Welcome, Brave Trainer!</h2>
+                <div class="scene-description">
+                    <p>In the mystical land of Fitness, you are known as a skilled trainer. But lately, new clients have been scarce, and the dark forces of Competition grow stronger.</p>
+                    <p>A wise sage has told you of a powerful artifact: the <strong>Funnel of Client Acquisition</strong>. It is said that whoever masters this artifact will never want for clients again.</p>
+                    <p>Your quest begins now. Answer these questions truthfully, and I shall guide you in forging your own Funnel of Client Acquisition!</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="nextScene(1)">Begin Your Quest</button>
+                </div>
+            </div>
+            
+            <!-- Scene 1: Trainer Name -->
+            <div class="scene" id="scene1">
+                <h2 class="scene-title">The Hero's Identity</h2>
+                <div class="scene-description">
+                    <p>Every great hero needs a name. What shall the bards call you in tales of your fitness prowess?</p>
+                </div>
+                <input type="text" class="input-field" id="trainerName" placeholder="Enter your name or business name">
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(0)">Back</button>
+                    <button class="nav-btn" onclick="saveName()">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Scene 2: Ideal Client -->
+            <div class="scene" id="scene2">
+                <h2 class="scene-title">Know Thy Follower</h2>
+                <div class="scene-description">
+                    <p>To craft an effective funnel, you must first understand who you seek to serve. Who is your ideal client seeking transformation?</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('Busy professionals wanting to lose weight and gain energy')">Busy professionals wanting to lose weight and gain energy</button>
+                    <button class="option-btn" onclick="selectOption('New moms getting back in shape post-pregnancy')">New moms getting back in shape post-pregnancy</button>
+                    <button class="option-btn" onclick="selectOption('Athletes looking to improve performance')">Athletes looking to improve performance</button>
+                    <button class="option-btn" onclick="selectOption('Seniors wanting to maintain mobility and strength')">Seniors wanting to maintain mobility and strength</button>
+                    <button class="option-btn" onclick="showCustomInput('idealClient')">Other (describe your ideal client)</button>
+                </div>
+                <div id="customIdealClient" style="display: none; margin-top: 15px;">
+                    <input type="text" class="input-field" id="idealClientInput" placeholder="Describe your ideal client">
+                    <button class="nav-btn" onclick="saveCustomInput('idealClient')">Save</button>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(1)">Back</button>
+                </div>
+            </div>
+            
+            <!-- Scene 3: Client Pain Point -->
+            <div class="scene" id="scene3">
+                <h2 class="scene-title">The Dragon They Face</h2>
+                <div class="scene-description">
+                    <p>Every hero faces a dragon. What is the single biggest frustration or challenge your ideal client faces on their fitness journey?</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('Lack of time for long workouts')">Lack of time for long workouts</button>
+                    <button class="option-btn" onclick="selectOption('Not knowing what exercises are effective')">Not knowing what exercises are effective</button>
+                    <button class="option-btn" onclick="selectOption('Struggling with consistency and motivation')">Struggling with consistency and motivation</button>
+                    <button class="option-btn" onclick="selectOption('Confusion about proper nutrition')">Confusion about proper nutrition</button>
+                    <button class="option-btn" onclick="showCustomInput('painPoint')">Other (describe their main challenge)</button>
+                </div>
+                <div id="customPainPoint" style="display: none; margin-top: 15px;">
+                    <input type="text" class="input-field" id="painPointInput" placeholder="Describe their main challenge">
+                    <button class="nav-btn" onclick="saveCustomInput('painPoint')">Save</button>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(2)">Back</button>
+                </div>
+            </div>
+            
+            <!-- Scene 4: Primary Service -->
+            <div class="scene" id="scene4">
+                <h2 class="scene-title">Your Magical Offering</h2>
+                <div class="scene-description">
+                    <p>What is your most powerful service - the one that brings the most value to your clients and success to your practice?</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('1-on-1 personal training sessions')">1-on-1 personal training sessions</button>
+                    <button class="option-btn" onclick="selectOption('Small group training classes')">Small group training classes</button>
+                    <button class="option-btn" onclick="selectOption('Online training programs')">Online training programs</button>
+                    <button class="option-btn" onclick="selectOption('Nutrition coaching combined with workouts')">Nutrition coaching combined with workouts</button>
+                    <button class="option-btn" onclick="showCustomInput('primaryService')">Other (describe your primary service)</button>
+                </div>
+                <div id="customPrimaryService" style="display: none; margin-top: 15px;">
+                    <input type="text" class="input-field" id="primaryServiceInput" placeholder="Describe your primary service">
+                    <button class="nav-btn" onclick="saveCustomInput('primaryService')">Save</button>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(3)">Back</button>
+                </div>
+            </div>
+            
+            <!-- Scene 5: Free Gift -->
+            <div class="scene" id="scene5">
+                <h2 class="scene-title">The Treasure Map</h2>
+                <div class="scene-description">
+                    <p>To attract followers to your cause, you must offer them a taste of your wisdom. What free gift will you offer that provides immediate value and demonstrates your expertise?</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('5-Minute Core Workout Video')">5-Minute Core Workout Video</button>
+                    <button class="option-btn" onclick="selectOption('7-Day Healthy Eating Guide')">7-Day Healthy Eating Guide</button>
+                    <button class="option-btn" onclick="selectOption('Beginner\'s Workout Plan PDF')">Beginner's Workout Plan PDF</button>
+                    <button class="option-btn" onclick="selectOption('Mobility Exercises for Desk Workers')">Mobility Exercises for Desk Workers</button>
+                    <button class="option-btn" onclick="showCustomInput('freeGift')">Other (describe your free gift)</button>
+                </div>
+                <div id="customFreeGift" style="display: none; margin-top: 15px;">
+                    <input type="text" class="input-field" id="freeGiftInput" placeholder="Describe your free gift">
+                    <button class="nav-btn" onclick="saveCustomInput('freeGift')">Save</button>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(4)">Back</button>
+                </div>
+            </div>
+            
+            <!-- Scene 6: Call to Action -->
+            <div class="scene" id="scene6">
+                <h2 class="scene-title">The Summoning</h2>
+                <div class="scene-description">
+                    <p>After followers receive your free gift, what action do you want them to take to continue their journey with you?</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('Book a free 15-minute discovery call')">Book a free 15-minute discovery call</button>
+                    <button class="option-btn" onclick="selectOption('Sign up for a free trial session')">Sign up for a free trial session</button>
+                    <button class="option-btn" onclick="selectOption('Purchase a starter package')">Purchase a starter package</button>
+                    <button class="option-btn" onclick="selectOption('Join your email newsletter')">Join your email newsletter</button>
+                    <button class="option-btn" onclick="showCustomInput('cta')">Other (describe your call to action)</button>
+                </div>
+                <div id="customCta" style="display: none; margin-top: 15px;">
+                    <input type="text" class="input-field" id="ctaInput" placeholder="Describe your call to action">
+                    <button class="nav-btn" onclick="saveCustomInput('cta')">Save</button>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(5)">Back</button>
+                </div>
+            </div>
+            
+            <!-- Scene 7: Social Proof -->
+            <div class="scene" id="scene7">
+                <h2 class="scene-title">Tales of Your Greatness</h2>
+                <div class="scene-description">
+                    <p>In every kingdom, bards sing of heroes' deeds. What evidence do you have of your success that will convince new followers to trust you?</p>
+                </div>
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('Client testimonials and success stories')">Client testimonials and success stories</button>
+                    <button class="option-btn" onclick="selectOption('Before and after photos')">Before and after photos</button>
+                    <button class="option-btn" onclick="selectOption('Certifications and qualifications')">Certifications and qualifications</button>
+                    <button class="option-btn" onclick="selectOption('Transformation videos')">Transformation videos</button>
+                    <button class="option-btn" onclick="selectOption('I need to start collecting these')">I need to start collecting these</button>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(6)">Back</button>
+                    <button class="nav-btn" onclick="nextScene(8)">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Scene 8: The Final Plan -->
+            <div class="scene" id="scene8">
+                <h2 class="scene-title">Your Funnel of Client Acquisition</h2>
+                <div class="achievement">
+                    Achievement Unlocked: Master of the Funnel!
+                </div>
+                <div class="scene-description">
+                    <p>Behold, <span id="finalName"></span>! Based on your answers, here is your personalized funnel strategy:</p>
+                </div>
+                
+                <div class="final-plan">
+                    <h3>Your Client Acquisition Funnel</h3>
+                    
+                    <p><strong>Target Audience:</strong> <span id="finalClient"></span></p>
+                    <p><strong>Their Main Challenge:</strong> <span id="finalPain"></span></p>
+                    
+                    <h4>Funnel Steps:</h4>
+                    <ul>
+                        <li><strong>Step 1: The Hook</strong> - Create Instagram content that addresses "<span id="finalPain2"></span>" and directs people to your free gift.</li>
+                        <li><strong>Step 2: The Free Gift</strong> - Offer your "<span id="finalGift"></span>" in exchange for their email address.</li>
+                        <li><strong>Step 3: The Conversion</strong> - After they receive your gift, invite them to "<span id="finalCta"></span>".</li>
+                        <li><strong>Step 4: The Proof</strong> - Use your <span id="finalProof"></span> to build trust and credibility.</li>
+                    </ul>
+                    
+                    <h4>Next Actions:</h4>
+                    <ul>
+                        <li>Create your free gift (<span id="finalGift2"></span>)</li>
+                        <li>Set up a simple landing page with an email capture form</li>
+                        <li>Plan 5 Instagram posts that lead to your free gift</li>
+                        <li>Set up your booking system for <span id="finalCta2"></span></li>
+                    </ul>
+                </div>
+                
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevScene(7)">Back</button>
+                    <button class="nav-btn" onclick="savePlan()">Save My Plan</button>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <!-- Character Sheet -->
+            <div class="character-sheet" id="characterSheet" style="display: none;">
+                <h3>Your Quest Progress</h3>
+                <p><strong>Trainer:</strong> <span id="sheetName"></span></p>
+                <p><strong>Ideal Client:</strong> <span id="sheetClient"></span></p>
+                <p><strong>Their Challenge:</strong> <span id="sheetPain"></span></p>
+                <p><strong>Your Service:</strong> <span id="sheetService"></span></p>
+                <p><strong>Free Gift:</strong> <span id="sheetGift"></span></p>
+                <p><strong>Call to Action:</strong> <span id="sheetCta"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentScene: 0,
+            totalScenes: 8,
+            trainerName: '',
+            idealClient: '',
+            painPoint: '',
+            primaryService: '',
+            freeGift: '',
+            cta: '',
+            socialProof: ''
+        };
+        
+        // Load saved game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('funnelQuestGameState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                Object.assign(gameState, parsedState);
+                
+                // Update UI with saved values
+                document.getElementById('trainerName').value = gameState.trainerName || '';
+                
+                // Show character sheet if we have some data
+                if (gameState.trainerName || gameState.idealClient) {
+                    updateCharacterSheet();
+                    document.getElementById('characterSheet').style.display = 'block';
+                }
+                
+                // Calculate progress
+                updateProgress();
+            }
+        }
+        
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('funnelQuestGameState', JSON.stringify(gameState));
+            updateProgress();
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            let filledFields = 0;
+            if (gameState.trainerName) filledFields++;
+            if (gameState.idealClient) filledFields++;
+            if (gameState.painPoint) filledFields++;
+            if (gameState.primaryService) filledFields++;
+            if (gameState.freeGift) filledFields++;
+            if (gameState.cta) filledFields++;
+            if (gameState.socialProof) filledFields++;
+            
+            const progressPercentage = (filledFields / 7) * 100;
+            document.getElementById('progress').style.width = `${progressPercentage}%`;
+        }
+        
+        // Navigate to next scene
+        function nextScene(sceneId) {
+            document.querySelector('.scene.active').classList.remove('active');
+            document.getElementById(`scene${sceneId}`).classList.add('active');
+            gameState.currentScene = sceneId;
+            saveGameState();
+        }
+        
+        // Navigate to previous scene
+        function prevScene(sceneId) {
+            document.querySelector('.scene.active').classList.remove('active');
+            document.getElementById(`scene${sceneId}`).classList.add('active');
+            gameState.currentScene = sceneId;
+            saveGameState();
+        }
+        
+        // Save trainer name
+        function saveName() {
+            const name = document.getElementById('trainerName').value.trim();
+            if (name) {
+                gameState.trainerName = name;
+                saveGameState();
+                updateCharacterSheet();
+                document.getElementById('characterSheet').style.display = 'block';
+                nextScene(2);
+            } else {
+                alert('Please enter your name to continue your quest!');
+            }
+        }
+        
+        // Select an option
+        function selectOption(value) {
+            const currentScene = gameState.currentScene;
+            
+            switch(currentScene) {
+                case 2:
+                    gameState.idealClient = value;
+                    break;
+                case 3:
+                    gameState.painPoint = value;
+                    break;
+                case 4:
+                    gameState.primaryService = value;
+                    break;
+                case 5:
+                    gameState.freeGift = value;
+                    break;
+                case 6:
+                    gameState.cta = value;
+                    break;
+                case 7:
+                    gameState.socialProof = value;
+                    break;
+            }
+            
+            saveGameState();
+            updateCharacterSheet();
+            nextScene(currentScene + 1);
+        }
+        
+        // Show custom input field
+        function showCustomInput(field) {
+            let customDiv;
+            switch(field) {
+                case 'idealClient':
+                    customDiv = document.getElementById('customIdealClient');
+                    break;
+                case 'painPoint':
+                    customDiv = document.getElementById('customPainPoint');
+                    break;
+                case 'primaryService':
+                    customDiv = document.getElementById('customPrimaryService');
+                    break;
+                case 'freeGift':
+                    customDiv = document.getElementById('customFreeGift');
+                    break;
+                case 'cta':
+                    customDiv = document.getElementById('customCta');
+                    break;
+            }
+            customDiv.style.display = 'block';
+        }
+        
+        // Save custom input
+        function saveCustomInput(field) {
+            let inputField, value;
+            
+            switch(field) {
+                case 'idealClient':
+                    inputField = document.getElementById('idealClientInput');
+                    value = inputField.value.trim();
+                    if (value) {
+                        gameState.idealClient = value;
+                        document.getElementById('customIdealClient').style.display = 'none';
+                        inputField.value = '';
+                        saveGameState();
+                        updateCharacterSheet();
+                        nextScene(3);
+                    }
+                    break;
+                case 'painPoint':
+                    inputField = document.getElementById('painPointInput');
+                    value = inputField.value.trim();
+                    if (value) {
+                        gameState.painPoint = value;
+                        document.getElementById('customPainPoint').style.display = 'none';
+                        inputField.value = '';
+                        saveGameState();
+                        updateCharacterSheet();
+                        nextScene(4);
+                    }
+                    break;
+                case 'primaryService':
+                    inputField = document.getElementById('primaryServiceInput');
+                    value = inputField.value.trim();
+                    if (value) {
+                        gameState.primaryService = value;
+                        document.getElementById('customPrimaryService').style.display = 'none';
+                        inputField.value = '';
+                        saveGameState();
+                        updateCharacterSheet();
+                        nextScene(5);
+                    }
+                    break;
+                case 'freeGift':
+                    inputField = document.getElementById('freeGiftInput');
+                    value = inputField.value.trim();
+                    if (value) {
+                        gameState.freeGift = value;
+                        document.getElementById('customFreeGift').style.display = 'none';
+                        inputField.value = '';
+                        saveGameState();
+                        updateCharacterSheet();
+                        nextScene(6);
+                    }
+                    break;
+                case 'cta':
+                    inputField = document.getElementById('ctaInput');
+                    value = inputField.value.trim();
+                    if (value) {
+                        gameState.cta = value;
+                        document.getElementById('customCta').style.display = 'none';
+                        inputField.value = '';
+                        saveGameState();
+                        updateCharacterSheet();
+                        nextScene(7);
+                    }
+                    break;
+            }
+        }
+        
+        // Update character sheet
+        function updateCharacterSheet() {
+            document.getElementById('sheetName').textContent = gameState.trainerName || 'Not yet chosen';
+            document.getElementById('sheetClient').textContent = gameState.idealClient || 'Not yet defined';
+            document.getElementById('sheetPain').textContent = gameState.painPoint || 'Not yet identified';
+            document.getElementById('sheetService').textContent = gameState.primaryService || 'Not yet selected';
+            document.getElementById('sheetGift').textContent = gameState.freeGift || 'Not yet created';
+            document.getElementById('sheetCta').textContent = gameState.cta || 'Not yet determined';
+        }
+        
+        // Save final plan
+        function savePlan() {
+            // Update final plan display
+            document.getElementById('finalName').textContent = gameState.trainerName;
+            document.getElementById('finalClient').textContent = gameState.idealClient;
+            document.getElementById('finalPain').textContent = gameState.painPoint;
+            document.getElementById('finalPain2').textContent = gameState.painPoint;
+            document.getElementById('finalGift').textContent = gameState.freeGift;
+            document.getElementById('finalGift2').textContent = gameState.freeGift;
+            document.getElementById('finalCta').textContent = gameState.cta;
+            document.getElementById('finalCta2').textContent = gameState.cta;
+            document.getElementById('finalProof').textContent = gameState.socialProof;
+            
+            // Save the complete plan
+            localStorage.setItem('funnelQuestFinalPlan', JSON.stringify(gameState));
+            alert('Your funnel plan has been saved! You can return anytime to review it.');
+        }
+        
+        // Initialize the game
+        window.onload = function() {
+            loadGameState();
+        };
+    </script>
+</body>
+</html>
