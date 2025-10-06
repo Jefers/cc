@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Client Acquisition Story</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevents scrollbars during animations */
+        }
+        .card {
+            transform-style: preserve-3d;
+            transition: transform 0.6s, opacity 0.6s;
+            backface-visibility: hidden;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        /* Custom scrollbar for summary */
+        .summary-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .summary-content::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .summary-content::-webkit-scrollbar-thumb {
+            background: #64748b;
+            border-radius: 10px;
+        }
+        .summary-content::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div id="game-container" class="w-full max-w-2xl mx-auto">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-white p-8 md:p-12 rounded-xl shadow-2xl text-center fade-in">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Build Your Client Acquisition Story</h1>
+            <p class="text-slate-600 mb-8 max-w-prose mx-auto">Let's turn your expertise into a system that attracts your ideal clients. Answer a few key questions to build a personalized plan. Your progress will be saved automatically.</p>
+            <button id="start-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                Let's Begin
+            </button>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="hidden">
+            <div id="progress-bar-container" class="w-full bg-slate-200 rounded-full h-2.5 mb-6 shadow-inner">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out"></div>
+            </div>
+            <div class="bg-white p-8 md:p-10 rounded-xl shadow-2xl">
+                <h2 id="question-title" class="text-xl md:text-2xl font-bold text-slate-800 mb-6"></h2>
+                <p id="question-helper" class="text-sm text-slate-500 mb-4"></p>
+                <textarea id="answer-input" rows="5" class="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-300" placeholder="Your answer here..."></textarea>
+                <div class="flex justify-end mt-6">
+                    <button id="next-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Screen -->
+        <div id="summary-screen" class="hidden">
+            <div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2 text-center">Your New Client Acquisition Story</h1>
+                <p class="text-slate-500 mb-8 text-center">Based on your answers, here is the blueprint for your client funnel.</p>
+                <div id="summary-content" class="summary-content max-h-[60vh] overflow-y-auto space-y-6 pr-4">
+                    <!-- Summary will be injected here -->
+                </div>
+                <div class="text-center mt-10">
+                     <button id="restart-btn" class="bg-slate-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-slate-300">
+                        Start Over
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startScreen = document.getElementById('start-screen');
+            const questionScreen = document.getElementById('question-screen');
+            const summaryScreen = document.getElementById('summary-screen');
+            
+            const startBtn = document.getElementById('start-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const restartBtn = document.getElementById('restart-btn');
+
+            const progressBar = document.getElementById('progress-bar');
+            const questionTitle = document.getElementById('question-title');
+            const questionHelper = document.getElementById('question-helper');
+            const answerInput = document.getElementById('answer-input');
+            const summaryContent = document.getElementById('summary-content');
+
+            const STORAGE_KEY = 'clientAcquisitionGame';
+
+            const questions = [
+                {
+                    key: 'idealClient',
+                    title: 'Who is your ideal new client from Instagram?',
+                    helper: 'Be specific! For example: a busy professional wanting to lose 20 lbs, a new mom getting back in shape, an athlete training for a marathon.',
+                    storyTitle: 'Your Ideal Client'
+                },
+                {
+                    key: 'biggestFrustration',
+                    title: 'What is the single biggest frustration or goal for this person?',
+                    helper: 'What keeps them up at night? What are they desperate to achieve? e.g., "I have no energy," or "I want to feel confident in my clothes again."',
+                    storyTitle: 'Their Biggest Goal'
+                },
+                {
+                    key: 'popularService',
+                    title: 'What is your most popular or profitable service for a new client?',
+                    helper: 'This is what we\'ll guide them towards. e.g., a 1-on-1 consultation, a starter pack of 3 sessions, your signature online course.',
+                    storyTitle: 'Your Core Offer'
+                },
+                {
+                    key: 'freeGift',
+                    title: 'What\'s one "quick win" you could teach them in a short video?',
+                    helper: 'This is your hook! Think of something that proves your expertise. e.g., "The 5-Minute Core Workout for Busy Dads," or "The 3 Foods to Instantly Boost Your Energy."',
+                    storyTitle: 'Your "Free Gift" Hook'
+                },
+                {
+                    key: 'mainAction',
+                    title: 'After they watch your free training, what is the #1 action you want them to take?',
+                    helper: 'We recommend a free 15-minute "Transformation Call". This is the goal of the entire system.',
+                    storyTitle: 'The Main Goal'
+                },
+                {
+                    key: 'socialProof',
+                    title: 'Do you have any client testimonials or success stories we can feature?',
+                    helper: 'Think about before/after photos, a great quote, or a short story of a client\'s success. If you don\'t have one yet, just type "I will gather some."',
+                    storyTitle: 'Your Social Proof'
+                }
+            ];
+
+            let state = {
+                currentQuestionIndex: -1, // -1 for start screen
+                answers: {}
+            };
+
+            // --- State Management ---
+            function loadState() {
+                const savedState = localStorage.getItem(STORAGE_KEY);
+                if (savedState) {
+                    state = JSON.parse(savedState);
+                }
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            }
+
+            // --- UI Transitions ---
+            function transitionTo(screen) {
+                const screens = [startScreen, questionScreen, summaryScreen];
+                const currentVisible = screens.find(s => !s.classList.contains('hidden'));
+
+                if (currentVisible) {
+                    currentVisible.classList.add('fade-out');
+                    currentVisible.addEventListener('animationend', () => {
+                        currentVisible.classList.add('hidden');
+                        currentVisible.classList.remove('fade-out');
+                        
+                        screen.classList.remove('hidden');
+                        screen.classList.add('fade-in');
+                        screen.addEventListener('animationend', () => {
+                            screen.classList.remove('fade-in');
+                        }, { once: true });
+
+                    }, { once: true });
+                } else {
+                    screen.classList.remove('hidden');
+                    screen.classList.add('fade-in');
+                    screen.addEventListener('animationend', () => {
+                        screen.classList.remove('fade-in');
+                    }, { once: true });
+                }
+            }
+
+            // --- Game Logic ---
+            function init() {
+                loadState();
+                if (state.currentQuestionIndex >= questions.length) {
+                    renderSummary();
+                    transitionTo(summaryScreen);
+                } else if (state.currentQuestionIndex > -1) {
+                    renderQuestion();
+                    transitionTo(questionScreen);
+                } else {
+                    transitionTo(startScreen);
+                }
+            }
+
+            function startGame() {
+                state.currentQuestionIndex = 0;
+                saveState();
+                renderQuestion();
+                transitionTo(questionScreen);
+            }
+
+            function renderQuestion() {
+                const question = questions[state.currentQuestionIndex];
+                const savedAnswer = state.answers[question.key] || '';
+
+                questionTitle.textContent = question.title;
+                questionHelper.textContent = question.helper;
+                answerInput.value = savedAnswer;
+                answerInput.focus();
+
+                updateProgressBar();
+                validateInput();
+            }
+
+            function handleNext() {
+                // Save answer
+                const currentQuestion = questions[state.currentQuestionIndex];
+                state.answers[currentQuestion.key] = answerInput.value.trim();
+
+                // Move to next question
+                state.currentQuestionIndex++;
+                saveState();
+
+                if (state.currentQuestionIndex < questions.length) {
+                    // Animate out the old question content before rendering new
+                    questionScreen.children[1].classList.add('fade-out');
+                    questionScreen.children[1].addEventListener('animationend', () => {
+                        questionScreen.children[1].classList.remove('fade-out');
+                        renderQuestion();
+                        questionScreen.children[1].classList.add('fade-in');
+                        questionScreen.children[1].addEventListener('animationend', () => {
+                             questionScreen.children[1].classList.remove('fade-in');
+                        }, { once: true });
+                    }, { once: true });
+                } else {
+                    renderSummary();
+                    transitionTo(summaryScreen);
+                }
+            }
+            
+            function validateInput() {
+                if (answerInput.value.trim().length > 0) {
+                    nextBtn.disabled = false;
+                } else {
+                    nextBtn.disabled = true;
+                }
+            }
+
+            function updateProgressBar() {
+                const progress = ((state.currentQuestionIndex) / questions.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            function renderSummary() {
+                summaryContent.innerHTML = ''; // Clear previous summary
+                let storyHTML = `
+                    <p class="text-slate-700">The system starts by targeting your <strong>ideal client</strong>: <span class="text-indigo-700 font-semibold">"${state.answers.idealClient}"</span>.</p>
+                    
+                    <p class="text-slate-700">We'll create Instagram content that speaks directly to their <strong>biggest goal</strong>, which is <span class="text-indigo-700 font-semibold">"${state.answers.biggestFrustration}"</span>. The call-to-action in your posts will be irresistible.</p>
+
+                    <p class="text-slate-700">It will offer them a free, high-value video—your <strong>"Free Gift"</strong>—teaching them about <span class="text-indigo-700 font-semibold">"${state.answers.freeGift}"</span>. This builds immediate trust and authority.</p>
+                    
+                    <p class="text-slate-700">The landing page will be simple and powerful. It will feature the video, showcase your <strong>social proof</strong> (<span class="text-indigo-700 font-semibold">"${state.answers.socialProof}"</span>), and guide them towards the main goal.</p>
+
+                    <p class="text-slate-700">The <strong>ultimate goal</strong> of this funnel is for them to take one clear action: <span class="text-indigo-700 font-semibold">"${state.answers.mainAction}"</span>. This is where they become a high-quality lead.</p>
+                    
+                    <p class="text-slate-700">Once they book a call, you can introduce them to your <strong>core offer</strong>: <span class="text-indigo-700 font-semibold">"${state.answers.popularService}"</span>, turning a follower into a paying client.</p>
+                `;
+
+                const storyContainer = document.createElement('div');
+                storyContainer.innerHTML = storyHTML;
+                storyContainer.classList.add('space-y-4');
+                summaryContent.appendChild(storyContainer);
+                
+                 // Final progress bar update
+                progressBar.style.width = '100%';
+            }
+            
+            function restartGame() {
+                if (confirm('Are you sure you want to start over? Your answers will be deleted.')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    state = { currentQuestionIndex: -1, answers: {} };
+                    transitionTo(startScreen);
+                }
+            }
+
+            // --- Event Listeners ---
+            startBtn.addEventListener('click', startGame);
+            nextBtn.addEventListener('click', handleNext);
+            restartBtn.addEventListener('click', restartGame);
+            answerInput.addEventListener('input', validateInput);
+            answerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !nextBtn.disabled) {
+                    e.preventDefault();
+                    handleNext();
+                }
+            });
+
+            // --- Initial Load ---
+            init();
+        });
+    </script>
+</body>
+</html>
