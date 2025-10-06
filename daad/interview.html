@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Client Interview Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            overscroll-behavior-x: contain; /* Prevents pull-to-refresh on swipe */
+            font-family: 'Inter', sans-serif;
+        }
+        .card-slider {
+            touch-action: pan-y; /* Allows vertical scroll but captures horizontal */
+        }
+        .card-container {
+            transition: transform 0.3s ease-out;
+        }
+        .card {
+            flex-shrink: 0;
+            width: 100%;
+        }
+        .dot {
+            transition: background-color 0.3s ease;
+        }
+        .card-content ul {
+            padding-left: 1.25rem; /* Equivalent to pl-5 in Tailwind */
+        }
+        .card-content ul li {
+            margin-bottom: 0.75rem; /* Equivalent to mb-3 */
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 flex flex-col h-screen overflow-hidden">
+
+    <header class="p-4 text-center">
+        <h1 class="text-xl font-bold text-white">Client Acquisition Plan</h1>
+        <p class="text-slate-400 text-sm">Swipe to guide the conversation</p>
+    </header>
+
+    <!-- Slider main container -->
+    <main id="card-slider" class="card-slider flex-grow overflow-hidden relative w-full">
+        <!-- Slides container -->
+        <div id="card-container" class="card-container h-full flex">
+
+            <!-- Card 1: Introduction -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">The Goal</h2>
+                    <p class="text-slate-300">"The goal of our work together is to stop relying on chance and start using a proven system to turn your Instagram followers into paying clients."</p>
+                    <p class="text-slate-300">"My role is to guide you in building a simple, highly effective landing page—often called a funnel."</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Funnel vs Website -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Funnel vs. Website</h2>
+                    <p class="text-slate-300">This approach is different from your website.</p>
+                    <ul class="list-disc text-slate-300">
+                        <li>Your website is your <strong>digital brochure</strong>.</li>
+                        <li>This funnel will be your <strong>#1 sales tool</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 3: Part 1 Intro -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Part 1: The "Transformation Call" Funnel</h2>
+                    <p class="text-slate-300">"To build this, I need to understand a few key things about your business. Let's start with your ideal client and your offer."</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Question 1 -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Define: Client & Offer</h2>
+                    <ul class="list-disc text-slate-300">
+                        <li>Who is your <strong>ideal</strong> new client from Instagram?</li>
+                        <li>What is their single <strong>biggest frustration or goal</strong>?</li>
+                        <li>What is your most <strong>popular or profitable service</strong> for a new client?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Card 5: Question 2 -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Craft: Your "Free Gift"</h2>
+                     <ul class="list-disc text-slate-300">
+                        <li>If you had 15 minutes to teach them one thing for a <strong>quick win</strong>, what would it be?</li>
+                        <li>We will film a short, high-value video of you teaching this. This video is the <strong>core of the entire system</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 6: Question 3 & 4 -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Define: Goal & Proof</h2>
+                     <ul class="list-disc text-slate-300">
+                        <li>After they watch your free training, what is the <strong>one action</strong> you want them to take? (e.g., Book a free call).</li>
+                        <li>Do you have any client <strong>testimonials, before/after photos</strong>, or success stories?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Card 7: Part 2 Intro -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Part 2: How The Funnel Works</h2>
+                    <p class="text-slate-300">"Here is the simple, step-by-step system we will build based on your answers."</p>
+                </div>
+            </div>
+
+            <!-- Card 8: Steps 1 & 2 -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Steps 1 & 2</h2>
+                    <ul class="list-disc text-slate-300">
+                        <li><strong>Instagram Hook:</strong> Create content with a clear call-to-action sending people to the "link in bio".</li>
+                        <li><strong>Landing Page:</strong> A simple page with a powerful headline, your free training video, and a large, unmissable button to book a call.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Card 9: Steps 3 & 4 -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Steps 3 & 4</h2>
+                    <ul class="list-disc text-slate-300">
+                        <li><strong>Seamless Booking:</strong> The button links to your calendar (Calendly) showing availability for the next 2-3 days to create urgency.</li>
+                        <li><strong>Capture Leads:</strong> A hidden Facebook Pixel will allow us to retarget visitors who didn't book a call.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 10: Part 3 -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Part 3: Future Revenue</h2>
+                    <p class="text-slate-300">"Once this funnel is working, we can expand your revenue with other income streams."</p>
+                </div>
+            </div>
+            
+            <!-- Card 11: Expansion Ideas -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Expansion Ideas</h2>
+                    <ul class="list-disc text-slate-300">
+                        <li><strong>Sell Digital Guides:</strong> Low-priced PDFs for followers not ready for 1-on-1 coaching.</li>
+                        <li><strong>"Book Funnel":</strong> Offer a free physical book (they pay shipping) and upsell to an online course.</li>
+                        <li><strong>Email Nurturing:</strong> Run special promotions and offers to your growing email list.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Card 12: Summary -->
+            <div class="card p-4 h-full flex items-center justify-center">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-lg w-full max-w-md mx-auto space-y-4 card-content">
+                    <h2 class="text-2xl font-bold text-indigo-400">Executive Summary</h2>
+                    <p class="text-slate-300">"This plan moves you from a passive presence to an active client-acquisition system. It's a proven, pragmatic method for generating leads and revenue for a service-based business like yours."</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Navigation dots -->
+    <footer id="dots-container" class="flex justify-center items-center p-4 space-x-2">
+        <!-- Dots will be inserted here by JS -->
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('card-slider');
+            const container = document.getElementById('card-container');
+            const dotsContainer = document.getElementById('dots-container');
+            const cards = Array.from(container.children);
+            const cardCount = cards.length;
+
+            let currentIndex = 0;
+            let startPos = 0;
+            let currentTranslate = 0;
+            let prevTranslate = 0;
+            let isDragging = false;
+            let animationID;
+
+            // Create dots
+            for (let i = 0; i < cardCount; i++) {
+                const dot = document.createElement('button');
+                dot.classList.add('dot', 'w-2', 'h-2', 'rounded-full', 'bg-slate-600');
+                dot.addEventListener('click', () => {
+                    currentIndex = i;
+                    setPositionByIndex();
+                });
+                dotsContainer.appendChild(dot);
+            }
+            const dots = Array.from(dotsContainer.children);
+
+            function setSliderPosition() {
+                container.style.transform = `translateX(${currentTranslate}px)`;
+            }
+            
+            function updateDots() {
+                dots.forEach(dot => dot.classList.remove('bg-indigo-400'));
+                dots[currentIndex].classList.add('bg-indigo-400');
+            }
+
+            function setPositionByIndex() {
+                // Check if slider has a width, if not, wait for next frame
+                if (slider.clientWidth === 0) {
+                    requestAnimationFrame(setPositionByIndex);
+                    return;
+                }
+                currentTranslate = currentIndex * -slider.clientWidth;
+                prevTranslate = currentTranslate;
+                setSliderPosition();
+                updateDots();
+            }
+
+            function animation() {
+                setSliderPosition();
+                if (isDragging) requestAnimationFrame(animation);
+            }
+
+            function touchStart(index) {
+                return function(event) {
+                    currentIndex = index;
+                    startPos = getPositionX(event);
+                    isDragging = true;
+                    animationID = requestAnimationFrame(animation);
+                    container.style.transition = 'none';
+                }
+            }
+            
+            function touchMove(event) {
+                if (isDragging) {
+                    const currentPosition = getPositionX(event);
+                    currentTranslate = prevTranslate + currentPosition - startPos;
+                }
+            }
+            
+            function touchEnd() {
+                isDragging = false;
+                cancelAnimationFrame(animationID);
+
+                const movedBy = currentTranslate - prevTranslate;
+
+                // Swipe threshold is 100px
+                if (movedBy < -100 && currentIndex < cardCount - 1) {
+                    currentIndex += 1;
+                }
+
+                if (movedBy > 100 && currentIndex > 0) {
+                    currentIndex -= 1;
+                }
+                
+                container.style.transition = 'transform 0.3s ease-out';
+                setPositionByIndex();
+            }
+
+            function getPositionX(event) {
+                return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+            }
+
+            // Add event listeners
+            cards.forEach((card, index) => {
+                // Touch events
+                card.addEventListener('touchstart', touchStart(index));
+                card.addEventListener('touchend', touchEnd);
+                card.addEventListener('touchmove', touchMove);
+
+                // Mouse events for desktop
+                card.addEventListener('mousedown', touchStart(index));
+                card.addEventListener('mouseup', touchEnd);
+                card.addEventListener('mouseleave', () => {
+                    if (isDragging) touchEnd();
+                });
+                card.addEventListener('mousemove', touchMove);
+                
+                // Prevent image dragging and text selection
+                card.ondragstart = () => false;
+            });
+            
+            window.addEventListener('resize', setPositionByIndex);
+
+            // Initial setup
+            setPositionByIndex();
+        });
+    </script>
+</body>
+</html>
