@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Material Prompt Builder</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            color: white;
+            margin: 0;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        main {
+            padding: 1rem 0;
+            min-height: calc(100vh - 120px);
+        }
+
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 4px;
+            background-color: var(--light-color);
+            width: 100%;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 4px;
+            background-color: var(--secondary-color);
+            width: 0%;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .step-circle.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .step-circle.completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.8rem;
+            text-align: center;
+            color: var(--dark-color);
+        }
+
+        /* Form Steps */
+        .step {
+            display: none;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            flex: 1 1 150px;
+            min-width: 0;
+        }
+
+        .checkbox-item input,
+        .radio-item input {
+            margin-right: 0.5rem;
+        }
+
+        .slider-container {
+            padding: 0.5rem 0;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        /* Characteristics Section */
+        .characteristic {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .characteristic-header {
+            padding: 1rem;
+            background-color: var(--light-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .characteristic-header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .characteristic-content {
+            padding: 0 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .characteristic.active .characteristic-content {
+            padding: 1rem;
+            max-height: 500px;
+        }
+
+        .characteristic-toggle {
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .characteristic.active .characteristic-toggle {
+            transform: rotate(45deg);
+        }
+
+        /* Priority Selection */
+        .priority-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .priority-item {
+            flex: 1 1 100px;
+            text-align: center;
+            padding: 0.5rem;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .priority-item.selected {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            min-height: 44px; /* Touch-friendly */
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d5dbdb;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        /* Prompt Output */
+        .prompt-output {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Help Tooltip */
+        .help-tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 0.5rem;
+            color: var(--secondary-color);
+            cursor: help;
+        }
+
+        .help-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+
+        .help-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 2rem;
+            }
+
+            .step {
+                padding: 2rem;
+            }
+
+            .progress-step {
+                flex: 1;
+            }
+
+            .step-circle {
+                width: 50px;
+                height: 50px;
+            }
+
+            .checkbox-group,
+            .radio-group {
+                gap: 1rem;
+            }
+
+            .checkbox-item,
+            .radio-item {
+                flex: 1 1 200px;
+            }
+
+            .characteristic-header h3 {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .form-row {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .form-row .form-group {
+                flex: 1;
+            }
+
+            .characteristics-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>House Material Prompt Builder</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Progress Indicator -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+            <div class="progress-fill"></div>
+            <div class="progress-step">
+                <div class="step-circle active" data-step="1">1</div>
+                <span class="step-label">Setup</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle" data-step="2">2</div>
+                <span class="step-label">Characteristics</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle" data-step="3">3</div>
+                <span class="step-label">Constraints</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle" data-step="4">4</div>
+                <span class="step-label">Generate</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Initial Setup -->
+        <section id="step-1" class="step active">
+            <h2>Initial Setup</h2>
+            <p>Tell us about the area where you need materials.</p>
+            
+            <div class="form-group">
+                <label for="house-part">What part of the house?</label>
+                <select id="house-part" required>
+                    <option value="">Select an option</option>
+                    <option value="Floor">Floor</option>
+                    <option value="Wall">Wall</option>
+                    <option value="Cabinet">Cabinet</option>
+                    <option value="Roof">Roof</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div id="custom-house-part-container" class="form-group" style="display: none;">
+                    <label for="custom-house-part">Specify the part:</label>
+                    <input type="text" id="custom-house-part" placeholder="e.g., Window frame, Staircase">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="room">Which room or area?</label>
+                <select id="room" required>
+                    <option value="">Select an option</option>
+                    <option value="Bathroom">Bathroom</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Bedroom">Bedroom</option>
+                    <option value="Living Room">Living Room</option>
+                    <option value="Outdoor">Outdoor</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div id="custom-room-container" class="form-group" style="display: none;">
+                    <label for="custom-room">Specify the room/area:</label>
+                    <input type="text" id="custom-room" placeholder="e.g., Garage, Hallway">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="climate">Climate</label>
+                <select id="climate" required>
+                    <option value="">Select an option</option>
+                    <option value="Tropical">Tropical</option>
+                    <option value="Arid">Arid</option>
+                    <option value="Temperate">Temperate</option>
+                    <option value="Cold">Cold</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Environmental Conditions <span class="help-tooltip">?
+                    <span class="tooltip-text">Select all environmental factors that apply to your location</span>
+                </span></label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="high-humidity" value="High Humidity">
+                        <label for="high-humidity">High Humidity</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="exposure-to-water" value="Exposure to Water">
+                        <label for="exposure-to-water">Exposure to Water</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sun-exposure" value="Sun Exposure">
+                        <label for="sun-exposure">Sun Exposure</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="salt-air" value="Salt Air (Coastal)">
+                        <label for="salt-air">Salt Air (Coastal)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="reset-btn">Reset</button>
+                <button class="btn" id="next-1">Next</button>
+            </div>
+        </section>
+
+        <!-- Step 2: Characteristics -->
+        <section id="step-2" class="step">
+            <h2>Material Characteristics</h2>
+            <p>Select and prioritize the characteristics that matter most for your material.</p>
+            
+            <div class="characteristics-grid">
+                <!-- Cost -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Cost</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label for="cost-range">Budget Range (per sq m)</label>
+                            <input type="range" id="cost-range" min="1" max="3" value="2">
+                            <div class="slider-value" id="cost-value">Medium ($50-150)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Durability -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Durability/Longevity</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label for="durability">Expected Lifespan</label>
+                            <select id="durability">
+                                <option value="<5 years">Less than 5 years</option>
+                                <option value="5-20 years" selected>5-20 years</option>
+                                <option value=">20 years">More than 20 years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Maintenance -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Maintenance</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label for="maintenance">Maintenance Effort</label>
+                            <select id="maintenance">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Installation -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Installation</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label for="installation">Installation Ease</label>
+                            <select id="installation">
+                                <option value="DIY-friendly">DIY-friendly</option>
+                                <option value="Professional required" selected>Professional required</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Water Resistance -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Water Resistance <span class="help-tooltip">?
+                            <span class="tooltip-text">How much the material absorbs water</span>
+                        </span></h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label for="water-resistance">Porosity/Water Resistance</label>
+                            <select id="water-resistance">
+                                <option value="Low absorption">Low absorption</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High absorption</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Safety -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Safety</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label>Safety Features</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="non-toxic" value="Non-toxic">
+                                    <label for="non-toxic">Non-toxic</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="low-voc" value="Low VOC">
+                                    <label for="low-voc">Low VOC</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="fire-resistant" value="Fire-resistant">
+                                    <label for="fire-resistant">Fire-resistant</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="non-slip" value="Non-slip">
+                                    <label for="non-slip">Non-slip</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Aesthetics -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Aesthetics</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label for="color-options">Color Options</label>
+                            <select id="color-options">
+                                <option value="Limited">Limited</option>
+                                <option value="Moderate" selected>Moderate</option>
+                                <option value="Wide variety">Wide variety</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="texture">Texture</label>
+                            <select id="texture">
+                                <option value="Smooth">Smooth</option>
+                                <option value="Rough">Rough</option>
+                                <option value="Varied" selected>Varied options</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="style">Style</label>
+                            <select id="style">
+                                <option value="Modern">Modern</option>
+                                <option value="Traditional">Traditional</option>
+                                <option value="Both" selected>Both modern and traditional</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Environmental Impact -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Environmental Impact</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label>Environmental Features</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="sustainable" value="Sustainable">
+                                    <label for="sustainable">Sustainable</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="recyclable" value="Recyclable">
+                                    <label for="recyclable">Recyclable</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="low-carbon" value="Low carbon footprint">
+                                    <label for="low-carbon">Low carbon footprint</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance -->
+                <div class="characteristic">
+                    <div class="characteristic-header">
+                        <h3>Performance</h3>
+                        <span class="characteristic-toggle">+</span>
+                    </div>
+                    <div class="characteristic-content">
+                        <div class="form-group">
+                            <label>Performance Features</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="thermal-insulation" value="Thermal insulation">
+                                    <label for="thermal-insulation">Thermal insulation</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="sound-insulation" value="Sound insulation">
+                                    <label for="sound-insulation">Sound insulation</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="high-strength" value="High strength-to-weight ratio">
+                                    <label for="high-strength">High strength-to-weight ratio</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="scratch-resistant" value="Scratch-resistant">
+                                    <label for="scratch-resistant">Scratch-resistant</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Prioritize Top Characteristics (select up to 5)</label>
+                <div class="priority-container" id="priority-container">
+                    <!-- Priority items will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prev-2">Previous</button>
+                <button class="btn" id="next-2">Next</button>
+            </div>
+        </section>
+
+        <!-- Step 3: Constraints and Preferences -->
+        <section id="step-3" class="step">
+            <h2>Constraints and Preferences</h2>
+            <p>Tell us about any specific constraints or preferences you have.</p>
+            
+            <div class="form-group">
+                <label for="avoid-materials">Materials to avoid</label>
+                <textarea id="avoid-materials" placeholder="e.g., No wood due to moisture concerns, avoid materials with high VOC emissions"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Known common options to consider</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tiles" value="Tiles">
+                        <label for="tiles">Tiles</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="lino" value="Linoleum">
+                        <label for="lino">Linoleum</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stone" value="Stone">
+                        <label for="stone">Stone</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="marble" value="Marble">
+                        <label for="marble">Marble</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="rubber" value="Rubber">
+                        <label for="rubber">Rubber</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="concrete" value="Concrete">
+                        <label for="concrete">Concrete</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wood" value="Wood">
+                        <label for="wood">Wood</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="metal" value="Metal">
+                        <label for="metal">Metal</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="composites" value="Composites">
+                        <label for="composites">Composites</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="innovative" value="Include emerging or unconventional materials">
+                    <label for="innovative">Include emerging or unconventional materials</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="area-size">Area size (for cost estimation)</label>
+                <input type="number" id="area-size" min="1" placeholder="e.g., 25">
+                <select id="area-unit">
+                    <option value="sq m">sq m</option>
+                    <option value="sq ft">sq ft</option>
+                </select>
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prev-3">Previous</button>
+                <button class="btn" id="next-3">Generate Prompt</button>
+            </div>
+        </section>
+
+        <!-- Step 4: Prompt Generation -->
+        <section id="step-4" class="step">
+            <h2>Generated Prompt</h2>
+            <p>Your detailed prompt is ready! Copy and paste it into your preferred LLM.</p>
+            
+            <div class="form-group">
+                <textarea id="prompt-output" class="prompt-output" rows="15" readonly></textarea>
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prev-4">Previous</button>
+                <button class="btn btn-success" id="copy-btn">Copy to Clipboard</button>
+            </div>
+            
+            <div class="form-group" style="margin-top: 2rem;">
+                <button class="btn btn-warning btn-full" id="start-over">Start Over</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>House Material Prompt Builder &copy; 2023 | Create detailed prompts for material research</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const steps = document.querySelectorAll('.step');
+        const stepCircles = document.querySelectorAll('.step-circle');
+        const progressFill = document.querySelector('.progress-fill');
+        const nextButtons = document.querySelectorAll('[id^="next-"]');
+        const prevButtons = document.querySelectorAll('[id^="prev-"]');
+        const resetBtn = document.getElementById('reset-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const startOverBtn = document.getElementById('start-over');
+        const promptOutput = document.getElementById('prompt-output');
+        
+        // Form Elements
+        const housePartSelect = document.getElementById('house-part');
+        const customHousePartContainer = document.getElementById('custom-house-part-container');
+        const customHousePartInput = document.getElementById('custom-house-part');
+        const roomSelect = document.getElementById('room');
+        const customRoomContainer = document.getElementById('custom-room-container');
+        const customRoomInput = document.getElementById('custom-room');
+        const costRange = document.getElementById('cost-range');
+        const costValue = document.getElementById('cost-value');
+        const characteristicHeaders = document.querySelectorAll('.characteristic-header');
+        const priorityContainer = document.getElementById('priority-container');
+        
+        // State
+        let currentStep = 1;
+        let selectedCharacteristics = [];
+        
+        // Initialize the app
+        function initApp() {
+            updateProgress();
+            setupEventListeners();
+            updateCostValue();
+            populatePriorityOptions();
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation buttons
+            nextButtons.forEach(btn => {
+                btn.addEventListener('click', goToNextStep);
+            });
+            
+            prevButtons.forEach(btn => {
+                btn.addEventListener('click', goToPrevStep);
+            });
+            
+            // Form interactions
+            housePartSelect.addEventListener('change', function() {
+                customHousePartContainer.style.display = this.value === 'Other' ? 'block' : 'none';
+            });
+            
+            roomSelect.addEventListener('change', function() {
+                customRoomContainer.style.display = this.value === 'Other' ? 'block' : 'none';
+            });
+            
+            costRange.addEventListener('input', updateCostValue);
+            
+            // Characteristic toggles
+            characteristicHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const characteristic = this.parentElement;
+                    characteristic.classList.toggle('active');
+                });
+            });
+            
+            // Priority selection
+            priorityContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('priority-item')) {
+                    const item = e.target;
+                    const characteristic = item.getAttribute('data-characteristic');
+                    
+                    if (item.classList.contains('selected')) {
+                        item.classList.remove('selected');
+                        selectedCharacteristics = selectedCharacteristics.filter(c => c !== characteristic);
+                    } else {
+                        if (selectedCharacteristics.length < 5) {
+                            item.classList.add('selected');
+                            selectedCharacteristics.push(characteristic);
+                        } else {
+                            alert('You can only select up to 5 characteristics for prioritization.');
+                        }
+                    }
+                    
+                    updatePriorityDisplay();
+                }
+            });
+            
+            // Action buttons
+            resetBtn.addEventListener('click', resetForm);
+            copyBtn.addEventListener('click', copyToClipboard);
+            startOverBtn.addEventListener('click', resetForm);
+        }
+        
+        // Navigation functions
+        function goToNextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < 4) {
+                    steps[currentStep - 1].classList.remove('active');
+                    stepCircles[currentStep - 1].classList.remove('active');
+                    
+                    currentStep++;
+                    
+                    steps[currentStep - 1].classList.add('active');
+                    stepCircles[currentStep - 1].classList.add('active');
+                    
+                    if (currentStep === 4) {
+                        generatePrompt();
+                    }
+                    
+                    updateProgress();
+                }
+            }
+        }
+        
+        function goToPrevStep() {
+            if (currentStep > 1) {
+                steps[currentStep - 1].classList.remove('active');
+                stepCircles[currentStep - 1].classList.remove('active');
+                
+                currentStep--;
+                
+                steps[currentStep - 1].classList.add('active');
+                stepCircles[currentStep - 1].classList.add('active');
+                
+                updateProgress();
+            }
+        }
+        
+        function updateProgress() {
+            const progressPercentage = ((currentStep - 1) / 3) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+            
+            stepCircles.forEach((circle, index) => {
+                if (index < currentStep - 1) {
+                    circle.classList.add('completed');
+                } else {
+                    circle.classList.remove('completed');
+                }
+            });
+        }
+        
+        // Form validation
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                if (!housePartSelect.value) {
+                    alert('Please select a house part.');
+                    return false;
+                }
+                if (housePartSelect.value === 'Other' && !customHousePartInput.value) {
+                    alert('Please specify the house part.');
+                    return false;
+                }
+                if (!roomSelect.value) {
+                    alert('Please select a room or area.');
+                    return false;
+                }
+                if (roomSelect.value === 'Other' && !customRoomInput.value) {
+                    alert('Please specify the room or area.');
+                    return false;
+                }
+                if (!document.getElementById('climate').value) {
+                    alert('Please select a climate.');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Update cost value display
+        function updateCostValue() {
+            const costLabels = ['Low (<$50/sq m)', 'Medium ($50-150)', 'High (>$150)'];
+            costValue.textContent = costLabels[costRange.value - 1];
+        }
+        
+        // Populate priority options
+        function populatePriorityOptions() {
+            const characteristics = [
+                'Cost', 'Durability/Longevity', 'Maintenance', 'Installation', 
+                'Water Resistance', 'Safety', 'Aesthetics', 'Environmental Impact', 'Performance'
+            ];
+            
+            priorityContainer.innerHTML = '';
+            
+            characteristics.forEach(char => {
+                const item = document.createElement('div');
+                item.className = 'priority-item';
+                item.setAttribute('data-characteristic', char);
+                item.textContent = char;
+                priorityContainer.appendChild(item);
+            });
+        }
+        
+        // Update priority display
+        function updatePriorityDisplay() {
+            const items = priorityContainer.querySelectorAll('.priority-item');
+            
+            items.forEach(item => {
+                const char = item.getAttribute('data-characteristic');
+                const index = selectedCharacteristics.indexOf(char);
+                
+                if (index !== -1) {
+                    item.textContent = `${index + 1}. ${char}`;
+                } else {
+                    item.textContent = char;
+                }
+            });
+        }
+        
+        // Generate the final prompt
+        function generatePrompt() {
+            // Get all form values
+            const housePart = housePartSelect.value === 'Other' ? customHousePartInput.value : housePartSelect.value;
+            const room = roomSelect.value === 'Other' ? customRoomInput.value : roomSelect.value;
+            const climate = document.getElementById('climate').value;
+            
+            // Environmental conditions
+            const environmentalConditions = [];
+            if (document.getElementById('high-humidity').checked) environmentalConditions.push('High Humidity');
+            if (document.getElementById('exposure-to-water').checked) environmentalConditions.push('Exposure to Water');
+            if (document.getElementById('sun-exposure').checked) environmentalConditions.push('Sun Exposure');
+            if (document.getElementById('salt-air').checked) environmentalConditions.push('Salt Air (Coastal)');
+            
+            // Characteristics
+            const costLabels = ['Low (<$50/sq m)', 'Medium ($50-150)', 'High (>$150)'];
+            const cost = costLabels[costRange.value - 1];
+            const durability = document.getElementById('durability').value;
+            const maintenance = document.getElementById('maintenance').value;
+            const installation = document.getElementById('installation').value;
+            const waterResistance = document.getElementById('water-resistance').value;
+            
+            // Safety features
+            const safetyFeatures = [];
+            if (document.getElementById('non-toxic').checked) safetyFeatures.push('Non-toxic');
+            if (document.getElementById('low-voc').checked) safetyFeatures.push('Low VOC');
+            if (document.getElementById('fire-resistant').checked) safetyFeatures.push('Fire-resistant');
+            if (document.getElementById('non-slip').checked) safetyFeatures.push('Non-slip');
+            
+            // Aesthetics
+            const colorOptions = document.getElementById('color-options').value;
+            const texture = document.getElementById('texture').value;
+            const style = document.getElementById('style').value;
+            
+            // Environmental features
+            const environmentalFeatures = [];
+            if (document.getElementById('sustainable').checked) environmentalFeatures.push('Sustainable');
+            if (document.getElementById('recyclable').checked) environmentalFeatures.push('Recyclable');
+            if (document.getElementById('low-carbon').checked) environmentalFeatures.push('Low carbon footprint');
+            
+            // Performance features
+            const performanceFeatures = [];
+            if (document.getElementById('thermal-insulation').checked) performanceFeatures.push('Thermal insulation');
+            if (document.getElementById('sound-insulation').checked) performanceFeatures.push('Sound insulation');
+            if (document.getElementById('high-strength').checked) performanceFeatures.push('High strength-to-weight ratio');
+            if (document.getElementById('scratch-resistant').checked) performanceFeatures.push('Scratch-resistant');
+            
+            // Constraints and preferences
+            const avoidMaterials = document.getElementById('avoid-materials').value;
+            
+            // Known options
+            const knownOptions = [];
+            if (document.getElementById('tiles').checked) knownOptions.push('Tiles');
+            if (document.getElementById('lino').checked) knownOptions.push('Linoleum');
+            if (document.getElementById('stone').checked) knownOptions.push('Stone');
+            if (document.getElementById('marble').checked) knownOptions.push('Marble');
+            if (document.getElementById('rubber').checked) knownOptions.push('Rubber');
+            if (document.getElementById('concrete').checked) knownOptions.push('Concrete');
+            if (document.getElementById('wood').checked) knownOptions.push('Wood');
+            if (document.getElementById('metal').checked) knownOptions.push('Metal');
+            if (document.getElementById('composites').checked) knownOptions.push('Composites');
+            
+            const includeInnovative = document.getElementById('innovative').checked;
+            const areaSize = document.getElementById('area-size').value;
+            const areaUnit = document.getElementById('area-unit').value;
+            
+            // Build the prompt
+            let prompt = `Recommend the top 5 materials for ${housePart} in ${room} for a house in a ${climate} climate`;
+            
+            if (environmentalConditions.length > 0) {
+                prompt += ` with the following environmental conditions: ${environmentalConditions.join(', ')}`;
+            }
+            
+            prompt += `, considering the following characteristics:\n\n`;
+            
+            // Prioritized characteristics
+            if (selectedCharacteristics.length > 0) {
+                prompt += `PRIORITIZED CHARACTERISTICS (in order of importance):\n`;
+                selectedCharacteristics.forEach((char, index) => {
+                    prompt += `${index + 1}. ${char}\n`;
+                });
+                prompt += `\n`;
+            }
+            
+            // All characteristics with details
+            prompt += `DETAILED CHARACTERISTICS:\n`;
+            prompt += `- Cost: ${cost}\n`;
+            prompt += `- Durability/Longevity: ${durability}\n`;
+            prompt += `- Maintenance: ${maintenance} effort\n`;
+            prompt += `- Installation: ${installation}\n`;
+            prompt += `- Water Resistance: ${waterResistance}\n`;
+            
+            if (safetyFeatures.length > 0) {
+                prompt += `- Safety: ${safetyFeatures.join(', ')}\n`;
+            }
+            
+            prompt += `- Aesthetics: Color options (${colorOptions}), Texture (${texture}), Style (${style})\n`;
+            
+            if (environmentalFeatures.length > 0) {
+                prompt += `- Environmental Impact: ${environmentalFeatures.join(', ')}\n`;
+            }
+            
+            if (performanceFeatures.length > 0) {
+                prompt += `- Performance: ${performanceFeatures.join(', ')}\n`;
+            }
+            
+            prompt += `\n`;
+            
+            // Constraints
+            if (avoidMaterials) {
+                prompt += `AVOID: ${avoidMaterials}\n`;
+            }
+            
+            if (knownOptions.length > 0) {
+                prompt += `INCLUDE COMMON OPTIONS: ${knownOptions.join(', ')}\n`;
+            }
+            
+            if (includeInnovative) {
+                prompt += `INCLUDE INNOVATIVE/UNCONVENTIONAL MATERIALS: Yes\n`;
+            }
+            
+            if (areaSize) {
+                prompt += `QUANTITY/SCALE: ${areaSize} ${areaUnit}\n`;
+            }
+            
+            prompt += `\n`;
+            prompt += `Please provide recommendations in a table format with the following columns:\n`;
+            prompt += `- Material Name\n`;
+            prompt += `- Pros\n`;
+            prompt += `- Cons\n`;
+            prompt += `- Approximate Cost (per ${areaUnit})\n`;
+            prompt += `- Installation Requirements\n`;
+            prompt += `- Sustainability/Safety Notes\n`;
+            prompt += `- Best Use Cases\n\n`;
+            
+            prompt += `Rank the materials by overall suitability considering my prioritized characteristics. Focus on materials that are sustainable, safe, and appropriate for my specific environmental conditions.`;
+            
+            promptOutput.value = prompt;
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard() {
+            promptOutput.select();
+            promptOutput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                // Fallback for browsers that don't support execCommand
+                navigator.clipboard.writeText(promptOutput.value).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                });
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            // Reset form fields
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                if (element.type === 'checkbox' || element.type === 'radio') {
+                    element.checked = false;
+                } else if (element.type === 'range') {
+                    element.value = element.defaultValue;
+                } else {
+                    element.value = '';
+                }
+            });
+            
+            // Reset selects to first option
+            document.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+            
+            // Reset custom inputs visibility
+            customHousePartContainer.style.display = 'none';
+            customRoomContainer.style.display = 'none';
+            
+            // Reset characteristics
+            document.querySelectorAll('.characteristic').forEach(char => {
+                char.classList.remove('active');
+            });
+            
+            // Reset priority selection
+            selectedCharacteristics = [];
+            document.querySelectorAll('.priority-item').forEach(item => {
+                item.classList.remove('selected');
+                item.textContent = item.getAttribute('data-characteristic');
+            });
+            
+            // Reset to first step
+            steps.forEach(step => step.classList.remove('active'));
+            stepCircles.forEach(circle => {
+                circle.classList.remove('active', 'completed');
+            });
+            
+            currentStep = 1;
+            steps[0].classList.add('active');
+            stepCircles[0].classList.add('active');
+            
+            updateProgress();
+            updateCostValue();
+        }
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

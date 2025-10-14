@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Business Systems Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevents scrollbars during animations */
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        /* Custom scrollbar for summary */
+        .summary-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .summary-content::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .summary-content::-webkit-scrollbar-thumb {
+            background: #64748b;
+            border-radius: 10px;
+        }
+        .summary-content::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div id="game-container" class="w-full max-w-2xl mx-auto">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-white p-8 md:p-12 rounded-xl shadow-2xl text-center fade-in">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Let's Build Your Business Blueprint</h1>
+            <p class="text-slate-600 mb-8 max-w-prose mx-auto">This isn't just a quiz—it's the first step to creating systems that save you time and grow your business. Let's map out your processes in a fun way. Your answers will be saved as you go.</p>
+            <button id="start-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                Start Building
+            </button>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="hidden">
+            <div id="progress-bar-container" class="w-full bg-slate-200 rounded-full h-2.5 mb-6 shadow-inner">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out"></div>
+            </div>
+            <div class="bg-white p-8 md:p-10 rounded-xl shadow-2xl">
+                <h2 id="question-title" class="text-xl md:text-2xl font-bold text-slate-800 mb-6"></h2>
+                <p id="question-helper" class="text-sm text-slate-500 mb-4"></p>
+                <textarea id="answer-input" rows="5" class="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-300" placeholder="Your thoughts here..."></textarea>
+                <div class="flex justify-end mt-6">
+                    <button id="next-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Screen -->
+        <div id="summary-screen" class="hidden">
+            <div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2 text-center">Your Business Systems Blueprint</h1>
+                <p class="text-slate-500 mb-8 text-center">Here's the information we've gathered. This is our starting point for building powerful systems.</p>
+                <div id="summary-content" class="summary-content max-h-[60vh] overflow-y-auto space-y-8 pr-4">
+                    <!-- Summary will be injected here -->
+                </div>
+                <div class="text-center mt-10">
+                     <button id="restart-btn" class="bg-slate-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-slate-300">
+                        Start Over
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startScreen = document.getElementById('start-screen');
+            const questionScreen = document.getElementById('question-screen');
+            const summaryScreen = document.getElementById('summary-screen');
+            
+            const startBtn = document.getElementById('start-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const restartBtn = document.getElementById('restart-btn');
+
+            const progressBar = document.getElementById('progress-bar');
+            const questionTitle = document.getElementById('question-title');
+            const questionHelper = document.getElementById('question-helper');
+            const answerInput = document.getElementById('answer-input');
+            const summaryContent = document.getElementById('summary-content');
+
+            const STORAGE_KEY = 'businessAnalysisGame';
+
+            const questions = [
+                {
+                    key: 'onboardingTasks',
+                    title: "Let's start with a 'brain dump'. What are all the steps you take to onboard a new client?",
+                    helper: 'Think about contracts, initial forms (like True Forms), the first payment, and scheduling their first session.'
+                },
+                {
+                    key: 'clientWorkTasks',
+                    title: 'What recurring tasks are involved in working with your existing clients?',
+                    helper: 'e.g., weekly check-ins, updating workout plans, tracking progress, taking notes, processing recurring payments.'
+                },
+                {
+                    key: 'businessAdminTasks',
+                    title: "What are the 'behind-the-scenes' tasks you do to run and market your business?",
+                    helper: 'e.g., posting on Instagram, answering DMs and emails, bookkeeping, planning future content.'
+                },
+                {
+                    key: 'annoyingTasks',
+                    title: 'Of all the tasks you just listed, which 1-3 are the most time-consuming or annoying?',
+                    helper: 'These are the tasks you dread doing. Be honest!'
+                },
+                {
+                    key: 'impactfulTasks',
+                    title: 'Which tasks, if done better or more consistently, would have the BIGGEST positive impact?',
+                    helper: 'Think about what would most improve your clients\' results or your business growth.'
+                },
+                {
+                    key: 'paymentSystem',
+                    title: 'How do you currently take payments from clients?',
+                    helper: 'Mention any apps, websites, or methods you use (e.g., bank transfer, PayPal, a specific software).'
+                },
+                {
+                    key: 'idealPayments',
+                    title: 'In a perfect world, how would taking payments work?',
+                    helper: 'Describe your ideal system. Do you want subscriptions? Automatic invoicing? (Hint: this helps us explore options like Stripe).'
+                },
+                {
+                    key: 'clientNotes',
+                    title: 'How do you currently keep notes and track progress for each client?',
+                    helper: 'e.g., a physical notebook, a Google Doc, a specific app?'
+                },
+                {
+                    key: 'schedulingSystem',
+                    title: 'How do you and your clients currently manage scheduling for sessions and check-ins?',
+                    helper: 'This could be back-and-forth texts, a booking link, etc. How does it integrate with your calendar?'
+                },
+                {
+                    key: 'firstToDelegate',
+                    title: 'If you could hand off one part of your business to a "robot assistant" tomorrow, what would it be?',
+                    helper: 'What\'s the one thing you wish you never had to do again? This is our prime target for automation or delegation.'
+                }
+            ];
+
+            let state = {
+                currentQuestionIndex: -1,
+                answers: {}
+            };
+
+            function loadState() {
+                const savedState = localStorage.getItem(STORAGE_KEY);
+                if (savedState) {
+                    state = JSON.parse(savedState);
+                }
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            }
+
+            function transitionTo(screen) {
+                const screens = [startScreen, questionScreen, summaryScreen];
+                const currentVisible = screens.find(s => !s.classList.contains('hidden'));
+                
+                if (currentVisible) {
+                    currentVisible.classList.add('fade-out');
+                    currentVisible.addEventListener('animationend', () => {
+                        currentVisible.classList.add('hidden');
+                        currentVisible.classList.remove('fade-out');
+                        screen.classList.remove('hidden');
+                        screen.classList.add('fade-in');
+                    }, { once: true });
+                } else {
+                    screen.classList.remove('hidden');
+                    screen.classList.add('fade-in');
+                }
+            }
+
+            function init() {
+                loadState();
+                if (state.currentQuestionIndex >= questions.length) {
+                    renderSummary();
+                    transitionTo(summaryScreen);
+                } else if (state.currentQuestionIndex > -1) {
+                    renderQuestion();
+                    transitionTo(questionScreen);
+                } else {
+                    transitionTo(startScreen);
+                }
+            }
+
+            function startGame() {
+                state.currentQuestionIndex = 0;
+                saveState();
+                renderQuestion();
+                transitionTo(questionScreen);
+            }
+
+            function renderQuestion() {
+                const question = questions[state.currentQuestionIndex];
+                const savedAnswer = state.answers[question.key] || '';
+
+                questionTitle.textContent = question.title;
+                questionHelper.textContent = question.helper;
+                answerInput.value = savedAnswer;
+                answerInput.focus();
+
+                updateProgressBar();
+                validateInput();
+            }
+            
+            function handleNext() {
+                const currentQuestion = questions[state.currentQuestionIndex];
+                state.answers[currentQuestion.key] = answerInput.value.trim();
+                state.currentQuestionIndex++;
+                saveState();
+
+                if (state.currentQuestionIndex < questions.length) {
+                    renderQuestion();
+                } else {
+                    renderSummary();
+                    transitionTo(summaryScreen);
+                }
+            }
+
+            function validateInput() {
+                nextBtn.disabled = answerInput.value.trim().length === 0;
+            }
+
+            function updateProgressBar() {
+                const progress = (state.currentQuestionIndex / questions.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            function createSummarySection(title, key) {
+                const answer = state.answers[key];
+                if (!answer) return '';
+                return `
+                    <div>
+                        <h3 class="text-lg font-bold text-indigo-700 mb-2">${title}</h3>
+                        <p class="bg-slate-100 p-4 rounded-lg text-slate-700 whitespace-pre-wrap">${answer}</p>
+                    </div>
+                `;
+            }
+
+            function renderSummary() {
+                summaryContent.innerHTML = `
+                    ${createSummarySection('Top Priorities for Systems (The Annoying Tasks)', 'annoyingTasks')}
+                    ${createSummarySection('Highest Impact Areas for Growth', 'impactfulTasks')}
+                    ${createSummarySection('The First Task to Automate or Delegate', 'firstToDelegate')}
+                    
+                    <div class="border-t border-slate-200 pt-6">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">Detailed Task Breakdown</h2>
+                        ${createSummarySection('Onboarding Process', 'onboardingTasks')}
+                        ${createSummarySection('Ongoing Client Management', 'clientWorkTasks')}
+                        ${createSummarySection('Business & Marketing Admin', 'businessAdminTasks')}
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-6">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">Current Tech & Future Needs</h2>
+                        ${createSummarySection('Current Payment System', 'paymentSystem')}
+                        ${createSummarySection('Ideal Payment System', 'idealPayments')}
+                        ${createSummarySection('Current Client Notes System', 'clientNotes')}
+                        ${createSummarySection('Current Scheduling System', 'schedulingSystem')}
+                    </div>
+                `;
+                progressBar.style.width = '100%';
+            }
+
+            function restartGame() {
+                if (confirm('Are you sure you want to start over? Your answers will be deleted.')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    state = { currentQuestionIndex: -1, answers: {} };
+                    transitionTo(startScreen);
+                }
+            }
+            
+            startBtn.addEventListener('click', startGame);
+            nextBtn.addEventListener('click', handleNext);
+            restartBtn.addEventListener('click', restartGame);
+            answerInput.addEventListener('input', validateInput);
+            answerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !nextBtn.disabled) {
+                    e.preventDefault();
+                    handleNext();
+                }
+            });
+
+            init();
+        });
+    </script>
+</body>
+</html>
