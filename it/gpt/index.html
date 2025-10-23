@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Streaming Diagnostic Checklist — Francine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  /* Mobile-first base */
+  :root{
+    --bg-primary-dark: #0a0a0a;
+    --bg-secondary-dark: #1a1a1a;
+    --bg-tertiary-dark: #2a2a2a;
+    --text-primary-dark: #ffffff;
+    --text-secondary-dark: #a0a0a0;
+    --accent: #6366f1; /* indigo */
+    --border-dark: rgba(255,255,255,0.1);
+
+    --bg-primary-light: #ffffff;
+    --bg-secondary-light: #f8f9fa;
+    --bg-tertiary-light: #e9ecef;
+    --text-primary-light: #1a1a1a;
+    --text-secondary-light: #6c757d;
+    --border-light: rgba(0,0,0,0.1);
+
+    --radius-card: 16px;
+    --radius-btn: 12px;
+    --transition: 0.3s;
+    --glass-blur: 10px;
+    --gradient-1: linear-gradient(90deg,#8b5cf6,#ec4899); /* purple-pink */
+    --gradient-2: linear-gradient(90deg,#06b6d4,#3b82f6); /* cyan-blue */
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  /* THEMES: dark by default */
+  html[data-theme="dark"]{
+    --bg-primary: var(--bg-primary-dark);
+    --bg-secondary: var(--bg-secondary-dark);
+    --bg-tertiary: var(--bg-tertiary-dark);
+    --text-primary: var(--text-primary-dark);
+    --text-secondary: var(--text-secondary-dark);
+    --border: var(--border-dark);
+  }
+  html[data-theme="light"]{
+    --bg-primary: var(--bg-primary-light);
+    --bg-secondary: var(--bg-secondary-light);
+    --bg-tertiary: var(--bg-tertiary-light);
+    --text-primary: var(--text-primary-light);
+    --text-secondary: var(--text-secondary-light);
+    --border: var(--border-light);
+  }
+
+  /* Reset & base */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--font-stack);
+    background:var(--bg-primary);
+    color:var(--text-primary);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding:18px;
+    transition:background var(--transition), color var(--transition);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:center;
+  }
+
+  .container{
+    width:100%;
+    max-width:980px;
+  }
+
+  header.app-header{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .brand {
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .logo {
+    width:46px;
+    height:46px;
+    border-radius:12px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(236,72,153,0.08));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    color:var(--accent);
+    backdrop-filter: blur(var(--glass-blur));
+  }
+  h1{
+    font-size:18px;
+    margin:0;
+    line-height:1;
+    letter-spacing:0.2px;
+  }
+  p.lead{
+    margin:0;
+    color:var(--text-secondary);
+    font-size:13px;
+  }
+
+  /* theme toggle */
+  .controls{display:flex; gap:8px; align-items:center;}
+  .toggle {
+    --w:48px; --h:28px;
+    width:var(--w); height:var(--h);
+    background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06));
+    border-radius:999px;
+    padding:4px;
+    display:inline-flex;
+    align-items:center;
+    transition:all var(--transition);
+    cursor:pointer;
+    border:1px solid var(--border);
+    backdrop-filter: blur(6px);
+  }
+  .toggle .knob{
+    width:20px;height:20px;border-radius:50%;background:white;transform:translateX(0);transition:all var(--transition);box-shadow:0 6px 18px rgba(0,0,0,0.18);
+  }
+  html[data-theme="dark"] .toggle { background: rgba(255,255,255,0.03); }
+  html[data-theme="dark"] .toggle .knob { background: #111; box-shadow:0 6px 18px rgba(0,0,0,0.6);}
+
+  html[data-theme="light"] .toggle { background: rgba(0,0,0,0.04); }
+  html[data-theme="light"] .toggle .knob { transform: translateX(20px); background:white; }
+
+  /* grid */
+  .grid{display:grid; gap:12px; grid-template-columns:1fr; align-items:start}
+  @media(min-width:760px){ .grid{ grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); } }
+
+  /* Card */
+  .card{
+    position:relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border-radius:var(--radius-card);
+    padding:14px;
+    border:1px solid var(--border);
+    transition: transform var(--transition), box-shadow var(--transition);
+    backdrop-filter: blur(var(--glass-blur));
+    overflow:hidden;
+  }
+  .card:hover{ transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.35); }
+  /* top gradient accent bar that appears on hover */
+  .card::before{
+    content:"";
+    position:absolute; left:0; top:-40px; right:0; height:40px;
+    background: linear-gradient(90deg, rgba(139,92,246,0.12), rgba(236,72,153,0.08));
+    transform: translateY(0); transition: transform .45s cubic-bezier(.2,.9,.2,1);
+    pointer-events:none;
+  }
+  .card:hover::before{ transform: translateY(40px); }
+
+  /* checklist list */
+  .checklist{ display:flex; flex-direction:column; gap:10px; margin-top:10px;}
+  .item{
+    display:flex; gap:10px; align-items:flex-start;
+    padding:10px; border-radius:12px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.01));
+    border:1px solid var(--border);
+    transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+  }
+  .item:hover{ transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+  .item input[type=checkbox]{ width:18px;height:18px;margin-top:4px; accent-color: var(--accent); }
+
+  .item .meta{ display:flex; flex-direction:column; gap:4px; flex:1;}
+  .item .meta .title{ font-size:15px; margin:0; color:var(--text-primary);}
+  .item .meta .desc{ font-size:12px; color:var(--text-secondary); margin:0;}
+
+  /* buttons */
+  .row{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .btn{
+    border-radius:var(--radius-btn); padding:10px 14px; font-weight:600; border:none; cursor:pointer;
+    transition: all var(--transition); font-size:14px;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-primary{ background: linear-gradient(90deg,#6366f1,#8b5cf6); color:white; box-shadow: 0 8px 24px rgba(99,102,241,0.16);}
+  .btn-gradient{ background: linear-gradient(90deg,#06b6d4,#3b82f6); color:white;}
+  .btn-outline{ background:transparent; border:1px solid var(--border); color:var(--text-primary);}
+  .btn-secondary{ background:var(--bg-tertiary); color:var(--text-primary); border:1px solid var(--border);}
+
+  .btn:hover{ transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+
+  /* badges */
+  .badge{ padding:6px 8px;border-radius:10px;background:rgba(99,102,241,0.12); color:var(--accent); font-weight:700; font-size:12px;}
+
+  /* progress */
+  .progress{ height:8px; border-radius:8px; background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(0,0,0,0.02)); overflow:hidden; border:1px solid var(--border);}
+  .progress .bar{ height:100%; width:0%; background: linear-gradient(90deg,#8b5cf6,#06b6d4); transition: width .6s cubic-bezier(.2,.9,.2,1); }
+
+  /* small elements */
+  .muted{ color:var(--text-secondary); font-size:13px;}
+  .alert{ padding:10px 12px; border-radius:10px; background: linear-gradient(90deg, rgba(246,229,255,0.03), rgba(236,249,255,0.01)); border-left:4px solid var(--accent); color:var(--text-primary); }
+  .small{ font-size:12px; color:var(--text-secondary);}
+
+  /* footer */
+  footer{ width:100%; text-align:center; color:var(--text-secondary); font-size:12px; margin-top:8px;}
+
+  /* fancy gradient text example */
+  .gradient-text{
+    font-weight:800; font-size:16px;
+    background: linear-gradient(90deg,#8b5cf6,#06b6d4);
+    -webkit-background-clip: text; background-clip: text; color:transparent;
+  }
+
+  /* responsive tweaks */
+  @media (hover:none){
+    .card:hover{ transform:none; box-shadow:none; }
+    .item:hover{ transform:none; box-shadow:none;}
+  }
+
+  /* fade-in */
+  .fade-in{ animation:fadeIn .45s ease both; }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(8px);} to{ opacity:1; transform:none;} }
+
+  /* floating featured element */
+  .floaty{ animation: floaty 3s ease-in-out infinite; }
+  @keyframes floaty{ 0%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} 100%{ transform: translateY(0);} }
+
+  /* nav link underline animation */
+  a.nav-link{ color:var(--text-primary); text-decoration:none; position:relative; display:inline-block; }
+  a.nav-link::after{ content:""; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:var(--accent); transition: width .28s ease; border-radius:2px;}
+  a.nav-link:hover::after{ width:100%; }
+
+  /* form inputs */
+  input[type="text"], select, textarea{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--text-primary);
+    transition: box-shadow var(--transition), border-color var(--transition);
+  }
+  input[type="text"]:focus, textarea:focus{
+    outline:none; box-shadow: 0 6px 18px rgba(99,102,241,0.12); border-color: var(--accent);
+  }
+
+  /* checkbox label spacing */
+  .item .time{ font-size:12px; color:var(--text-secondary); }
+
+  /* export text area */
+  .export-box{ width:100%; min-height:100px; border-radius:12px; padding:10px; border:1px dashed var(--border); background:transparent; color:var(--text-primary); }
+
+</style>
+</head>
+<body class="fade-in" data-theme="dark">
+  <div class="container">
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo gradient-text">FG</div>
+        <div>
+          <h1>Streaming Diagnostic Checklist</h1>
+          <p class="lead">Simple steps to find why your stream looks poor — made mobile first.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="badge">Quick Test</div>
+        <div class="toggle" id="themeToggle" title="Toggle theme">
+          <div class="knob"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- LEFT: Checklist -->
+      <section class="card fade-in" id="check-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div class="gradient-text">Step-by-step Diagnostics</div>
+            <div class="small muted">Tick each step when done. Save or export at the end.</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small muted">Progress</div>
+            <div class="progress" style="width:180px;">
+              <div class="bar" id="progressBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="checklist" id="checklist">
+          <!-- Items populated by JS -->
+        </div>
+
+        <div class="row">
+          <button class="btn btn-primary" id="saveBtn">Save</button>
+          <button class="btn btn-outline" id="loadBtn">Load</button>
+          <button class="btn btn-gradient" id="exportBtn">Export CSV</button>
+          <button class="btn btn-secondary" id="copyJsonBtn">Copy JSON</button>
+          <button class="btn btn-outline" id="resetBtn">Reset</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: Info & results -->
+      <aside class="card fade-in">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div class="gradient-text">Quick tips</div>
+            <div class="small muted">No purchases first — follow the checklist to locate the issue.</div>
+          </div>
+          <div class="floaty" title="Featured">
+            <div style="padding:8px 12px;border-radius:12px;background:linear-gradient(90deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08)); border:1px solid var(--border);">
+              <div style="font-weight:700;color:var(--accent)">Francine</div>
+              <div class="small muted">Follow each step</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <div class="alert">Pro tip: Use Ethernet instead of Wi-Fi for the most reliable stream.</div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="small muted">Export output</div>
+          <textarea id="exportArea" class="export-box" placeholder="Exported JSON / CSV will appear here"></textarea>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="small muted">Created for remote diagnostics • Local only — data stored in your browser</div>
+    </footer>
+  </div>
+
+<script>
+/* Mobile-first diagnostic checklist app
+   - items come from the streaming diagnostic steps
+   - supports save/load in localStorage
+   - export CSV + copy JSON
+*/
+
+// Checklist data
+const defaultItems = [
+  { id: "internet", title: "Check internet speed (speedtest.net)", desc: "Run upload test; upload should be >= 3 Mbps for decent streaming.", done:false },
+  { id: "ethernet", title: "If possible, plug PC into router (Ethernet)", desc: "Wired connection is more stable than Wi-Fi.", done:false },
+  { id: "webcam-app", title: "Open Logitech camera app & check resolution/frame rate", desc: "Set 720p/1080p and 30fps; disable auto-focus if blurry.", done:false },
+  { id: "clean-lens", title: "Clean webcam lens", desc: "Use a soft cloth; smudges cause blur.", done:false },
+  { id: "lighting", title: "Improve lighting (front-facing light)", desc: "Avoid bright windows behind you; add soft front light.", done:false },
+  { id: "task-manager", title: "Check Task Manager (CPU / RAM)", desc: "If CPU or RAM near 90% the PC may be the bottleneck.", done:false },
+  { id: "close-apps", title: "Close background apps/tabs", desc: "Close heavy programs and extra browser tabs.", done:false },
+  { id: "camera-test", title: "Test webcam in Windows Camera app", desc: "If clear in Camera but not in stream, app settings may be wrong.", done:false },
+  { id: "obs-settings", title: "Check streaming software settings (resolution/bitrate)", desc: "Try 720p at 2500–3000kbps if internet limited.", done:false },
+  { id: "restart", title: "Restart PC and reconnect webcam", desc: "A reboot often clears issues.", done:false },
+  { id: "router-restart", title: "Restart router (power off 30s)", desc: "Sometimes the router needs a reset for stable upload.", done:false },
+  { id: "test-stream", title: "Do a private test stream", desc: "Short private test to confirm fix.", done:false },
+];
+
+// DOM refs
+const checklistEl = document.getElementById("checklist");
+const progressBar = document.getElementById("progressBar");
+const exportArea = document.getElementById("exportArea");
+
+let items = [];
+
+// Utilities
+function saveToLocal(){
+  localStorage.setItem("streamCheck_v1", JSON.stringify(items));
+}
+function loadFromLocal(){
+  const raw = localStorage.getItem("streamCheck_v1");
+  if(raw){
+    try{ items = JSON.parse(raw); return true; } catch(e){ return false; }
+  }
+  return false;
+}
+function resetLocal(){
+  items = JSON.parse(JSON.stringify(defaultItems));
+  saveToLocal();
+  renderChecklist();
+}
+
+// Render UI
+function renderChecklist(){
+  checklistEl.innerHTML = "";
+  items.forEach((it, idx) => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <input type="checkbox" id="${it.id}" ${it.done ? "checked":""} />
+      <div class="meta">
+        <div class="title">${idx+1}. ${escapeHtml(it.title)}</div>
+        <div class="desc">${escapeHtml(it.desc)}</div>
+      </div>
+      <div style="min-width:60px;text-align:right">
+        <div class="time small muted" data-id="${it.id}">${it.done? "Done":"Pending"}</div>
+      </div>
+    `;
+    checklistEl.appendChild(div);
+
+    // hook up checkbox
+    div.querySelector("input[type=checkbox]").addEventListener("change", (e)=>{
+      it.done = e.target.checked;
+      saveToLocal();
+      renderProgress();
+      div.querySelector(".time").textContent = it.done? "Done":"Pending";
+    });
+  });
+  renderProgress();
+}
+
+// Progress calculation
+function renderProgress(){
+  const completed = items.filter(i=>i.done).length;
+  const pct = Math.round((completed / items.length) * 100);
+  progressBar.style.width = pct + "%";
+  exportArea.value = ""; // clear export area
+}
+
+// Export CSV
+function exportCSV(){
+  const header = ["step","id","title","desc","done"];
+  const lines = [header.join(",")];
+  items.forEach((it, idx)=>{
+    // escape double quotes in fields
+    const row = [
+      `"${idx+1}"`,
+      `"${it.id}"`,
+      `"${it.title.replace(/"/g,'""')}"`,
+      `"${it.desc.replace(/"/g,'""')}"`,
+      `"${it.done ? "yes":"no"}"`
+    ];
+    lines.push(row.join(","));
+  });
+  const csv = lines.join("\n");
+  exportArea.value = csv;
+
+  // download CSV
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'stream_checklist_results.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Copy JSON to clipboard
+function copyJson(){
+  const payload = JSON.stringify({ ts: new Date().toISOString(), items }, null, 2);
+  navigator.clipboard.writeText(payload).then(()=>{
+    exportArea.value = payload;
+    alert("Checklist JSON copied to clipboard. You can paste it into chat or save it.");
+  }).catch((err)=>{
+    exportArea.value = payload;
+    alert("Could not copy automatically. The data has been placed in the export box — you can copy it manually.");
+  });
+}
+
+// Small helper to escape HTML
+function escapeHtml(s){ return (""+s).replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+
+// initial load
+if(!loadFromLocal()){
+  items = JSON.parse(JSON.stringify(defaultItems));
+  saveToLocal();
+}
+renderChecklist();
+
+// Buttons
+document.getElementById("saveBtn").addEventListener("click", ()=>{
+  saveToLocal();
+  alert("Saved locally in your browser.");
+});
+document.getElementById("loadBtn").addEventListener("click", ()=>{
+  if(loadFromLocal()){ renderChecklist(); alert("Loaded saved checklist."); } else { alert("No saved checklist found."); }
+});
+document.getElementById("exportBtn").addEventListener("click", ()=>exportCSV());
+document.getElementById("copyJsonBtn").addEventListener("click", ()=>copyJson());
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Reset checklist to default steps? This will overwrite saved data.")){
+    resetLocal();
+  }
+});
+
+// Theme toggle logic
+const themeToggle = document.getElementById("themeToggle");
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("theme_preference_v1", t);
+  // move knob position for visual feedback
+  const knob = themeToggle.querySelector(".knob");
+  if(t === "light"){ knob.style.transform = "translateX(20px)"; }
+  else { knob.style.transform = "translateX(0)"; }
+}
+themeToggle.addEventListener("click", ()=>{
+  const current = document.documentElement.getAttribute("data-theme") || "dark";
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+// restore theme
+const storedTheme = localStorage.getItem("theme_preference_v1");
+applyTheme(storedTheme || "dark");
+
+// helper: autosave on beforeunload
+window.addEventListener("beforeunload", ()=> saveToLocal());
+
+</script>
+</body>
+</html>

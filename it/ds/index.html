@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Quality Diagnostic</title>
+    <style>
+        :root {
+            /* Dark Mode Default */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent-color: #6366f1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 10px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .light-mode {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --tertiary-bg: #e9ecef;
+            --primary-text: #1a1a1a;
+            --secondary-text: #6c757d;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 10px 15px rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            color: var(--primary-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro-card {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .intro-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .intro-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .goal-badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+
+        .card {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .step-content {
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .help-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .help-toggle:hover {
+            background: var(--tertiary-bg);
+        }
+
+        .help-content {
+            background: var(--tertiary-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            display: none;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .help-content.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            background: var(--tertiary-bg);
+        }
+
+        .checklist-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 12px;
+            margin-top: 2px;
+            accent-color: var(--accent-color);
+        }
+
+        .checklist-item label {
+            flex: 1;
+            color: var(--primary-text);
+        }
+
+        .checklist-item.completed label {
+            color: var(--secondary-text);
+            text-decoration: line-through;
+        }
+
+        .progress-container {
+            margin: 24px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--tertiary-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background: var(--secondary-bg);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            color: white;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 24px;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--primary-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .export-btn:hover {
+            background: var(--tertiary-bg);
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            background: var(--tertiary-bg);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-icon {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+
+        .alert-content h4 {
+            margin-bottom: 4px;
+            color: var(--primary-text);
+        }
+
+        .alert-content p {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: row;
+            }
+            
+            .export-options {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Webcam Quality Diagnostic</h1>
+                <p class="subtitle">Step-by-step guide to fix your streaming quality</p>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span>🌙</span> Dark Mode
+            </button>
+        </header>
+
+        <div class="intro-card">
+            <span class="goal-badge">🧠 GOAL</span>
+            <h2>Find the cause of poor streaming quality</h2>
+            <p>This checklist will guide you through diagnosing why your webcam quality looks bad on your Windows PC with a Logitech webcam.</p>
+            
+            <div class="alert" style="margin-top: 16px;">
+                <div class="alert-icon">💡</div>
+                <div class="alert-content">
+                    <h4>Before You Start</h4>
+                    <p>Make sure your webcam is connected and you have about 15-20 minutes to complete all the steps.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span>Progress</span>
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+
+        <div class="card" id="step1">
+            <div class="card-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Check Internet Speed</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Go to <a href="https://speedtest.net" target="_blank" style="color: var(--accent-color);">speedtest.net</a>. Click "Go" and write down your results.</p>
+                
+                <div class="help-content">
+                    <p><strong>What to look for:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Upload speed should be at least 3-5 Mbps for smooth streaming</li>
+                        <li>If it's under 2 Mbps, the internet is the problem</li>
+                    </ul>
+                    <p style="margin-top: 12px;"><strong>Fix:</strong> Ask others in the house to stop using Wi-Fi, or plug the PC directly into the router with a cable.</p>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step1-1" data-step="1">
+                    <label for="step1-1">Download speed recorded</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step1-2" data-step="1">
+                    <label for="step1-2">Upload speed recorded</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step1-3" data-step="1">
+                    <label for="step1-3">Ping recorded</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="step2">
+            <div class="card-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Check Webcam Settings</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Open the Logitech Camera App (Logi Capture or G HUB) and check these settings:</p>
+                
+                <div class="help-content">
+                    <p><strong>What to look for:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Resolution: Set to 720p or 1080p, not lower</li>
+                        <li>Frame Rate: 30 fps is good</li>
+                        <li>Focus: Turn off auto-focus if the picture keeps going blurry</li>
+                        <li>Exposure/Lighting: Try turning off auto-exposure if the image is too bright or dark</li>
+                    </ul>
+                    <p style="margin-top: 12px;"><strong>Fix:</strong> Save your settings and close other camera apps — only your streaming app should be using the webcam.</p>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step2-1" data-step="2">
+                    <label for="step2-1">Resolution set to 720p or 1080p</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step2-2" data-step="2">
+                    <label for="step2-2">Frame rate set to 30 fps</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step2-3" data-step="2">
+                    <label for="step2-3">Auto-focus adjusted if needed</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step2-4" data-step="2">
+                    <label for="step2-4">Exposure/lighting adjusted</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="step3">
+            <div class="card-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Check PC Performance</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Press Ctrl + Shift + Esc to open Task Manager. Look at CPU, Memory (RAM), and GPU usage.</p>
+                
+                <div class="help-content">
+                    <p><strong>What to look for:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>If CPU or Memory is near 90-100%, your PC is struggling</li>
+                        <li>If you see many background apps, right-click and choose "End task" (except for system ones)</li>
+                    </ul>
+                    <p style="margin-top: 12px;"><strong>Fix:</strong> Close extra tabs and apps (Chrome, games, etc.). Restart your computer before streaming.</p>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step3-1" data-step="3">
+                    <label for="step3-1">CPU usage checked</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step3-2" data-step="3">
+                    <label for="step3-2">Memory (RAM) usage checked</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step3-3" data-step="3">
+                    <label for="step3-3">Unnecessary apps closed</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="step4">
+            <div class="card-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Test Camera on Another App</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Open the Camera app in Windows. Check if the picture looks clear there.</p>
+                
+                <div class="help-content">
+                    <p><strong>What to look for:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>✅ If it looks clear → problem is with the streaming software</li>
+                        <li>❌ If it looks blurry → problem is with the webcam or lighting</li>
+                    </ul>
+                    <p style="margin-top: 12px;"><strong>Fix:</strong> Clean the lens with a soft cloth. Add a light in front of you (not behind).</p>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step4-1" data-step="4">
+                    <label for="step4-1">Camera tested in Windows Camera app</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step4-2" data-step="4">
+                    <label for="step4-2">Picture clarity assessed</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="step5">
+            <div class="card-header">
+                <div class="step-number">5</div>
+                <div class="step-title">Check Streaming Software Settings</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Open your streaming app (e.g., OBS, browser-based stream) and check Video Settings.</p>
+                
+                <div class="help-content">
+                    <p><strong>What to look for:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Resolution: 720p (start here)</li>
+                        <li>Bitrate: 2500-4000 kbps</li>
+                        <li>Frame rate: 30 fps</li>
+                    </ul>
+                    <p style="margin-top: 12px;"><strong>Fix:</strong> If the stream lags or blurs, lower resolution (from 1080p to 720p). If it's pixelated, increase bitrate (if your internet allows).</p>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step5-1" data-step="5">
+                    <label for="step5-1">Resolution set to 720p</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step5-2" data-step="5">
+                    <label for="step5-2">Bitrate set between 2500-4000 kbps</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step5-3" data-step="5">
+                    <label for="step5-3">Frame rate set to 30 fps</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="step6">
+            <div class="card-header">
+                <div class="step-number">6</div>
+                <div class="step-title">Reboot Everything</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Restart your devices to fix "mystery problems."</p>
+                
+                <div class="help-content">
+                    <p>This often fixes issues that don't have an obvious cause.</p>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step6-1" data-step="6">
+                    <label for="step6-1">PC restarted</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step6-2" data-step="6">
+                    <label for="step6-2">Webcam unplugged and plugged back in</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step6-3" data-step="6">
+                    <label for="step6-3">Router restarted (30 seconds off, then on)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="step7">
+            <div class="card-header">
+                <div class="step-number">7</div>
+                <div class="step-title">Test Everything Together</div>
+                <button class="help-toggle">Need Help?</button>
+            </div>
+            <div class="step-content">
+                <p>Do a short private test stream (most platforms allow this). Watch the playback.</p>
+                
+                <div class="help-content">
+                    <p><strong>What to look for:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>✅ If yes → You're fixed!</li>
+                        <li>❌ If still bad → You may need a new webcam, better lighting, or faster internet</li>
+                    </ul>
+                </div>
+                
+                <div class="checklist-item">
+                    <input type="checkbox" id="step7-1" data-step="7">
+                    <label for="step7-1">Private test stream completed</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="step7-2" data-step="7">
+                    <label for="step7-2">Playback reviewed for quality</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-gradient" id="submitBtn">Submit & Generate Report</button>
+            <button class="btn btn-secondary" id="resetBtn">Reset Checklist</button>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">Diagnostic Results</h2>
+                <p style="color: var(--secondary-text); margin-bottom: 16px;">Here's a summary of your diagnostic results. You can export this to share with others or save for reference.</p>
+                
+                <div id="resultsContent"></div>
+                
+                <div class="export-options">
+                    <button class="export-btn" id="copyBtn">
+                        <span>📋</span> Copy to Clipboard
+                    </button>
+                    <button class="export-btn" id="saveBtn">
+                        <span>💾</span> Save as Text File
+                    </button>
+                    <button class="export-btn" id="printBtn">
+                        <span>🖨️</span> Print Results
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('light-mode');
+                const isLightMode = document.body.classList.contains('light-mode');
+                themeToggle.innerHTML = isLightMode ? 
+                    '<span>☀️</span> Light Mode' : 
+                    '<span>🌙</span> Dark Mode';
+                
+                // Save theme preference
+                localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+            });
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                themeToggle.innerHTML = '<span>☀️</span> Light Mode';
+            }
+            
+            // Help toggle buttons
+            const helpToggles = document.querySelectorAll('.help-toggle');
+            helpToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const helpContent = this.parentElement.parentElement.querySelector('.help-content');
+                    helpContent.classList.toggle('show');
+                    this.textContent = helpContent.classList.contains('show') ? 'Hide Help' : 'Need Help?';
+                });
+            });
+            
+            // Checklist functionality
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const totalItems = checkboxes.length;
+            
+            // Load saved state
+            checkboxes.forEach(checkbox => {
+                const savedState = localStorage.getItem(checkbox.id);
+                if (savedState === 'checked') {
+                    checkbox.checked = true;
+                    updateItemState(checkbox);
+                }
+                
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        localStorage.setItem(this.id, 'checked');
+                    } else {
+                        localStorage.removeItem(this.id);
+                    }
+                    updateItemState(this);
+                    updateProgress();
+                });
+            });
+            
+            function updateItemState(checkbox) {
+                const item = checkbox.closest('.checklist-item');
+                if (checkbox.checked) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            }
+            
+            function updateProgress() {
+                const checkedItems = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const progress = (checkedItems / totalItems) * 100;
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `${Math.round(progress)}%`;
+            }
+            
+            // Initialize progress
+            updateProgress();
+            
+            // Submit button
+            const submitBtn = document.getElementById('submitBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            submitBtn.addEventListener('click', function() {
+                // Generate results
+                let resultsHTML = '<div class="alert"><div class="alert-icon">📊</div><div class="alert-content"><h4>Diagnostic Summary</h4><p>Based on your completed checklist items:</p></div></div>';
+                
+                // Check each step
+                const steps = document.querySelectorAll('.card');
+                steps.forEach(step => {
+                    if (step.id !== 'resultsSection') {
+                        const stepNumber = step.querySelector('.step-number').textContent;
+                        const stepTitle = step.querySelector('.step-title').textContent;
+                        const stepCheckboxes = step.querySelectorAll('input[type="checkbox"]');
+                        const checkedCount = step.querySelectorAll('input[type="checkbox"]:checked').length;
+                        const totalInStep = stepCheckboxes.length;
+                        
+                        resultsHTML += `
+                            <div class="checklist-item ${checkedCount === totalInStep ? 'completed' : ''}">
+                                <input type="checkbox" ${checkedCount === totalInStep ? 'checked' : ''} disabled>
+                                <label><strong>Step ${stepNumber}:</strong> ${stepTitle} - ${checkedCount}/${totalInStep} completed</label>
+                            </div>
+                        `;
+                    }
+                });
+                
+                // Add recommendations
+                const totalChecked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                let recommendation = '';
+                
+                if (totalChecked === totalItems) {
+                    recommendation = 'All diagnostic steps completed! Your webcam quality issues should be resolved.';
+                } else if (totalChecked > totalItems * 0.7) {
+                    recommendation = 'Most diagnostic steps completed. You\'ve likely identified the main issues with your webcam quality.';
+                } else {
+                    recommendation = 'Some diagnostic steps completed. Consider completing more steps to fully diagnose your webcam quality issues.';
+                }
+                
+                resultsHTML += `
+                    <div class="alert" style="margin-top: 16px;">
+                        <div class="alert-icon">💡</div>
+                        <div class="alert-content">
+                            <h4>Recommendation</h4>
+                            <p>${recommendation}</p>
+                        </div>
+                    </div>
+                `;
+                
+                resultsContent.innerHTML = resultsHTML;
+                resultsSection.classList.add('show');
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Reset button
+            const resetBtn = document.getElementById('resetBtn');
+            resetBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset the entire checklist? This will clear all your progress.')) {
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                        updateItemState(checkbox);
+                        localStorage.removeItem(checkbox.id);
+                    });
+                    updateProgress();
+                    resultsSection.classList.remove('show');
+                }
+            });
+            
+            // Export functionality
+            const copyBtn = document.getElementById('copyBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const printBtn = document.getElementById('printBtn');
+            
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = generateExportText();
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert('Results copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            });
+            
+            saveBtn.addEventListener('click', function() {
+                const textToSave = generateExportText();
+                const blob = new Blob([textToSave], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'webcam-diagnostic-results.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            printBtn.addEventListener('click', function() {
+                window.print();
+            });
+            
+            function generateExportText() {
+                let text = 'WEBCAM QUALITY DIAGNOSTIC RESULTS\n';
+                text += '===================================\n\n';
+                
+                const steps = document.querySelectorAll('.card');
+                steps.forEach(step => {
+                    if (step.id !== 'resultsSection') {
+                        const stepNumber = step.querySelector('.step-number').textContent;
+                        const stepTitle = step.querySelector('.step-title').textContent;
+                        const stepCheckboxes = step.querySelectorAll('input[type="checkbox"]');
+                        const checkedCount = step.querySelectorAll('input[type="checkbox"]:checked').length;
+                        const totalInStep = stepCheckboxes.length;
+                        
+                        text += `Step ${stepNumber}: ${stepTitle} - ${checkedCount}/${totalInStep} completed\n`;
+                        
+                        stepCheckboxes.forEach(checkbox => {
+                            const label = checkbox.nextElementSibling.textContent;
+                            text += `  [${checkbox.checked ? 'X' : ' '}] ${label}\n`;
+                        });
+                        
+                        text += '\n';
+                    }
+                });
+                
+                const totalChecked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                text += `Overall Progress: ${totalChecked}/${totalItems} (${Math.round((totalChecked / totalItems) * 100)}%)\n\n`;
+                text += 'Generated by Webcam Quality Diagnostic Tool';
+                
+                return text;
+            }
+        });
+    </script>
+</body>
+</html>

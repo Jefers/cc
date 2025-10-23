@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Mobile-first modern boilerplate with light & dark themes and many UI elements." />
+  <title>Mobile-first Boilerplate — Light & Dark</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+  <style>
+    /* -----------------------------------------
+       MOBILE-FIRST MODERN BOILERPLATE
+       - Uses CSS variables for light/dark themes
+       - Accessible focuses, reduced motion support
+       - Many UI components: navbar, hero, cards, forms,
+         buttons, switches, tabs, accordion, modal, toast, table
+       - Pure CSS + small vanilla JS for interactions
+       ------------------------------------------*/
+
+    :root{
+      /* Base scale */
+      --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px;
+      --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 6px 18px rgba(0,0,0,0.12);
+      --shadow-lg: 0 20px 40px rgba(0,0,0,0.2);
+
+      /* Light theme colors */
+      --bg: #0f1724; /* fallback dark */
+      --surface: #0b1220;
+      --muted: #94a3b8;
+      --text: #e6eef8;
+      --primary:  #7c3aed; /* violet */
+      --primary-600: #5b21b6;
+      --accent:  #06b6d4; /* cyan */
+      --success: #10b981;
+      --danger:  #ef4444;
+      --glass: rgba(255,255,255,0.04);
+
+      /* typography */
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --base-size: 16px;
+    }
+
+    /* Light theme (opt-in) */
+    :root[data-theme='light']{
+      --bg: #f7f9fc;
+      --surface: #ffffff;
+      --muted: #475569;
+      --text: #0b1220;
+      --primary: #6d28d9;
+      --primary-600: #5b21b6;
+      --accent: #0891b2;
+      --success: #059669;
+      --danger: #dc2626;
+      --glass: rgba(0,0,0,0.04);
+    }
+
+    /* system preference default */
+    @media (prefers-color-scheme: light){
+      :root:not([data-theme]){ --bg: #f7f9fc; --surface:#fff; --text:#0b1220; --muted:#475569; }
+    }
+
+    /* typography - mobile first */
+    html{ font-family: var(--font-sans); font-size:var(--base-size); -webkit-text-size-adjust:100%; box-sizing:border-box; }
+    *,*::before,*::after{ box-sizing:inherit; }
+    body{ margin:0; background:linear-gradient(180deg,var(--bg), color-mix(in srgb, var(--bg) 80%, rgba(0,0,0,0.02))); color:var(--text); line-height:1.45; -webkit-font-smoothing:antialiased; }
+
+    /* Helpers */
+    .container{ max-width:1080px; margin:0 auto; padding:0 var(--space-md); }
+    .row{ display:flex; gap: var(--space-md); flex-wrap:wrap; }
+    .col{ flex:1 1 100%; }
+
+    /* Utility classes */
+    .rounded{ border-radius:var(--radius-md); }
+    .rounded-sm{ border-radius:var(--radius-sm); }
+    .p-1{ padding: var(--space-sm); }
+    .p-2{ padding: var(--space-md); }
+    .p-3{ padding: var(--space-lg); }
+    .m-1{ margin: var(--space-sm); }
+    .muted{ color:var(--muted); }
+    .center{ text-align:center; }
+    .flex{ display:flex; }
+    .items-center{ align-items:center; }
+    .justify-between{ justify-content:space-between; }
+    .gap-sm{ gap:var(--space-sm); }
+
+    /* focus states */
+    :focus{ outline: none; }
+    button:focus, a:focus, input:focus, select:focus, textarea:focus{ box-shadow:0 0 0 4px color-mix(in srgb, var(--primary) 24%, transparent); border-radius:8px; }
+
+    /* NAVBAR */
+    header.nav{ position:sticky; top:0; z-index:40; backdrop-filter: blur(6px); background: linear-gradient(180deg, color-mix(in srgb,var(--surface) 70%, transparent), transparent); }
+    .nav-inner{ display:flex; align-items:center; gap:var(--space-md); padding:var(--space-sm) 0; }
+    .brand{ display:flex; gap:var(--space-sm); align-items:center; font-weight:700; letter-spacing:0.2px; }
+    .brand svg{ width:36px; height:36px; border-radius:10px; background: linear-gradient(135deg,var(--primary), var(--accent)); box-shadow: var(--shadow-md); }
+    .nav-actions{ margin-left:auto; display:flex; gap:var(--space-sm); align-items:center; }
+    .btn{ -webkit-tap-highlight-color: transparent; border:0; cursor:pointer; padding:8px 12px; border-radius:10px; font-weight:600; background:linear-gradient(180deg, color-mix(in srgb,var(--surface) 85%, transparent), transparent); box-shadow:var(--shadow-sm); color:var(--text); }
+    .btn.primary{ background: linear-gradient(90deg,var(--primary), var(--primary-600)); color:white; }
+    .btn.ghost{ background:transparent; border:1px solid color-mix(in srgb,var(--text) 8%, transparent); }
+
+    /* HERO */
+    .hero{ padding: var(--space-lg) 0; display:grid; gap:var(--space-md); align-items:center; }
+    .hero-card{ background: linear-gradient(180deg, color-mix(in srgb,var(--surface) 92%, transparent), transparent); border-radius:var(--radius-lg); padding:var(--space-md); box-shadow: var(--shadow-lg); }
+    .hero h1{ margin:0; font-size:1.5rem; line-height:1.08; }
+    .lead{ font-size:0.98rem; color:var(--muted); margin-top:6px; }
+
+    /* GRID -- responsive */
+    @media(min-width:640px){ .col-sm-6{ flex:1 1 calc(50% - var(--space-md)); } .hero h1{ font-size:2rem; } }
+    @media(min-width:900px){ .col-md-4{ flex:1 1 calc(33.333% - var(--space-md)); } .hero{ grid-template-columns: 1fr 360px; } }
+
+    /* Cards */
+    .card{ background:var(--surface); border-radius:var(--radius-md); padding:var(--space-md); box-shadow:var(--shadow-md); border:1px solid color-mix(in srgb,var(--text) 4%, transparent); }
+    .card .title{ font-weight:700; margin-bottom:6px; }
+    .card .meta{ font-size:0.85rem; color:var(--muted); }
+
+    /* Buttons / Controls */
+    .btn:active{ transform:translateY(1px); }
+    .btn-sm{ padding:6px 10px; font-size:0.92rem; }
+
+    /* Forms */
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    input[type="text"], input[type="email"], input[type="password"], textarea, select{
+      background: linear-gradient(180deg, color-mix(in srgb,var(--surface) 96%, transparent), transparent);
+      border:1px solid color-mix(in srgb,var(--text) 6%, transparent);
+      color:var(--text);
+      padding:10px 12px; border-radius:10px; font-size:1rem;
+    }
+    textarea{ min-height:96px; resize:vertical; }
+    label{ font-size:0.9rem; color:var(--muted); }
+
+    /* TABS */
+    .tabs{ display:flex; gap:6px; background:transparent; padding:6px; border-radius:10px; }
+    .tab{ padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .tab.active{ background: linear-gradient(90deg,var(--primary), var(--primary-600)); color:white; }
+
+    /* ACCORDION */
+    .accordion .item{ border-bottom:1px dashed color-mix(in srgb,var(--text) 4%, transparent); }
+    .accordion summary{ list-style:none; cursor:pointer; padding:12px 0; display:flex; justify-content:space-between; align-items:center; }
+    .accordion details[open] summary{ font-weight:700; }
+
+    /* MODAL */
+    .modal-backdrop{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:50; }
+    .modal-backdrop.open{ display:flex; }
+    .modal{ width:min(640px, 92%); background:var(--surface); border-radius:14px; padding:var(--space-lg); box-shadow:var(--shadow-lg); }
+
+    /* TOAST */
+    .toast-wrap{ position:fixed; right:var(--space-md); bottom:var(--space-md); display:flex; flex-direction:column; gap:8px; z-index:60; }
+    .toast{ min-width:220px; padding:10px 12px; background:linear-gradient(90deg,var(--surface), color-mix(in srgb,var(--surface) 96%, transparent)); border-radius:10px; box-shadow:var(--shadow-md); }
+
+    /* TABLE */
+    table{ width:100%; border-collapse:collapse; font-size:0.95rem; }
+    thead th{ text-align:left; padding:8px 6px; color:var(--muted); font-weight:700; font-size:0.82rem; }
+    tbody td{ padding:12px 6px; border-top:1px solid color-mix(in srgb,var(--text) 4%, transparent); }
+
+    /* SMALL UI */
+    .badge{ display:inline-block; padding:6px 8px; border-radius:999px; font-weight:600; font-size:0.82rem; background:color-mix(in srgb,var(--primary) 10%, transparent); }
+    .avatar{ width:44px; height:44px; border-radius:999px; display:inline-grid; place-items:center; font-weight:700; }
+
+    /* responsive utilities */
+    .hide-sm{ display:none; }
+    @media(min-width:640px){ .hide-sm{ display:unset; } }
+
+    /* CODE BLOCK */
+    pre{ overflow:auto; background: linear-gradient(180deg, color-mix(in srgb,var(--surface) 98%, transparent), transparent); padding:12px; border-radius:10px; }
+
+    /* subtle animations */
+    .fade-in{ animation:fadeIn 420ms ease both; }
+    @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none; } }
+
+    /* reduced motion */
+    @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+
+  </style>
+</head>
+<body>
+  <header class="nav container" role="banner">
+    <div class="nav-inner">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect width="24" height="24" rx="6" fill="url(#g)" />
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#7c3aed" />
+              <stop offset="1" stop-color="#06b6d4" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <div style="font-size:0.95rem;">Project</div>
+          <div style="font-size:0.75rem; color:var(--muted);">Mobile-first Boilerplate</div>
+        </div>
+      </div>
+
+      <nav class="nav-actions" aria-label="Main navigation">
+        <button class="btn ghost" id="theme-toggle" aria-pressed="false" title="Toggle light/dark">🌗</button>
+        <button class="btn" id="open-modal">Try modal</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="main">
+    <section class="hero">
+      <div class="hero-card card">
+        <h1>Mobile-first, light & dark — modern UI boilerplate</h1>
+        <p class="lead">A compact, developer-friendly starting point with many commonly needed components and accessible interactions. Use this file to prototype and build consistent styling across projects.</p>
+
+        <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+          <button class="btn primary">Primary action</button>
+          <button class="btn btn-sm">Secondary</button>
+          <button class="btn ghost">Ghost</button>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+          <div class="badge">v1.0</div>
+          <div class="muted">Mobile-first · Accessible · Lightweight</div>
+        </div>
+      </div>
+
+      <aside class="card" aria-label="Quick preview">
+        <div class="center">
+          <div style="font-weight:700;">Preview panel</div>
+          <div class="muted" style="font-size:0.9rem; margin-top:6px;">Theme toggle, quick components, and utilities</div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px; align-items:center; justify-content:center;">
+          <div class="avatar" style="background:linear-gradient(90deg,var(--primary),var(--accent)); color:white;">PB</div>
+          <div style="text-align:left;">
+            <div style="font-weight:700">You</div>
+            <div class="muted" style="font-size:0.85rem">Designer / Developer</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label class="muted">Search</label>
+          <input type="text" placeholder="Find components, classes..." />
+        </div>
+      </aside>
+    </section>
+
+    <!-- COMPONENTS GRID -->
+    <section style="margin-top:18px;">
+      <div class="row">
+        <div class="col col-sm-6 card">
+          <div class="title">Form</div>
+          <form id="sample-form" class="form" onsubmit="return false;">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" type="text" placeholder="Full name" required />
+            </div>
+            <div class="field" style="margin-top:10px;">
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="you@domain.com" required />
+            </div>
+            <div class="field" style="margin-top:10px;">
+              <label for="message">Message</label>
+              <textarea id="message" placeholder="Tell us more..."></textarea>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:12px;">
+              <button class="btn primary" type="button" onclick="submitForm()">Send</button>
+              <button class="btn ghost" type="reset">Reset</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col col-sm-6 card">
+          <div class="title">Tabs</div>
+          <div class="tabs" role="tablist" aria-label="Example tabs">
+            <div class="tab active" role="tab" data-tab="0" tabindex="0">Overview</div>
+            <div class="tab" role="tab" data-tab="1" tabindex="0">Details</div>
+            <div class="tab" role="tab" data-tab="2" tabindex="0">Activity</div>
+          </div>
+          <div id="tab-panels" style="margin-top:12px;">
+            <div data-panel="0">This is the overview panel. Use tabs for quick content switching.</div>
+            <div data-panel="1" hidden>Details content goes here. Put forms, settings, or extended content.</div>
+            <div data-panel="2" hidden>Activity feed or timeline.</div>
+          </div>
+        </div>
+
+        <div class="col col-sm-6 card">
+          <div class="title">Accordion</div>
+          <div class="accordion">
+            <details class="item" open>
+              <summary>What is this?</summary>
+              <div class="muted">A mobile-first UI boilerplate with theme support and components.</div>
+            </details>
+            <details class="item">
+              <summary>How to use?</summary>
+              <div class="muted">Copy the file and edit variables at the top to match your brand.</div>
+            </details>
+            <details class="item">
+              <summary>Accessibility</summary>
+              <div class="muted">Keyboard accessible controls and sensible focus states included.</div>
+            </details>
+          </div>
+        </div>
+
+        <div class="col col-sm-6 card">
+          <div class="title">Table</div>
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+                <tr><th>Item</th><th>Status</th><th class="hide-sm">Updated</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Design system</td><td><span class="badge">Stable</span></td><td class="hide-sm muted">Oct 2025</td></tr>
+                <tr><td>Docs</td><td><span class="badge">Draft</span></td><td class="hide-sm muted">Oct 2025</td></tr>
+                <tr><td>Release</td><td><span class="badge">Planned</span></td><td class="hide-sm muted">TBD</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col col-sm-6 card">
+          <div class="title">Small UI pieces</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <div class="badge">New</div>
+            <div class="badge">Beta</div>
+            <div class="avatar" style="background:linear-gradient(90deg,var(--accent),var(--primary)); color:white;">AB</div>
+            <button class="btn">Action</button>
+            <button class="btn primary">Primary</button>
+            <button class="btn ghost">Ghost</button>
+          </div>
+        </div>
+
+        <div class="col col-sm-6 card">
+          <div class="title">Code</div>
+          <pre><code>&lt;!-- small snippet --&gt;
+&lt;button class="btn primary"&gt;Click&lt;/button&gt;
+          </code></pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODAL MARKUP -->
+    <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <strong>Example modal</strong>
+            <div class="muted" style="font-size:0.9rem;">Use for dialogs, confirmation, quick actions.</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn ghost" id="close-modal">Close</button>
+            <button class="btn primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOASTS -->
+    <div class="toast-wrap" aria-live="polite" aria-atomic="true" id="toasts"></div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top:24px; padding:20px 0;" class="center muted">
+      <div>© <span id="year"></span> • Mobile-first Boilerplate • <span class="hide-sm">Built with plain HTML, CSS & JS</span></div>
+    </footer>
+
+  </main>
+
+  <script>
+    // Small interactive layer (vanilla JS)
+    (function(){
+      const root = document.documentElement;
+      const themeToggle = document.getElementById('theme-toggle');
+      const modal = document.getElementById('modal');
+      const openModalBtn = document.getElementById('open-modal');
+      const closeModalBtn = document.getElementById('close-modal');
+      const toasts = document.getElementById('toasts');
+
+      // initial theme from localStorage or prefers-color-scheme
+      const saved = localStorage.getItem('theme');
+      if(saved){ root.setAttribute('data-theme', saved); themeToggle.setAttribute('aria-pressed', saved==='light'); }
+
+      themeToggle.addEventListener('click', ()=>{
+        const cur = root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        const next = cur === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        themeToggle.setAttribute('aria-pressed', next==='light');
+        toast('Switched to ' + next + ' theme');
+      });
+
+      // modal toggles
+      openModalBtn.addEventListener('click', ()=>{ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; });
+      closeModalBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+      function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+
+      // tabs
+      document.querySelectorAll('.tabs .tab').forEach(tab=>{
+        tab.addEventListener('click', ()=> activateTab(tab));
+        tab.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') activateTab(tab); });
+      });
+      function activateTab(tab){
+        const idx = tab.dataset.tab;
+        document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('#tab-panels > div').forEach(p=> p.hidden = p.dataset.panel !== idx);
+      }
+
+      // form mock
+      window.submitForm = function(){
+        const name = document.getElementById('name').value || 'Friend';
+        toast('Thanks, ' + name + '! (this is a demo message)');
+      }
+
+      // toast helper
+      function toast(message, timeout=3600){
+        const t = document.createElement('div');
+        t.className = 'toast fade-in';
+        t.textContent = message;
+        toasts.appendChild(t);
+        setTimeout(()=> t.classList.add('dismiss'), 20);
+        setTimeout(()=> { t.remove(); }, timeout);
+      }
+
+      // set current year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // keyboard: Esc to close modal
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ closeModal(); } });
+
+      // small accessibility tweak: ensure details summary toggles via keyboard Enter/Space
+      document.querySelectorAll('details summary').forEach(s=> s.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') e.target.parentElement.toggleAttribute('open'); }));
+
+    })();
+  </script>
+
+</body>
+</html>
