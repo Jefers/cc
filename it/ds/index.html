@@ -16,6 +16,9 @@
             --border-color: rgba(255, 255, 255, 0.1);
             --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --hover-shadow: 0 10px 15px rgba(99, 102, 241, 0.2);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
         }
 
         .light-mode {
@@ -248,6 +251,7 @@
             margin-right: 12px;
             margin-top: 2px;
             accent-color: var(--accent-color);
+            transform: scale(1.2);
         }
 
         .checklist-item label {
@@ -270,6 +274,7 @@
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 8px;
+            position: relative;
         }
 
         .progress-fill {
@@ -278,6 +283,7 @@
             border-radius: 4px;
             width: 0%;
             transition: width 0.5s ease;
+            position: relative;
         }
 
         .progress-text {
@@ -289,6 +295,7 @@
 
         .button-group {
             display: flex;
+            flex-direction: column;
             gap: 12px;
             margin-top: 24px;
         }
@@ -310,7 +317,6 @@
         .btn-primary {
             background: var(--accent-color);
             color: white;
-            flex: 1;
         }
 
         .btn-primary:hover {
@@ -351,9 +357,9 @@
 
         .export-options {
             display: flex;
+            flex-direction: column;
             gap: 12px;
             margin-top: 16px;
-            flex-wrap: wrap;
         }
 
         .export-btn {
@@ -398,6 +404,57 @@
         .alert-content p {
             color: var(--secondary-text);
             font-size: 0.9rem;
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+        }
+
+        .toast {
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .toast.info {
+            background-color: var(--accent-color);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
         }
 
         @media (min-width: 768px) {
@@ -702,8 +759,47 @@
         </div>
     </div>
 
+    <!-- Toast notifications container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Toast notification system
+            function showToast(message, type = 'info', duration = 4000) {
+                const toastContainer = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icons = {
+                    success: '✅',
+                    warning: '⚠️',
+                    error: '❌',
+                    info: 'ℹ️'
+                };
+                
+                toast.innerHTML = `
+                    <span class="toast-icon">${icons[type]}</span>
+                    <span>${message}</span>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Trigger animation
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                // Auto remove after duration
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, duration);
+            }
+
             // Theme toggle
             const themeToggle = document.getElementById('themeToggle');
             themeToggle.addEventListener('click', function() {
@@ -715,6 +811,7 @@
                 
                 // Save theme preference
                 localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+                showToast(`Switched to ${isLightMode ? 'light' : 'dark'} mode`, 'info');
             });
             
             // Load saved theme
@@ -751,6 +848,7 @@
                 checkbox.addEventListener('change', function() {
                     if (this.checked) {
                         localStorage.setItem(this.id, 'checked');
+                        showToast('Task completed!', 'success', 2000);
                     } else {
                         localStorage.removeItem(this.id);
                     }
@@ -773,6 +871,9 @@
                 const progress = (checkedItems / totalItems) * 100;
                 progressFill.style.width = `${progress}%`;
                 progressText.textContent = `${Math.round(progress)}%`;
+                
+                // Force a reflow to fix mobile rendering issues
+                progressFill.offsetHeight;
             }
             
             // Initialize progress
@@ -789,13 +890,21 @@
                 
                 // Check each step
                 const steps = document.querySelectorAll('.card');
+                let completedSteps = 0;
+                let totalSteps = 0;
+                
                 steps.forEach(step => {
-                    if (step.id !== 'resultsSection') {
+                    if (step.id && step.id.startsWith('step')) {
+                        totalSteps++;
                         const stepNumber = step.querySelector('.step-number').textContent;
                         const stepTitle = step.querySelector('.step-title').textContent;
                         const stepCheckboxes = step.querySelectorAll('input[type="checkbox"]');
                         const checkedCount = step.querySelectorAll('input[type="checkbox"]:checked').length;
                         const totalInStep = stepCheckboxes.length;
+                        
+                        if (checkedCount === totalInStep) {
+                            completedSteps++;
+                        }
                         
                         resultsHTML += `
                             <div class="checklist-item ${checkedCount === totalInStep ? 'completed' : ''}">
@@ -809,13 +918,17 @@
                 // Add recommendations
                 const totalChecked = document.querySelectorAll('input[type="checkbox"]:checked').length;
                 let recommendation = '';
+                let recommendationType = 'info';
                 
                 if (totalChecked === totalItems) {
                     recommendation = 'All diagnostic steps completed! Your webcam quality issues should be resolved.';
+                    recommendationType = 'success';
                 } else if (totalChecked > totalItems * 0.7) {
                     recommendation = 'Most diagnostic steps completed. You\'ve likely identified the main issues with your webcam quality.';
+                    recommendationType = 'warning';
                 } else {
                     recommendation = 'Some diagnostic steps completed. Consider completing more steps to fully diagnose your webcam quality issues.';
+                    recommendationType = 'warning';
                 }
                 
                 resultsHTML += `
@@ -833,6 +946,9 @@
                 
                 // Scroll to results
                 resultsSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Show toast notification
+                showToast('Report generated successfully!', 'success');
             });
             
             // Reset button
@@ -846,6 +962,7 @@
                     });
                     updateProgress();
                     resultsSection.classList.remove('show');
+                    showToast('Checklist reset successfully', 'info');
                 }
             });
             
@@ -857,9 +974,10 @@
             copyBtn.addEventListener('click', function() {
                 const textToCopy = generateExportText();
                 navigator.clipboard.writeText(textToCopy).then(() => {
-                    alert('Results copied to clipboard!');
+                    showToast('Results copied to clipboard!', 'success');
                 }).catch(err => {
                     console.error('Failed to copy: ', err);
+                    showToast('Failed to copy to clipboard', 'error');
                 });
             });
             
@@ -874,19 +992,22 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+                showToast('Results saved as text file!', 'success');
             });
             
             printBtn.addEventListener('click', function() {
                 window.print();
+                showToast('Print dialog opened', 'info');
             });
             
             function generateExportText() {
                 let text = 'WEBCAM QUALITY DIAGNOSTIC RESULTS\n';
                 text += '===================================\n\n';
+                text += `Generated on: ${new Date().toLocaleString()}\n\n`;
                 
                 const steps = document.querySelectorAll('.card');
                 steps.forEach(step => {
-                    if (step.id !== 'resultsSection') {
+                    if (step.id && step.id.startsWith('step')) {
                         const stepNumber = step.querySelector('.step-number').textContent;
                         const stepTitle = step.querySelector('.step-title').textContent;
                         const stepCheckboxes = step.querySelectorAll('input[type="checkbox"]');
