@@ -76,7 +76,7 @@
             justify-content: center;
             width: 40px;
             height: 40px;
-            animation: spin 10s linear infinite;
+            animation: spin 60s linear infinite;
         }
 
         .logo {
@@ -324,8 +324,8 @@
         }
 
         .menu-thumbnail {
-            width: 160px;
-            height: 160px;
+            width: 60px;
+            height: 60px;
             border-radius: 12px;
             margin-bottom: 12px;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
@@ -354,7 +354,7 @@
         }
 
         .menu-url {
-            font-size: 1px;
+            font-size: 10px;
             color: var(--text-secondary);
             overflow: hidden;
             text-overflow: ellipsis;
@@ -602,6 +602,15 @@
             cursor: pointer;
         }
 
+        /* Sortable Styles */
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+
+        .sortable-chosen {
+            transform: scale(1.02);
+        }
+
         /* Animations */
         @keyframes spin {
             from { transform: rotate(0deg); }
@@ -763,7 +772,8 @@
             editMode: false,
             sidebarOpen: false,
             currentTheme: 'dark',
-            currentThumbnail: null
+            currentThumbnail: null,
+            sortableInstance: null
         };
 
         // DOM Elements
@@ -800,53 +810,79 @@
             renderMenuItems();
             setupEventListeners();
             setupSortable();
+            
+            // Show initial toast
+            setTimeout(() => {
+                showToast('Dynamic Menu loaded successfully!');
+            }, 1000);
         }
 
         // Load menu items from localStorage
         function loadMenuItems() {
             const savedItems = localStorage.getItem('dynamicMenuItems');
             if (savedItems) {
-                state.menuItems = JSON.parse(savedItems);
+                try {
+                    state.menuItems = JSON.parse(savedItems);
+                    // Validate loaded data
+                    state.menuItems = state.menuItems.filter(item => 
+                        item && item.title && item.url
+                    );
+                } catch (e) {
+                    console.error('Error loading menu items:', e);
+                    state.menuItems = getDefaultItems();
+                }
             } else {
-                // Default items with favicon URLs
-                state.menuItems = [
-                    { 
-                        title: 'Google', 
-                        url: 'https://google.com', 
-                        thumbnail: 'https://www.google.com/favicon.ico'
-                    },
-                    { 
-                        title: 'GitHub', 
-                        url: 'https://github.com', 
-                        thumbnail: 'https://github.com/favicon.ico'
-                    },
-                    { 
-                        title: 'Twitter', 
-                        url: 'https://twitter.com', 
-                        thumbnail: 'https://abs.twimg.com/favicons/twitter.2.ico'
-                    },
-                    { 
-                        title: 'YouTube', 
-                        url: 'https://youtube.com', 
-                        thumbnail: 'https://www.youtube.com/favicon.ico'
-                    }
-                ];
-                saveMenuItems();
+                state.menuItems = getDefaultItems();
             }
+            saveMenuItems();
+        }
+
+        // Get default menu items
+        function getDefaultItems() {
+            return [
+                { 
+                    title: 'Google', 
+                    url: 'https://google.com', 
+                    thumbnail: 'https://www.google.com/favicon.ico'
+                },
+                { 
+                    title: 'GitHub', 
+                    url: 'https://github.com', 
+                    thumbnail: 'https://github.com/favicon.ico'
+                },
+                { 
+                    title: 'Twitter', 
+                    url: 'https://twitter.com', 
+                    thumbnail: 'https://abs.twimg.com/favicons/twitter.2.ico'
+                },
+                { 
+                    title: 'YouTube', 
+                    url: 'https://youtube.com', 
+                    thumbnail: 'https://www.youtube.com/favicon.ico'
+                }
+            ];
         }
 
         // Save menu items to localStorage
         function saveMenuItems() {
-            localStorage.setItem('dynamicMenuItems', JSON.stringify(state.menuItems));
+            try {
+                localStorage.setItem('dynamicMenuItems', JSON.stringify(state.menuItems));
+                return true;
+            } catch (e) {
+                console.error('Error saving menu items:', e);
+                showToast('Error saving changes');
+                return false;
+            }
         }
 
-        // Extract domain from URL for favicon
+        // Extract domain from URL for display
         function getDomain(url) {
             try {
                 const urlObj = new URL(url);
-                return urlObj.hostname;
+                return urlObj.hostname.replace('www.', '');
             } catch (e) {
-                return null;
+                // Return original URL if parsing fails
+                return url.length > 20 ? url.substring(0, 20) + '...' : url;
             }
         }
 
@@ -855,17 +891,38 @@
             return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
         }
 
+        // Validate URL format
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
         // Render menu items to the grid
         function renderMenuItems() {
             elements.menuGrid.innerHTML = '';
+            
+            if (state.menuItems.length === 0) {
+                elements.menuGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                        <i class="fas fa-plus-circle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <h3 style="margin-bottom: 8px;">No menu items yet</h3>
+                        <p>Tap the menu icon and click "Add New Item" to get started</p>
+                    </div>
+                `;
+                return;
+            }
             
             state.menuItems.forEach((item, index) => {
                 const menuItem = document.createElement('div');
                 menuItem.className = `menu-item ${state.editMode ? 'edit-mode' : ''}`;
                 menuItem.setAttribute('data-index', index);
                 
-                const thumbnailContent = item.thumbnail 
-                    ? `<img src="${item.thumbnail}" alt="${item.title}" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\\'fas fa-globe thumbnail-placeholder\\'></i>';" />`
+                const thumbnailContent = item.thumbnail && item.thumbnail !== 'null' 
+                    ? `<img src="${item.thumbnail}" alt="${item.title}" onerror="this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<i class=\\'fas fa-globe thumbnail-placeholder\\'></i>';" />`
                     : `<i class="fas fa-globe thumbnail-placeholder"></i>`;
                 
                 menuItem.innerHTML = `
@@ -887,22 +944,26 @@
                     menuItem.addEventListener('click', (e) => {
                         if (e.target.closest('.delete-btn')) {
                             deleteMenuItem(index);
-                        } else {
+                        } else if (!e.target.closest('.drag-handle')) {
                             openEditModal(index);
                         }
                     });
                 } else {
-                    menuItem.addEventListener('click', () => {
-                        if (!state.editMode) {
+                    menuItem.addEventListener('click', (e) => {
+                        if (!state.editMode && !e.target.closest('.delete-btn') && !e.target.closest('.drag-handle')) {
                             // Create ripple effect
+                            const rect = menuItem.getBoundingClientRect();
                             const ripple = document.createElement('div');
                             ripple.style.position = 'absolute';
                             ripple.style.borderRadius = '50%';
                             ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
                             ripple.style.width = '10px';
                             ripple.style.height = '10px';
+                            ripple.style.left = (e.clientX - rect.left - 5) + 'px';
+                            ripple.style.top = (e.clientY - rect.top - 5) + 'px';
                             ripple.style.pointerEvents = 'none';
                             ripple.style.animation = 'ripple 0.6s linear';
+                            menuItem.style.position = 'relative';
                             menuItem.appendChild(ripple);
                             
                             // Remove ripple after animation
@@ -912,7 +973,11 @@
                             
                             // Navigate to URL
                             setTimeout(() => {
-                                window.open(item.url, '_blank');
+                                if (isValidUrl(item.url)) {
+                                    window.open(item.url, '_blank');
+                                } else {
+                                    showToast('Invalid URL: ' + item.url);
+                                }
                             }, 300);
                         }
                     });
@@ -920,6 +985,11 @@
                 
                 elements.menuGrid.appendChild(menuItem);
             });
+
+            // Reinitialize Sortable after rendering
+            if (state.editMode) {
+                setupSortable();
+            }
         }
 
         // Setup event listeners
@@ -932,7 +1002,11 @@
             
             // Sidebar items
             elements.addNewItem.addEventListener('click', openAddModal);
-            elements.saveChanges.addEventListener('click', saveMenuItems);
+            elements.saveChanges.addEventListener('click', () => {
+                if (saveMenuItems()) {
+                    showToast('Changes saved successfully');
+                }
+            });
             elements.exportMenu.addEventListener('click', exportMenu);
             elements.clearAll.addEventListener('click', confirmClearAll);
             
@@ -954,7 +1028,7 @@
             // Theme toggle
             elements.themeToggle.addEventListener('click', toggleTheme);
             
-            // Close modals on backdrop click
+            // Close modals on backdrop click and ESC key
             document.addEventListener('click', (e) => {
                 if (e.target === elements.itemModal) {
                     closeItemModal();
@@ -963,26 +1037,51 @@
                     closeConfirmModal();
                 }
             });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeItemModal();
+                    closeConfirmModal();
+                }
+            });
+
+            // URL input change - auto fetch favicon when URL changes
+            document.getElementById('item-url').addEventListener('blur', function() {
+                if (this.value && !state.currentThumbnail) {
+                    // Auto-fetch favicon if no thumbnail is set
+                    fetchFaviconFromUrl();
+                }
+            });
         }
 
         // Setup Sortable for drag and drop
         function setupSortable() {
-            new Sortable(elements.menuGrid, {
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                chosenClass: 'sortable-chosen',
-                dragClass: 'sortable-drag',
-                handle: '.drag-handle',
-                onEnd: function(evt) {
-                    if (evt.oldIndex !== evt.newIndex) {
-                        // Reorder the array
-                        const movedItem = state.menuItems.splice(evt.oldIndex, 1)[0];
-                        state.menuItems.splice(evt.newIndex, 0, movedItem);
-                        saveMenuItems();
-                        showToast('Menu order updated');
+            // Destroy existing instance
+            if (state.sortableInstance) {
+                state.sortableInstance.destroy();
+            }
+
+            if (state.editMode && state.menuItems.length > 0) {
+                state.sortableInstance = new Sortable(elements.menuGrid, {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    dragClass: 'sortable-drag',
+                    handle: '.drag-handle',
+                    filter: '.delete-btn',
+                    preventOnFilter: false,
+                    onEnd: function(evt) {
+                        if (evt.oldIndex !== evt.newIndex) {
+                            // Reorder the array
+                            const movedItem = state.menuItems.splice(evt.oldIndex, 1)[0];
+                            state.menuItems.splice(evt.newIndex, 0, movedItem);
+                            if (saveMenuItems()) {
+                                showToast('Menu order updated');
+                            }
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         // Toggle sidebar
@@ -997,9 +1096,12 @@
             state.editMode = elements.editModeSwitch.checked;
             elements.editBanner.style.display = state.editMode ? 'block' : 'none';
             renderMenuItems();
+            setupSortable();
             
             if (state.editMode) {
-                showToast('Edit mode activated');
+                showToast('Edit mode activated - Drag to rearrange');
+            } else {
+                showToast('Edit mode deactivated');
             }
         }
 
@@ -1015,7 +1117,12 @@
             state.currentThumbnail = null;
             
             elements.itemModal.classList.add('active');
-            toggleSidebar(); // Close sidebar
+            toggleSidebar();
+            
+            // Focus on title input
+            setTimeout(() => {
+                document.getElementById('item-title').focus();
+            }, 300);
         }
 
         // Open edit modal
@@ -1027,7 +1134,7 @@
             document.getElementById('item-url').value = item.url;
             
             // Set thumbnail preview
-            if (item.thumbnail) {
+            if (item.thumbnail && item.thumbnail !== 'null') {
                 elements.thumbnailPreview.innerHTML = `<img src="${item.thumbnail}" alt="${item.title}" />`;
                 state.currentThumbnail = item.thumbnail;
             } else {
@@ -1036,11 +1143,19 @@
             }
             
             elements.itemModal.classList.add('active');
+            
+            // Focus on title input
+            setTimeout(() => {
+                document.getElementById('item-title').focus();
+            }, 300);
         }
 
         // Close item modal
         function closeItemModal() {
             elements.itemModal.classList.remove('active');
+            // Reset form
+            elements.itemForm.reset();
+            state.currentThumbnail = null;
         }
 
         // Close confirm modal
@@ -1052,13 +1167,31 @@
         function handleThumbnailUpload(e) {
             const file = e.target.files[0];
             if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showToast('Please select an image file');
+                    return;
+                }
+
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showToast('Image must be smaller than 2MB');
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     state.currentThumbnail = event.target.result;
                     elements.thumbnailPreview.innerHTML = `<img src="${state.currentThumbnail}" alt="Uploaded thumbnail" />`;
-                    showToast('Thumbnail uploaded');
+                    showToast('Thumbnail uploaded successfully');
+                };
+                reader.onerror = function() {
+                    showToast('Error reading image file');
                 };
                 reader.readAsDataURL(file);
+                
+                // Reset file input
+                e.target.value = '';
             }
         }
 
@@ -1070,16 +1203,27 @@
                 return;
             }
             
-            const domain = getDomain(url);
-            if (!domain) {
-                showToast('Invalid URL');
+            if (!isValidUrl(url)) {
+                showToast('Please enter a valid URL');
                 return;
             }
             
+            const domain = getDomain(url);
             const faviconUrl = getFaviconUrl(domain);
-            state.currentThumbnail = faviconUrl;
-            elements.thumbnailPreview.innerHTML = `<img src="${faviconUrl}" alt="Favicon" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\\'fas fa-globe thumbnail-placeholder\\'></i>';" />`;
-            showToast('Favicon fetched');
+            
+            // Test if favicon exists
+            const img = new Image();
+            img.onload = function() {
+                state.currentThumbnail = faviconUrl;
+                elements.thumbnailPreview.innerHTML = `<img src="${faviconUrl}" alt="Favicon" />`;
+                showToast('Favicon loaded successfully');
+            };
+            img.onerror = function() {
+                elements.thumbnailPreview.innerHTML = '<i class="fas fa-globe thumbnail-placeholder"></i>';
+                state.currentThumbnail = null;
+                showToast('No favicon found for this website');
+            };
+            img.src = faviconUrl;
         }
 
         // Handle form submission
@@ -1087,9 +1231,28 @@
             e.preventDefault();
             
             const index = document.getElementById('edit-index').value;
-            const title = document.getElementById('item-title').value;
-            const url = document.getElementById('item-url').value;
+            const title = document.getElementById('item-title').value.trim();
+            const url = document.getElementById('item-url').value.trim();
             const thumbnail = state.currentThumbnail;
+            
+            // Validation
+            if (!title) {
+                showToast('Please enter a title');
+                document.getElementById('item-title').focus();
+                return;
+            }
+            
+            if (!url) {
+                showToast('Please enter a URL');
+                document.getElementById('item-url').focus();
+                return;
+            }
+            
+            if (!isValidUrl(url)) {
+                showToast('Please enter a valid URL (include http:// or https://)');
+                document.getElementById('item-url').focus();
+                return;
+            }
             
             if (index === '') {
                 // Add new item
@@ -1101,37 +1264,47 @@
                 showToast('Menu item updated successfully');
             }
             
-            saveMenuItems();
-            renderMenuItems();
-            closeItemModal();
-            
-            // Confetti effect
-            createConfetti();
+            if (saveMenuItems()) {
+                renderMenuItems();
+                closeItemModal();
+                createConfetti();
+            }
         }
 
         // Delete menu item
         function deleteMenuItem(index) {
-            state.menuItems.splice(index, 1);
-            saveMenuItems();
-            renderMenuItems();
-            showToast('Menu item deleted');
+            if (index >= 0 && index < state.menuItems.length) {
+                const itemTitle = state.menuItems[index].title;
+                state.menuItems.splice(index, 1);
+                if (saveMenuItems()) {
+                    renderMenuItems();
+                    showToast(`"${itemTitle}" deleted`);
+                }
+            }
         }
 
         // Confirm clear all
         function confirmClearAll() {
-            document.getElementById('confirm-message').textContent = 'Are you sure you want to clear all menu items?';
+            if (state.menuItems.length === 0) {
+                showToast('No items to clear');
+                return;
+            }
+            
+            document.getElementById('confirm-message').textContent = 
+                `Are you sure you want to clear all ${state.menuItems.length} menu items? This cannot be undone.`;
             elements.confirmAction.onclick = clearAllItems;
             elements.confirmModal.classList.add('active');
-            toggleSidebar(); // Close sidebar
+            toggleSidebar();
         }
 
         // Clear all items
         function clearAllItems() {
             state.menuItems = [];
-            saveMenuItems();
-            renderMenuItems();
-            closeConfirmModal();
-            showToast('All menu items cleared');
+            if (saveMenuItems()) {
+                renderMenuItems();
+                closeConfirmModal();
+                showToast('All menu items cleared');
+            }
         }
 
         // Handle confirm action
@@ -1141,18 +1314,28 @@
 
         // Export menu
         function exportMenu() {
-            const dataStr = JSON.stringify(state.menuItems, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            if (state.menuItems.length === 0) {
+                showToast('No items to export');
+                return;
+            }
             
-            const exportFileDefaultName = 'dynamic-menu.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showToast('Menu exported successfully');
-            toggleSidebar(); // Close sidebar
+            try {
+                const dataStr = JSON.stringify(state.menuItems, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'dynamic-menu-export.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showToast(`Exported ${state.menuItems.length} items successfully`);
+                toggleSidebar();
+            } catch (e) {
+                showToast('Error exporting menu');
+                console.error('Export error:', e);
+            }
         }
 
         // Toggle theme
@@ -1161,15 +1344,23 @@
                 document.body.classList.add('light-mode');
                 elements.themeIcon.className = 'fas fa-sun';
                 state.currentTheme = 'light';
+                showToast('Light mode activated');
             } else {
                 document.body.classList.remove('light-mode');
                 elements.themeIcon.className = 'fas fa-moon';
                 state.currentTheme = 'dark';
+                showToast('Dark mode activated');
             }
         }
 
         // Show toast notification
         function showToast(message) {
+            // Clear any existing toast
+            elements.toast.classList.remove('show');
+            
+            // Force reflow
+            void elements.toast.offsetWidth;
+            
             elements.toast.textContent = message;
             elements.toast.classList.add('show');
             
