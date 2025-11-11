@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Self-Portrait Setup Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #38bdf8;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--light);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent), #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            color: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+
+        .card-content p {
+            margin-bottom: 12px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(56, 189, 248, 0.15), transparent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .warning {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .tip {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        .icon {
+            color: var(--accent);
+            min-width: 28px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .card {
+                padding: 30px;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
+            margin: 25px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pro Setup for Full-Length Self Portraits</h1>
+            <div class="subtitle">iPhone 16 Pro Max • Professional Photography Guide</div>
+        </header>
+
+        <div class="card">
+            <div class="card-number">1</div>
+            <h2 class="card-title">
+                <i class="fas fa-camera icon"></i>
+                Use the Rear (Main) Camera
+            </h2>
+            <div class="card-content">
+                <p>The <span class="highlight">1x main lens (24mm equivalent)</span> gives the best quality and least distortion.</p>
+                <p class="warning">⚠️ Avoid the 0.5x ultra-wide — it will stretch proportions.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-number">2</div>
+            <h2 class="card-title">
+                <i class="fas fa-tripod icon"></i>
+                Tripod Placement
+            </h2>
+            <div class="card-content">
+                <p>Set the tripod so the camera lens is roughly at your <span class="highlight">mid-torso or chest height</span>, not eye level.</p>
+                <p>→ This prevents the "big head/small feet" distortion and keeps proportions natural.</p>
+                <p>Ensure the phone is perfectly vertical (use the built-in level guide).</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-number">3</div>
+            <h2 class="card-title">
+                <i class="fas fa-ruler-combined icon"></i>
+                Distance and Framing
+            </h2>
+            <div class="card-content">
+                <p>Stand about <span class="highlight">10–15 ft (3–4.5 m)</span> from the camera for a natural perspective.</p>
+                <p>Use the <span class="highlight">3x lens</span> if space allows — it compresses perspective slightly for flattering body proportions.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-number">4</div>
+            <h2 class="card-title">
+                <i class="fas fa-sliders-h icon"></i>
+                Camera Settings
+            </h2>
+            <div class="card-content">
+                <p>Open Camera → Photo mode → <span class="highlight">1x or 3x lens</span> (avoid Portrait mode unless you want background blur).</p>
+                <p>Tap your face or upper body to focus, then slide exposure down slightly to avoid blown highlights.</p>
+                <p>Turn on Grid in Settings → Camera → Grid (for horizon and body alignment).</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-number">5</div>
+            <h2 class="card-title">
+                <i class="fas fa-sun icon"></i>
+                Lighting
+            </h2>
+            <div class="card-content">
+                <p>Use <span class="highlight">soft, even light</span> — near a large window or outdoors on an overcast day.</p>
+                <p class="warning">⚠️ Avoid harsh overhead light; it shortens the body and creates strong shadows.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-number">6</div>
+            <h2 class="card-title">
+                <i class="fas fa-shutter icon"></i>
+                Triggering the Shot
+            </h2>
+            <div class="card-content">
+                <p>Use your <span class="highlight">Bluetooth remote</span> or <span class="highlight">3–10 sec timer</span> to avoid camera shake.</p>
+                <p>For natural poses, start moving or adjusting slightly before the shutter — it reduces stiffness.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-number">7</div>
+            <h2 class="card-title">
+                <i class="fas fa-search-plus icon"></i>
+                Fine-tuning
+            </h2>
+            <div class="card-content">
+                <p>Review the photo and check for:</p>
+                <div class="tip">
+                    → Straight verticals (no leaning forward/back).<br>
+                    → No distortion in legs or head (adjust tripod height slightly if needed).<br>
+                    → Balanced framing (equal space above head and below feet).
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Professional Photography Guide • Optimized for iPhone 16 Pro Max</p>
+        </footer>
+    </div>
+</body>
+</html>

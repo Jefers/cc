@@ -22,6 +22,7 @@
             height: 70vh;
             border: 1px solid #ddd;
             background: white;
+            overflow: hidden;
         }
         .tooltip {
             position: absolute;
@@ -229,55 +230,93 @@
         };
 
         // Tree setup
-        const margin = {top: 20, right: 120, bottom: 20, left: 40};
-        const width = 800;
-        const height = 600;
-        const radius = Math.min(width, height) / 2;
+        const margin = {top: 20, right: 200, bottom: 20, left: 40};
+        const width = 1000 - margin.left - margin.right;
+        const height = 600 - margin.top - margin.bottom;
 
         const svg = d3.select(".tree-svg")
-            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
             .style("max-width", "100%")
             .style("height", "auto");
 
         const g = svg.append("g")
-            .attr("transform", `translate(${width / 2},${height / 2})`);
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-        const tree = d3.tree().size([2 * Math.PI, radius - 100]);
-        const cluster = d3.cluster().size([2 * Math.PI, radius - 100]);
+        const tree = d3.tree()
+            .size([height, width])
+            .separation((a, b) => a.parent === b.parent ? 1 : 2);
 
-        // Use cluster for radial layout
-        const root = d3.hierarchy(treeData);
-        root.x0 = 0;
+        let i = 0;
+        const duration = 750;
+        const root = d3.hierarchy(treeData, d => d.children);
+        root.x0 = height / 2;
         root.y0 = 0;
 
         const tooltip = d3.select("#tooltip");
 
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        // Initial collapse
+        root.children.forEach(collapse);
+
         function update(source) {
-            const nodes = cluster(root).descendants();
-            const links = nodes.slice(1);
+            const treeDataLayout = tree(root);
+            const nodes = treeDataLayout.descendants();
+            const links = treeDataLayout.descendants().slice(1);
 
-            nodes.forEach(d => d.y = d.depth * 50);
+            // Normalize fixed depth
+            nodes.forEach(d => d.y = d.depth * 120);
 
+            // Links
             const link = g.selectAll(".link")
                 .data(links, d => d.id);
 
             const linkEnter = link.enter().append("path")
                 .attr("class", "link")
-                .attr("d", d => radialLine(d, source));
+                .attr("d", d => {
+                    const o = {x: source.x0, y: source.y0};
+                    return d3.linkVertical()
+                        .x(e => e.y)
+                        .y(e => e.x)
+                        ({source: o, target: {x: d.x, y: d.y}});
+                });
 
-            link.merge(linkEnter)
-                .transition()
-                .duration(750)
-                .attr("d", d => radialLine(d, d));
+            const linkUpdate = linkEnter.merge(link);
 
-            link.exit().remove();
+            linkUpdate.transition()
+                .duration(duration)
+                .attr("d", d => {
+                    return d3.linkVertical()
+                        .x(e => e.y)
+                        .y(e => e.x)
+                        ({source: d.parent, target: d});
+                });
 
+            link.exit().transition()
+                .duration(duration)
+                .attr("d", d => {
+                    const o = {x: source.x, y: source.y};
+                    return d3.linkVertical()
+                        .x(e => e.y)
+                        .y(e => e.x)
+                        ({source: o, target: o});
+                })
+                .remove();
+
+            // Nodes
             const node = g.selectAll(".node")
-                .data(nodes, d => d.id);
+                .data(nodes, d => d.id || (d.id = ++i));
 
             const nodeEnter = node.enter().append("g")
                 .attr("class", "node")
-                .attr("transform", d => radialTransform(source.x0, source.y0))
+                .attr("transform", d => `translate(${source.y0}, ${source.x0})`)
                 .on("mouseover", function(event, d) {
                     tooltip.style("opacity", 1)
                         .html(d.data.description)
@@ -285,75 +324,59 @@
                         .style("top", (event.pageY - 28) + "px");
                 })
                 .on("mouseout", () => tooltip.style("opacity", 0))
-                .on("click", function(event, d) {
-                    event.stopPropagation();
-                    if (d.children) {
-                        d._children = d.children;
-                        d.children = null;
-                    } else {
-                        d.children = d._children;
-                        d._children = null;
-                    }
-                    update(d);
-                });
+                .on("click", click);
 
             nodeEnter.append("circle")
-                .attr("r", 5)
-                .style("fill", d => d._children ? "#ff7f7f" : "#fff")
-                .style("stroke", "#3182bd")
-                .style("stroke-width", 2);
+                .attr("r", 1e-6)
+                .style("fill", d => d._children ? "lightsteelblue" : "#fff");
 
             nodeEnter.append("text")
-                .attr("dy", "0.31em")
-                .attr("x", d => d.x < Math.PI ? 6 : -6)
-                .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
-                .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
-                .text(d => d.data.name)
-                .style("font-size", "11px");
+                .attr("dy", ".35em")
+                .attr("x", d => (d.children || d._children) ? -13 : 13)
+                .attr("text-anchor", d => (d.children || d._children) ? "end" : "start")
+                .text(d => d.data.name);
 
             const nodeUpdate = nodeEnter.merge(node);
 
             nodeUpdate.transition()
-                .duration(750)
-                .attr("transform", d => radialTransform(d.x, d.y));
+                .duration(duration)
+                .attr("transform", d => `translate(${d.y}, ${d.x})`);
 
             nodeUpdate.select("circle")
-                .style("fill", d => d._children ? "#ff7f7f" : "#fff");
+                .attr("r", 10)
+                .style("fill", d => d._children ? "lightsteelblue" : "#fff")
+                .attr("cursor", "pointer");
 
-            nodeUpdate.select("text")
-                .style("fill-opacity", 1);
-
-            node.exit().transition()
-                .duration(750)
-                .attr("transform", d => radialTransform(source.x, source.y))
+            const nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("transform", d => `translate(${source.y}, ${source.x})`)
                 .remove();
 
+            nodeExit.select("circle")
+                .attr("r", 1e-6);
+
+            nodeExit.select("text")
+                .style("fill-opacity", 1e-6);
+
+            // Stash old positions
             nodes.forEach(d => {
                 d.x0 = d.x;
                 d.y0 = d.y;
             });
         }
 
-        function radialLine(d, source) {
-            return d3.linkRadial()
-                .angle(d => d.x)
-                .radius(d => d.y)({source, target: d});
-        }
-
-        function radialTransform(x, y) {
-            return `rotate(${x * 180 / Math.PI - 90}) translate(${y}) rotate(${x >= Math.PI ? 90 : -90})`;
-        }
-
-        // Initial collapse
-        root.children.forEach(collapse);
-        update(root);
-
-        function collapse(d) {
+        function click(event, d) {
             if (d.children) {
                 d._children = d.children;
                 d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
             }
+            update(d);
         }
+
+        update(root);
 
         // Zoom for better mobile/desktop interaction
         const zoom = d3.zoom()
