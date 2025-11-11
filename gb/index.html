@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Gut Bacteria Taxonomy Tree</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .tree-container {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: 70vh;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        .node text {
+            font: 12px sans-serif;
+        }
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+        @media (max-width: 600px) {
+            .tree-container {
+                height: 50vh;
+            }
+            .node text {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Human Gut Bacteria Taxonomy Tree</h1>
+    <p style="text-align: center; font-size: 14px; color: #666;">Click nodes to expand/collapse. Hover for functions and health impacts. Zoom/pan on desktop; scroll on mobile.</p>
+    <div class="tree-container">
+        <svg class="tree-svg"></svg>
+    </div>
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        const treeData = {
+            "name": "Human Gut Microbiota",
+            "description": "Hierarchical classification of major bacterial phyla in the human gut, from phylum to species. Dominated by Firmicutes and Bacteroidetes (~90%). Key roles: nutrient metabolism, SCFA production, immune modulation. Dysbiosis linked to obesity, IBD, etc.",
+            "children": [
+                {
+                    "name": "Firmicutes",
+                    "description": "Dominant phylum (50-60%). Functions: Carbohydrate fermentation to SCFAs (butyrate, propionate) for energy and gut barrier integrity. Health: High Firmicutes/Bacteroidetes ratio associated with obesity; butyrate producers protect against inflammation.",
+                    "children": [
+                        {
+                            "name": "Clostridia",
+                            "description": "Primary class; anaerobic spore-formers involved in fermentation.",
+                            "children": [
+                                {
+                                    "name": "Clostridiales",
+                                    "description": "Order: Diverse fermentative anaerobes.",
+                                    "children": [
+                                        {
+                                            "name": "Ruminococcaceae",
+                                            "description": "Family: Degrades resistant starches and fibers to SCFAs.",
+                                            "children": [
+                                                {
+                                                    "name": "Faecalibacterium",
+                                                    "description": "Genus: Major butyrate producer; anti-inflammatory.",
+                                                    "children": [
+                                                        {
+                                                            "name": "prausnitzii",
+                                                            "description": "Species: Most abundant in healthy adults (5-15%). Functions: Butyrate production, IL-10 induction, pathogen inhibition. Health: Reduced in IBD, Crohn's disease, colorectal cancer; protective against colitis and metabolic disorders."
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "Lachnospiraceae",
+                                            "description": "Family: Acetate/butyrate producers from plant polysaccharides.",
+                                            "children": [
+                                                {
+                                                    "name": "Roseburia",
+                                                    "description": "Genus: Ferments inulin and resistant starch.",
+                                                    "children": [
+                                                        {
+                                                            "name": "hominis",
+                                                            "description": "Species: Functions: Butyrate production for colonocyte energy. Health: Decreased in ulcerative colitis; linked to reduced inflammation and better gut barrier function."
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Bacteroidetes",
+                    "description": "Major phylum (30-40%). Functions: Breakdown of complex polysaccharides, mucin degradation, bile acid metabolism. Health: Depletion linked to obesity; excess may promote inflammation in dysbiosis.",
+                    "children": [
+                        {
+                            "name": "Bacteroidia",
+                            "description": "Class: Gram-negative, versatile metabolizers.",
+                            "children": [
+                                {
+                                    "name": "Bacteroidales",
+                                    "description": "Order: Polysaccharide utilization loci (PUL) for diet breakdown.",
+                                    "children": [
+                                        {
+                                            "name": "Bacteroidaceae",
+                                            "description": "Family: Commensals with opportunistic potential.",
+                                            "children": [
+                                                {
+                                                    "name": "Bacteroides",
+                                                    "description": "Genus: ~30% of gut bacteria; vitamin producers.",
+                                                    "children": [
+                                                        {
+                                                            "name": "fragilis",
+                                                            "description": "Species: Functions: Polysaccharide A (PSA) modulates immunity via TLR4. Health: Commensal role in tolerance; pathogenic strains cause abscesses; dysregulated in IBD."
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Actinobacteria",
+                    "description": "Minor phylum (~5%, higher in infants). Functions: Oligosaccharide fermentation to acetate/lactate, pH regulation. Health: Promotes immune development; depletion linked to allergies, obesity.",
+                    "children": [
+                        {
+                            "name": "Actinomycetia",
+                            "description": "Class: Bifid shunt for carbohydrate metabolism.",
+                            "children": [
+                                {
+                                    "name": "Bifidobacteriales",
+                                    "description": "Order: Bifidobacteria-dominant.",
+                                    "children": [
+                                        {
+                                            "name": "Bifidobacteriaceae",
+                                            "description": "Family: Probiotic potential.",
+                                            "children": [
+                                                {
+                                                    "name": "Bifidobacterium",
+                                                    "description": "Genus: Degrades human milk oligosaccharides (HMOs).",
+                                                    "children": [
+                                                        {
+                                                            "name": "longum",
+                                                            "description": "Species: Functions: SCFA production, pathogen exclusion, IgA induction. Health: Reduced in Crohn's disease, obesity; protective against allergies, infections in infants."
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Proteobacteria",
+                    "description": "Minor phylum (1-2%, rises in dysbiosis). Functions: Opportunistic metabolism, LPS production (pro-inflammatory). Health: Elevated in IBD, obesity, infections; marker of imbalance.",
+                    "children": [
+                        {
+                            "name": "Gammaproteobacteria",
+                            "description": "Class: Includes enteric pathogens.",
+                            "children": [
+                                {
+                                    "name": "Enterobacteriales",
+                                    "description": "Order: Fast-growing aerobes/anaerobes.",
+                                    "children": [
+                                        {
+                                            "name": "Enterobacteriaceae",
+                                            "description": "Family: Potential opportunists.",
+                                            "children": [
+                                                {
+                                                    "name": "Escherichia",
+                                                    "description": "Genus: Commensal strains aid vitamin synthesis.",
+                                                    "children": [
+                                                        {
+                                                            "name": "coli",
+                                                            "description": "Species: Functions: Vitamin K2 production, tryptophan metabolism. Health: Commensal in balance; pathogenic strains cause diarrhea; increased in autism, stress, dysbiosis."
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Tree setup
+        const margin = {top: 20, right: 120, bottom: 20, left: 40};
+        const width = 800;
+        const height = 600;
+        const radius = Math.min(width, height) / 2;
+
+        const svg = d3.select(".tree-svg")
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .style("max-width", "100%")
+            .style("height", "auto");
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${width / 2},${height / 2})`);
+
+        const tree = d3.tree().size([2 * Math.PI, radius - 100]);
+        const cluster = d3.cluster().size([2 * Math.PI, radius - 100]);
+
+        // Use cluster for radial layout
+        const root = d3.hierarchy(treeData);
+        root.x0 = 0;
+        root.y0 = 0;
+
+        const tooltip = d3.select("#tooltip");
+
+        function update(source) {
+            const nodes = cluster(root).descendants();
+            const links = nodes.slice(1);
+
+            nodes.forEach(d => d.y = d.depth * 50);
+
+            const link = g.selectAll(".link")
+                .data(links, d => d.id);
+
+            const linkEnter = link.enter().append("path")
+                .attr("class", "link")
+                .attr("d", d => radialLine(d, source));
+
+            link.merge(linkEnter)
+                .transition()
+                .duration(750)
+                .attr("d", d => radialLine(d, d));
+
+            link.exit().remove();
+
+            const node = g.selectAll(".node")
+                .data(nodes, d => d.id);
+
+            const nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .attr("transform", d => radialTransform(source.x0, source.y0))
+                .on("mouseover", function(event, d) {
+                    tooltip.style("opacity", 1)
+                        .html(d.data.description)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0))
+                .on("click", function(event, d) {
+                    event.stopPropagation();
+                    if (d.children) {
+                        d._children = d.children;
+                        d.children = null;
+                    } else {
+                        d.children = d._children;
+                        d._children = null;
+                    }
+                    update(d);
+                });
+
+            nodeEnter.append("circle")
+                .attr("r", 5)
+                .style("fill", d => d._children ? "#ff7f7f" : "#fff")
+                .style("stroke", "#3182bd")
+                .style("stroke-width", 2);
+
+            nodeEnter.append("text")
+                .attr("dy", "0.31em")
+                .attr("x", d => d.x < Math.PI ? 6 : -6)
+                .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+                .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+                .text(d => d.data.name)
+                .style("font-size", "11px");
+
+            const nodeUpdate = nodeEnter.merge(node);
+
+            nodeUpdate.transition()
+                .duration(750)
+                .attr("transform", d => radialTransform(d.x, d.y));
+
+            nodeUpdate.select("circle")
+                .style("fill", d => d._children ? "#ff7f7f" : "#fff");
+
+            nodeUpdate.select("text")
+                .style("fill-opacity", 1);
+
+            node.exit().transition()
+                .duration(750)
+                .attr("transform", d => radialTransform(source.x, source.y))
+                .remove();
+
+            nodes.forEach(d => {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        }
+
+        function radialLine(d, source) {
+            return d3.linkRadial()
+                .angle(d => d.x)
+                .radius(d => d.y)({source, target: d});
+        }
+
+        function radialTransform(x, y) {
+            return `rotate(${x * 180 / Math.PI - 90}) translate(${y}) rotate(${x >= Math.PI ? 90 : -90})`;
+        }
+
+        // Initial collapse
+        root.children.forEach(collapse);
+        update(root);
+
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            }
+        }
+
+        // Zoom for better mobile/desktop interaction
+        const zoom = d3.zoom()
+            .on("zoom", event => g.attr("transform", event.transform));
+        svg.call(zoom);
+    </script>
+</body>
+</html>
