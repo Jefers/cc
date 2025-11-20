@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Systems Quest</title>
     <style>
+        /* CSS remains the same, just adding one new style */
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #d32f2f;
+            display: none;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
@@ -90,6 +101,13 @@
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
         
+        .option-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
         .progress-bar {
             height: 10px;
             background-color: #e0e0e0;
@@ -157,6 +175,13 @@
             margin-bottom: 10px;
             border-radius: 10px;
             border: 2px solid #8B4513;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8B4513;
+            font-size: 0.8rem;
+            text-align: center;
         }
         
         @media (max-width: 600px) {
@@ -190,6 +215,8 @@
                 <!-- Scene content will be dynamically inserted here -->
             </div>
             
+            <div class="error-message" id="errorMessage"></div>
+            
             <div class="options-container" id="optionsContainer">
                 <!-- Option buttons will be dynamically inserted here -->
             </div>
@@ -214,30 +241,46 @@
             businessSize: "",
             painPoints: [],
             systemsNeeded: [],
-            // Using localStorage to save and load game progress :cite[1]:cite[2]
+            
             saveGame: function() {
-                const saveData = {
-                    currentSceneId: this.currentSceneId,
-                    playerName: this.playerName,
-                    businessType: this.businessType,
-                    businessSize: this.businessSize,
-                    painPoints: this.painPoints,
-                    systemsNeeded: this.systemsNeeded
-                };
-                localStorage.setItem("businessSystemsQuest", JSON.stringify(saveData));
-            },
-            loadGame: function() {
-                const savedData = localStorage.getItem("businessSystemsQuest");
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    this.currentSceneId = data.currentSceneId;
-                    this.playerName = data.playerName;
-                    this.businessType = data.businessType;
-                    this.businessSize = data.businessSize;
-                    this.painPoints = data.painPoints;
-                    this.systemsNeeded = data.systemsNeeded;
+                try {
+                    const saveData = {
+                        currentSceneId: this.currentSceneId,
+                        playerName: this.playerName,
+                        businessType: this.businessType,
+                        businessSize: this.businessSize,
+                        painPoints: this.painPoints,
+                        systemsNeeded: this.systemsNeeded,
+                        saveTime: new Date().toISOString()
+                    };
+                    localStorage.setItem("businessSystemsQuest", JSON.stringify(saveData));
+                } catch (error) {
+                    console.error("Failed to save game:", error);
+                    this.showError("Failed to save your progress. Please ensure you have storage permissions enabled.");
                 }
             },
+            
+            loadGame: function() {
+                try {
+                    const savedData = localStorage.getItem("businessSystemsQuest");
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        // Validate loaded data
+                        if (data && typeof data === 'object') {
+                            this.currentSceneId = data.currentSceneId || "start";
+                            this.playerName = data.playerName || "";
+                            this.businessType = data.businessType || "";
+                            this.businessSize = data.businessSize || "";
+                            this.painPoints = Array.isArray(data.painPoints) ? data.painPoints : [];
+                            this.systemsNeeded = Array.isArray(data.systemsNeeded) ? data.systemsNeeded : [];
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to load saved game:", error);
+                    this.resetGame();
+                }
+            },
+            
             resetGame: function() {
                 this.currentSceneId = "start";
                 this.playerName = "";
@@ -245,27 +288,48 @@
                 this.businessSize = "";
                 this.painPoints = [];
                 this.systemsNeeded = [];
-                localStorage.removeItem("businessSystemsQuest");
+                try {
+                    localStorage.removeItem("businessSystemsQuest");
+                } catch (error) {
+                    console.error("Failed to clear saved game:", error);
+                }
+            },
+            
+            showError: function(message) {
+                const errorElement = document.getElementById("errorMessage");
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = "block";
+                    setTimeout(() => {
+                        errorElement.style.display = "none";
+                    }, 5000);
+                }
             }
         };
 
         // Scene definitions
         const scenes = {
             start: {
-                text: "<img src='https://i.imgur.com/7V1lQ9Y.png' class='npc-image' alt='Wise Mentor'><strong>Wise Business Mentor:</strong> Welcome, brave entrepreneur! I sense your business has great potential, but it's trapped in chaos. I shall guide you on a quest to build systems that will set your business free. What shall I call you on this journey?",
+                text: "<div class='npc-image'>Wise<br>Mentor</div><strong>Wise Business Mentor:</strong> Welcome, brave entrepreneur! I sense your business has great potential, but it's trapped in chaos. I shall guide you on a quest to build systems that will set your business free. What shall I call you on this journey?",
                 input: true,
                 inputPrompt: "Your name",
+                inputRequired: true,
                 options: [
                     { text: "Begin the quest", nextScene: "business_type" }
                 ],
                 onAction: function(input) {
                     if (input && input.trim() !== "") {
                         gameData.playerName = input.trim();
+                        return true;
                     }
+                    gameData.showError("Please enter your name to begin the quest.");
+                    return false;
                 }
             },
             business_type: {
-                text: `<strong>Wise Business Mentor:</strong> Well met, ${gameData.playerName}! Every legendary venture has its domain. What realm does your business operate in?`,
+                text: function() {
+                    return `<strong>Wise Business Mentor:</strong> Well met, ${gameData.playerName || "brave entrepreneur"}! Every legendary venture has its domain. What realm does your business operate in?`;
+                },
                 options: [
                     { text: "Personal Training & One-on-One Coaching", nextScene: "business_size", data: "Personal Training" },
                     { text: "Group Fitness Classes & Bootcamps", nextScene: "business_size", data: "Group Fitness" },
@@ -274,10 +338,13 @@
                 ],
                 onAction: function(selectedOption) {
                     gameData.businessType = selectedOption.data;
+                    return true;
                 }
             },
             business_size: {
-                text: `<strong>Wise Business Mentor:</strong> A ${gameData.businessType} venture! Now, tell me about your fellowship. How many work alongside you in this quest?`,
+                text: function() {
+                    return `<strong>Wise Business Mentor:</strong> A ${gameData.businessType} venture! Now, tell me about your fellowship. How many work alongside you in this quest?`;
+                },
                 options: [
                     { text: "I am a lone warrior - it's just me", nextScene: "pain_points", data: "Solo" },
                     { text: "A small party of 2-5 dedicated souls", nextScene: "pain_points", data: "Small Team" },
@@ -286,10 +353,13 @@
                 ],
                 onAction: function(selectedOption) {
                     gameData.businessSize = selectedOption.data;
+                    return true;
                 }
             },
             pain_points: {
-                text: `<strong>Wise Business Mentor:</strong> I see... A ${gameData.businessSize} operation. Now, reveal to me the dragons that plague your realm. What challenges do you face daily?`,
+                text: function() {
+                    return `<strong>Wise Business Mentor:</strong> I see... A ${gameData.businessSize} operation. Now, reveal to me the dragons that plague your realm. What challenges do you face daily?`;
+                },
                 options: [
                     { text: "I'm constantly putting out fires instead of working strategically", nextScene: "pain_points2", data: "Firefighting" },
                     { text: "Client management is chaotic - scheduling, payments, follow-ups", nextScene: "pain_points2", data: "Client Management" },
@@ -297,7 +367,11 @@
                     { text: "Inconsistent customer experience and service quality", nextScene: "pain_points2", data: "Inconsistency" }
                 ],
                 onAction: function(selectedOption) {
-                    gameData.painPoints.push(selectedOption.data);
+                    // Prevent duplicate pain points
+                    if (!gameData.painPoints.includes(selectedOption.data)) {
+                        gameData.painPoints.push(selectedOption.data);
+                    }
+                    return true;
                 }
             },
             pain_points2: {
@@ -309,11 +383,17 @@
                     { text: "Financial management is confusing and stressful", nextScene: "systems_analysis", data: "Financial Stress" }
                 ],
                 onAction: function(selectedOption) {
-                    gameData.painPoints.push(selectedOption.data);
+                    // Prevent duplicate pain points
+                    if (!gameData.painPoints.includes(selectedOption.data)) {
+                        gameData.painPoints.push(selectedOption.data);
+                    }
+                    return true;
                 }
             },
             systems_analysis: {
-                text: `<strong>Wise Business Mentor:</strong> The path is becoming clearer. Based on your challenges, I divine which systems will bring order to your realm. Which of these treasures would transform your business?`,
+                text: function() {
+                    return `<strong>Wise Business Mentor:</strong> The path is becoming clearer. Based on your challenges, I divine which systems will bring order to your realm. Which of these treasures would transform your business?`;
+                },
                 options: [
                     { text: "An automated scheduling and client management system", nextScene: "final", data: "Client Management System" },
                     { text: "Standardized onboarding processes for new clients", nextScene: "final", data: "Onboarding System" },
@@ -321,14 +401,20 @@
                     { text: "Financial tracking and reporting systems", nextScene: "final", data: "Financial System" }
                 ],
                 onAction: function(selectedOption) {
-                    gameData.systemsNeeded.push(selectedOption.data);
+                    if (!gameData.systemsNeeded.includes(selectedOption.data)) {
+                        gameData.systemsNeeded.push(selectedOption.data);
+                    }
+                    return true;
                 }
             },
             final: {
                 text: "<strong>Wise Business Mentor:</strong> Your quest for clarity is complete! Behold - the scroll of wisdom that reveals the systems that will transform your business kingdom!",
                 options: [
                     { text: "View my business systems report", nextScene: "report" }
-                ]
+                ],
+                onAction: function() {
+                    return true;
+                }
             }
         };
 
@@ -339,6 +425,10 @@
         const sceneCounter = document.getElementById("sceneCounter");
         const finalReport = document.getElementById("finalReport");
         const restartBtn = document.getElementById("restartBtn");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Calculate total scenes for progress (excluding report)
+        const totalScenes = Object.keys(scenes).length;
 
         // Initialize the game
         function initGame() {
@@ -346,7 +436,7 @@
             showScene(gameData.currentSceneId);
             
             restartBtn.addEventListener("click", function() {
-                if (confirm("Are you sure you want to restart your quest?")) {
+                if (confirm("Are you sure you want to restart your quest? All progress will be lost.")) {
                     gameData.resetGame();
                     finalReport.style.display = "none";
                     showScene("start");
@@ -357,31 +447,67 @@
         // Show a specific scene
         function showScene(sceneId) {
             const scene = scenes[sceneId];
-            if (!scene) return;
+            if (!scene) {
+                console.error("Scene not found:", sceneId);
+                showScene("start");
+                return;
+            }
             
             gameData.currentSceneId = sceneId;
             gameData.saveGame();
             
-            // Update progress bar
+            // Update progress bar (report is the final step)
             const sceneIds = Object.keys(scenes);
             const currentIndex = sceneIds.indexOf(sceneId);
-            const progress = (currentIndex / (sceneIds.length - 1)) * 100;
+            let progress = 0;
+            
+            if (sceneId === "report") {
+                progress = 100;
+            } else if (currentIndex >= 0) {
+                progress = (currentIndex / (totalScenes - 1)) * 100;
+            }
+            
             progressFill.style.width = `${progress}%`;
             
             // Update scene counter
-            sceneCounter.textContent = `Scene ${currentIndex + 1} of ${sceneIds.length}`;
+            if (sceneId === "report") {
+                sceneCounter.textContent = "Quest Complete!";
+            } else {
+                sceneCounter.textContent = `Scene ${currentIndex + 1} of ${totalScenes}`;
+            }
+            
+            // Clear error message
+            errorMessage.style.display = "none";
             
             // Display scene text
-            sceneContent.innerHTML = `<div class="scene-text">${scene.text}</div>`;
+            const sceneText = typeof scene.text === 'function' ? scene.text() : scene.text;
+            sceneContent.innerHTML = `<div class="scene-text">${sceneText}</div>`;
             
             // Handle input scenes
             if (scene.input) {
                 const inputHtml = `
                     <div style="margin: 20px 0;">
-                        <input type="text" id="playerInput" placeholder="${scene.inputPrompt}" style="padding: 10px; width: 100%; max-width: 300px; border-radius: 5px; border: 1px solid #8B4513;">
+                        <input type="text" id="playerInput" placeholder="${scene.inputPrompt}" 
+                               value="${gameData.playerName || ""}"
+                               style="padding: 10px; width: 100%; max-width: 300px; border-radius: 5px; border: 1px solid #8B4513;">
                     </div>
                 `;
                 sceneContent.innerHTML += inputHtml;
+                
+                // Focus the input field
+                setTimeout(() => {
+                    const inputField = document.getElementById("playerInput");
+                    if (inputField) {
+                        inputField.focus();
+                        // Add enter key support
+                        inputField.addEventListener("keypress", function(e) {
+                            if (e.key === "Enter") {
+                                const firstOption = optionsContainer.querySelector(".option-btn");
+                                if (firstOption) firstOption.click();
+                            }
+                        });
+                    }
+                }, 100);
             }
             
             // Display options
@@ -391,17 +517,25 @@
                 button.className = "option-btn";
                 button.textContent = option.text;
                 button.addEventListener("click", function() {
-                    if (scene.input) {
-                        const input = document.getElementById("playerInput");
-                        if (scene.onAction) scene.onAction(input ? input.value : "");
-                    } else if (scene.onAction) {
-                        scene.onAction(option);
+                    let shouldProceed = true;
+                    
+                    // Handle scene action with validation
+                    if (scene.onAction) {
+                        if (scene.input) {
+                            const input = document.getElementById("playerInput");
+                            const inputValue = input ? input.value : "";
+                            shouldProceed = scene.onAction(inputValue);
+                        } else {
+                            shouldProceed = scene.onAction(option);
+                        }
                     }
                     
-                    if (option.nextScene === "report") {
-                        showFinalReport();
-                    } else {
-                        showScene(option.nextScene);
+                    if (shouldProceed) {
+                        if (option.nextScene === "report") {
+                            showFinalReport();
+                        } else {
+                            showScene(option.nextScene);
+                        }
                     }
                 });
                 optionsContainer.appendChild(button);
@@ -414,36 +548,41 @@
             const recommendations = generateRecommendations();
             
             finalReport.innerHTML = `
-                <h2>Scroll of Business Wisdom for ${gameData.playerName}</h2>
+                <h2>Scroll of Business Wisdom for ${gameData.playerName || "Valiant Entrepreneur"}</h2>
                 
                 <div class="report-section">
                     <h3>Business Profile</h3>
-                    <p><strong>Domain:</strong> ${gameData.businessType}</p>
-                    <p><strong>Company Size:</strong> ${gameData.businessSize}</p>
+                    <p><strong>Domain:</strong> ${gameData.businessType || "Not specified"}</p>
+                    <p><strong>Company Size:</strong> ${gameData.businessSize || "Not specified"}</p>
                 </div>
                 
                 <div class="report-section">
                     <h3>Challenges Identified</h3>
                     <ul>
-                        ${gameData.painPoints.map(point => `<li>${point}</li>`).join('')}
+                        ${gameData.painPoints.length > 0 
+                            ? gameData.painPoints.map(point => `<li>${point}</li>`).join('') 
+                            : '<li>No specific challenges identified</li>'}
                     </ul>
                 </div>
                 
                 <div class="report-section">
                     <h3>Recommended Systems</h3>
                     <ul>
-                        ${gameData.systemsNeeded.map(system => `<li>${system}</li>`).join('')}
+                        ${gameData.systemsNeeded.length > 0 
+                            ? gameData.systemsNeeded.map(system => `<li>${system}</li>`).join('') 
+                            : '<li>No specific systems selected</li>'}
                     </ul>
                 </div>
                 
                 <div class="report-section">
                     <h3>Strategic Guidance</h3>
-                    ${recommendations}
+                    ${recommendations || "<p>Begin by documenting one key process each week to build momentum.</p>"}
                 </div>
                 
                 <div class="report-section">
                     <h3>Next Steps</h3>
                     <p>Begin by implementing one system at a time, starting with the area causing the most pain. Document each process as you go, and soon your business will transform from chaotic to systematic!</p>
+                    <p><strong>Remember:</strong> First you work your system, then your systems do the work.</p>
                 </div>
             `;
             
@@ -454,10 +593,15 @@
             // Update progress to 100%
             progressFill.style.width = "100%";
             sceneCounter.textContent = "Quest Complete!";
+            
+            gameData.currentSceneId = "report";
+            gameData.saveGame();
         }
 
         // Generate personalized recommendations
         function generateRecommendations() {
+            if (gameData.painPoints.length === 0) return "";
+            
             let recommendations = "";
             
             if (gameData.painPoints.includes("Firefighting")) {
@@ -478,6 +622,10 @@
             
             if (gameData.painPoints.includes("No Personal Time")) {
                 recommendations += "<p><strong>No Personal Time:</strong> Systemize your most time-consuming tasks first. Batch similar activities and delegate where possible.</p>";
+            }
+            
+            if (gameData.painPoints.includes("Scaling Challenges")) {
+                recommendations += "<p><strong>Scaling Challenges:</strong> Focus on creating replicable processes that don't depend on your personal involvement.</p>";
             }
             
             return recommendations;

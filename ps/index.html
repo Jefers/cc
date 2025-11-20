@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoShop Clone - Layer-Based Image Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1e1e1e;
+            color: #f0f0f0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Top Toolbar */
+        .toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2d2d2d;
+            border-bottom: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 5px;
+            margin-right: 30px;
+        }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #3a3a3a;
+            color: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .tool-btn:hover {
+            background: #4a4a4a;
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: #007acc;
+            box-shadow: 0 2px 8px rgba(0, 122, 204, 0.4);
+        }
+
+        .separator {
+            width: 1px;
+            height: 30px;
+            background: #3a3a3a;
+            margin: 0 15px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #4a4a4a;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .brush-size-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brush-size {
+            width: 100px;
+        }
+
+        /* Left Sidebar - Layers Panel */
+        .sidebar-left {
+            width: 300px;
+            background: #252525;
+            border-right: 1px solid #3a3a3a;
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .layer-controls {
+            margin-bottom: 20px;
+        }
+
+        .layer-controls button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #3a3a3a;
+            color: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .layer-controls button:hover {
+            background: #4a4a4a;
+        }
+
+        .layers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .layer-item {
+            background: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .layer-item:hover {
+            background: #353535;
+            border-color: #4a4a4a;
+        }
+
+        .layer-item.active {
+            background: #3a3a3a;
+            border-color: #007acc;
+            box-shadow: 0 0 0 1px #007acc inset;
+        }
+
+        .layer-item.dragging {
+            opacity: 0.5;
+        }
+
+        .layer-preview {
+            width: 40px;
+            height: 40px;
+            background: #1e1e1e;
+            border: 1px solid #3a3a3a;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .layer-preview canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .layer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .layer-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .layer-controls-small {
+            display: flex;
+            gap: 5px;
+        }
+
+        .layer-control-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .layer-control-btn:hover {
+            background: #4a4a4a;
+            color: #f0f0f0;
+        }
+
+        .layer-opacity {
+            margin-top: 10px;
+        }
+
+        .opacity-slider {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .layer-blend-mode {
+            margin-top: 10px;
+        }
+
+        .blend-mode-select {
+            width: 100%;
+            padding: 5px;
+            background: #3a3a3a;
+            color: #f0f0f0;
+            border: 1px solid #4a4a4a;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* Main Canvas Area */
+        .canvas-area {
+            flex: 1;
+            margin-top: 60px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #mainCanvas {
+            background: white;
+            cursor: crosshair;
+            display: block;
+        }
+
+        .canvas-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: 
+                repeating-linear-gradient(0deg, #e0e0e0, #e0e0e0 1px, transparent 1px, transparent 20px),
+                repeating-linear-gradient(90deg, #e0e0e0, #e0e0e0 1px, transparent 1px, transparent 20px);
+            opacity: 0.3;
+        }
+
+        /* Right Sidebar - Tools Properties */
+        .sidebar-right {
+            width: 250px;
+            background: #252525;
+            border-left: 1px solid #3a3a3a;
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .tool-properties {
+            display: none;
+        }
+
+        .tool-properties.active {
+            display: block;
+        }
+
+        .property-group {
+            margin-bottom: 20px;
+        }
+
+        .property-label {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 8px;
+            background: #3a3a3a;
+            color: #f0f0f0;
+            border: 1px solid #4a4a4a;
+            border-radius: 3px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: #2d2d2d;
+            border-top: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+
+        .status-info {
+            margin-right: 30px;
+        }
+
+        /* Selection Outline */
+        .selection-outline {
+            position: absolute;
+            border: 1px dashed #007acc;
+            pointer-events: none;
+            display: none;
+        }
+
+        .selection-outline.active {
+            display: block;
+        }
+
+        /* Hidden file input */
+        #fileInput {
+            display: none;
+        }
+
+        /* Modal Dialogs */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 30px;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: #007acc;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: #005a9e;
+        }
+
+        .modal-btn.secondary {
+            background: #3a3a3a;
+            color: #f0f0f0;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #4a4a4a;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 8px;
+            display: none;
+            z-index: 3000;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            width: 300px;
+            height: 4px;
+            background: #3a3a3a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill-inner {
+            height: 100%;
+            background: #007acc;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4a4a4a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a5a5a;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Top Toolbar -->
+        <div class="toolbar">
+            <div class="tool-group">
+                <button class="tool-btn active" data-tool="select" title="Selection Tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z"/>
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="brush" title="Brush Tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z"/>
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="eraser" title="Eraser Tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.14 3c-.51 0-1.02.2-1.41.59L2.59 14.73c-.78.78-.78 2.05 0 2.83L5.03 20H7.66l7.06-7.06 5.69-5.69c.78-.78.78-2.05 0-2.83l-2.83-2.83c-.39-.39-.9-.59-1.41-.59zM5.03 16L14 7.03 16.97 10 8 18.97H5.03V16z"/>
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="clone" title="Clone Stamp Tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="color-picker-wrapper">
+                <div class="color-picker" id="colorPicker" style="background: #000000;"></div>
+                <input type="color" id="colorInput" value="#000000" style="display: none;">
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="brush-size-wrapper">
+                <label style="font-size: 12px; color: #a0a0a0;">Size:</label>
+                <input type="range" class="brush-size" id="brushSize" min="1" max="100" value="10">
+                <span id="brushSizeValue" style="font-size: 12px; color: #a0a0a0; min-width: 30px;">10</span>
+            </div>
+
+            <div class="separator"></div>
+
+            <button class="tool-btn" id="undoBtn" title="Undo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
+                </svg>
+            </button>
+
+            <button class="tool-btn" id="redoBtn" title="Redo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/>
+                </svg>
+            </button>
+
+            <div style="margin-left: auto; display: flex; gap: 10px;">
+                <button class="tool-btn" id="exportBtn" title="Export Image">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                </button>
+                <button class="tool-btn" id="saveProjectBtn" title="Save Project">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Left Sidebar - Layers Panel -->
+        <div class="sidebar-left">
+            <h3 class="sidebar-title">Layers</h3>
+            <div class="layer-controls">
+                <button id="addLayerBtn">+ Add New Layer</button>
+                <button id="uploadLayerBtn">📁 Upload Image to Layer</button>
+                <button id="duplicateLayerBtn">Duplicate Layer</button>
+                <button id="deleteLayerBtn" style="color: #ff6b6b;">🗑️ Delete Layer</button>
+                <button id="mergeDownBtn">Merge Down</button>
+                <button id="mergeAllBtn">Merge All</button>
+            </div>
+            <div class="layers-list" id="layersList"></div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="canvas-area">
+            <div class="canvas-wrapper">
+                <div class="canvas-grid"></div>
+                <canvas id="mainCanvas" width="800" height="600"></canvas>
+                <div class="selection-outline" id="selectionOutline"></div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Tool Properties -->
+        <div class="sidebar-right">
+            <h3 class="sidebar-title">Tool Properties</h3>
+            
+            <div class="tool-properties active" id="select-properties">
+                <div class="property-group">
+                    <label class="property-label">Selection Mode</label>
+                    <select class="property-input" id="selectionMode">
+                        <option value="rectangular">Rectangular</option>
+                        <option value="elliptical">Elliptical</option>
+                        <option value="lasso">Lasso</option>
+                    </select>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Feather</label>
+                    <input type="range" class="property-input" id="selectionFeather" min="0" max="50" value="0">
+                    <span id="featherValue">0px</span>
+                </div>
+            </div>
+
+            <div class="tool-properties" id="brush-properties">
+                <div class="property-group">
+                    <label class="property-label">Brush Type</label>
+                    <select class="property-input" id="brushType">
+                        <option value="round">Round Brush</option>
+                        <option value="square">Square Brush</option>
+                        <option value="soft">Soft Round</option>
+                    </select>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Hardness</label>
+                    <input type="range" class="property-input" id="brushHardness" min="0" max="100" value="100">
+                    <span id="hardnessValue">100%</span>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Flow</label>
+                    <input type="range" class="property-input" id="brushFlow" min="1" max="100" value="100">
+                    <span id="flowValue">100%</span>
+                </div>
+            </div>
+
+            <div class="tool-properties" id="eraser-properties">
+                <div class="property-group">
+                    <label class="property-label">Eraser Type</label>
+                    <select class="property-input" id="eraserType">
+                        <option value="brush">Brush</option>
+                        <option value="block">Block</option>
+                    </select>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Hardness</label>
+                    <input type="range" class="property-input" id="eraserHardness" min="0" max="100" value="100">
+                    <span id="eraserHardnessValue">100%</span>
+                </div>
+            </div>
+
+            <div class="tool-properties" id="clone-properties">
+                <div class="property-group">
+                    <label class="property-label">Sample</label>
+                    <button class="modal-btn secondary" id="sampleBtn" style="width: 100%;">Alt+Click to Sample</button>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Aligned</label>
+                    <input type="checkbox" id="cloneAligned" checked>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="status-info">Tool: <span id="currentTool">Select</span></span>
+            <span class="status-info">Layer: <span id="currentLayer">Background</span></span>
+            <span class="status-info">Zoom: <span id="zoomLevel">100%</span></span>
+            <span class="status-info" id="canvasSize">800x600</span>
+            <span class="status-info" id="mousePosition">X: 0, Y: 0</span>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept="image/*" multiple>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Export Image</h2>
+            <div class="property-group">
+                <label class="property-label">Format</label>
+                <select class="property-input" id="exportFormat">
+                    <option value="png">PNG</option>
+                    <option value="jpeg">JPEG</option>
+                    <option value="webp">WebP</option>
+                </select>
+            </div>
+            <div class="property-group">
+                <label class="property-label">Quality (for JPEG/WebP)</label>
+                <input type="range" class="property-input" id="exportQuality" min="0.1" max="1" step="0.1" value="0.9">
+                <span id="qualityValue">90%</span>
+            </div>
+            <div class="property-group">
+                <label class="property-label">
+                    <input type="checkbox" id="exportSelectionOnly"> Export Selection Only
+                </label>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="cancelExportBtn">Cancel</button>
+                <button class="modal-btn primary" id="confirmExportBtn">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-text">Processing...</div>
+        <div class="progress-fill">
+            <div class="progress-fill-inner" id="progressFill"></div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================================================
+        // PHOTOSHOP CLONE - MAIN APPLICATION
+        // =============================================================================
+
+        class Layer {
+            constructor(id, name, width, height) {
+                this.id = id;
+                this.name = name;
+                this.canvas = document.createElement('canvas');
+                this.canvas.width = width;
+                this.canvas.height = height;
+                this.ctx = this.canvas.getContext('2d');
+                this.visible = true;
+                this.opacity = 1.0;
+                this.blendMode = 'normal';
+                this.x = 0;
+                this.y = 0;
+                this.rotation = 0;
+                this.scaleX = 1;
+                this.scaleY = 1;
+                this.transformMatrix = [1, 0, 0, 1, 0, 0];
+                this.mask = null;
+                this.effects = [];
+                this.parent = null;
+                this.children = [];
+                this.locked = false;
+                this.thumbnailCanvas = document.createElement('canvas');
+                this.thumbnailCanvas.width = 40;
+                this.thumbnailCanvas.height = 40;
+                this.thumbnailCtx = this.thumbnailCanvas.getContext('2d');
+                this.updateThumbnail();
+            }
+
+            updateThumbnail() {
+                this.thumbnailCtx.clearRect(0, 0, 40, 40);
+                this.thumbnailCtx.fillStyle = '#f0f0f0';
+                this.thumbnailCtx.fillRect(0, 0, 40, 40);
+                this.thumbnailCtx.drawImage(this.canvas, 0, 0, 40, 40);
+            }
+
+            applyTransform(ctx) {
+                const [a, b, c, d, e, f] = this.transformMatrix;
+                ctx.transform(a, b, c, d, e, f);
+            }
+
+            saveState() {
+                const data = {
+                    id: this.id,
+                    name: this.name,
+                    visible: this.visible,
+                    opacity: this.opacity,
+                    blendMode: this.blendMode,
+                    x: this.x,
+                    y: this.y,
+                    rotation: this.rotation,
+                    scaleX: this.scaleX,
+                    scaleY: this.scaleY,
+                    transformMatrix: [...this.transformMatrix],
+                    locked: this.locked,
+                    imageData: this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height).data.buffer
+                };
+                return data;
+            }
+
+            restoreState(state) {
+                Object.assign(this, state);
+                const imgData = new ImageData(new Uint8ClampedArray(state.imageData), this.canvas.width, this.canvas.height);
+                this.ctx.putImageData(imgData, 0, 0);
+                this.updateThumbnail();
+            }
+        }
+
+        class BlendModes {
+            static apply(ctx, blendMode, opacity) {
+                const originalComposite = ctx.globalCompositeOperation;
+                const originalAlpha = ctx.globalAlpha;
+
+                ctx.globalCompositeOperation = BlendModes.getCompositeOperation(blendMode);
+                ctx.globalAlpha = opacity;
+
+                return { originalComposite, originalAlpha };
+            }
+
+            static restore(ctx, state) {
+                ctx.globalCompositeOperation = state.originalComposite;
+                ctx.globalAlpha = state.originalAlpha;
+            }
+
+            static getCompositeOperation(blendMode) {
+                const blendModeMap = {
+                    'normal': 'source-over',
+                    'multiply': 'multiply',
+                    'screen': 'screen',
+                    'overlay': 'overlay',
+                    'darken': 'darken',
+                    'lighten': 'lighten',
+                    'color-dodge': 'color-dodge',
+                    'color-burn': 'color-burn',
+                    'hard-light': 'hard-light',
+                    'soft-light': 'soft-light',
+                    'difference': 'difference',
+                    'exclusion': 'exclusion',
+                    'hue': 'hue',
+                    'saturation': 'saturation',
+                    'color': 'color',
+                    'luminosity': 'luminosity'
+                };
+                return blendModeMap[blendMode] || 'source-over';
+            }
+
+            static customBlend(bottom, top, mode) {
+                const [br, bg, bb, ba] = bottom;
+                const [tr, tg, tb, ta] = top;
+                
+                const bo = ba / 255;
+                const to = ta / 255;
+                const ro = bo + to - bo * to;
+
+                if (ro === 0) return [0, 0, 0, 0];
+
+                let nr, ng, nb;
+
+                switch (mode) {
+                    case 'multiply':
+                        nr = (br * tr) / 255;
+                        ng = (bg * tg) / 255;
+                        nb = (bb * tb) / 255;
+                        break;
+                    case 'screen':
+                        nr = 255 - ((255 - br) * (255 - tr)) / 255;
+                        ng = 255 - ((255 - bg) * (255 - tg)) / 255;
+                        nb = 255 - ((255 - bb) * (255 - tb)) / 255;
+                        break;
+                    case 'overlay':
+                        nr = br < 128 ? (2 * br * tr) / 255 : 255 - (2 * (255 - br) * (255 - tr)) / 255;
+                        ng = bg < 128 ? (2 * bg * tg) / 255 : 255 - (2 * (255 - bg) * (255 - tg)) / 255;
+                        nb = bb < 128 ? (2 * bb * tb) / 255 : 255 - (2 * (255 - bb) * (255 - tb)) / 255;
+                        break;
+                    case 'darken':
+                        nr = Math.min(br, tr);
+                        ng = Math.min(bg, tg);
+                        nb = Math.min(bb, tb);
+                        break;
+                    case 'lighten':
+                        nr = Math.max(br, tr);
+                        ng = Math.max(bg, tg);
+                        nb = Math.max(bb, tb);
+                        break;
+                    default:
+                        const to1 = to * (1 - bo);
+                        nr = (br * bo + tr * to1) / ro;
+                        ng = (bg * bo + tg * to1) / ro;
+                        nb = (bb * bo + tb * to1) / ro;
+                }
+
+                return [
+                    Math.round(nr),
+                    Math.round(ng),
+                    Math.round(nb),
+                    Math.round(ro * 255)
+                ];
+            }
+        }
+
+        class SelectionManager {
+            constructor(app) {
+                this.app = app;
+                this.active = false;
+                this.start = { x: 0, y: 0 };
+                this.end = { x: 0, y: 0 };
+                this.mode = 'rectangular';
+                this.feather = 0;
+                this.mask = null;
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+            }
+
+            begin(x, y) {
+                this.active = true;
+                this.start = { x, y };
+                this.end = { x, y };
+            }
+
+            update(x, y) {
+                if (!this.active) return;
+                this.end = { x, y };
+            }
+
+            finish() {
+                if (!this.active) return;
+                this.createMask();
+                this.active = false;
+            }
+
+            createMask() {
+                const canvas = this.app.canvas;
+                this.canvas.width = canvas.width;
+                this.canvas.height = canvas.height;
+                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const x = Math.min(this.start.x, this.end.x);
+                const y = Math.min(this.start.y, this.end.y);
+                const width = Math.abs(this.end.x - this.start.x);
+                const height = Math.abs(this.end.y - this.start.y);
+
+                this.ctx.fillStyle = 'white';
+                this.ctx.globalAlpha = 1;
+
+                switch (this.mode) {
+                    case 'rectangular':
+                        this.ctx.fillRect(x, y, width, height);
+                        break;
+                    case 'elliptical':
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        break;
+                    case 'lasso':
+                        // Lasso selection would require more complex implementation
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(this.start.x, this.start.y);
+                        this.ctx.lineTo(this.end.x, this.end.y);
+                        this.ctx.lineTo(this.start.x + (this.end.x - this.start.y), this.end.y);
+                        this.ctx.lineTo(this.end.x - (this.end.y - this.start.x), this.start.y);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        break;
+                }
+
+                if (this.feather > 0) {
+                    this.ctx.globalCompositeOperation = 'destination-in';
+                    this.ctx.filter = `blur(${this.feather}px)`;
+                    this.ctx.drawImage(this.canvas, 0, 0);
+                    this.ctx.filter = 'none';
+                }
+
+                this.mask = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
+            }
+
+            clear() {
+                this.active = false;
+                this.mask = null;
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            drawOutline(ctx) {
+                if (!this.active) return;
+
+                const x = Math.min(this.start.x, this.end.x);
+                const y = Math.min(this.start.y, this.end.y);
+                const width = Math.abs(this.end.x - this.start.x);
+                const height = Math.abs(this.end.y - this.start.y);
+
+                ctx.save();
+                ctx.strokeStyle = '#007acc';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.globalAlpha = 1;
+
+                switch (this.mode) {
+                    case 'rectangular':
+                        ctx.strokeRect(x + 0.5, y + 0.5, width, height);
+                        break;
+                    case 'elliptical':
+                        ctx.beginPath();
+                        ctx.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
+                        ctx.stroke();
+                        break;
+                    case 'lasso':
+                        ctx.beginPath();
+                        ctx.moveTo(this.start.x, this.start.y);
+                        ctx.lineTo(this.end.x, this.end.y);
+                        ctx.lineTo(this.start.x + (this.end.x - this.start.y), this.end.y);
+                        ctx.lineTo(this.end.x - (this.end.y - this.start.x), this.start.y);
+                        ctx.closePath();
+                        ctx.stroke();
+                        break;
+                }
+
+                ctx.restore();
+            }
+
+            isPointInSelection(x, y) {
+                if (!this.mask || !this.app.activeLayer) return true;
+
+                const canvas = this.app.canvas;
+                const layer = this.app.activeLayer;
+                const layerX = Math.floor(x - layer.x);
+                const layerY = Math.floor(y - layer.y);
+
+                if (layerX < 0 || layerY < 0 || layerX >= layer.canvas.width || layerY >= layer.canvas.height) {
+                    return false;
+                }
+
+                const maskIndex = (y * canvas.width + x) * 4;
+                return this.mask.data[maskIndex + 3] > 128;
+            }
+        }
+
+        class PhotoShopClone {
+            constructor() {
+                this.canvas = document.getElementById('mainCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.layers = [];
+                this.activeLayer = null;
+                this.activeTool = 'select';
+                this.history = [];
+                this.historyIndex = -1;
+                this.maxHistory = 50;
+                this.isDrawing = false;
+                this.isMoving = false;
+                this.lastPoint = null;
+                this.cloneSource = null;
+                this.cloneOffset = { x: 0, y: 0 };
+                this.altKeyPressed = false;
+                
+                this.brushSettings = {
+                    size: 10,
+                    hardness: 100,
+                    flow: 100,
+                    type: 'round'
+                };
+
+                this.eraserSettings = {
+                    size: 10,
+                    hardness: 100,
+                    type: 'brush'
+                };
+
+                this.selectionManager = new SelectionManager(this);
+                
+                this.colors = {
+                    primary: '#000000',
+                    secondary: '#FFFFFF'
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.setupCanvas();
+                this.setupEventListeners();
+                this.setupLayerSystem();
+                this.setupColorPicker();
+                this.setupBrushControls();
+                this.setupExport();
+                
+                // Create initial background layer
+                this.createBackgroundLayer();
+                
+                console.log('PhotoShop Clone initialized successfully');
+            }
+
+            setupCanvas() {
+                this.canvas.width = 800;
+                this.canvas.height = 600;
+                this.ctx.fillStyle = 'white';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            setupLayerSystem() {
+                const addLayerBtn = document.getElementById('addLayerBtn');
+                const uploadLayerBtn = document.getElementById('uploadLayerBtn');
+                const duplicateLayerBtn = document.getElementById('duplicateLayerBtn');
+                const deleteLayerBtn = document.getElementById('deleteLayerBtn');
+                const mergeDownBtn = document.getElementById('mergeDownBtn');
+                const mergeAllBtn = document.getElementById('mergeAllBtn');
+
+                addLayerBtn.addEventListener('click', () => this.addLayer());
+                uploadLayerBtn.addEventListener('click', () => this.uploadToLayer());
+                duplicateLayerBtn.addEventListener('click', () => this.duplicateLayer());
+                deleteLayerBtn.addEventListener('click', () => this.deleteLayer());
+                mergeDownBtn.addEventListener('click', () => this.mergeDown());
+                mergeAllBtn.addEventListener('click', () => this.mergeAll());
+            }
+
+            setupEventListeners() {
+                // Tool selection
+                document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const tool = e.currentTarget.getAttribute('data-tool');
+                        this.setActiveTool(tool);
+                    });
+                });
+
+                // Canvas events
+                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+                this.canvas.addEventListener('mouseleave', (e) => this.handleMouseUp(e));
+
+                // Keyboard events
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+                document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+
+                // Mouse position tracking
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = Math.floor(e.clientX - rect.left);
+                    const y = Math.floor(e.clientY - rect.top);
+                    document.getElementById('mousePosition').textContent = `X: ${x}, Y: ${y}`;
+                });
+
+                // History buttons
+                document.getElementById('undoBtn').addEventListener('click', () => this.undo());
+                document.getElementById('redoBtn').addEventListener('click', () => this.redo());
+            }
+
+            setupColorPicker() {
+                const colorPicker = document.getElementById('colorPicker');
+                const colorInput = document.getElementById('colorInput');
+
+                colorPicker.addEventListener('click', () => {
+                    colorInput.click();
+                });
+
+                colorInput.addEventListener('input', (e) => {
+                    this.colors.primary = e.target.value;
+                    colorPicker.style.background = e.target.value;
+                });
+            }
+
+            setupBrushControls() {
+                const brushSize = document.getElementById('brushSize');
+                const brushSizeValue = document.getElementById('brushSizeValue');
+
+                brushSize.addEventListener('input', (e) => {
+                    this.brushSettings.size = parseInt(e.target.value);
+                    brushSizeValue.textContent = e.target.value;
+                });
+
+                // Additional brush controls
+                const hardness = document.getElementById('brushHardness');
+                const hardnessValue = document.getElementById('hardnessValue');
+                const flow = document.getElementById('brushFlow');
+                const flowValue = document.getElementById('flowValue');
+
+                hardness.addEventListener('input', (e) => {
+                    this.brushSettings.hardness = parseInt(e.target.value);
+                    hardnessValue.textContent = e.target.value + '%';
+                });
+
+                flow.addEventListener('input', (e) => {
+                    this.brushSettings.flow = parseInt(e.target.value);
+                    flowValue.textContent = e.target.value + '%';
+                });
+
+                const brushType = document.getElementById('brushType');
+                brushType.addEventListener('change', (e) => {
+                    this.brushSettings.type = e.target.value;
+                });
+            }
+
+            setupExport() {
+                const exportBtn = document.getElementById('exportBtn');
+                const saveProjectBtn = document.getElementById('saveProjectBtn');
+                const exportModal = document.getElementById('exportModal');
+                const cancelExportBtn = document.getElementById('cancelExportBtn');
+                const confirmExportBtn = document.getElementById('confirmExportBtn');
+                const exportQuality = document.getElementById('exportQuality');
+                const qualityValue = document.getElementById('qualityValue');
+
+                exportBtn.addEventListener('click', () => {
+                    exportModal.classList.add('active');
+                });
+
+                saveProjectBtn.addEventListener('click', () => {
+                    this.saveProject();
+                });
+
+                cancelExportBtn.addEventListener('click', () => {
+                    exportModal.classList.remove('active');
+                });
+
+                confirmExportBtn.addEventListener('click', () => {
+                    this.exportImage();
+                    exportModal.classList.remove('active');
+                });
+
+                exportQuality.addEventListener('input', (e) => {
+                    qualityValue.textContent = Math.round(e.target.value * 100) + '%';
+                });
+
+                // Selection mode controls
+                const selectionMode = document.getElementById('selectionMode');
+                selectionMode.addEventListener('change', (e) => {
+                    this.selectionManager.mode = e.target.value;
+                });
+
+                const selectionFeather = document.getElementById('selectionFeather');
+                const featherValue = document.getElementById('featherValue');
+                selectionFeather.addEventListener('input', (e) => {
+                    this.selectionManager.feather = parseInt(e.target.value);
+                    featherValue.textContent = e.target.value + 'px';
+                });
+            }
+
+            setActiveTool(tool) {
+                this.activeTool = tool;
+                
+                // Update UI
+                document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+                
+                // Update tool properties panel
+                document.querySelectorAll('.tool-properties').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                const propertiesPanel = document.getElementById(`${tool}-properties`);
+                if (propertiesPanel) {
+                    propertiesPanel.classList.add('active');
+                }
+                
+                document.getElementById('currentTool').textContent = 
+                    tool.charAt(0).toUpperCase() + tool.slice(1);
+                
+                this.updateCursor();
+            }
+
+            updateCursor() {
+                switch (this.activeTool) {
+                    case 'brush':
+                        this.canvas.style.cursor = 'crosshair';
+                        break;
+                    case 'eraser':
+                        this.canvas.style.cursor = 'grab';
+                        break;
+                    case 'select':
+                        this.canvas.style.cursor = this.selectionManager.mode === 'lasso' ? 
+                            'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHBhdGggZD0iTTggMUw2IDNsMyAzLTMgMyAzIDMtMyAzIDMgMyAyLTItMy0zIDMtMy0zLTN6IiBmaWxsPSIjMDAwIi8+PC9zdmc+) 8 8, crosshair' : 
+                            'crosshair';
+                        break;
+                    case 'clone':
+                        this.canvas.style.cursor = this.altKeyPressed ? 
+                            'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNyIgLz48Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iMyIgZmlsbD0iIzAwNyIgLz48L3N2Zz4=) 8 8, crosshair' : 
+                            'crosshair';
+                        break;
+                    default:
+                        this.canvas.style.cursor = 'crosshair';
+                }
+            }
+
+            getMousePos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+
+            handleMouseDown(e) {
+                if (!this.activeLayer) return;
+
+                const pos = this.getMousePos(e);
+                
+                if (this.activeTool === 'select') {
+                    this.selectionManager.clear();
+                    this.selectionManager.begin(pos.x, pos.y);
+                    this.isDrawing = true;
+                    return;
+                }
+
+                if (!this.selectionManager.isPointInSelection(pos.x, pos.y)) {
+                    return;
+                }
+
+                if (this.activeLayer.locked) {
+                    return;
+                }
+
+                this.isDrawing = true;
+                this.lastPoint = pos;
+
+                if (this.activeTool === 'clone' && this.altKeyPressed) {
+                    this.cloneSource = { x: pos.x, y: pos.y };
+                    this.cloneOffset = { x: 0, y: 0 };
+                    return;
+                }
+
+                this.activeLayer.ctx.save();
+                
+                if (this.selectionManager.mask) {
+                    this.activeLayer.ctx.globalCompositeOperation = 'destination-in';
+                    this.activeLayer.ctx.drawImage(this.selectionManager.canvas, 0, 0);
+                    this.activeLayer.ctx.globalCompositeOperation = 'source-over';
+                }
+
+                this.saveState();
+            }
+
+            handleMouseMove(e) {
+                const pos = this.getMousePos(e);
+                
+                if (this.activeTool === 'select' && this.isDrawing) {
+                    this.selectionManager.update(pos.x, pos.y);
+                    this.render();
+                    return;
+                }
+
+                if (!this.isDrawing || !this.activeLayer) return;
+
+                switch (this.activeTool) {
+                    case 'brush':
+                        this.drawBrush(pos);
+                        break;
+                    case 'eraser':
+                        this.eraser(pos);
+                        break;
+                    case 'clone':
+                        this.cloneStamp(pos);
+                        break;
+                }
+
+                this.lastPoint = pos;
+            }
+
+            handleMouseUp(e) {
+                if (this.activeTool === 'select' && this.isDrawing) {
+                    this.selectionManager.finish();
+                    this.isDrawing = false;
+                    this.render();
+                    return;
+                }
+
+                if (this.activeLayer && this.isDrawing) {
+                    this.activeLayer.ctx.restore();
+                    this.activeLayer.updateThumbnail();
+                    this.updateLayersList();
+                }
+
+                this.isDrawing = false;
+                this.lastPoint = null;
+            }
+
+            handleKeyDown(e) {
+                if (e.key === 'Alt' || e.key === 'Option') {
+                    this.altKeyPressed = true;
+                    this.updateCursor();
+                }
+
+                if (e.ctrlKey || e.metaKey) {
+                    switch (e.key) {
+                        case 'z':
+                            e.preventDefault();
+                            this.undo();
+                            break;
+                        case 'y':
+                            e.preventDefault();
+                            this.redo();
+                            break;
+                        case 's':
+                            e.preventDefault();
+                            this.saveProject();
+                            break;
+                        case 'e':
+                            e.preventDefault();
+                            this.setActiveTool('eraser');
+                            break;
+                        case 'b':
+                            e.preventDefault();
+                            this.setActiveTool('brush');
+                            break;
+                        case 'v':
+                            e.preventDefault();
+                            this.setActiveTool('select');
+                            break;
+                    }
+                }
+            }
+
+            handleKeyUp(e) {
+                if (e.key === 'Alt' || e.key === 'Option') {
+                    this.altKeyPressed = false;
+                    this.updateCursor();
+                }
+            }
+
+            drawBrush(pos) {
+                if (!this.lastPoint) return;
+
+                const ctx = this.activeLayer.ctx;
+                const color = this.colors.primary;
+                
+                ctx.save();
+                
+                // Set brush properties
+                ctx.globalAlpha = this.brushSettings.flow / 100;
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = this.brushSettings.size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Apply hardness
+                if (this.brushSettings.hardness < 100) {
+                    ctx.globalCompositeOperation = 'destination-atop';
+                    const gradient = ctx.createRadialGradient(
+                        pos.x, pos.y, 0,
+                        pos.x, pos.y, this.brushSettings.size / 2
+                    );
+                    gradient.addColorStop(0, 'rgba(255,255,255,1)');
+                    gradient.addColorStop(this.brushSettings.hardness / 100, 'rgba(255,255,255,1)');
+                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(this.lastPoint.x - this.activeLayer.x, this.lastPoint.y - this.activeLayer.y);
+                ctx.lineTo(pos.x - this.activeLayer.x, pos.y - this.activeLayer.y);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            eraser(pos) {
+                if (!this.lastPoint) return;
+
+                const ctx = this.activeLayer.ctx;
+                
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = this.eraserSettings.size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                ctx.beginPath();
+                ctx.moveTo(this.lastPoint.x - this.activeLayer.x, this.lastPoint.y - this.activeLayer.y);
+                ctx.lineTo(pos.x - this.activeLayer.x, pos.y - this.activeLayer.y);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            cloneStamp(pos) {
+                if (this.altKeyPressed) return;
+
+                if (!this.cloneSource) return;
+
+                const ctx = this.activeLayer.ctx;
+                const dx = pos.x - this.lastPoint.x;
+                const dy = pos.y - this.lastPoint.y;
+
+                ctx.save();
+                ctx.globalAlpha = this.brushSettings.flow / 100;
+                
+                const sourceX = this.cloneSource.x - this.activeLayer.x;
+                const sourceY = this.cloneSource.y - this.activeLayer.y;
+                const destX = pos.x - this.activeLayer.x;
+                const destY = pos.y - this.activeLayer.y;
+
+                // Sample from source and draw at destination
+                ctx.drawImage(
+                    this.activeLayer.canvas,
+                    sourceX - this.brushSettings.size/2, sourceY - this.brushSettings.size/2,
+                    this.brushSettings.size, this.brushSettings.size,
+                    destX - this.brushSettings.size/2, destY - this.brushSettings.size/2,
+                    this.brushSettings.size, this.brushSettings.size
+                );
+
+                ctx.restore();
+
+                // Update source for next move
+                if (this.altKeyPressed === false) { // Clone tool movement
+                    this.cloneSource.x += dx;
+                    this.cloneSource.y += dy;
+                }
+            }
+
+            createBackgroundLayer() {
+                const layer = new Layer(0, 'Background', this.canvas.width, this.canvas.height);
+                layer.ctx.fillStyle = 'white';
+                layer.ctx.fillRect(0, 0, layer.canvas.width, layer.canvas.height);
+                
+                this.layers.push(layer);
+                this.activeLayer = layer;
+                this.updateLayersList();
+                this.render();
+            }
+
+            addLayer() {
+                const id = this.layers.length;
+                const name = `Layer ${id}`;
+                const layer = new Layer(id, name, this.canvas.width, this.canvas.height);
+                
+                this.layers.unshift(layer);
+                this.activeLayer = layer;
+                this.updateLayersList();
+                this.render();
+                
+                this.saveState();
+            }
+
+            uploadToLayer() {
+                const input = document.getElementById('fileInput');
+                input.onchange = (e) => {
+                    const files = Array.from(e.target.files);
+                    files.forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                if (index === 0 && this.layers.length === 1 && this.activeLayer.id === 0) {
+                                    // Replace background layer
+                                    this.activeLayer.canvas.width = img.width;
+                                    this.activeLayer.canvas.height = img.height;
+                                    this.activeLayer.ctx.drawImage(img, 0, 0);
+                                    this.activeLayer.name = file.name.split('.')[0];
+                                } else {
+                                    // Add as new layer
+                                    const id = this.layers.length;
+                                    const layer = new Layer(id, file.name.split('.')[0], img.width, img.height);
+                                    layer.ctx.drawImage(img, 0, 0);
+                                    this.layers.unshift(layer);
+                                    this.activeLayer = layer;
+                                }
+                                
+                                this.fitCanvasToLayers();
+                                this.updateLayersList();
+                                this.render();
+                                this.saveState();
+                            };
+                            img.src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                };
+                input.click();
+            }
+
+            duplicateLayer() {
+                if (!this.activeLayer) return;
+                
+                const original = this.activeLayer;
+                const duplicate = new Layer(
+                    this.layers.length,
+                    `${original.name} copy`,
+                    original.canvas.width,
+                    original.canvas.height
+                );
+                
+                duplicate.ctx.drawImage(original.canvas, 0, 0);
+                duplicate.opacity = original.opacity;
+                duplicate.blendMode = original.blendMode;
+                duplicate.x = original.x + 20;
+                duplicate.y = original.y + 20;
+                
+                this.layers.unshift(duplicate);
+                this.activeLayer = duplicate;
+                this.updateLayersList();
+                this.render();
+                
+                this.saveState();
+            }
+
+            deleteLayer() {
+                if (this.layers.length <= 1) {
+                    alert('Cannot delete the last layer!');
+                    return;
+                }
+                
+                const index = this.layers.indexOf(this.activeLayer);
+                this.layers.splice(index, 1);
+                
+                // Update remaining layer IDs
+                this.layers.forEach((layer, i) => {
+                    layer.id = this.layers.length - 1 - i;
+                });
+                
+                this.activeLayer = this.layers[0];
+                this.updateLayersList();
+                this.render();
+                
+                this.saveState();
+            }
+
+            mergeDown() {
+                const index = this.layers.indexOf(this.activeLayer);
+                if (index >= this.layers.length - 1) return;
+                
+                const topLayer = this.activeLayer;
+                const bottomLayer = this.layers[index + 1];
+                
+                // Merge top layer into bottom layer
+                const state = BlendModes.apply(bottomLayer.ctx, topLayer.blendMode, topLayer.opacity);
+                bottomLayer.ctx.drawImage(topLayer.canvas, topLayer.x, topLayer.y);
+                BlendModes.restore(bottomLayer.ctx, state);
+                
+                // Remove top layer
+                this.layers.splice(index, 1);
+                this.activeLayer = bottomLayer;
+                
+                // Update IDs
+                this.layers.forEach((layer, i) => {
+                    layer.id = this.layers.length - 1 - i;
+                });
+                
+                this.updateLayersList();
+                this.render();
+                this.saveState();
+            }
+
+            mergeAll() {
+                if (this.layers.length <= 1) return;
+                
+                const baseLayer = this.layers[this.layers.length - 1];
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = this.canvas.width;
+                finalCanvas.height = this.canvas.height;
+                const finalCtx = finalCanvas.getContext('2d');
+                
+                // Draw all layers in order (bottom to top)
+                [...this.layers].reverse().forEach(layer => {
+                    finalCtx.save();
+                    const state = BlendModes.apply(finalCtx, layer.blendMode, layer.opacity);
+                    finalCtx.drawImage(layer.canvas, layer.x, layer.y);
+                    BlendModes.restore(finalCtx, state);
+                });
+                
+                // Clear all layers except background
+                this.layers = [baseLayer];
+                baseLayer.ctx.clearRect(0, 0, baseLayer.canvas.width, baseLayer.canvas.height);
+                baseLayer.ctx.drawImage(finalCanvas, 0, 0);
+                baseLayer.name = 'Merged Image';
+                baseLayer.opacity = 1;
+                baseLayer.blendMode = 'normal';
+                
+                this.activeLayer = baseLayer;
+                this.updateLayersList();
+                this.render();
+                this.saveState();
+            }
+
+            fitCanvasToLayers() {
+                let maxWidth = 0;
+                let maxHeight = 0;
+                
+                this.layers.forEach(layer => {
+                    maxWidth = Math.max(maxWidth, layer.canvas.width + layer.x);
+                    maxHeight = Math.max(maxHeight, layer.canvas.height + layer.y);
+                });
+                
+                if (maxWidth > this.canvas.width || maxHeight > this.canvas.height) {
+                    this.canvas.width = Math.max(this.canvas.width, maxWidth);
+                    this.canvas.height = Math.max(this.canvas.height, maxHeight);
+                }
+                
+                document.getElementById('canvasSize').textContent = `${this.canvas.width}x${this.canvas.height}`;
+            }
+
+            updateLayersList() {
+                const layersList = document.getElementById('layersList');
+                layersList.innerHTML = '';
+                
+                this.layers.forEach((layer, index) => {
+                    const layerItem = document.createElement('div');
+                    layerItem.className = 'layer-item';
+                    if (layer === this.activeLayer) {
+                        layerItem.classList.add('active');
+                    }
+                    
+                    layerItem.innerHTML = `
+                        <div class="layer-preview">
+                            ${layer.thumbnailCanvas ? layer.thumbnailCanvas.outerHTML : ''}
+                        </div>
+                        <div class="layer-info">
+                            <span class="layer-name">${layer.name}</span>
+                            <div class="layer-controls-small">
+                                <button class="layer-control-btn" data-action="visible" title="Toggle Visibility">
+                                    ${layer.visible ? '👁️' : '🚫'}
+                                </button>
+                                <button class="layer-control-btn" data-action="lock" title="Lock/Unlock Layer">
+                                    ${layer.locked ? '🔒' : '🔓'}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layer-opacity">
+                            <label style="font-size: 11px; color: #a0a0a0;">Opacity: ${Math.round(layer.opacity * 100)}%</label>
+                            <input type="range" class="opacity-slider" min="0" max="100" value="${layer.opacity * 100}" 
+                                   data-layer-id="${layer.id}">
+                        </div>
+                        <div class="layer-blend-mode">
+                            <label style="font-size: 11px; color: #a0a0a0;">Blend Mode:</label>
+                            <select class="blend-mode-select" data-layer-id="${layer.id}">
+                                <option value="normal" ${layer.blendMode === 'normal' ? 'selected' : ''}>Normal</option>
+                                <option value="multiply" ${layer.blendMode === 'multiply' ? 'selected' : ''}>Multiply</option>
+                                <option value="screen" ${layer.blendMode === 'screen' ? 'selected' : ''}>Screen</option>
+                                <option value="overlay" ${layer.blendMode === 'overlay' ? 'selected' : ''}>Overlay</option>
+                                <option value="darken" ${layer.blendMode === 'darken' ? 'selected' : ''}>Darken</option>
+                                <option value="lighten" ${layer.blendMode === 'lighten' ? 'selected' : ''}>Lighten</option>
+                                <option value="color-dodge" ${layer.blendMode === 'color-dodge' ? 'selected' : ''}>Color Dodge</option>
+                                <option value="color-burn" ${layer.blendMode === 'color-burn' ? 'selected' : ''}>Color Burn</option>
+                                <option value="hard-light" ${layer.blendMode === 'hard-light' ? 'selected' : ''}>Hard Light</option>
+                                <option value="soft-light" ${layer.blendMode === 'soft-light' ? 'selected' : ''}>Soft Light</option>
+                                <option value="difference" ${layer.blendMode === 'difference' ? 'selected' : ''}>Difference</option>
+                                <option value="exclusion" ${layer.blendMode === 'exclusion' ? 'selected' : ''}>Exclusion</option>
+                            </select>
+                        </div>
+                    `;
+                    
+                    layerItem.addEventListener('click', (e) => {
+                        if (!e.target.closest('.layer-control-btn') && 
+                            !e.target.closest('input') && 
+                            !e.target.closest('select')) {
+                            this.setActiveLayer(layer);
+                        }
+                    });
+                    
+                    layersList.appendChild(layerItem);
+                });
+                
+                // Add event listeners to controls
+                document.querySelectorAll('.opacity-slider').forEach(slider => {
+                    slider.addEventListener('input', (e) => {
+                        const layerId = parseInt(e.target.getAttribute('data-layer-id'));
+                        const layer = this.layers.find(l => l.id === layerId);
+                        if (layer) {
+                            layer.opacity = e.target.value / 100;
+                            this.render();
+                            this.updateLayersList();
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.blend-mode-select').forEach(select => {
+                    select.addEventListener('change', (e) => {
+                        const layerId = parseInt(e.target.getAttribute('data-layer-id'));
+                        const layer = this.layers.find(l => l.id === layerId);
+                        if (layer) {
+                            layer.blendMode = e.target.value;
+                            this.render();
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.layer-control-btn[data-action="visible"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const layerItem = e.target.closest('.layer-item');
+                        const index = Array.from(layerItem.parentNode.children).indexOf(layerItem);
+                        const layer = this.layers[index];
+                        layer.visible = !layer.visible;
+                        this.render();
+                        this.updateLayersList();
+                    });
+                });
+                
+                document.querySelectorAll('.layer-control-btn[data-action="lock"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const layerItem = e.target.closest('.layer-item');
+                        const index = Array.from(layerItem.parentNode.children).indexOf(layerItem);
+                        const layer = this.layers[index];
+                        layer.locked = !layer.locked;
+                        this.updateLayersList();
+                    });
+                });
+
+                document.getElementById('currentLayer').textContent = 
+                    this.activeLayer ? this.activeLayer.name : 'None';
+            }
+
+            setActiveLayer(layer) {
+                this.activeLayer = layer;
+                this.updateLayersList();
+            }
+
+            render() {
+                const ctx = this.ctx;
+                const canvas = this.canvas;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background checkerboard
+                this.drawCheckerboard();
+                
+                // Draw layers (bottom to top)
+                [...this.layers].reverse().forEach(layer => {
+                    if (!layer.visible) return;
+                    
+                    ctx.save();
+                    
+                    // Apply layer transform
+                    ctx.translate(layer.x + layer.canvas.width/2, layer.y + layer.canvas.height/2);
+                    ctx.rotate(layer.rotation * Math.PI / 180);
+                    ctx.scale(layer.scaleX, layer.scaleY);
+                    ctx.translate(-layer.canvas.width/2, -layer.canvas.height/2);
+                    
+                    // Apply blend mode and opacity
+                    const state = BlendModes.apply(ctx, layer.blendMode, layer.opacity);
+                    
+                    // Draw layer
+                    if (layer.mask) {
+                        // Apply mask if exists
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'destination-in';
+                        ctx.drawImage(layer.mask.canvas, 0, 0);
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.drawImage(layer.canvas, 0, 0);
+                        ctx.restore();
+                    } else {
+                        ctx.drawImage(layer.canvas, 0, 0);
+                    }
+                    
+                    BlendModes.restore(ctx, state);
+                    ctx.restore();
+                });
+                
+                // Draw selection outline if active
+                this.selectionManager.drawOutline(ctx);
+            }
+
+            drawCheckerboard() {
+                const tileSize = 20;
+                const ctx = this.ctx;
+                
+                ctx.save();
+                ctx.globalAlpha = 0.1;
+                
+                for (let y = 0; y < this.canvas.height; y += tileSize) {
+                    for (let x = 0; x < this.canvas.width; x += tileSize) {
+                        const isEven = (Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2 === 0;
+                        ctx.fillStyle = isEven ? '#808080' : '#f0f0f0';
+                        ctx.fillRect(x, y, tileSize, tileSize);
+                    }
+                }
+                
+                ctx.restore();
+            }
+
+            saveState() {
+                // Remove any states after current index
+                this.history = this.history.slice(0, this.historyIndex + 1);
+                
+                // Save current state
+                const state = {
+                    layers: this.layers.map(layer => layer.saveState()),
+                    activeLayerId: this.activeLayer ? this.activeLayer.id : null,
+                    canvasWidth: this.canvas.width,
+                    canvasHeight: this.canvas.height
+                };
+                
+                this.history.push(state);
+                
+                // Limit history size
+                if (this.history.length > this.maxHistory) {
+                    this.history.shift();
+                } else {
+                    this.historyIndex++;
+                }
+                
+                console.log(`State saved. History size: ${this.history.length}`);
+            }
+
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.restoreState(this.history[this.historyIndex]);
+                    console.log('Undo performed');
+                }
+            }
+
+            redo() {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.restoreState(this.history[this.historyIndex]);
+                    console.log('Redo performed');
+                }
+            }
+
+            restoreState(state) {
+                // Clear current layers
+                this.layers = [];
+                
+                // Restore layers
+                state.layers.forEach(layerState => {
+                    const layer = new Layer(
+                        layerState.id,
+                        layerState.name,
+                        this.canvas.width,
+                        this.canvas.height
+                    );
+                    layer.restoreState(layerState);
+                    this.layers.push(layer);
+                });
+                
+                // Restore active layer
+                if (state.activeLayerId !== null) {
+                    this.activeLayer = this.layers.find(l => l.id === state.activeLayerId);
+                }
+                
+                // Update UI
+                this.updateLayersList();
+                this.render();
+            }
+
+            exportImage() {
+                const format = document.getElementById('exportFormat').value;
+                const quality = parseFloat(document.getElementById('exportQuality').value);
+                const exportSelectionOnly = document.getElementById('exportSelectionOnly').checked;
+                
+                // Create temporary canvas for export
+                const exportCanvas = document.createElement('canvas');
+                const exportCtx = exportCanvas.getContext('2d');
+                
+                if (exportSelectionOnly && this.selectionManager.mask) {
+                    // Export only selected area
+                    const bounds = this.selectionManager.getBounds();
+                    exportCanvas.width = bounds.width;
+                    exportCanvas.height = bounds.height;
+                    
+                    exportCtx.drawImage(
+                        this.canvas,
+                        bounds.x, bounds.y, bounds.width, bounds.height,
+                        0, 0, bounds.width, bounds.height
+                    );
+                } else {
+                    // Export full canvas
+                    exportCanvas.width = this.canvas.width;
+                    exportCanvas.height = this.canvas.height;
+                    exportCtx.drawImage(this.canvas, 0, 0);
+                }
+                
+                // Convert to desired format and download
+                exportCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `photoshop-clone-export.${format}`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }, `image/${format}`, quality);
+                
+                this.showProgress('Exporting image...', 100);
+            }
+
+            saveProject() {
+                const projectData = {
+                    version: '1.0',
+                    timestamp: new Date().toISOString(),
+                    canvas: {
+                        width: this.canvas.width,
+                        height: this.canvas.height
+                    },
+                    layers: this.layers.map(layer => layer.saveState()),
+                    activeLayerId: this.activeLayer ? this.activeLayer.id : null
+                };
+                
+                const blob = new Blob([JSON.stringify(projectData)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'photoshop-project.psc';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.showProgress('Saving project...', 100);
+            }
+
+            showProgress(message, percentage) {
+                const progressBar = document.getElementById('progressBar');
+                const progressFill = document.getElementById('progressFill');
+                const progressText = progressBar.querySelector('.progress-text');
+                
+                progressText.textContent = message;
+                progressFill.style.width = percentage + '%';
+                progressBar.classList.add('active');
+                
+                setTimeout(() => {
+                    progressBar.classList.remove('active');
+                }, 1000);
+            }
+        }
+
+        // =============================================================================
+        // INITIALIZE APPLICATION
+        // =============================================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new PhotoShopClone();
+            
+            // Add some helpful console logs
+            console.log('%c PhotoShop Clone Initialized Successfully! ', 'background: #007acc; color: white; font-size: 16px; padding: 10px; border-radius: 5px;');
+            console.log('%c Keyboard Shortcuts: ', 'font-weight: bold;');
+            console.log('%c Ctrl+Z: Undo | Ctrl+Y: Redo | Ctrl+S: Save | Ctrl+B: Brush | Ctrl+E: Eraser | Ctrl+V: Select Tool | Alt+Click: Clone Source', 'color: #007acc;');
+        });
+
+        // =============================================================================
+        // ADDITIONAL UTILITY FUNCTIONS
+        // =============================================================================
+
+        // Add drag and drop functionality for images
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = Array.from(e.dataTransfer.files).filter(file => 
+                file.type.startsWith('image/')
+            );
+            
+            if (files.length > 0) {
+                const input = document.getElementById('fileInput');
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+
+        // Add zoom functionality
+        document.addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const zoomLevel = document.getElementById('zoomLevel');
+                const currentZoom = parseInt(zoomLevel.textContent);
+                const delta = e.deltaY > 0 ? -10 : 10;
+                const newZoom = Math.max(10, Math.min(200, currentZoom + delta));
+                zoomLevel.textContent = newZoom + '%';
+                
+                // Apply zoom to canvas
+                const scale = newZoom / 100;
+                document.querySelector('.canvas-wrapper').style.transform = `scale(${scale})`;
+                document.querySelector('.canvas-wrapper').style.transformOrigin = 'center center';
+            }
+        });
+
+        // Add keyboard shortcuts for tools
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            
+            switch (e.key.toLowerCase()) {
+                case 'b':
+                    window.app.setActiveTool('brush');
+                    break;
+                case 'e':
+                    window.app.setActiveTool('eraser');
+                    break;
+                case 'v':
+                    window.app.setActiveTool('select');
+                    break;
+                case 's':
+                    window.app.setActiveTool('clone');
+                    break;
+                case 'g':
+                    window.app.setActiveTool('gradient');
+                    break;
+                case 'i':
+                    window.app.setActiveTool('eyedropper');
+                    break;
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.app) {
+                window.app.render();
+            }
+        });
+    </script>
+</body>
+</html>

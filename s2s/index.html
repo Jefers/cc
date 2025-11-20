@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snap2Sell MVP</title>
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f8;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* App-like feel */
+        }
+
+        /* --- LAYOUT --- */
+        #app-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px; /* Space for bottom nav */
+            max-width: 600px; /* Mobile width simulator on desktop */
+            width: 100%;
+            margin: 0 auto;
+            background-color: #fff;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        header {
+            background-color: #fff;
+            padding: 15px 20px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #6200ea;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- FORMS & INPUTS --- */
+        .section {
+            padding: 20px;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #6200ea;
+            outline: none;
+            background: #fff;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        /* --- IMAGE UPLOAD --- */
+        .image-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .upload-box {
+            aspect-ratio: 1;
+            background-color: #f0f0f5;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-box span {
+            font-size: 24px;
+            color: #aaa;
+        }
+
+        .upload-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: #6200ea;
+            color: white;
+            box-shadow: 0 4px 10px rgba(98, 0, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+            padding: 8px 12px;
+            font-size: 13px;
+            margin-bottom: 0;
+            width: auto;
+            display: inline-block;
+        }
+
+        .btn-danger {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: none;
+        }
+
+        /* --- INVENTORY CARDS --- */
+        .inventory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .card-thumb {
+            width: 80px;
+            height: 80px;
+            background-color: #f0f0f5;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .card-price {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        /* --- BOTTOM NAV --- */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 20;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #999;
+            font-size: 11px;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #6200ea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        /* --- ANIMATION --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- SETTINGS --- */
+        .settings-group {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <header>
+            <span>Snap2Sell</span>
+            <span style="font-size: 14px; color: #999; font-weight: 400;">Alpha 1.0</span>
+        </header>
+
+        <div id="view-home" class="section active">
+            <h2 style="margin-bottom: 15px;">Create Listing</h2>
+            
+            <div class="image-upload-grid">
+                <div class="upload-box" onclick="document.getElementById('file1').click()">
+                    <span id="preview-icon-1">📷</span>
+                    <img id="preview-img-1" style="display:none">
+                    <input type="file" id="file1" class="hidden-input" accept="image/*" onchange="handleImageUpload(this, 1)">
+                </div>
+                <div class="upload-box" onclick="document.getElementById('file2').click()">
+                    <span id="preview-icon-2">📷</span>
+                    <img id="preview-img-2" style="display:none">
+                    <input type="file" id="file2" class="hidden-input" accept="image/*" onchange="handleImageUpload(this, 2)">
+                </div>
+                <div class="upload-box" onclick="document.getElementById('file3').click()">
+                    <span id="preview-icon-3">📷</span>
+                    <img id="preview-img-3" style="display:none">
+                    <input type="file" id="file3" class="hidden-input" accept="image/*" onchange="handleImageUpload(this, 3)">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="generateMockListing()">✨ Generate Listing (AI)</button>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+            <form id="listing-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="inp-title" placeholder="Item Name">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="inp-desc" placeholder="Describe your item..."></textarea>
+                </div>
+
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Category</label>
+                        <select id="inp-category">
+                            <option value="">Select...</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Home">Home</option>
+                            <option value="Miscellaneous">Miscellaneous</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Condition</label>
+                        <select id="inp-condition">
+                            <option value="">Select...</option>
+                            <option value="New">New</option>
+                            <option value="Like New">Like New</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Suggested Price ($)</label>
+                    <input type="number" id="inp-price" placeholder="0.00">
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+                <button type="button" class="btn btn-outline" style="width:100%" onclick="resetForm()">Clear Form</button>
+            </form>
+        </div>
+
+        <div id="view-inventory" class="section">
+            <h2 style="margin-bottom: 15px;">My Drafts</h2>
+            <div id="inventory-container" class="inventory-list">
+                </div>
+        </div>
+
+        <div id="view-settings" class="section">
+            <h2 style="margin-bottom: 15px;">Settings</h2>
+            <div class="settings-group">
+                <h3>👤 User Profile</h3>
+                <p style="color: #666; margin-top: 5px;">Demo User</p>
+            </div>
+            <div class="settings-group">
+                <h3>⚙️ Preferences</h3>
+                <p style="color: #666; margin-top: 5px;">Notifications: On</p>
+                <p style="color: #666; margin-top: 5px;">Currency: USD</p>
+            </div>
+            <div class="settings-group" style="text-align: center;">
+                <p>Snap2Sell Version 1.0</p>
+                <button class="btn btn-outline" style="margin-top: 10px;" onclick="localStorage.clear(); location.reload();">Reset App Data</button>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+            <span class="nav-icon">📷</span>
+            <span>New Item</span>
+        </div>
+        <div class="nav-item" id="nav-inventory" onclick="switchTab('inventory')">
+            <span class="nav-icon">📦</span>
+            <span>Inventory</span>
+        </div>
+        <div class="nav-item" id="nav-settings" onclick="switchTab('settings')">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+        </div>
+    </nav>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let listings = [];
+        // Using Base64 array to store images temporarily for persistence
+        let currentImages = [null, null, null]; 
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            loadListings();
+        };
+
+        // --- NAVIGATION ---
+        function switchTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            // Show target section
+            document.getElementById(`view-${tabName}`).classList.add('active');
+            
+            // Update Nav Styles
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${tabName}`).classList.add('active');
+
+            if(tabName === 'inventory') {
+                renderInventory();
+            }
+        }
+
+        // --- IMAGE HANDLING ---
+        // Note: For a purely local MVP without a backend server, we use FileReader 
+        // to convert images to Base64 string so they persist in localStorage.
+        function handleImageUpload(input, index) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Display Preview
+                    const imgEl = document.getElementById(`preview-img-${index}`);
+                    const iconEl = document.getElementById(`preview-icon-${index}`);
+                    imgEl.src = e.target.result;
+                    imgEl.style.display = 'block';
+                    iconEl.style.display = 'none';
+                    
+                    // Store Base64 string
+                    currentImages[index - 1] = e.target.result;
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- MOCK AI GENERATOR ---
+        function generateMockListing() {
+            // Simple visual loading effect
+            const btn = document.querySelector('.btn-primary');
+            const originalText = btn.innerText;
+            btn.innerText = "🤖 Analyzing Image...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Mock Heuristics
+                const categories = ["Electronics", "Fashion", "Home", "Miscellaneous"];
+                const conditions = ["New", "Like New", "Good", "Fair"];
+                
+                const randomPrice = Math.floor(Math.random() * 40) + 5;
+                const randomCat = categories[Math.floor(Math.random() * categories.length)];
+                
+                document.getElementById('inp-title').value = "General Item (Auto-Generated)";
+                document.getElementById('inp-desc').value = "This is a pre-owned item in good working condition. Features durable materials and standard dimensions. (Auto-generated description based on visual analysis).";
+                document.getElementById('inp-category').value = randomCat;
+                document.getElementById('inp-condition').value = conditions[Math.floor(Math.random() * conditions.length)];
+                document.getElementById('inp-price').value = randomPrice;
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 800); // 800ms artificial delay
+        }
+
+        // --- DATA PERSISTENCE (CRUD) ---
+        
+        function loadListings() {
+            const stored = localStorage.getItem('snap2sell_drafts');
+            if (stored) {
+                listings = JSON.parse(stored);
+            }
+        }
+
+        function saveListings() {
+            localStorage.setItem('snap2sell_drafts', JSON.stringify(listings));
+        }
+
+        function saveDraft() {
+            const idInput = document.getElementById('edit-id').value;
+            const title = document.getElementById('inp-title').value;
+            const price = document.getElementById('inp-price').value;
+            
+            if(!title || !price) {
+                alert("Please fill in at least a Title and Price.");
+                return;
+            }
+
+            const newItem = {
+                id: idInput ? parseInt(idInput) : Date.now(),
+                title: title,
+                description: document.getElementById('inp-desc').value,
+                category: document.getElementById('inp-category').value,
+                condition: document.getElementById('inp-condition').value,
+                price: price,
+                // Filter out null images
+                images: currentImages.filter(img => img !== null),
+                date: new Date().toLocaleDateString()
+            };
+
+            if (idInput) {
+                // Update existing
+                const index = listings.findIndex(item => item.id == idInput);
+                if (index !== -1) listings[index] = newItem;
+            } else {
+                // Create new
+                listings.unshift(newItem); // Add to top
+            }
+
+            saveListings();
+            resetForm();
+            switchTab('inventory');
+        }
+
+        function deleteListing(id) {
+            if(confirm("Delete this draft?")) {
+                listings = listings.filter(item => item.id !== id);
+                saveListings();
+                renderInventory();
+            }
+        }
+
+        function editListing(id) {
+            const item = listings.find(l => l.id === id);
+            if (!item) return;
+
+            // Populate form
+            document.getElementById('edit-id').value = item.id;
+            document.getElementById('inp-title').value = item.title;
+            document.getElementById('inp-desc').value = item.description;
+            document.getElementById('inp-category').value = item.category;
+            document.getElementById('inp-condition').value = item.condition;
+            document.getElementById('inp-price').value = item.price;
+
+            // Restore images visually and in state
+            currentImages = [null, null, null];
+            
+            // Clear current previews
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`preview-img-${i}`).style.display = 'none';
+                document.getElementById(`preview-icon-${i}`).style.display = 'block';
+            }
+
+            // Load saved images
+            if (item.images && item.images.length > 0) {
+                item.images.forEach((imgData, idx) => {
+                    if (idx < 3) {
+                        currentImages[idx] = imgData;
+                        const imgEl = document.getElementById(`preview-img-${idx+1}`);
+                        const iconEl = document.getElementById(`preview-icon-${idx+1}`);
+                        imgEl.src = imgData;
+                        imgEl.style.display = 'block';
+                        iconEl.style.display = 'none';
+                    }
+                });
+            }
+
+            switchTab('home');
+        }
+
+        function publishListing(id) {
+            alert(`🚀 Success!\n\nItem ID: ${id}\nHas been published to the marketplace!`);
+        }
+
+        function resetForm() {
+            document.getElementById('listing-form').reset();
+            document.getElementById('edit-id').value = '';
+            currentImages = [null, null, null];
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`preview-img-${i}`).src = '';
+                document.getElementById(`preview-img-${i}`).style.display = 'none';
+                document.getElementById(`preview-icon-${i}`).style.display = 'block';
+                document.getElementById(`file${i}`).value = '';
+            }
+        }
+
+        // --- RENDERING ---
+        function renderInventory() {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = '';
+
+            if (listings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size:40px; margin-bottom:10px;">📦</div>
+                        <p>No drafts saved.</p>
+                        <button class="btn btn-outline" style="margin-top:10px" onclick="switchTab('home')">Create New</button>
+                    </div>
+                `;
+                return;
+            }
+
+            listings.forEach(item => {
+                // Use first image or a placeholder color
+                const thumbSrc = item.images && item.images[0] ? item.images[0] : null;
+                const thumbHtml = thumbSrc 
+                    ? `<img src="${thumbSrc}" class="card-thumb">` 
+                    : `<div class="card-thumb" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:20px">📷</div>`;
+
+                const html = `
+                    <div class="card">
+                        ${thumbHtml}
+                        <div class="card-content">
+                            <div>
+                                <div class="card-title">${item.title}</div>
+                                <div class="card-price">$${item.price}</div>
+                                <div style="font-size:12px; color:#999; margin-top:2px">${item.category} • ${item.condition}</div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-outline btn-sm" onclick="editListing(${item.id})">Edit</button>
+                                <button class="btn btn-outline btn-sm btn-danger" onclick="deleteListing(${item.id})">Delete</button>
+                                <button class="btn btn-primary btn-sm" style="width:auto; padding: 8px 12px; margin:0; font-size:13px;" onclick="publishListing(${item.id})">Publish</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+    </script>
+</body>
+</html>

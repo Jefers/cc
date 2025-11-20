@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Gut Microbiome Interactive Tree</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        #visualization {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .node circle {
+            cursor: pointer;
+            stroke: #fff;
+            stroke-width: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .node circle:hover {
+            stroke-width: 3px;
+            filter: brightness(1.1);
+        }
+        
+        .node text {
+            font-size: 12px;
+            pointer-events: none;
+            fill: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .link {
+            fill: none;
+            stroke: #bdc3c7;
+            stroke-width: 2px;
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.2s;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            transform: translateY(10px);
+        }
+        
+        .tooltip h3 {
+            margin: 0 0 12px 0;
+            color: #2c3e50;
+            font-size: 1.4em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .tooltip-section {
+            margin-bottom: 15px;
+        }
+        
+        .tooltip-section h4 {
+            margin: 0 0 8px 0;
+            color: #34495e;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .tooltip-section p {
+            margin: 0;
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #555;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .controls button {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .controls button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .legend h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .phylum-header {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦠 Human Gut Microbiome Explorer</h1>
+        <p class="subtitle">Interactive taxonomic tree with microbial functions and health impacts</p>
+        
+        <div id="visualization">
+            <div class="controls">
+                <button onclick="expandAll()">Expand All</button>
+                <button onclick="collapseAll()">Collapse All</button>
+                <button onclick="resetZoom()">Reset Zoom</button>
+            </div>
+            
+            <div class="legend">
+                <h4>Phyla</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c;"></div>
+                    <span>Firmicutes</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Bacteroidetes</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2ecc71;"></div>
+                    <span>Actinobacteria</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12;"></div>
+                    <span>Proteobacteria</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Verrucomicrobia</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Hierarchical data structure based on human gut microbiome taxonomy
+        const data = {
+            name: "Gut Microbiota",
+            type: "root",
+            children: [
+                {
+                    name: "Firmicutes",
+                    type: "phylum",
+                    color: "#e74c3c",
+                    functions: "Major producers of short-chain fatty acids (SCFAs) like butyrate",
+                    health: "Protective against inflammation, maintains gut barrier integrity",
+                    prevalence: "50-70% of gut bacteria",
+                    children: [
+                        {
+                            name: "Clostridia",
+                            type: "class",
+                            description: "Dominant class of Firmicutes",
+                            functions: "Butyrate production, bile acid metabolism",
+                            health: "Anti-inflammatory, colonocyte energy source",
+                            children: [
+                                {
+                                    name: "Faecalibacterium",
+                                    type: "genus",
+                                    functions: "Primary butyrate producer, anti-inflammatory properties",
+                                    health: "Strongly associated with gut health, reduced in IBD",
+                                    children: [
+                                        {
+                                            name: "F. prausnitzii",
+                                            type: "species",
+                                            functions: "Butyrate production, IL-10 induction, strengthens gut barrier",
+                                            health: "Anti-inflammatory, protects against colorectal cancer, reduced in Crohn's disease",
+                                            abundance: "5-15% of total microbiota"
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Ruminococcus",
+                                    type: "genus",
+                                    functions: "Cellulose degradation, complex carbohydrate fermentation",
+                                    health: "Important for fiber metabolism, linked to metabolic health",
+                                    children: [
+                                        {
+                                            name: "R. bromii",
+                                            type: "species",
+                                            functions: "Resistant starch degradation, acetate production",
+                                            health: "Improves glucose metabolism, supports beneficial bacteria",
+                                            abundance: "1-3% in high-fiber diets"
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Roseburia",
+                                    type: "genus",
+                                    functions: "Butyrate and propionate production",
+                                    health: "Anti-inflammatory, improves insulin sensitivity",
+                                    children: [
+                                        {
+                                            name: "R. hominis",
+                                            type: "species",
+                                            functions: "Butyrate production, mucin degradation",
+                                            health: "Maintains epithelial health, reduced in ulcerative colitis",
+                                            abundance: "1-5% of total microbiota"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Bacilli",
+                            type: "class",
+                            description: "Contains beneficial lactic acid bacteria",
+                            functions: "Lactic acid production, pathogen inhibition",
+                            health: "Probiotic effects, immune modulation",
+                            children: [
+                                {
+                                    name: "Lactobacillus",
+                                    type: "genus",
+                                    functions: "Lactate production, bacteriocin synthesis, pH reduction",
+                                    health: "Probiotic, prevents diarrhea, supports vaginal health",
+                                    children: [
+                                        {
+                                            name: "L. acidophilus",
+                                            type: "species",
+                                            functions: "Lactate production, cholesterol reduction",
+                                            health: "Improves lactose digestion, prevents antibiotic-associated diarrhea",
+                                            abundance: "0.1-1% of total microbiota"
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Enterococcus",
+                                    type: "genus",
+                                    functions: "Enterocin production, bile acid metabolism",
+                                    health: "Mixed effects - some strains probiotic, others opportunistic pathogens",
+                                    children: [
+                                        {
+                                            name: "E. faecium",
+                                            type: "species",
+                                            functions: "Probiotic strain production",
+                                            health: "Immune support, but can be pathogenic in immunocompromised",
+                                            abundance: "<0.1% in healthy individuals"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Bacteroidetes",
+                    type: "phylum",
+                    color: "#3498db",
+                    functions: "Primary degraders of complex carbohydrates and mucin",
+                    health: "Essential for fiber fermentation, but can be pathogenic if overgrown",
+                    prevalence: "20-40% of gut bacteria",
+                    children: [
+                        {
+                            name: "Bacteroidia",
+                            type: "class",
+                            description: "Major carbohydrate fermenters",
+                            functions: "Polysaccharide degradation, bile acid metabolism",
+                            health: "Critical for fiber digestion, supports SCFA production",
+                            children: [
+                                {
+                                    name: "Bacteroides",
+                                    type: "genus",
+                                    functions: "Complex carbohydrate fermentation, bile acid deconjugation",
+                                    health: "Contributes to obesity when overabundant, essential for normal digestion",
+                                    children: [
+                                        {
+                                            name: "B. thetaiotaomicron",
+                                            type: "species",
+                                            functions: "Degrades 15+ dietary polysaccharides, mucin foraging",
+                                            health: "Essential for fiber metabolism, can become opportunistic",
+                                            abundance: "5-10% of total microbiota"
+                                        },
+                                        {
+                                            name: "B. fragilis",
+                                            type: "species",
+                                            functions: "Polysaccharide A (PSA) production, immunomodulation",
+                                            health: "Can be beneficial or pathogenic (abscess formation)",
+                                            abundance: "1-3% of total microbiota"
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Alistipes",
+                                    type: "genus",
+                                    functions: "Bile acid metabolism, propionate production",
+                                    health: "Generally beneficial, increased in Mediterranean diet",
+                                    children: [
+                                        {
+                                            name: "A. indistinctus",
+                                            type: "species",
+                                            functions: "Bile acid modification, amino acid metabolism",
+                                            health: "Associated with reduced liver fat",
+                                            abundance: "0.5-2% of total microbiota"
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Prevotella",
+                                    type: "genus",
+                                    functions: "Hemicellulose and pectin degradation, H2S production",
+                                    health: "Associated with plant-based diets, potential role in inflammation",
+                                    children: [
+                                        {
+                                            name: "P. copri",
+                                            type: "species",
+                                            functions: "Complex carbohydrate degradation",
+                                            health: "Linked to insulin resistance in Western diets",
+                                            abundance: "5-20% (highly variable)"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Actinobacteria",
+                    type: "phylum",
+                    color: "#2ecc71",
+                    functions: "Bile acid metabolism, vitamin production",
+                    health: "Generally beneficial, probiotic members",
+                    prevalence: "3-10% of gut bacteria",
+                    children: [
+                        {
+                            name: "Bifidobacterium",
+                            type: "genus",
+                            functions: "Lactate and acetate production, pathogen inhibition",
+                            health: "Critical in infants, prevents NEC, supports immune development",
+                            children: [
+                                {
+                                    name: "B. longum",
+                                    type: "species",
+                                    functions: "Human milk oligosaccharide (HMO) degradation",
+                                    health: "Essential for infant gut health, anti-inflammatory",
+                                    abundance: "1-5% (higher in infants)"
+                                },
+                                {
+                                    name: "B. adolescentis",
+                                    type: "species",
+                                    functions: "Fructooligosaccharide fermentation",
+                                    health: "Supports gut barrier, reduces LPS translocation",
+                                    abundance: "0.5-3% of total microbiota"
+                                }
+                            ]
+                        },
+                        {
+                            name: "Collinsella",
+                            type: "genus",
+                            functions: "Bile acid deconjugation, oxalate degradation",
+                            health: "Implicated in oxalate kidney stones when overabundant",
+                            children: [
+                                {
+                                    name: "C. aerofaciens",
+                                    type: "species",
+                                    functions: "Bile acid metabolism",
+                                    health: "Associated with cholesterol metabolism",
+                                    abundance: "0.1-1% of total microbiota"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Proteobacteria",
+                    type: "phylum",
+                    color: "#f39c12",
+                    functions: "Variable - contains many pathogenic and beneficial species",
+                    health: "Minority member in healthy gut; expansion indicates dysbiosis",
+                    prevalence: "1-5% in healthy individuals",
+                    children: [
+                        {
+                            name: "Gammaproteobacteria",
+                            type: "class",
+                            description: "Includes Enterobacteriaceae",
+                            functions: "Lipopolysaccharide (LPS) production, rapid growth",
+                            health: "Expansion linked to inflammation and metabolic syndrome",
+                            children: [
+                                {
+                                    name: "Escherichia",
+                                    type: "genus",
+                                    functions: "Vitamin K2 production, flagellin expression",
+                                    health: "E. coli Nissle is probiotic; others can be pathogenic",
+                                    children: [
+                                        {
+                                            name: "E. coli (commensal)",
+                                            type: "species",
+                                            functions: "Vitamin synthesis, competitive exclusion",
+                                            health: "Generally harmless in low abundance",
+                                            abundance: "0.1-1% of total microbiota"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Verrucomicrobia",
+                    type: "phylum",
+                    color: "#9b59b6",
+                    functions: "Mucin degradation, acetate production",
+                    health: "Associated with leanness and metabolic health",
+                    prevalence: "<1-5% of gut bacteria",
+                    children: [
+                        {
+                            name: "Verrucomicrobiae",
+                            type: "class",
+                            description: "Single important genus in human gut",
+                            children: [
+                                {
+                                    name: "Akkermansia",
+                                    type: "genus",
+                                    functions: "Mucin foraging, strengthens gut barrier",
+                                    health: "Strongly associated with metabolic health, reduced in obesity and diabetes",
+                                    children: [
+                                        {
+                                            name: "A. muciniphila",
+                                            type: "species",
+                                            functions: "Mucin degradation, improves insulin sensitivity",
+                                            health: "Probiotic candidate, reduces inflammation, enhances gut barrier",
+                                            abundance: "1-5% (highly beneficial)"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Initialize visualization
+        const width = 1400;
+        const height = 800;
+        const margin = { top: 80, right: 250, bottom: 50, left: 100 };
+        
+        const svg = d3.select("#visualization")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .style("background", "white");
+        
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+        
+        // Create zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 3])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+        
+        svg.call(zoom);
+        
+        // Create tree layout
+        const tree = d3.tree()
+            .size([height - margin.top - margin.bottom, width - margin.left - margin.right])
+            .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+        
+        // Create tooltip
+        const tooltip = d3.select("#tooltip");
+        
+        let root;
+        
+        // Process data
+        function update(source) {
+            const treeData = tree(root);
+            const nodes = treeData.descendants();
+            const links = treeData.descendants().slice(1);
+            
+            // Update nodes
+            const node = g.selectAll("g.node")
+                .data(nodes, d => d.id || (d.id = ++i));
+            
+            const nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${source.y0 || 0},${source.x0 || 0})`);
+            
+            nodeEnter.append("circle")
+                .attr("r", 1e-6)
+                .style("fill", d => d.data.color || "#ccc")
+                .on("click", click)
+                .on("mouseover", showTooltip)
+                .on("mouseout", hideTooltip);
+            
+            nodeEnter.append("text")
+                .attr("dy", ".35em")
+                .attr("x", d => d.children || d._children ? -13 : 13)
+                .attr("text-anchor", d => d.children || d._children ? "end" : "start")
+                .text(d => d.data.name)
+                .style("fill", d => d.data.type === "phylum" ? "#2c3e50" : "#333")
+                .style("font-weight", d => d.data.type === "phylum" ? "600" : "500")
+                .style("font-size", d => d.data.type === "phylum" ? "14px" : "12px");
+            
+            const nodeUpdate = nodeEnter.merge(node);
+            
+            nodeUpdate.transition()
+                .duration(750)
+                .attr("transform", d => `translate(${d.y},${d.x})`);
+            
+            nodeUpdate.select("circle")
+                .attr("r", d => {
+                    const sizes = { phylum: 10, class: 8, genus: 6, species: 5 };
+                    return sizes[d.data.type] || 5;
+                })
+                .style("cursor", "pointer")
+                .style("fill", d => d.data.color || "#ccc")
+                .style("stroke", "#fff")
+                .style("stroke-width", "2px")
+                .attr("class", d => d._children ? "node collapsed" : "node expanded");
+            
+            const nodeExit = node.exit().transition()
+                .duration(750)
+                .attr("transform", d => `translate(${source.y},${source.x})`)
+                .remove();
+            
+            nodeExit.select("circle")
+                .attr("r", 1e-6);
+            
+            nodeExit.select("text")
+                .style("fill-opacity", 1e-6);
+            
+            // Update links
+            const link = g.selectAll("path.link")
+                .data(links, d => d.id);
+            
+            const linkEnter = link.enter().insert("path", "g")
+                .attr("class", "link")
+                .attr("d", d => {
+                    const o = { x: source.x0 || 0, y: source.y0 || 0 };
+                    return diagonal(o, o);
+                });
+            
+            const linkUpdate = linkEnter.merge(link);
+            
+            linkUpdate.transition()
+                .duration(750)
+                .attr("d", d => diagonal(d, d.parent));
+            
+            link.exit().transition()
+                .duration(750)
+                .attr("d", d => {
+                    const o = { x: source.x, y: source.y };
+                    return diagonal(o, o);
+                })
+                .remove();
+            
+            nodes.forEach(d => {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        }
+        
+        function diagonal(s, d) {
+            return `M ${s.y} ${s.x}
+                    C ${(s.y + d.y) / 2} ${s.x},
+                      ${(s.y + d.y) / 2} ${d.x},
+                      ${d.y} ${d.x}`;
+        }
+        
+        function click(event, d) {
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d);
+        }
+        
+        function showTooltip(event, d) {
+            const data = d.data;
+            let content = `<h3>${data.name}</h3>`;
+            
+            if (data.type === "phylum") {
+                content += `
+                    <div class="tooltip-section">
+                        <h4>📊 Prevalence</h4>
+                        <p>${data.prevalence || "Data not available"}</p>
+                    </div>
+                    <div class="tooltip-section">
+                        <h4>⚙️ Microbial Functions</h4>
+                        <p>${data.functions || "Various functions across members"}</p>
+                    </div>
+                    <div class="tooltip-section">
+                        <h4>❤️ Health Impact</h4>
+                        <p>${data.health || "Variable effects"}</p>
+                    </div>
+                `;
+            } else if (data.type === "species") {
+                content += `
+                    <div class="tooltip-section">
+                        <h4>📊 Typical Abundance</h4>
+                        <p>${data.abundance || "Variable"}</p>
+                    </div>
+                    <div class="tooltip-section">
+                        <h4>⚙️ Key Functions</h4>
+                        <p>${data.functions || "Specific metabolic activities"}</p>
+                    </div>
+                    <div class="tooltip-section">
+                        <h4>❤️ Health Impact</h4>
+                        <p>${data.health || "Context-dependent"}</p>
+                    </div>
+                `;
+            } else {
+                content += `
+                    <div class="tooltip-section">
+                        <h4>⚙️ Functions</h4>
+                        <p>${data.functions || "Various metabolic capabilities"}</p>
+                    </div>
+                    <div class="tooltip-section">
+                        <h4>❤️ Health Effects</h4>
+                        <p>${data.health || "Diverse impacts"}</p>
+                    </div>
+                `;
+            }
+            
+            tooltip.html(content)
+                .style("opacity", 1)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        }
+        
+        function hideTooltip() {
+            tooltip.style("opacity", 0);
+        }
+        
+        // Global functions for buttons
+        window.expandAll = function() {
+            function expand(d) {
+                if (d._children) {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                if (d.children) d.children.forEach(expand);
+            }
+            expand(root);
+            update(root);
+        };
+        
+        window.collapseAll = function() {
+            function collapse(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            }
+            root.children.forEach(collapse);
+            update(root);
+        };
+        
+        window.resetZoom = function() {
+            svg.transition().duration(750).call(
+                zoom.transform,
+                d3.zoomIdentity
+            );
+        };
+        
+        let i = 0;
+        
+        // Initialize
+        root = d3.hierarchy(data, d => d.children);
+        root.x0 = (height - margin.top - margin.bottom) / 2;
+        root.y0 = 0;
+        
+        root.children.forEach(collapse);
+        
+        update(root);
+        
+        // Initial expand of phylum level
+        setTimeout(() => {
+            root.children.forEach(d => {
+                if (d._children) {
+                    d.children = d._children;
+                    d._children = null;
+                }
+            });
+            update(root);
+        }, 500);
+    </script>
+</body>
+</html>
