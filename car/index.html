@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Photo Carousel</title>
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            /* Dark Mode (Default) */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent: #6366f1;
+            --border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .light-mode {
+            /* Light Mode */
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --tertiary-bg: #e9ecef;
+            --primary-text: #1a1a1a;
+            --secondary-text: #6c757d;
+            --border: rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* Header & Theme Toggle */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.25rem;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--tertiary-bg);
+            border-radius: 15px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        #theme-switch:checked ~ .theme-toggle::after {
+            transform: translateX(30px);
+        }
+
+        #theme-switch {
+            display: none;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .upload-label {
+            display: block;
+            text-align: center;
+            padding: 1.5rem;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-label:hover {
+            border-color: var(--accent);
+            background: var(--tertiary-bg);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 1rem;
+            color: var(--secondary-text);
+        }
+
+        /* Carousel Container */
+        .carousel-container {
+            position: relative;
+            margin-bottom: 2rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Carousel */
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        /* Slides */
+        .slide {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        .slide-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Navigation Buttons */
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .nav-button {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border);
+            color: var(--primary-text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .nav-button:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Scroll Indicators */
+        .scroll-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--secondary-text);
+            opacity: 0.5;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .indicator.active {
+            opacity: 1;
+            background: var(--accent);
+            transform: scale(1.2);
+        }
+
+        /* Uploaded Images Grid */
+        .uploaded-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* Instructions */
+        .instructions {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .instructions h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .instructions ul {
+            padding-left: 1.5rem;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+            color: var(--secondary-text);
+        }
+
+        /* Fade-in Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Responsive Adjustments */
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+            
+            .slide-image {
+                height: 400px;
+            }
+            
+            .uploaded-images {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <input type="checkbox" id="theme-switch">
+    
+    <header>
+        <div class="logo">PhotoCarousel</div>
+        <label for="theme-switch" class="theme-toggle"></label>
+    </header>
+    
+    <main>
+        <section class="upload-section fade-in">
+            <label for="file-upload" class="upload-label">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">Tap to upload photos from your gallery</span>
+            </label>
+            <input type="file" id="file-upload" accept="image/*" multiple style="display: none;">
+        </section>
+        
+        <section class="carousel-container fade-in">
+            <div class="carousel" id="carousel">
+                <!-- Slides will be added here by JavaScript -->
+                <div class="slide">
+                    <img src="https://picsum.photos/600/400?random=1" alt="Sample photo 1" class="slide-image">
+                    <div class="slide-caption">Beautiful landscape</div>
+                </div>
+                <div class="slide">
+                    <img src="https://picsum.photos/600/400?random=2" alt="Sample photo 2" class="slide-image">
+                    <div class="slide-caption">City skyline at dusk</div>
+                </div>
+                <div class="slide">
+                    <img src="https://picsum.photos/600/400?random=3" alt="Sample photo 3" class="slide-image">
+                    <div class="slide-caption">Mountain adventure</div>
+                </div>
+            </div>
+            
+            <div class="carousel-nav">
+                <button class="nav-button prev" onclick="scrollCarousel(-1)">❮</button>
+                <button class="nav-button next" onclick="scrollCarousel(1)">❯</button>
+            </div>
+            
+            <div class="scroll-indicators" id="indicators">
+                <!-- Indicators will be added here by JavaScript -->
+            </div>
+        </section>
+        
+        <section class="uploaded-images fade-in" id="uploaded-images">
+            <!-- Thumbnails will be added here by JavaScript -->
+        </section>
+        
+        <section class="instructions fade-in">
+            <h3>How to use this carousel</h3>
+            <ul>
+                <li>Tap the upload area to select photos from your device</li>
+                <li>Use the arrow buttons or swipe to navigate the carousel</li>
+                <li>Tap on thumbnails to jump to specific photos</li>
+                <li>Toggle between dark and light mode using the switch</li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        // Theme toggle functionality
+        const themeSwitch = document.getElementById('theme-switch');
+        const body = document.body;
+        
+        // Check for saved theme preference or respect OS preference
+        if (localStorage.getItem('theme') === 'light' || 
+            (window.matchMedia('(prefers-color-scheme: light)').matches && !localStorage.getItem('theme'))) {
+            themeSwitch.checked = true;
+            body.classList.add('light-mode');
+        }
+        
+        themeSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-mode');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+        
+        // Carousel functionality
+        const carousel = document.getElementById('carousel');
+        const indicators = document.getElementById('indicators');
+        const uploadedImages = document.getElementById('uploaded-images');
+        const fileInput = document.getElementById('file-upload');
+        
+        // Initialize indicators for existing slides
+        function initIndicators() {
+            indicators.innerHTML = '';
+            const slides = carousel.querySelectorAll('.slide');
+            
+            slides.forEach((slide, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator' + (index === 0 ? ' active' : '');
+                indicator.addEventListener('click', () => {
+                    scrollToSlide(index);
+                });
+                indicators.appendChild(indicator);
+            });
+        }
+        
+        // Initialize thumbnails for existing slides
+        function initThumbnails() {
+            uploadedImages.innerHTML = '';
+            const slides = carousel.querySelectorAll('.slide');
+            
+            slides.forEach((slide, index) => {
+                const img = slide.querySelector('img');
+                const thumbnail = document.createElement('img');
+                thumbnail.src = img.src;
+                thumbnail.alt = img.alt;
+                thumbnail.className = 'thumbnail';
+                thumbnail.addEventListener('click', () => {
+                    scrollToSlide(index);
+                });
+                uploadedImages.appendChild(thumbnail);
+            });
+        }
+        
+        // Scroll carousel by a certain number of slides
+        function scrollCarousel(direction) {
+            const slideWidth = carousel.offsetWidth;
+            carousel.scrollBy({
+                left: direction * slideWidth,
+                behavior: 'smooth'
+            });
+            
+            // Update active indicator after scroll completes
+            setTimeout(updateActiveIndicator, 300);
+        }
+        
+        // Scroll to a specific slide
+        function scrollToSlide(index) {
+            const slideWidth = carousel.offsetWidth;
+            carousel.scrollTo({
+                left: index * slideWidth,
+                behavior: 'smooth'
+            });
+            
+            // Update active indicator after scroll completes
+            setTimeout(updateActiveIndicator, 300);
+        }
+        
+        // Update the active indicator based on current scroll position
+        function updateActiveIndicator() {
+            const slides = carousel.querySelectorAll('.slide');
+            const indicators = document.querySelectorAll('.indicator');
+            
+            const scrollPosition = carousel.scrollLeft;
+            const slideWidth = carousel.offsetWidth;
+            const activeIndex = Math.round(scrollPosition / slideWidth);
+            
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === activeIndex);
+            });
+        }
+        
+        // Handle file upload
+        fileInput.addEventListener('change', function(e) {
+            const files = e.target.files;
+            
+            if (files.length > 0) {
+                // In a real app, you would upload files to a server
+                // For this demo, we'll just display them locally
+                
+                Array.from(files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            // Create new slide
+                            const slide = document.createElement('div');
+                            slide.className = 'slide';
+                            
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = 'Uploaded photo';
+                            img.className = 'slide-image';
+                            
+                            const caption = document.createElement('div');
+                            caption.className = 'slide-caption';
+                            caption.textContent = 'Uploaded photo';
+                            
+                            slide.appendChild(img);
+                            slide.appendChild(caption);
+                            carousel.appendChild(slide);
+                            
+                            // Create thumbnail
+                            const thumbnail = document.createElement('img');
+                            thumbnail.src = e.target.result;
+                            thumbnail.alt = 'Uploaded photo';
+                            thumbnail.className = 'thumbnail';
+                            
+                            const slideIndex = carousel.querySelectorAll('.slide').length - 1;
+                            thumbnail.addEventListener('click', () => {
+                                scrollToSlide(slideIndex);
+                            });
+                            
+                            uploadedImages.appendChild(thumbnail);
+                            
+                            // Update indicators
+                            initIndicators();
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                // Scroll to the last uploaded image
+                setTimeout(() => {
+                    const slides = carousel.querySelectorAll('.slide');
+                    scrollToSlide(slides.length - 1);
+                }, 500);
+            }
+        });
+        
+        // Update active indicator on scroll
+        carousel.addEventListener('scroll', updateActiveIndicator);
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initIndicators();
+            initThumbnails();
+        });
+    </script>
+</body>
+</html>
