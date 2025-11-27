@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Photo Carousel</title>
+    <title>Modern CSS Carousel</title>
     <style>
         /* CSS Variables for Theming */
         :root {
@@ -17,6 +17,7 @@
             --border: rgba(255, 255, 255, 0.1);
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
             --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.05);
         }
 
         .light-mode {
@@ -29,6 +30,7 @@
             --border: rgba(0, 0, 0, 0.1);
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(0, 0, 0, 0.05);
         }
 
         /* Base Styles */
@@ -46,6 +48,9 @@
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
             padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* Header & Theme Toggle */
@@ -53,6 +58,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
+            max-width: 800px;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border);
@@ -98,6 +105,228 @@
             display: none;
         }
 
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title-section h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .title-section p {
+            color: var(--secondary-text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Carousel Container */
+        .carousel-container {
+            position: relative;
+            margin-bottom: 2rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            background: var(--secondary-bg);
+            /* Anchor for positioning scroll buttons */
+            anchor-name: --carousel;
+        }
+
+        /* Modern Carousel with Scroll Buttons */
+        .carousel {
+            display: flex;
+            gap: 1em;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 1.5rem;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        /* Cards */
+        .card {
+            flex: 0 0 20em;
+            scroll-snap-align: start;
+            background: var(--tertiary-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-text);
+        }
+
+        .card-description {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .tag {
+            background: var(--glass-bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--secondary-text);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Scroll Buttons using Modern CSS */
+        .carousel::scroll-button(right) {
+            content: '→';
+            position: fixed;
+            position-anchor: --carousel;
+            position-area: right center;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+            transform: translateX(50%);
+        }
+
+        .carousel::scroll-button(left) {
+            content: '←';
+            position: fixed;
+            position-anchor: --carousel;
+            position-area: left center;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+
+        .carousel::scroll-button:disabled {
+            opacity: 0.5;
+            cursor: auto;
+            box-shadow: none;
+        }
+
+        .carousel::scroll-button:not(:disabled):hover {
+            transform: translateY(-2px) translateX(50%);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .carousel::scroll-button(left):not(:disabled):hover {
+            transform: translateY(-2px) translateX(-50%);
+        }
+
+        /* Scroll Markers */
+        .carousel {
+            scroll-marker-group: after;
+        }
+
+        .carousel::scroll-marker-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.5em;
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+
+        .card::scroll-marker {
+            content: '';
+            height: 1em;
+            width: 1em;
+            background-color: var(--secondary-text);
+            border-radius: 50%;
+            opacity: 0.5;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .card::scroll-marker:target-current {
+            background-color: var(--accent);
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
         /* Upload Section */
         .upload-section {
             background: var(--secondary-bg);
@@ -139,133 +368,6 @@
             color: var(--secondary-text);
         }
 
-        /* Carousel Container */
-        .carousel-container {
-            position: relative;
-            margin-bottom: 2rem;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-        }
-
-        /* Carousel */
-        .carousel {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            background: var(--secondary-bg);
-            border-radius: 16px;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .carousel::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Edge */
-        }
-
-        /* Slides */
-        .slide {
-            flex: 0 0 100%;
-            scroll-snap-align: start;
-            position: relative;
-        }
-
-        .slide-image {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .slide-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-            color: white;
-            padding: 1rem;
-            font-size: 0.9rem;
-        }
-
-        /* Navigation Buttons */
-        .carousel-nav {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .nav-button {
-            background: var(--secondary-bg);
-            border: 1px solid var(--border);
-            color: var(--primary-text);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .nav-button:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
-        }
-
-        /* Scroll Indicators */
-        .scroll-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--secondary-text);
-            opacity: 0.5;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .indicator.active {
-            opacity: 1;
-            background: var(--accent);
-            transform: scale(1.2);
-        }
-
-        /* Uploaded Images Grid */
-        .uploaded-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 0.75rem;
-            margin-top: 2rem;
-        }
-
-        .thumbnail {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-
-        .thumbnail:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            border-color: var(--accent);
-        }
-
         /* Instructions */
         .instructions {
             background: var(--secondary-bg);
@@ -289,6 +391,17 @@
             color: var(--secondary-text);
         }
 
+        /* Browser Support Notice */
+        .browser-notice {
+            background: var(--tertiary-bg);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+
         /* Fade-in Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -300,19 +413,20 @@
         }
 
         /* Responsive Adjustments */
-        @media (min-width: 768px) {
-            body {
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 2rem;
+        @media (max-width: 768px) {
+            .card {
+                flex: 0 0 100%;
             }
             
-            .slide-image {
-                height: 400px;
+            .carousel {
+                padding: 1rem;
             }
             
-            .uploaded-images {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            .carousel::scroll-button(right),
+            .carousel::scroll-button(left) {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
             }
         }
     </style>
@@ -321,11 +435,80 @@
     <input type="checkbox" id="theme-switch">
     
     <header>
-        <div class="logo">PhotoCarousel</div>
+        <div class="logo">CSS Carousel</div>
         <label for="theme-switch" class="theme-toggle"></label>
     </header>
     
-    <main>
+    <div class="container">
+        <section class="title-section fade-in">
+            <h1>Modern CSS Carousel</h1>
+            <p>Built with cutting-edge CSS features: scroll buttons, anchor positioning, and scroll markers</p>
+        </section>
+        
+        <section class="carousel-container fade-in">
+            <div class="carousel" id="carousel">
+                <div class="card">
+                    <img src="https://picsum.photos/600/400?random=1" alt="Mountain landscape" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Mountain Adventure</h3>
+                        <p class="card-description">Explore breathtaking mountain ranges with stunning views and fresh air.</p>
+                        <div class="card-tags">
+                            <span class="tag">Outdoor</span>
+                            <span class="tag">Hiking</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://picsum.photos/600/400?random=2" alt="City skyline" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Urban Exploration</h3>
+                        <p class="card-description">Discover the vibrant energy of city life and architectural marvels.</p>
+                        <div class="card-tags">
+                            <span class="tag">City</span>
+                            <span class="tag">Architecture</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://picsum.photos/600/400?random=3" alt="Beach scene" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Beach Getaway</h3>
+                        <p class="card-description">Relax on pristine sandy beaches with crystal clear waters.</p>
+                        <div class="card-tags">
+                            <span class="tag">Beach</span>
+                            <span class="tag">Relaxation</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://picsum.photos/600/400?random=4" alt="Forest path" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Forest Retreat</h3>
+                        <p class="card-description">Immerse yourself in the tranquility of lush green forests.</p>
+                        <div class="card-tags">
+                            <span class="tag">Nature</span>
+                            <span class="tag">Peaceful</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="https://picsum.photos/600/400?random=5" alt="Desert landscape" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Desert Journey</h3>
+                        <p class="card-description">Experience the vast beauty and solitude of desert landscapes.</p>
+                        <div class="card-tags">
+                            <span class="tag">Adventure</span>
+                            <span class="tag">Extreme</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <section class="upload-section fade-in">
             <label for="file-upload" class="upload-label">
                 <span class="upload-icon">📷</span>
@@ -334,47 +517,22 @@
             <input type="file" id="file-upload" accept="image/*" multiple style="display: none;">
         </section>
         
-        <section class="carousel-container fade-in">
-            <div class="carousel" id="carousel">
-                <!-- Slides will be added here by JavaScript -->
-                <div class="slide">
-                    <img src="https://picsum.photos/600/400?random=1" alt="Sample photo 1" class="slide-image">
-                    <div class="slide-caption">Beautiful landscape</div>
-                </div>
-                <div class="slide">
-                    <img src="https://picsum.photos/600/400?random=2" alt="Sample photo 2" class="slide-image">
-                    <div class="slide-caption">City skyline at dusk</div>
-                </div>
-                <div class="slide">
-                    <img src="https://picsum.photos/600/400?random=3" alt="Sample photo 3" class="slide-image">
-                    <div class="slide-caption">Mountain adventure</div>
-                </div>
-            </div>
-            
-            <div class="carousel-nav">
-                <button class="nav-button prev" onclick="scrollCarousel(-1)">❮</button>
-                <button class="nav-button next" onclick="scrollCarousel(1)">❯</button>
-            </div>
-            
-            <div class="scroll-indicators" id="indicators">
-                <!-- Indicators will be added here by JavaScript -->
-            </div>
-        </section>
-        
-        <section class="uploaded-images fade-in" id="uploaded-images">
-            <!-- Thumbnails will be added here by JavaScript -->
-        </section>
-        
         <section class="instructions fade-in">
-            <h3>How to use this carousel</h3>
+            <h3>How this carousel works</h3>
             <ul>
-                <li>Tap the upload area to select photos from your device</li>
-                <li>Use the arrow buttons or swipe to navigate the carousel</li>
-                <li>Tap on thumbnails to jump to specific photos</li>
+                <li>Uses CSS-only scroll buttons (::scroll-button) for navigation</li>
+                <li>Implements anchor positioning (anchor-name, position-anchor) for button placement</li>
+                <li>Features scroll markers (::scroll-marker) for position indicators</li>
+                <li>Utilizes scroll snapping (scroll-snap-type) for precise card alignment</li>
+                <li>Includes smooth scrolling (scroll-behavior: smooth) for better UX</li>
                 <li>Toggle between dark and light mode using the switch</li>
             </ul>
         </section>
-    </main>
+        
+        <div class="browser-notice fade-in">
+            <strong>Note:</strong> This demo uses cutting-edge CSS features that may not be supported in all browsers yet. For best results, try in the latest version of Chrome or Safari.
+        </div>
+    </div>
 
     <script>
         // Theme toggle functionality
@@ -398,149 +556,61 @@
             }
         });
         
-        // Carousel functionality
-        const carousel = document.getElementById('carousel');
-        const indicators = document.getElementById('indicators');
-        const uploadedImages = document.getElementById('uploaded-images');
-        const fileInput = document.getElementById('file-upload');
-        
-        // Initialize indicators for existing slides
-        function initIndicators() {
-            indicators.innerHTML = '';
-            const slides = carousel.querySelectorAll('.slide');
-            
-            slides.forEach((slide, index) => {
-                const indicator = document.createElement('div');
-                indicator.className = 'indicator' + (index === 0 ? ' active' : '');
-                indicator.addEventListener('click', () => {
-                    scrollToSlide(index);
-                });
-                indicators.appendChild(indicator);
-            });
-        }
-        
-        // Initialize thumbnails for existing slides
-        function initThumbnails() {
-            uploadedImages.innerHTML = '';
-            const slides = carousel.querySelectorAll('.slide');
-            
-            slides.forEach((slide, index) => {
-                const img = slide.querySelector('img');
-                const thumbnail = document.createElement('img');
-                thumbnail.src = img.src;
-                thumbnail.alt = img.alt;
-                thumbnail.className = 'thumbnail';
-                thumbnail.addEventListener('click', () => {
-                    scrollToSlide(index);
-                });
-                uploadedImages.appendChild(thumbnail);
-            });
-        }
-        
-        // Scroll carousel by a certain number of slides
-        function scrollCarousel(direction) {
-            const slideWidth = carousel.offsetWidth;
-            carousel.scrollBy({
-                left: direction * slideWidth,
-                behavior: 'smooth'
-            });
-            
-            // Update active indicator after scroll completes
-            setTimeout(updateActiveIndicator, 300);
-        }
-        
-        // Scroll to a specific slide
-        function scrollToSlide(index) {
-            const slideWidth = carousel.offsetWidth;
-            carousel.scrollTo({
-                left: index * slideWidth,
-                behavior: 'smooth'
-            });
-            
-            // Update active indicator after scroll completes
-            setTimeout(updateActiveIndicator, 300);
-        }
-        
-        // Update the active indicator based on current scroll position
-        function updateActiveIndicator() {
-            const slides = carousel.querySelectorAll('.slide');
-            const indicators = document.querySelectorAll('.indicator');
-            
-            const scrollPosition = carousel.scrollLeft;
-            const slideWidth = carousel.offsetWidth;
-            const activeIndex = Math.round(scrollPosition / slideWidth);
-            
-            indicators.forEach((indicator, index) => {
-                indicator.classList.toggle('active', index === activeIndex);
-            });
-        }
-        
         // Handle file upload
+        const fileInput = document.getElementById('file-upload');
+        const carousel = document.getElementById('carousel');
+        
         fileInput.addEventListener('change', function(e) {
             const files = e.target.files;
             
             if (files.length > 0) {
-                // In a real app, you would upload files to a server
-                // For this demo, we'll just display them locally
-                
                 Array.from(files).forEach(file => {
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         
                         reader.onload = function(e) {
-                            // Create new slide
-                            const slide = document.createElement('div');
-                            slide.className = 'slide';
+                            // Create new card
+                            const card = document.createElement('div');
+                            card.className = 'card';
                             
                             const img = document.createElement('img');
                             img.src = e.target.result;
                             img.alt = 'Uploaded photo';
-                            img.className = 'slide-image';
+                            img.className = 'card-image';
                             
-                            const caption = document.createElement('div');
-                            caption.className = 'slide-caption';
-                            caption.textContent = 'Uploaded photo';
+                            const cardContent = document.createElement('div');
+                            cardContent.className = 'card-content';
                             
-                            slide.appendChild(img);
-                            slide.appendChild(caption);
-                            carousel.appendChild(slide);
+                            const title = document.createElement('h3');
+                            title.className = 'card-title';
+                            title.textContent = 'Your Photo';
                             
-                            // Create thumbnail
-                            const thumbnail = document.createElement('img');
-                            thumbnail.src = e.target.result;
-                            thumbnail.alt = 'Uploaded photo';
-                            thumbnail.className = 'thumbnail';
+                            const description = document.createElement('p');
+                            description.className = 'card-description';
+                            description.textContent = 'This photo was uploaded from your device.';
                             
-                            const slideIndex = carousel.querySelectorAll('.slide').length - 1;
-                            thumbnail.addEventListener('click', () => {
-                                scrollToSlide(slideIndex);
-                            });
+                            const tags = document.createElement('div');
+                            tags.className = 'card-tags';
                             
-                            uploadedImages.appendChild(thumbnail);
+                            const tag = document.createElement('span');
+                            tag.className = 'tag';
+                            tag.textContent = 'Uploaded';
                             
-                            // Update indicators
-                            initIndicators();
+                            tags.appendChild(tag);
+                            cardContent.appendChild(title);
+                            cardContent.appendChild(description);
+                            cardContent.appendChild(tags);
+                            
+                            card.appendChild(img);
+                            card.appendChild(cardContent);
+                            
+                            carousel.appendChild(card);
                         };
                         
                         reader.readAsDataURL(file);
                     }
                 });
-                
-                // Scroll to the last uploaded image
-                setTimeout(() => {
-                    const slides = carousel.querySelectorAll('.slide');
-                    scrollToSlide(slides.length - 1);
-                }, 500);
             }
-        });
-        
-        // Update active indicator on scroll
-        carousel.addEventListener('scroll', updateActiveIndicator);
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            initIndicators();
-            initThumbnails();
         });
     </script>
 </body>
