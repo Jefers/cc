@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gen Z & Gen Alpha Slang Dictionary</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #6366f1;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            padding: 2rem 1rem;
+            text-align: center;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 2rem;
+            right: 1rem;
+            width: 60px;
+            height: 30px;
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        [data-theme="light"] .theme-toggle::before {
+            transform: translateX(30px);
+        }
+
+        .carousel-container {
+            perspective: 2000px;
+            height: 600px;
+            position: relative;
+            margin: 4rem auto;
+            max-width: 1200px;
+        }
+
+        .carousel-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 3rem 0 1rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotate 120s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .carousel:hover {
+            animation-play-state: paused;
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 280px;
+            left: 50%;
+            top: 50%;
+            margin-left: -140px;
+            margin-top: -150px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px 16px 0 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .carousel-item:hover::before {
+            opacity: 1;
+        }
+
+        .carousel-item:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+            border-color: var(--accent);
+        }
+
+        .phrase {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .meaning {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .gen-z {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .gen-alpha {
+            background: rgba(245, 87, 108, 0.2);
+            color: #f5576c;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 2rem 0;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-container {
+                height: 500px;
+            }
+            
+            .carousel-item {
+                width: 240px;
+                margin-left: -120px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .carousel-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔥 Gen Z & Gen Alpha Slang Dictionary</h1>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Explore the language of the internet generation</p>
+        <div class="theme-toggle" onclick="toggleTheme()"></div>
+    </header>
+
+    <div class="carousel-title">Gen Z Slang (100 Terms)</div>
+    <div class="carousel-container">
+        <div class="carousel" id="genZCarousel"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="toggleAnimation('genZCarousel')">⏯️ Pause/Play Gen Z</button>
+        <button class="btn" onclick="resetCarousel('genZCarousel')">🔄 Reset</button>
+    </div>
+
+    <div class="carousel-title">Gen Alpha Slang (100 Terms)</div>
+    <div class="carousel-container">
+        <div class="carousel" id="genAlphaCarousel"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="toggleAnimation('genAlphaCarousel')">⏯️ Pause/Play Gen Alpha</button>
+        <button class="btn" onclick="resetCarousel('genAlphaCarousel')">🔄 Reset</button>
+    </div>
+
+    <script>
+        const genZSlang = [
+            { phrase: "Slay", meaning: "To do something exceptionally well or look amazing" },
+            { phrase: "No cap", meaning: "No lie, for real, being genuine" },
+            { phrase: "Cap", meaning: "A lie or exaggeration" },
+            { phrase: "Bet", meaning: "Agreement, like 'okay' or 'sounds good'" },
+            { phrase: "Lit", meaning: "Exciting, amazing, or fun" },
+            { phrase: "Vibe check", meaning: "Assessing the mood or atmosphere" },
+            { phrase: "It's giving", meaning: "It has the energy of, it reminds me of" },
+            { phrase: "Periodt", meaning: "End of discussion, emphasis on a point" },
+            { phrase: "Tea", meaning: "Gossip or interesting information" },
+            { phrase: "Spill the tea", meaning: "Share the gossip" },
+            { phrase: "Snatched", meaning: "Looking really good, well put together" },
+            { phrase: "Fire", meaning: "Excellent, cool, awesome" },
+            { phrase: "Lowkey", meaning: "Somewhat, kind of, or secretly" },
+            { phrase: "Highkey", meaning: "Very much, obviously" },
+            { phrase: "Mid", meaning: "Mediocre, not good or bad" },
+            { phrase: "Rent free", meaning: "Living in your mind, can't stop thinking about something" },
+            { phrase: "Slaps", meaning: "Really good, usually music" },
+            { phrase: "Hits different", meaning: "Has a unique or better effect" },
+            { phrase: "Vibe", meaning: "A mood, feeling, or atmosphere" },
+            { phrase: "Main character", meaning: "Acting like the protagonist of your own life" },
+            { phrase: "Side quest", meaning: "A minor distraction from main goals" },
+            { phrase: "NPC", meaning: "Someone acting boring or without personality" },
+            { phrase: "Rizz", meaning: "Charisma, especially in flirting" },
+            { phrase: "Unhinged", meaning: "Acting wild, chaotic, or without restraint" },
+            { phrase: "Cheugy", meaning: "Outdated, trying too hard, uncool" },
+            { phrase: "Sheesh", meaning: "Expression of surprise or amazement" },
+            { phrase: "Yeet", meaning: "To throw something forcefully, or express excitement" },
+            { phrase: "Oof", meaning: "Expression of sympathy or acknowledgment of pain" },
+            { phrase: "Big yikes", meaning: "Very embarrassing or concerning" },
+            { phrase: "Cringe", meaning: "Embarrassing, awkward, uncomfortable" },
+            { phrase: "Stan", meaning: "To be an extremely devoted fan" },
+            { phrase: "Simp", meaning: "Someone who does too much for someone they like" },
+            { phrase: "Gatekeep", meaning: "To restrict access to something" },
+            { phrase: "Gaslight", meaning: "To manipulate someone into doubting their reality" },
+            { phrase: "Girlboss", meaning: "An empowered, successful woman (sometimes used ironically)" },
+            { phrase: "Salty", meaning: "Bitter, upset, or angry" },
+            { phrase: "Boujee", meaning: "Fancy, high-class, luxurious" },
+            { phrase: "Flex", meaning: "To show off" },
+            { phrase: "Drip", meaning: "Stylish clothing or appearance" },
+            { phrase: "Ghosted", meaning: "When someone suddenly stops all communication" },
+            { phrase: "Left on read", meaning: "When someone reads your message but doesn't reply" },
+            { phrase: "Slide into DMs", meaning: "To send a private message, usually flirtatiously" },
+            { phrase: "Fam", meaning: "Close friends or family" },
+            { phrase: "Bruh", meaning: "Expression of disbelief or used to address someone" },
+            { phrase: "Sis", meaning: "Used to address someone, not necessarily female" },
+            { phrase: "Bestie", meaning: "Best friend" },
+            { phrase: "Bop", meaning: "A really good song" },
+            { phrase: "Banger", meaning: "An excellent song or party" },
+            { phrase: "Extra", meaning: "Over the top, dramatic" },
+            { phrase: "Suss", meaning: "Suspicious or to investigate" },
+            { phrase: "Caught in 4K", meaning: "Caught red-handed with clear evidence" },
+            { phrase: "Ratio", meaning: "When a reply gets more likes than the original post" },
+            { phrase: "Touch grass", meaning: "Go outside, get off the internet" },
+            { phrase: "GOAT", meaning: "Greatest Of All Time" },
+            { phrase: "FOMO", meaning: "Fear Of Missing Out" },
+            { phrase: "IYKYK", meaning: "If You Know You Know" },
+            { phrase: "POV", meaning: "Point Of View" },
+            { phrase: "FR", meaning: "For Real" },
+            { phrase: "Ate", meaning: "Did something really well" },
+            { phrase: "Ate and left no crumbs", meaning: "Did something perfectly" },
+            { phrase: "Serving", meaning: "Looking good, delivering a great performance" },
+            { phrase: "Living for it", meaning: "Really enjoying something" },
+            { phrase: "Understood the assignment", meaning: "Did exactly what was expected perfectly" },
+            { phrase: "Say less", meaning: "I understand, no need to explain further" },
+            { phrase: "I'm dead", meaning: "Something is so funny it metaphorically killed you" },
+            { phrase: "I'm deceased", meaning: "Same as 'I'm dead'" },
+            { phrase: "Not me", meaning: "Expression of relating to something embarrassing" },
+            { phrase: "The way", meaning: "Used to emphasize something surprising" },
+            { phrase: "Delulu", meaning: "Delusional" },
+            { phrase: "It's the ___ for me", meaning: "Pointing out a specific thing you noticed" },
+            { phrase: "Built different", meaning: "Exceptionally good or unique" },
+            { phrase: "Different breed", meaning: "Exceptionally talented or unusual" },
+            { phrase: "Finna", meaning: "Going to, about to" },
+            { phrase: "Sliving", meaning: "Living your best life (slaying + living)" },
+            { phrase: "Zaddy", meaning: "An attractive, stylish, confident man" },
+            { phrase: "Snack", meaning: "An attractive person" },
+            { phrase: "Glow up", meaning: "A positive transformation" },
+            { phrase: "Receipts", meaning: "Proof or evidence" },
+            { phrase: "Pressed", meaning: "Upset or bothered" },
+            { phrase: "Shook", meaning: "Shocked or surprised" },
+            { phrase: "Wig", meaning: "So shocked your wig flew off" },
+            { phrase: "Purr", meaning: "Expression of approval or agreement" },
+            { phrase: "Bussin", meaning: "Really good, especially food" },
+            { phrase: "Bussin bussin", meaning: "Extra emphasis on how good something is" },
+            { phrase: "No printer, just facts", meaning: "Telling the truth" },
+            { phrase: "And I oop", meaning: "Expression of surprise or shock" },
+            { phrase: "Sksksk", meaning: "Expression of laughter or excitement" },
+            { phrase: "Smol", meaning: "Small and cute" },
+            { phrase: "Valid", meaning: "Acceptable, reasonable, or justified" },
+            { phrase: "Send it", meaning: "Go for it, take a risk" },
+            { phrase: "Sending me", meaning: "Making me laugh uncontrollably" },
+            { phrase: "Slept on", meaning: "Underrated or overlooked" },
+            { phrase: "Hits", meaning: "Is really good" },
+            { phrase: "Rent a personality", meaning: "Someone who has no original traits" },
+            { phrase: "Clean girl aesthetic", meaning: "Minimalist, natural beauty look" },
+            { phrase: "That's so random", meaning: "Unexpected or quirky" },
+            { phrase: "Living my best life", meaning: "Enjoying life to the fullest" },
+            { phrase: "Big mood", meaning: "Very relatable" },
+            { phrase: "Mood", meaning: "Relatable feeling or situation" },
+            { phrase: "Whole vibe", meaning: "Complete atmosphere or feeling" }
+        ];
+
+        const genAlphaSlang = [
+            { phrase: "Skibidi", meaning: "Nonsense word from viral videos, used randomly" },
+            { phrase: "Ohio", meaning: "Weird, strange, or chaotic (referencing 'Only in Ohio' memes)" },
+            { phrase: "Gyat", meaning: "Expression of excitement, especially about someone attractive" },
+            { phrase: "Sigma", meaning: "An independent, self-reliant person (from manosphere)" },
+            { phrase: "Alpha", meaning: "Dominant, leader-type person" },
+            { phrase: "Beta", meaning: "Follower, weaker person" },
+            { phrase: "Mewing", meaning: "Tongue posture exercise for jawline (often used as joke)" },
+            { phrase: "Looksmaxxing", meaning: "Trying to improve physical appearance" },
+            { phrase: "Mogging", meaning: "Looking better than someone else" },
+            { phrase: "Rizz you up", meaning: "To charm or flirt with someone" },
+            { phrase: "Fanum tax", meaning: "Taking someone's food (from streamer Fanum)" },
+            { phrase: "Griddy", meaning: "A dance move/celebration" },
+            { phrase: "Bussin no crumbs", meaning: "Absolutely delicious" },
+            { phrase: "Slay queen", meaning: "Encouraging someone who's doing great" },
+            { phrase: "W", meaning: "Win, something good" },
+            { phrase: "L", meaning: "Loss, something bad" },
+            { phrase: "Ratio + L + fell off", meaning: "Multi-layered insult combining several putdowns" },
+            { phrase: "No cap fr fr", meaning: "Really telling the truth, emphasis" },
+            { phrase: "Ong", meaning: "On God, swearing something is true" },
+            { phrase: "Frfr", meaning: "For real for real" },
+            { phrase: "Nah bro", meaning: "Disagreement or disbelief" },
+            { phrase: "Bro what", meaning: "Confusion or disbelief" },
+            { phrase: "Bruh moment", meaning: "An embarrassing or absurd situation" },
+            { phrase: "It's giving broke", meaning: "Looks cheap or low quality" },
+            { phrase: "It's giving rich", meaning: "Looks expensive or high quality" },
+            { phrase: "Ate that up", meaning: "Did something really well" },
+            { phrase: "Devious lick", meaning: "Stealing something (TikTok trend)" },
+            { phrase: "Tweaking", meaning: "Acting crazy or being wrong" },
+            { phrase: "Bussin respectfully", meaning: "Very good in a proper way" },
+            { phrase: "Respectfully", meaning: "Used to soften a bold statement" },
+            { phrase: "On fleek", meaning: "Perfect, on point (older but still used)" },
+            { phrase: "Dank", meaning: "Really good, cool" },
+            { phrase: "Poggers", meaning: "Exciting, awesome (from gaming)" },
+            { phrase: "Based", meaning: "Agreeable, respectable, authentic" },
+            { phrase: "Redpilled", meaning: "Awakened to reality (from manosphere)" },
+            { phrase: "Bluepilled", meaning: "Naive or ignorant" },
+            { phrase: "Blackpilled", meaning: "Pessimistic worldview" },
+            { phrase: "Cooked", meaning: "Finished, ruined, or in trouble" },
+            { phrase: "We're so back", meaning: "Things are good again" },
+            { phrase: "It's so over", meaning: "Things are going badly" },
+            { phrase: "Locked in", meaning: "Focused and committed" },
+            { phrase: "Goofy ahh", meaning: "Silly or ridiculous" },
+            { phrase: "Zesty", meaning: "Flamboyant or energetic" },
+            { phrase: "Saucy", meaning: "Bold, confident, or spicy" },
+            { phrase: "Ick", meaning: "Something that turns you off about someone" },
+            { phrase: "The ick", meaning: "A feeling of sudden disgust toward someone you liked" },
+            { phrase: "Delulu is the solulu", meaning: "Being delusional is the solution" },
+            { phrase: "Roman Empire", meaning: "Something you think about constantly" },
+            { phrase: "Hearing colors", meaning: "Being so shocked you're confused" },
+            { phrase: "Gassed", meaning: "Overly confident or hyped up" },
+            { phrase: "Clout chaser", meaning: "Someone seeking fame or attention" },
+            { phrase: "Pick me", meaning: "Someone who puts others down to seem special" },
+            { phrase: "Let him cook", meaning: "Let someone finish what they're doing" },
+            { phrase: "He's cooking", meaning: "He's doing something impressive" },
+            { phrase: "We ball", meaning: "We keep going despite difficulties" },
+            { phrase: "Glaze", meaning: "To overly compliment or hype someone" },
+            { phrase: "Glazing", meaning: "Excessively praising someone" },
+            { phrase: "Aura", meaning: "Your presence or energy level" },
+            { phrase: "Aura points", meaning: "Measure of how cool you are" },
+            { phrase: "Negative aura", meaning: "Lost coolness points" },
+            { phrase: "Plus aura", meaning: "Gained coolness points" },
+            { phrase: "Blud", meaning: "British slang for friend or person" },
+            { phrase: "Innit", meaning: "Isn't it (British)" },
+            { phrase: "Bruv", meaning: "Bro (British)" },
+            { phrase: "Peng", meaning: "Attractive or good (British)" },
+            { phrase: "Mandem", meaning: "Group of friends (British)" },
+            { phrase: "Garms", meaning: "Clothes, outfit (British)" },
+            { phrase: "Drilla", meaning: "Troublemaker (UK drill culture)" },
+            { phrase: "Opps", meaning: "Opponents or enemies" },
+            { phrase: "Crashout", meaning: "To lose control emotionally" },
+            { phrase: "Crash out", meaning: "Have an emotional breakdown" },
+            { phrase: "Tweakin fr", meaning: "Really acting crazy" },
+            { phrase: "Lowkey highkey", meaning: "Contradictory emphasis" },
+            { phrase: "That's cap bro", meaning: "That's a lie" },
+            { phrase: "Bing chilling", meaning: "Meme phrase meaning relaxing (from John Cena video)" },
+            { phrase: "Goofy", meaning: "Silly or foolish" },
+            { phrase: "Zaza", meaning: "High quality marijuana" },
+            { phrase: "Gooning", meaning: "Obsessive behavior (various contexts)" },
+            { phrase: "Edging", meaning: "Almost doing something but stopping" },
+            { phrase: "Down bad", meaning: "Desperately wanting something/someone" },
+            { phrase: "Down horrendous", meaning: "Extremely desperately wanting something" },
+            { phrase: "Starving", meaning: "Really wanting something badly" },
+            { phrase: "Thirsting", meaning: "Obviously wanting someone" },
+            { phrase: "Shooting your shot", meaning: "Trying to flirt or make a move" },
+            { phrase: "Missed", meaning: "Failed attempt at something" },
+            { phrase: "Bagged", meaning: "Successfully got someone to date you" },
+            { phrase: "Cuffing season", meaning: "Time of year people want relationships" },
+            { phrase: "Situationship", meaning: "Undefined romantic relationship" },
+            { phrase: "Link up", meaning: "Meet up or hang out" },
+            { phrase: "Linking", meaning: "Meeting up with someone" },
+            { phrase: "Pulling", meaning: "Attracting romantic interest" },
+            { phrase: "Rotting", meaning: "Lying in bed doing nothing" },
+            { phrase: "Bed rotting", meaning: "Staying in bed all day" },
+            { phrase: "Brain rot", meaning: "Consuming too much low-quality content" },
+            { phrase: "Core memory", meaning: "A significant memorable moment" },
+            { phrase: "Cannon event", meaning: "An unavoidable life event (from Spider-Verse)" },
+            { phrase: "The multiverse", meaning: "Alternative scenarios or possibilities" },
+            { phrase: "NPC behavior", meaning: "Acting like a background character" },
+            { phrase: "IRL", meaning: "In Real Life" }
+        ];
+
+        function createCarousel(containerId, data, type) {
+            const carousel = document.getElementById(containerId);
+            const itemCount = data.length;
+            const radius = 400;
+            const angleStep = 360 / itemCount;
+
+            data.forEach((item, index) => {
+                const angle = angleStep * index;
+                const div = document.createElement('div');
+                div.className = 'carousel-item';
+                
+                const yPos = Math.sin((angle * Math.PI) / 180) * 150;
+                const zPos = Math.cos((angle * Math.PI) / 180) * radius;
+                const xPos = Math.sin((angle * Math.PI) / 180) * 100;
+                
+                div.style.transform = `rotateY(${angle}deg) translateZ(${radius}px) translateX(${xPos}px) translateY(${yPos}px)`;
+                
+                div.innerHTML = `
+                    <span class="badge ${type}">${type === 'gen-z' ? 'Gen Z' : 'Gen Alpha'}</span>
+                    <div class="phrase">${item.phrase}</div>
+                    <div class="meaning">${item.meaning}</div>
+                `;
+                
+                carousel.appendChild(div);
+            });
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+
+        function toggleAnimation(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            const currentState = getComputedStyle(carousel).animationPlayState;
+            carousel.style.animationPlayState = currentState === 'paused' ? 'running' : 'paused';
+        }
+
+        function resetCarousel(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            carousel.style.animation = 'none';
+            setTimeout(() => {
+                carousel.style.animation = 'rotate 120s linear infinite';
+            }, 10);
+        }
+
+        createCarousel('genZCarousel', genZSlang, 'gen-z');
+        createCarousel('genAlphaCarousel', genAlphaSlang, 'gen-alpha');
+    </script>
+</body>
+</html>
