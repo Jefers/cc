@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary-bg: #0a0a0a;
@@ -198,13 +198,24 @@
             width: 100%;
         }
 
-        #qrcode {
+        .qr-code-wrapper {
             width: 75%;
             max-width: 300px;
-            height: auto;
-            padding: 10px;
-            background: white;
+            padding: 15px;
+            background: white; /* Always white background for QR code */
             border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #qrcode {
+            width: 100%;
+            height: auto;
+        }
+
+        #qrcode canvas, #qrcode img {
+            width: 100% !important;
+            height: auto !important;
+            display: block;
         }
 
         .badge {
@@ -260,6 +271,10 @@
             h1 {
                 font-size: 1.5rem;
             }
+            
+            .qr-code-wrapper {
+                width: 85%; /* Slightly larger on very small screens */
+            }
         }
     </style>
 </head>
@@ -290,7 +305,9 @@
 
         <div class="card fade-in">
             <div class="qr-container" id="qrContainer">
-                <div id="qrcode"></div>
+                <div class="qr-code-wrapper">
+                    <div id="qrcode"></div>
+                </div>
             </div>
             <div class="badge">QR Code</div>
         </div>
@@ -307,9 +324,10 @@
             const themeText = document.getElementById('themeText');
             const generateBtn = document.getElementById('generateBtn');
             const qrText = document.getElementById('qrText');
-            const qrContainer = document.getElementById('qrcode');
+            const qrCodeElement = document.getElementById('qrcode');
             
             let isDarkMode = true;
+            let qrcode = null;
             
             // Theme toggle functionality
             themeToggle.addEventListener('click', function() {
@@ -341,32 +359,32 @@
                 }
                 
                 // Clear previous QR code
-                qrContainer.innerHTML = '';
+                qrCodeElement.innerHTML = '';
                 
                 // Add loading state to button
                 generateBtn.innerHTML = '<span>Generating...</span>';
                 generateBtn.disabled = true;
                 
-                // Generate new QR code
+                // Generate new QR code with qrcodejs library
                 setTimeout(() => {
                     try {
-                        QRCode.toCanvas(qrContainer, text, {
-                            width: Math.min(300, window.innerWidth * 0.75),
-                            margin: 1,
-                            color: {
-                                dark: '#000000',
-                                light: '#FFFFFF'
-                            }
-                        }, function(error) {
-                            if (error) {
-                                console.error(error);
-                                alert('Error generating QR code. Please try again.');
-                            }
-                            
-                            // Reset button state
-                            generateBtn.innerHTML = 'Generate';
-                            generateBtn.disabled = false;
+                        // Calculate size - at least 75% of screen width, max 300px
+                        const wrapper = document.querySelector('.qr-code-wrapper');
+                        const size = Math.min(300, Math.floor(wrapper.offsetWidth));
+                        
+                        // Create new QRCode instance
+                        qrcode = new QRCode(qrCodeElement, {
+                            text: text,
+                            width: size,
+                            height: size,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
                         });
+                        
+                        // Reset button state
+                        generateBtn.innerHTML = 'Generate';
+                        generateBtn.disabled = false;
                     } catch (error) {
                         console.error(error);
                         alert('Error generating QR code. Please try again.');
