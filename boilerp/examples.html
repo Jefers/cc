@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing Border Code Examples</title>
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0e2136;
+            color: white;
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #00c3ff;
+            font-weight: 300;
+        }
+        
+        h2 {
+            margin-bottom: 1rem;
+            color: #00c3ff;
+            border-bottom: 1px solid rgba(0, 195, 255, 0.3);
+            padding-bottom: 0.5rem;
+        }
+        
+        .demo-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .demo-box {
+            flex: 1;
+            min-width: 300px;
+            background: #142d4a;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .visual-demo {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-container {
+            background: #0a1a2a;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background: #071220;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .copy-btn {
+            background: #00c3ff;
+            border: none;
+            color: #0a1a2a;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #4d0199;
+            color: white;
+        }
+        
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        .explanation {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #a0c4e0;
+        }
+        
+        .status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .working {
+            background: rgba(0, 195, 255, 0.2);
+            color: #00c3ff;
+        }
+        
+        .not-working {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff5555;
+        }
+        
+        /* Technique 1: Basic Box */
+        #basic-box {
+            background: #142d4a;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+        }
+        
+        /* Technique 2: Static Gradient Border */
+        #static-gradient {
+            background: #142d4a;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        #static-gradient::before {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: conic-gradient(
+                from 0deg at center,
+                #00c3ff,
+                #4d0199,
+                #6300c6,
+                #009dcd
+            );
+            border-radius: inherit;
+            z-index: -1;
+            padding: 2px;
+            top: -2px;
+            left: -2px;
+        }
+        
+        /* Technique 3: Static Gradient with Blur */
+        #static-blur {
+            background: #142d4a;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        #static-blur::before,
+        #static-blur::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: conic-gradient(
+                from 0deg at center,
+                #00c3ff,
+                #4d0199,
+                #6300c6,
+                #00c3ff
+            );
+            border-radius: inherit;
+            z-index: -1;
+            padding: 2px;
+            top: -2px;
+            left: -2px;
+        }
+        
+        #static-blur::after {
+            filter: blur(10px);
+        }
+        
+        /* Technique 4: Rotating Gradient (Transform Method) */
+        #rotate-transform {
+            background: #142d4a;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        #rotate-transform::before,
+        #rotate-transform::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: conic-gradient(
+                from 0deg at center,
+                #00c3ff,
+                #4d0199,
+                #6300c6,
+                #00c3ff
+            );
+            border-radius: inherit;
+            z-index: -1;
+            padding: 2px;
+            top: -2px;
+            left: -2px;
+            animation: rotate 3s linear infinite;
+        }
+        
+        #rotate-transform::after {
+            filter: blur(10px);
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Technique 5: Rotating Gradient (CSS Variables Method) */
+        @property --angle {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: false;
+        }
+        
+        #rotate-property {
+            background: #142d4a;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        #rotate-property::before,
+        #rotate-property::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: conic-gradient(
+                from var(--angle) at center,
+                #00c3ff,
+                #4d0199,
+                #6300c6,
+                #00c3ff
+            );
+            border-radius: inherit;
+            z-index: -1;
+            padding: 2px;
+            top: -2px;
+            left: -2px;
+            animation: rotate-angle 3s linear infinite;
+        }
+        
+        #rotate-property::after {
+            filter: blur(10px);
+        }
+        
+        @keyframes rotate-angle {
+            to {
+                --angle: 360deg;
+            }
+        }
+        
+        /* Technique 6: Final Effect */
+        #final-effect {
+            background: #142d4a;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        #final-effect::before,
+        #final-effect::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: conic-gradient(
+                from var(--angle) at center,
+                #00c3ff,
+                #4d0199,
+                #6300c6,
+                #00c3ff
+            );
+            border-radius: inherit;
+            z-index: -1;
+            padding: 2px;
+            top: -2px;
+            left: -2px;
+            animation: final-animation 2s linear infinite;
+        }
+        
+        #final-effect::after {
+            filter: blur(10px);
+        }
+        
+        @keyframes final-animation {
+            to {
+                --angle: 360deg;
+            }
+        }
+        
+        .browser-info {
+            background: #142d4a;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .browser-info h2 {
+            text-align: center;
+        }
+        
+        .support-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .support-table th, .support-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .support-table th {
+            background: rgba(0, 195, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .demo-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modern Animated Glowing Border - Code Examples</h1>
+        
+        <div class="demo-section">
+            <!-- Technique 1: Basic Box -->
+            <div class="demo-box">
+                <h2>1. Basic Box</h2>
+                <div class="visual-demo">
+                    <div id="basic-box">Basic Box</div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CSS Code</span>
+                        <button class="copy-btn" onclick="copyCode('code1')">Copy</button>
+                    </div>
+                    <pre id="code1">#basic-box {
+    background: #142d4a;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+}</pre>
+                </div>
+                <div class="explanation">
+                    This is our starting point - a simple box with a dark background and rounded corners.
+                </div>
+                <div class="status working">Works in all browsers</div>
+            </div>
+            
+            <!-- Technique 2: Static Gradient Border -->
+            <div class="demo-box">
+                <h2>2. Static Gradient Border</h2>
+                <div class="visual-demo">
+                    <div id="static-gradient">Static Gradient</div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CSS Code</span>
+                        <button class="copy-btn" onclick="copyCode('code2')">Copy</button>
+                    </div>
+                    <pre id="code2">#static-gradient {
+    background: #142d4a;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+#static-gradient::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: conic-gradient(
+        from 0deg at center,
+        #00c3ff,
+        #4d0199,
+        #6300c6,
+        #009dcd
+    );
+    border-radius: inherit;
+    z-index: -1;
+    padding: 2px;
+    top: -2px;
+    left: -2px;
+}</pre>
+                </div>
+                <div class="explanation">
+                    Adding a static conic gradient using the ::before pseudo-element to create a colorful border.
+                </div>
+                <div class="status working">Works in modern browsers</div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <!-- Technique 3: Static Gradient with Blur -->
+            <div class="demo-box">
+                <h2>3. Gradient with Blur</h2>
+                <div class="visual-demo">
+                    <div id="static-blur">Static + Blur</div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CSS Code</span>
+                        <button class="copy-btn" onclick="copyCode('code3')">Copy</button>
+                    </div>
+                    <pre id="code3">#static-blur {
+    background: #142d4a;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+#static-blur::before,
+#static-blur::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: conic-gradient(
+        from 0deg at center,
+        #00c3ff,
+        #4d0199,
+        #6300c6,
+        #00c3ff
+    );
+    border-radius: inherit;
+    z-index: -1;
+    padding: 2px;
+    top: -2px;
+    left: -2px;
+}
+
+#static-blur::after {
+    filter: blur(10px);
+}</pre>
+                </div>
+                <div class="explanation">
+                    Adding a blurred duplicate using the ::after pseudo-element to create a glowing effect.
+                </div>
+                <div class="status working">Works in modern browsers</div>
+            </div>
+            
+            <!-- Technique 4: Rotating Gradient (Transform) -->
+            <div class="demo-box">
+                <h2>4. Rotating (Transform)</h2>
+                <div class="visual-demo">
+                    <div id="rotate-transform">Rotating</div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CSS Code</span>
+                        <button class="copy-btn" onclick="copyCode('code4')">Copy</button>
+                    </div>
+                    <pre id="code4">#rotate-transform {
+    background: #142d4a;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+#rotate-transform::before,
+#rotate-transform::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: conic-gradient(
+        from 0deg at center,
+        #00c3ff,
+        #4d0199,
+        #6300c6,
+        #00c3ff
+    );
+    border-radius: inherit;
+    z-index: -1;
+    padding: 2px;
+    top: -2px;
+    left: -2px;
+    animation: rotate 3s linear infinite;
+}
+
+#rotate-transform::after {
+    filter: blur(10px);
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}</pre>
+                </div>
+                <div class="explanation">
+                    Animating the gradient by rotating the entire pseudo-element using CSS transforms.
+                </div>
+                <div class="status working">Works in all modern browsers</div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <!-- Technique 5: Rotating Gradient (CSS Variables) -->
+            <div class="demo-box">
+                <h2>5. Rotating (CSS Variables)</h2>
+                <div class="visual-demo">
+                    <div id="rotate-property">Rotating</div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CSS Code</span>
+                        <button class="copy-btn" onclick="copyCode('code5')">Copy</button>
+                    </div>
+                    <pre id="code5">@property --angle {
+    syntax: "&lt;angle&gt;";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#rotate-property {
+    background: #142d4a;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+#rotate-property::before,
+#rotate-property::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: conic-gradient(
+        from var(--angle) at center,
+        #00c3ff,
+        #4d0199,
+        #6300c6,
+        #00c3ff
+    );
+    border-radius: inherit;
+    z-index: -1;
+    padding: 2px;
+    top: -2px;
+    left: -2px;
+    animation: rotate-angle 3s linear infinite;
+}
+
+#rotate-property::after {
+    filter: blur(10px);
+}
+
+@keyframes rotate-angle {
+    to {
+        --angle: 360deg;
+    }
+}</pre>
+                </div>
+                <div class="explanation">
+                    Using the @property rule to animate CSS custom properties. This is a newer approach that might not be supported in all browsers.
+                </div>
+                <div class="status not-working" id="status5">Checking browser support...</div>
+            </div>
+            
+            <!-- Technique 6: Final Effect -->
+            <div class="demo-box">
+                <h2>6. Final Effect</h2>
+                <div class="visual-demo">
+                    <div id="final-effect">Final Effect</div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CSS Code</span>
+                        <button class="copy-btn" onclick="copyCode('code6')">Copy</button>
+                    </div>
+                    <pre id="code6">@property --angle {
+    syntax: "&lt;angle&gt;";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#final-effect {
+    background: #142d4a;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+#final-effect::before,
+#final-effect::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: conic-gradient(
+        from var(--angle) at center,
+        #00c3ff,
+        #4d0199,
+        #6300c6,
+        #00c3ff
+    );
+    border-radius: inherit;
+    z-index: -1;
+    padding: 2px;
+    top: -2px;
+    left: -2px;
+    animation: final-animation 2s linear infinite;
+}
+
+#final-effect::after {
+    filter: blur(10px);
+}
+
+@keyframes final-animation {
+    to {
+        --angle: 360deg;
+    }
+}</pre>
+                </div>
+                <div class="explanation">
+                    The complete effect combining the rotating gradient with the blur effect using CSS custom properties.
+                </div>
+                <div class="status not-working" id="status6">Checking browser support...</div>
+            </div>
+        </div>
+        
+        <div class="browser-info">
+            <h2>Browser Support Information</h2>
+            <p>If the rotating effects (Techniques 5 and 6) aren't working, it's likely due to limited browser support for the @property rule.</p>
+            
+            <table class="support-table">
+                <thead>
+                    <tr>
+                        <th>Browser</th>
+                        <th>@property Support</th>
+                        <th>Conic Gradient Support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chrome</td>
+                        <td>85+</td>
+                        <td>69+</td>
+                    </tr>
+                    <tr>
+                        <td>Firefox</td>
+                        <td>Not Supported</td>
+                        <td>83+</td>
+                    </tr>
+                    <tr>
+                        <td>Safari</td>
+                        <td>Not Supported</td>
+                        <td>12.1+</td>
+                    </tr>
+                    <tr>
+                        <td>Edge</td>
+                        <td>85+</td>
+                        <td>79+</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="margin-top: 1rem;"><strong>Solution:</strong> If @property isn't supported, use the transform method (Technique 4) which has broader browser support.</p>
+            <p id="browser-detection" style="margin-top: 1rem; text-align: center;"></p>
+        </div>
+    </div>
+
+    <script>
+        // Copy code to clipboard
+        function copyCode(id) {
+            const codeElement = document.getElementById(id);
+            const textArea = document.createElement('textarea');
+            textArea.value = codeElement.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1500);
+        }
+        
+        // Check if @property is supported
+        function checkPropertySupport() {
+            try {
+                CSS.registerProperty({
+                    name: '--test-angle',
+                    syntax: '<angle>',
+                    inherits: false,
+                    initialValue: '0deg'
+                });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Update status indicators based on actual support
+        document.addEventListener('DOMContentLoaded', function() {
+            const isPropertySupported = checkPropertySupport();
+            
+            const status5 = document.getElementById('status5');
+            const status6 = document.getElementById('status6');
+            const browserDetection = document.getElementById('browser-detection');
+            
+            if (isPropertySupported) {
+                status5.textContent = 'Working (Browser supports @property)';
+                status5.className = 'status working';
+                status6.textContent = 'Working (Browser supports @property)';
+                status6.className = 'status working';
+                browserDetection.innerHTML = '<strong>Your browser supports the @property rule!</strong>';
+                browserDetection.style.color = '#00c3ff';
+            } else {
+                status5.textContent = 'Not working (Browser does not support @property)';
+                status5.className = 'status not-working';
+                status6.textContent = 'Not working (Browser does not support @property)';
+                status6.className = 'status not-working';
+                browserDetection.innerHTML = '<strong>Your browser does NOT support the @property rule.</strong> Use Technique 4 instead.';
+                browserDetection.style.color = '#ff5555';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Animated Glowing Border</title>
+    <style>
+        /* Define the custom property for animation */
+        @property --deg {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* Base styles */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0e2136;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-weight: 300;
+            text-shadow: 0 0 10px rgba(0, 195, 255, 0.5);
+        }
+
+        /* Box styles */
+        .box {
+            background: #142d4a;
+            height: 200px;
+            aspect-ratio: 1/1;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+
+        /* Glowing border effect */
+        .box::before,
+        .box::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: conic-gradient(
+                from var(--deg) at center,
+                #00c3ff,
+                #4d0199,
+                #6300c6,
+                #00c3ff
+            );
+            border-radius: inherit;
+            z-index: -2;
+            padding: 2px;
+            animation: autoRotate 2s linear infinite;
+        }
+
+        .box::after {
+            filter: blur(10px);
+        }
+
+        /* Animation keyframes */
+        @keyframes autoRotate {
+            to {
+                --deg: 360deg;
+            }
+        }
+
+        /* Additional styling for demo purposes */
+        .instructions {
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 500px;
+            line-height: 1.5;
+        }
+
+        .note {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modern Animated Glowing Border</h1>
+        <div class="box">
+            
+        </div>
+        <div class="instructions">
+            <p>This effect uses CSS pseudo-elements with a rotating conic gradient and blur filter to create a modern animated glowing border.</p>
+            <p>You can customize the colors, animation speed, and blur amount by editing the CSS variables.</p>
+            <p class="note">Note: The @property rule used in this example is currently only supported in Chromium-based browsers (Chrome, Edge, etc.).</p>
+        </div>
+    </div>
+</body>
+</html>

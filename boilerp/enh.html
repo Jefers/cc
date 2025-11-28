@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Boilerplate with Glowing Borders</title>
+    <style>
+        /* CSS Custom Properties for Theming */
+        :root {
+            /* Dark Mode (Default) */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent-color: #6366f1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            
+            /* Light Mode */
+            --primary-bg-light: #ffffff;
+            --secondary-bg-light: #f8f9fa;
+            --tertiary-bg-light: #e9ecef;
+            --primary-text-light: #1a1a1a;
+            --secondary-text-light: #6c757d;
+            --border-color-light: rgba(0, 0, 0, 0.1);
+            
+            /* Design Tokens */
+            --border-radius-card: 16px;
+            --border-radius-button: 12px;
+            --transition: all 0.3s ease;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            
+            /* Glowing Border Effect */
+            --glow-color-1: #6366f1; /* Using your accent color */
+            --glow-color-2: #8b5cf6; /* Purple */
+            --glow-color-3: #ec4899; /* Pink */
+            --glow-color-4: #06b6d4; /* Cyan */
+        }
+
+        /* Property definition for rotating gradient (if supported) */
+        @property --angle {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        body.light-mode {
+            --primary-bg: var(--primary-bg-light);
+            --secondary-bg: var(--secondary-bg-light);
+            --tertiary-bg: var(--tertiary-bg-light);
+            --primary-text: var(--primary-text-light);
+            --secondary-text: var(--secondary-text-light);
+            --border-color: var(--border-color-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header & Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        nav a:hover {
+            color: var(--primary-text);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--primary-text);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-button);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--tertiary-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Card Components */
+        .card {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: 1.5rem;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-text);
+        }
+
+        .card p {
+            color: var(--secondary-text);
+            margin-bottom: 1rem;
+        }
+
+        /* Enhanced Card with Glowing Border */
+        .card-glow-wrapper {
+            position: relative;
+            border-radius: var(--border-radius-card);
+            transition: var(--transition);
+        }
+
+        .card-glow-wrapper:hover {
+            transform: translateY(-8px);
+        }
+
+        .card-glow {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: 1.5rem;
+            position: relative;
+            z-index: 2;
+            border: 1px solid var(--border-color);
+            height: 100%;
+        }
+
+        .card-glow-wrapper::before,
+        .card-glow-wrapper::after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: conic-gradient(
+                from var(--angle) at center,
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            border-radius: calc(var(--border-radius-card) + 4px);
+            z-index: 1;
+            animation: rotate-gradient 4s linear infinite;
+        }
+
+        .card-glow-wrapper::after {
+            filter: blur(20px);
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        @keyframes rotate-gradient {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        /* Button Components */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-button);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-stack);
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            color: white;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--tertiary-bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-text);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--border-radius-button);
+            border: 1px solid var(--border-color);
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            font-family: var(--font-stack);
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent-color);
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius-card);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-color);
+            background: var(--secondary-bg);
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--tertiary-bg);
+            transition: var(--transition);
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Progress Bars */
+        .progress {
+            height: 8px;
+            background: var(--tertiary-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Utility Classes */
+        .text-gradient {
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Reduced motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">GlowUI</div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Components</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Examples</a></li>
+                </ul>
+            </nav>
+            <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+        </header>
+
+        <main>
+            <section class="fade-in">
+                <h1 class="text-gradient">Enhanced Design System</h1>
+                <p class="secondary-text mb-3">A modern UI system with animated glowing borders</p>
+                
+                <div class="grid">
+                    <!-- Standard Card -->
+                    <div class="card fade-in">
+                        <h3>Standard Card</h3>
+                        <p>This card uses the standard design with a subtle top gradient accent on hover.</p>
+                        <button class="btn btn-primary mt-2">Learn More</button>
+                    </div>
+                    
+                    <!-- Enhanced Card with Glowing Border -->
+                    <div class="card-glow-wrapper fade-in">
+                        <div class="card-glow">
+                            <span class="badge">New</span>
+                            <h3>Enhanced Card</h3>
+                            <p>This card features the animated glowing border effect with rotating gradient.</p>
+                            <button class="btn btn-gradient mt-2">Explore</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Glassmorphism Card -->
+                    <div class="card glass fade-in">
+                        <h3>Glass Card</h3>
+                        <p>This card uses glassmorphism effects with backdrop blur.</p>
+                        <button class="btn btn-outline mt-2">View Details</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="mt-3 fade-in">
+                <h2>UI Components</h2>
+                
+                <div class="grid">
+                    <!-- Buttons -->
+                    <div class="card">
+                        <h3>Button Variants</h3>
+                        <div class="mt-2">
+                            <button class="btn btn-primary">Primary</button>
+                            <button class="btn btn-gradient">Gradient</button>
+                            <button class="btn btn-outline">Outline</button>
+                            <button class="btn btn-secondary">Secondary</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Elements -->
+                    <div class="card">
+                        <h3>Form Elements</h3>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="Enter your email">
+                        </div>
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                    
+                    <!-- Progress & Toggle -->
+                    <div class="card">
+                        <h3>Progress & Toggle</h3>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 65%"></div>
+                        </div>
+                        <div class="mt-2">
+                            <label class="toggle">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="ml-1">Toggle switch</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="mt-3 fade-in">
+                <div class="alert">
+                    <h3>Alert Box</h3>
+                    <p>This is an alert message with a left border accent.</p>
+                </div>
+                
+                <div class="card floating">
+                    <h3>Floating Element</h3>
+                    <p>This card has a floating animation applied to it.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            themeToggle.textContent = document.body.classList.contains('light-mode') 
+                ? 'Dark Mode' 
+                : 'Light Mode';
+        });
+
+        // Fade in elements on scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const fadeInOnScroll = () => {
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.style.opacity = 1;
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        // Set initial state
+        fadeElements.forEach(element => {
+            element.style.opacity = 0;
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        });
+        
+        window.addEventListener('scroll', fadeInOnScroll);
+        // Initial check
+        fadeInOnScroll();
+        
+        // Check for @property support and apply fallback if needed
+        document.addEventListener('DOMContentLoaded', () => {
+            const isPropertySupported = CSS.supports('--angle: 0deg');
+            
+            if (!isPropertySupported) {
+                // Fallback: Use transform rotation instead of CSS variables
+                const style = document.createElement('style');
+                style.textContent = `
+                    .card-glow-wrapper::before,
+                    .card-glow-wrapper::after {
+                        animation: rotate-transform 4s linear infinite;
+                    }
+                    
+                    @keyframes rotate-transform {
+                        from {
+                            transform: rotate(0deg);
+                        }
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+    </script>
+</body>
+</html>
