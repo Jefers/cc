@@ -60,9 +60,6 @@
     position:absolute; inset:-4px; border-radius:20px; background:conic-gradient(from var(--angle), var(--glow-color-1), var(--glow-color-2), var(--glow-color-3), var(--glow-color-4), var(--glow-color-1)); 
     filter:blur(20px); opacity:0.7; z-index:0; animation: rotate 4s linear infinite;
   }
- /*  @supports not (background: conic-gradient(from var(--angle), var(--glow-color-1), var(--glow-color-2), var(--glow-color-3), var(--glow-color-4), var(--glow-color-1))) { */
- /*    .card-glow { animation: rotate-fallback 4s linear infinite; } */
- /*  } */
   .card { 
     position:relative; z-index:2; background:var(--secondary-bg); border-radius:var(--border-radius-card); 
     padding:24px; backdrop-filter:blur(10px); border:1px solid var(--border-color); transition:var(--transition);
@@ -75,7 +72,7 @@
   textarea:focus, input:focus { outline:none; border-color:var(--accent-color); box-shadow:0 0 0 3px rgba(99,102,241,0.3); }
   button {
     padding:12px 24px; border:none; border-radius:var(--border-radius-button); cursor:pointer; font-weight:600;
-    transition:var(--transition); margin:8px 4px;
+    transition:var(--transition); margin:8px 4px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
   .btn-primary { background:var(--accent-color); color:white; }
   .btn-gradient { background:linear-gradient(135deg, var(--glow-color-1), var(--glow-color-3)); color:white; }
@@ -87,7 +84,6 @@
   .progress-fill { height:100%; width:0%; background:linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3)); transition:width 0.6s ease; }
   .final-prompt { background:var(--tertiary-bg); padding:20px; border-radius:12px; white-space:pre-wrap; font-family:monospace; font-size:14px; max-height:50vh; overflow:auto; }
   @keyframes rotate { from { --angle:0deg; } to { --angle:360deg; } }
-  @keyframes rotate-fallback { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -102,7 +98,7 @@
       <div class="card-glow-wrapper"><div class="card-glow"></div>
         <div class="card">
           <h2>0 What process are we killing today?</h2>
-          <input type="text" id="processName" placeholder="e.g. Monthly expense reporting, Customer onboarding, Inventory counting..." oninput="save()">
+          <input type="text" id="processName" placeholder="e.g. Monthly expense reporting, Customer onboarding, Inventory counting...">
           <p style="margin-top:16px"><button class="btn-gradient" onclick="nextStep()">Start →</button></p>
         </div>
       </div>
@@ -112,7 +108,7 @@
     <div class="step">
       <div class="card-glow-wrapper"><div class="card-glow"></div>
         <div class="card">
-          <h2>1 Make requirements less dumb</h2>
+          <h2>1 Make your requirements less dumb</h2>
           <p>Who originally wrote the current requirements? Are they actually knowledgeable, or is it “how we’ve always done it”?</p>
           <textarea id="step1" rows="6" placeholder="Describe the current requirements and why many of them might be dumb..."></textarea><br><br>
           <button class="btn-primary" onclick="prevStep()">← Back</button>
@@ -125,7 +121,7 @@
     <div class="step">
       <div class="card-glow-wrapper"><div class="card-glow"></div>
         <div class="card">
-          <h2>2 Delete parts or entire process</h2>
+          <h2>2 Work very hard to delete the part or process</h2>
           <p>If you had a magic wand and could delete anything without consequence, what would you delete first?</p>
           <textarea id="step2" rows="6" placeholder="List parts, steps, approvals, reports, tools, meetings you would try to completely eliminate..."></textarea><br><br>
           <button class="btn-primary" onclick="prevStep()">← Back</button>
@@ -138,7 +134,7 @@
     <div class="step">
       <div class="card-glow-wrapper"><div class="card-glow"></div>
         <div class="card">
-          <h2>3 Simplify & own requirements personally</h2>
+          <h2>3 Simplify the process or part. Requirements should come from person not from the department</h2>
           <p>What is the real human need here? What should the process actually achieve in the simplest possible way?</p>
           <textarea id="step3" rows="6" placeholder="Write the new, dramatically simpler requirement owned by one real person (not a department)..."></textarea><br><br>
           <button class="btn-primary" onclick="prevStep()">← Back</button>
@@ -151,7 +147,7 @@
     <div class="step">
       <div class="card-glow-wrapper"><div class="card-glow"></div>
         <div class="card">
-          <h2>4 Accelerate cycle time</h2>
+          <h2>4 Accelerate cycle times</h2>
           <p>How can we make this 10× faster? From days → hours → minutes → seconds?</p>
           <textarea id="step4" rows="6" placeholder="Ideas for radical speed: real-time data, remove batches, parallelize, eliminate hand-offs..."></textarea><br><br>
           <button class="btn-primary" onclick="prevStep()">← Back</button>
@@ -164,7 +160,7 @@
     <div class="step">
       <div class="card-glow-wrapper"><div class="card-glow"></div>
         <div class="card">
-          <h2>5 Automate (only now!)</h2>
+          <h2>5 Automate</h2>
           <p>Now that it’s simple and fast, what can be fully automated with almost no risk?</p>
           <textarea id="step5" rows="6" placeholder="Scripts, bots, API calls, no-code tools, AI agents..."></textarea><br><br>
           <button class="btn-primary" onclick="prevStep()">← Back</button>
@@ -190,30 +186,40 @@
 <script>
   const totalSteps = 6;
   let currentStep = 0;
+  let debounceTimer;
 
   function save() {
-    const data = {
-      processName: document.getElementById('processName').value,
-      step1: document.getElementById('step1').value,
-      step2: document.getElementById('step2').value,
-      step3: document.getElementById('step3').value,
-      step4: document.getElementById('step4').value,
-      step5: document.getElementById('step5').value
-    };
-    localStorage.setItem('processData', JSON.stringify(data));
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const data = {
+        processName: document.getElementById('processName').value,
+        step1: document.getElementById('step1').value,
+        step2: document.getElementById('step2').value,
+        step3: document.getElementById('step3').value,
+        step4: document.getElementById('step4').value,
+        step5: document.getElementById('step5').value
+      };
+      try {
+        localStorage.setItem('processData', JSON.stringify(data));
+      } catch (e) {
+        // Silent fail for quota issues
+      }
+    }, 500);
   }
 
   function load() {
-    const saved = localStorage.getItem('processData');
-    if (saved) {
-      const d = JSON.parse(saved);
-      if (d.processName) document.getElementById('processName').value = d.processName;
-      if (d.step1) document.getElementById('step1').value = d.step1;
-      if (d.step2) document.getElementById('step2').value = d.step2;
-      if (d.step3) document.getElementById('step3').value = d.step3;
-      if (d.step4) document.getElementById('step4').value = d.step4;
-      if (d.step5) document.getElementById('step5').value = d.step5;
-    }
+    try {
+      const saved = localStorage.getItem('processData');
+      if (saved) {
+        const d = JSON.parse(saved);
+        document.getElementById('processName').value = d.processName || '';
+        document.getElementById('step1').value = d.step1 || '';
+        document.getElementById('step2').value = d.step2 || '';
+        document.getElementById('step3').value = d.step3 || '';
+        document.getElementById('step4').value = d.step4 || '';
+        document.getElementById('step5').value = d.step5 || '';
+      }
+    } catch (e) {}
   }
 
   function nextStep() {
@@ -242,7 +248,12 @@
 
   function generatePrompt() {
     save();
-    const d = JSON.parse(localStorage.getItem('processData') || '{}');
+    let d;
+    try {
+      d = JSON.parse(localStorage.getItem('processData') || '{}');
+    } catch (e) {
+      d = {};
+    }
     const prompt = `Apply Elon Musk's/Tesla's exact 5-step engineering algorithm to radically improve this real business process:
 
 Process: "${d.processName || 'Unnamed'}"
@@ -277,8 +288,7 @@ Be brutal. Delete 70-90% if possible. Output should be actionable within weeks.`
 
   function copyToClipboard() {
     const text = document.getElementById('output').textContent;
-    navigator.clipboard.writeText(text);
-    alert('Copied!');
+    navigator.clipboard.writeText(text).then(() => alert('Copied!'));
   }
 
   function selectText(el) {
