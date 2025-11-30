@@ -60,10 +60,9 @@
     position:absolute; inset:-4px; border-radius:20px; background:conic-gradient(from var(--angle), var(--glow-color-1), var(--glow-color-2), var(--glow-color-3), var(--glow-color-4), var(--glow-color-1)); 
     filter:blur(20px); opacity:0.7; z-index:0; animation: rotate 4s linear infinite;
   }
-  /* Fallback for browsers that don't support conic-gradient() */
-  @supports not (background: conic-gradient(var(--glow-color-1), var(--glow-color-2))) {
-    .card-glow { animation: rotate-fallback 4s linear infinite; }
-  }
+ /*  @supports not (background: conic-gradient(from var(--angle), var(--glow-color-1), var(--glow-color-2), var(--glow-color-3), var(--glow-color-4), var(--glow-color-1))) { */
+ /*    .card-glow { animation: rotate-fallback 4s linear infinite; } */
+ /*  } */
   .card { 
     position:relative; z-index:2; background:var(--secondary-bg); border-radius:var(--border-radius-card); 
     padding:24px; backdrop-filter:blur(10px); border:1px solid var(--border-color); transition:var(--transition);
