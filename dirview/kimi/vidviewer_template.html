@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DirVids</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent: #6366f1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+
+        #counter {
+            background: var(--secondary-bg);
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--secondary-text);
+            flex-shrink: 0;
+        }
+
+        #viewer {
+            flex: 0 0 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-bg);
+            cursor: zoom-in;
+            position: relative;
+        }
+
+        #viewer video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 48px;
+            color: var(--primary-text);
+            background: rgba(0,0,0,0.5);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .nav-arrow:hover {
+            opacity: 1;
+        }
+
+        .nav-arrow.left {
+            left: 10px;
+        }
+
+        .nav-arrow.right {
+            right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-arrow {
+                display: none;
+            }
+        }
+
+        #thumbnails {
+            background: var(--tertiary-bg);
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            flex-shrink: 0;
+        }
+
+        .thumb {
+            height: 80px;
+            flex-shrink: 0;
+            opacity: 0.75;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .thumb.active {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        .thumb video {
+            height: 100%;
+            width: auto;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .thumb {
+                height: 120px;
+            }
+        }
+
+        body.fullscreen #thumbnails {
+            display: none;
+        }
+
+        body.fullscreen #viewer {
+            cursor: zoom-out;
+        }
+
+        body.fullscreen .nav-arrow {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="counter">0 / 0</div>
+    <div id="viewer">
+        <div class="nav-arrow left">‹</div>
+        <video id="mainVideo" src="" controls playsinline webkit-playsinline></video>
+        <div class="nav-arrow right">›</div>
+    </div>
+    <div id="thumbnails"></div>
+
+    <script>
+        const VIDEOS = /*__VID_MANIFEST__*/;
+
+        let currentIndex = 0;
+        const counter = document.getElementById('counter');
+        const viewer = document.getElementById('viewer');
+        const mainVideo = document.getElementById('mainVideo');
+        const thumbnails = document.getElementById('thumbnails');
+        const body = document.body;
+
+        // Initialize thumbnails
+        function initThumbnails() {
+            VIDEOS.forEach((video, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumb';
+                if (index === 0) thumb.classList.add('active');
+                
+                const thumbVideo = document.createElement('video');
+                thumbVideo.src = video.filename;
+                thumbVideo.muted = true;
+                thumbVideo.preload = 'metadata';
+                thumbVideo.playsInline = true;
+                thumbVideo.controls = false;
+                
+                // Seek to first visible frame when metadata is loaded
+                thumbVideo.addEventListener('loadedmetadata', () => {
+                    thumbVideo.currentTime = Math.min(0.5, thumbVideo.duration || 0.5);
+                });
+                
+                thumb.appendChild(thumbVideo);
+                thumb.addEventListener('click', () => showVideo(index));
+                thumbnails.appendChild(thumb);
+            });
+        }
+
+        // Show video at index
+        function showVideo(index) {
+            if (index < 0 || index >= VIDEOS.length) return;
+            
+            currentIndex = index;
+            const video = VIDEOS[index];
+            mainVideo.src = video.filename;
+            
+            // Update counter
+            counter.textContent = `${index + 1} / ${VIDEOS.length}`;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumb').forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === index);
+            });
+            
+            // Scroll thumbnails to center active one
+            const activeThumb = document.querySelector('.thumb.active');
+            if (activeThumb) {
+                const thumbRect = activeThumb.getBoundingClientRect();
+                const containerRect = thumbnails.getBoundingClientRect();
+                const scrollLeft = activeThumb.offsetLeft - (containerRect.width / 2) + (thumbRect.width / 2);
+                thumbnails.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                showVideo(currentIndex - 1);
+            } else if (e.key === 'ArrowRight') {
+                showVideo(currentIndex + 1);
+            } else if (e.key >= '1' && e.key <= '9') {
+                const num = parseInt(e.key);
+                const targetIndex = num - 1;
+                if (targetIndex < VIDEOS.length) {
+                    showVideo(targetIndex);
+                }
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                if (mainVideo.paused) {
+                    mainVideo.play();
+                } else {
+                    mainVideo.pause();
+                }
+            } else if (e.key === 'Escape' && body.classList.contains('fullscreen')) {
+                exitFullscreen();
+            }
+        });
+
+        // On-screen arrow navigation
+        document.querySelector('.nav-arrow.left').addEventListener('click', (e) => {
+            e.stopPropagation();
+            showVideo(currentIndex - 1);
+        });
+
+        document.querySelector('.nav-arrow.right').addEventListener('click', (e) => {
+            e.stopPropagation();
+            showVideo(currentIndex + 1);
+        });
+
+        // Fullscreen toggle
+        viewer.addEventListener('click', toggleFullscreen);
+
+        function toggleFullscreen() {
+            if (!body.classList.contains('fullscreen')) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        }
+
+        function enterFullscreen() {
+            body.classList.add('fullscreen');
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        }
+
+        function exitFullscreen() {
+            body.classList.remove('fullscreen');
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+
+        // Initialize
+        if (VIDEOS.length > 0) {
+            initThumbnails();
+            showVideo(0);
+        } else {
+            counter.textContent = 'No videos found';
+        }
+    </script>
+</body>
+</html>

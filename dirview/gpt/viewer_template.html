@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>DirView</title>
+
+<style>
+:root {
+  --primary-bg: #0a0a0a;
+  --secondary-bg: #1a1a1a;
+  --tertiary-bg: #2a2a2a;
+  --primary-text: #ffffff;
+  --secondary-text: #a0a0a0;
+  --accent: #6366f1;
+
+  --thumb-size-desktop: 80px;
+  --thumb-size-mobile: 120px;
+
+  --transition: 0.25s ease;
+}
+
+body {
+  margin: 0;
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* Layout */
+#main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Counter */
+#counter {
+  text-align: center;
+  padding: 8px 0;
+  color: var(--secondary-text);
+  font-size: 14px;
+}
+
+/* Main image area */
+#viewer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--secondary-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+#viewer img {
+  max-width: 100%;
+  max-height: calc(100% - 10px);
+  object-fit: contain;
+  transition: transform var(--transition);
+  cursor: zoom-in;
+}
+
+/* Fullscreen mode */
+.fullscreen #viewer img {
+  max-height: 100%;
+  max-width: 100%;
+  cursor: zoom-out;
+}
+
+.fullscreen #thumbs {
+  display: none;
+}
+
+#thumbs {
+  background: var(--tertiary-bg);
+  padding: 8px 0;
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+#thumbs img {
+  height: var(--thumb-size-desktop);
+  border-radius: 6px;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: transform var(--transition), opacity var(--transition), border var(--transition);
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+/* Active thumbnail */
+#thumbs img.active {
+  opacity: 1;
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+/* Mobile thumb size */
+@media (max-width: 700px) {
+  #thumbs img {
+    height: var(--thumb-size-mobile);
+  }
+}
+</style>
+</head>
+
+<body>
+<div id="main">
+  <div id="counter"></div>
+  <div id="viewer"></div>
+  <div id="thumbs"></div>
+</div>
+
+<script>
+// Manifest injected by generate.js
+const IMAGES = /*__MANIFEST__*/;
+
+let current = 0;
+const viewer = document.getElementById("viewer");
+const thumbs = document.getElementById("thumbs");
+const counter = document.getElementById("counter");
+const body = document.body;
+
+/* Build UI */
+function init() {
+  IMAGES.forEach((img, i) => {
+    const t = document.createElement("img");
+    t.src = img.filename;
+    t.dataset.index = i;
+    t.onclick = () => show(i, true);
+    thumbs.appendChild(t);
+  });
+
+  show(0, false);
+}
+
+/* Update main image */
+function show(i, scrollThumb) {
+  current = i;
+  const item = IMAGES[i];
+
+  viewer.innerHTML = "";
+
+  const big = document.createElement("img");
+  big.src = item.filename;
+  big.onclick = toggleFullscreen;
+  viewer.appendChild(big);
+
+  // thumb highlighting
+  [...thumbs.children].forEach((t, idx) => {
+    t.classList.toggle("active", idx === i);
+  });
+
+  // scroll to center
+  if (scrollThumb) {
+    const t = thumbs.children[i];
+    const containerMid = thumbs.offsetWidth / 2;
+    const thumbMid = t.offsetLeft + t.offsetWidth / 2;
+    thumbs.scrollTo({ left: thumbMid - containerMid, behavior: "smooth" });
+  }
+
+  // counter
+  counter.textContent = `${i + 1} / ${IMAGES.length}`;
+}
+
+/* Keyboard navigation */
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "ArrowRight") show((current + 1) % IMAGES.length, true);
+  else if (ev.key === "ArrowLeft") show((current - 1 + IMAGES.length) % IMAGES.length, true);
+  else if (ev.key >= "1" && ev.key <= "9") {
+    const jump = parseInt(ev.key, 10) - 1;
+    if (jump < IMAGES.length) show(jump, true);
+  }
+  else if (ev.key === "Escape") body.classList.remove("fullscreen");
+});
+
+/* Fullscreen toggle */
+function toggleFullscreen() {
+  body.classList.toggle("fullscreen");
+}
+
+/* Init */
+init();
+</script>
+</body>
+</html>
