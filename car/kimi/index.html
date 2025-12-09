@@ -162,9 +162,9 @@
             display: none;
         }
 
-        /* Cards */
+        /* Cards - ~90% width on desktop */
         .card {
-            flex: 0 0 20em;
+            flex: 0 0 calc(85% - 0.5em); /* 85% minus half gap = ~90% effective */
             scroll-snap-align: start;
             background: var(--tertiary-bg);
             border-radius: 16px;
@@ -174,6 +174,10 @@
             position: relative;
             display: flex;
             flex-direction: column;
+        }
+
+        .card:last-child {
+            margin-right: 0;
         }
 
         .card:hover {
@@ -252,9 +256,11 @@
         }
 
         /* Desktop: Show on card hover */
-        .card:hover .delete-btn {
-            opacity: 1;
-            transform: scale(1);
+        @media (hover: hover) and (pointer: fine) {
+            .card:hover .delete-btn {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .card-content {
@@ -349,8 +355,12 @@
         /* Show buttons on carousel hover (desktop only) */
         @media (hover: hover) and (pointer: fine) {
             .carousel-container:hover .scroll-btn {
-                opacity: 1;
+                opacity: 0.7;
                 pointer-events: auto;
+            }
+            
+            .carousel-container:hover .scroll-btn:hover {
+                opacity: 1;
             }
         }
 
@@ -435,29 +445,6 @@
             display: none;
         }
 
-        /* Instructions */
-        .instructions {
-            background: var(--secondary-bg);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            box-shadow: var(--card-shadow);
-        }
-
-        .instructions h3 {
-            margin-bottom: 1rem;
-            color: var(--accent);
-        }
-
-        .instructions ul {
-            padding-left: 1.5rem;
-        }
-
-        .instructions li {
-            margin-bottom: 0.5rem;
-            color: var(--secondary-text);
-        }
-
         /* Fullscreen Overlay */
         .fullscreen-overlay {
             position: fixed;
@@ -521,17 +508,6 @@
             transform: rotate(90deg);
         }
 
-        /* Browser Support Notice */
-        .browser-notice {
-            background: var(--tertiary-bg);
-            border-left: 4px solid var(--accent);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-            color: var(--secondary-text);
-            font-size: 0.9rem;
-        }
-
         /* Fade-in Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -542,48 +518,64 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Mobile Optimizations */
+        /* Mobile Optimizations - KEY FIXES HERE */
         @media (max-width: 768px) {
             body {
                 padding: 0.5rem;
             }
             
+            /* FIX 1: Full width cards with NO peeking */
             .card {
-                flex: 0 0 100%; /* Full width of container */
+                flex: 0 0 100%; /* Exactly 100% of viewport width */
             }
             
+            /* FIX 2: Remove gap and edge padding */
             .carousel {
-                padding: 1rem 0; /* Remove horizontal padding */
-                gap: 0; /* Remove gap to prevent peeking */
+                padding: 1rem 0; /* No horizontal padding */
+                gap: 0; /* No gap between cards */
                 scroll-snap-stop: always;
             }
             
+            /* FIX 3: Edge-to-edge container */
             .carousel-container {
-                border-radius: 0; /* Optional: remove rounded corners for full bleed */
                 margin-left: -0.5rem;
                 margin-right: -0.5rem;
-                width: calc(100% + 1rem); /* Compensate for body padding */
+                width: calc(100% + 1rem);
+                border-radius: 0; /* Optional: full edge-to-edge look */
             }
             
+            /* FIX 4: Show arrows on mobile */
             .scroll-btn {
-                display: none; /* Hide on mobile, rely on swipe */
+                opacity: 0.6 !important; /* Force visible */
+                pointer-events: auto !important;
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
             }
             
+            .scroll-btn-left {
+                left: 0.5rem;
+            }
+            
+            .scroll-btn-right {
+                right: 0.5rem;
+            }
+            
+            /* FIX 5: Square corners for full-screen effect */
             .card {
-                border-radius: 0; /* Square edges on mobile */
+                border-radius: 0;
             }
         }
 
-        /* Reduce motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+        /* Desktop: Show arrows only on hover */
+        @media (min-width: 769px) {
+            .carousel-container:hover .scroll-btn {
+                opacity: 0.7;
+                pointer-events: auto;
             }
             
-            .carousel {
-                scroll-behavior: auto;
+            .carousel-container:hover .scroll-btn:hover {
+                opacity: 1;
             }
         }
     </style>
@@ -604,8 +596,8 @@
         
         <section class="carousel-container fade-in">
             <div class="carousel" id="carousel" role="region" aria-label="Image carousel" tabindex="0">
-                <button class="scroll-btn scroll-btn-left visible" id="scroll-left" aria-label="Scroll left">‹</button>
-                <button class="scroll-btn scroll-btn-right visible" id="scroll-right" aria-label="Scroll right">›</button>
+                <button class="scroll-btn scroll-btn-left" id="scroll-left" aria-label="Scroll left">‹</button>
+                <button class="scroll-btn scroll-btn-right" id="scroll-right" aria-label="Scroll right">›</button>
                 
                 <div class="card" role="group" aria-label="Card 1 of 5">
                     <div class="card-image-container">
@@ -757,16 +749,24 @@
         let isScrolling = false;
         let longPressTimer = null;
 
+        // Get exact scroll distance (card width + gap)
+        function getScrollDistance() {
+            const card = carousel.querySelector('.card');
+            const cardWidth = card.offsetWidth;
+            const gap = parseFloat(getComputedStyle(carousel).gap) || 0;
+            return cardWidth + gap;
+        }
+
         // Update scroll buttons state
         function updateScrollButtons() {
             const maxScroll = carousel.scrollWidth - carousel.clientWidth;
             scrollLeftBtn.disabled = carousel.scrollLeft <= 0;
-            scrollRightBtn.disabled = carousel.scrollLeft >= maxScroll - 1;
+            scrollRightBtn.disabled = carousel.scrollLeft >= maxScroll - 2; // -2 for rounding errors
             
             // Update markers
             const markers = scrollMarkers.querySelectorAll('.scroll-marker');
-            const cardWidth = carousel.querySelector('.card').offsetWidth;
-            const currentIndex = Math.round(carousel.scrollLeft / (cardWidth + 1)); // +1 for gap
+            const distance = getScrollDistance();
+            const currentIndex = Math.round(carousel.scrollLeft / distance);
             
             markers.forEach((marker, index) => {
                 marker.classList.toggle('active', index === currentIndex);
@@ -775,13 +775,13 @@
 
         // Scroll buttons
         scrollLeftBtn.addEventListener('click', () => {
-            const cardWidth = carousel.querySelector('.card').offsetWidth + 16; // card + gap
-            carousel.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+            const distance = getScrollDistance();
+            carousel.scrollBy({ left: -distance, behavior: 'smooth' });
         });
 
         scrollRightBtn.addEventListener('click', () => {
-            const cardWidth = carousel.querySelector('.card').offsetWidth + 16;
-            carousel.scrollBy({ left: cardWidth, behavior: 'smooth' });
+            const distance = getScrollDistance();
+            carousel.scrollBy({ left: distance, behavior: 'smooth' });
         });
 
         // Create scroll markers
@@ -792,8 +792,8 @@
                 marker.className = 'scroll-marker';
                 marker.setAttribute('aria-label', `Go to card ${i + 1}`);
                 marker.addEventListener('click', () => {
-                    const card = carousel.querySelectorAll('.card')[i];
-                    card.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                    const distance = getScrollDistance();
+                    carousel.scrollTo({ left: i * distance, behavior: 'smooth' });
                 });
                 scrollMarkers.appendChild(marker);
             }
@@ -890,11 +890,11 @@
             }
         });
 
-        // Delete functionality
+        // Delete functionality with long-press for mobile
         function addDeleteListener(btn) {
             const card = btn.closest('.card');
             
-            // Desktop: Use hover
+            // Desktop: Hover to show
             card.addEventListener('mouseenter', () => {
                 if (window.innerWidth > 768) {
                     btn.style.opacity = '1';
@@ -903,13 +903,13 @@
             });
             
             card.addEventListener('mouseleave', () => {
-                if (window.innerWidth > 768 && !btn.dataset.longPress) {
+                if (window.innerWidth > 768) {
                     btn.style.opacity = '0';
                     btn.style.transform = 'scale(0.8)';
                 }
             });
             
-            // Mobile: Long press (500ms)
+            // Mobile: Long-press (500ms)
             let touchTimer;
             
             card.addEventListener('touchstart', (e) => {
@@ -917,16 +917,13 @@
                     touchTimer = setTimeout(() => {
                         btn.style.opacity = '1';
                         btn.style.transform = 'scale(1)';
-                        btn.dataset.longPress = 'true';
-                        
-                        // Hide after 3 seconds
+                        // Auto-hide after 2 seconds
                         setTimeout(() => {
                             if (!btn.matches(':active')) {
                                 btn.style.opacity = '0';
                                 btn.style.transform = 'scale(0.8)';
-                                delete btn.dataset.longPress;
                             }
-                        }, 3000);
+                        }, 2000);
                     }, 500);
                 }
             }, { passive: true });
@@ -1069,9 +1066,13 @@
         updateScrollButtons();
 
         // Update on resize
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            createMarkers();
-            updateScrollButtons();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                createMarkers();
+                updateScrollButtons();
+            }, 250);
         });
     </script>
 </body>
