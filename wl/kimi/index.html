@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12-Week Weight Loss Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="glass-header">
+        <h1 class="logo">
+            <i class="fas fa-chart-line"></i> FitTrack Pro
+        </h1>
+        <div class="header-actions">
+            <button id="themeToggle" class="icon-button" aria-label="Toggle theme">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </button>
+            <button id="menuToggle" class="icon-button" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar glass">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+            <button id="closeSidebar" class="icon-button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-item" onclick="app.showDashboard()">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="nav-item" onclick="app.showWeeklyEntry()">
+                <i class="fas fa-weight"></i> Weekly Entry
+            </button>
+            <button class="nav-item" onclick="app.exportData()">
+                <i class="fas fa-download"></i> Export Data
+            </button>
+            <button class="nav-item" onclick="app.importData()">
+                <i class="fas fa-upload"></i> Import Data
+            </button>
+            <button class="nav-item" onclick="app.showShareSummary()">
+                <i class="fas fa-share"></i> Share Progress
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Setup Screen -->
+    <section id="setupScreen" class="screen">
+        <div class="container">
+            <div class="hero-card glass">
+                <h1 class="hero-title">
+                    <i class="fas fa-rocket"></i> Start Your Journey
+                </h1>
+                <p class="hero-subtitle">Set up your 12-week weight loss program</p>
+                
+                <form id="setupForm" class="form">
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="startWeight">Starting Weight (kg)</label>
+                        <input type="number" id="startWeight" step="0.01" min="20" max="500" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="targetWeight">Target Weight (kg)</label>
+                        <input type="number" id="targetWeight" step="0.01" min="20" max="500" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-play"></i> Start Program
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Screen -->
+    <section id="dashboardScreen" class="screen hidden">
+        <div class="container">
+            <!-- Week Selector -->
+            <div class="week-selector glass">
+                <h3>Current Week</h3>
+                <div class="week-slider-container">
+                    <input type="range" id="weekSlider" min="1" max="12" value="1">
+                    <div class="week-labels">
+                        <span>Week 1</span>
+                        <span id="currentWeekDisplay">Week 1</span>
+                        <span>Week 12</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-card glass">
+                <h2>Progress Chart</h2>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card glass">
+                    <div class="stat-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>Target This Week</h4>
+                        <p id="weeklyTarget" class="stat-value">--</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass">
+                    <div class="stat-icon">
+                        <i class="fas fa-weight"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>Total Lost</h4>
+                        <p id="totalLost" class="stat-value">--</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-area"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>Avg Weekly Loss</h4>
+                        <p id="avgWeekly" class="stat-value">--</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>Progress</h4>
+                        <p id="progressPercent" class="stat-value">--</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Entry -->
+            <div class="entry-card glass">
+                <h3>Record Weight for Week <span id="entryWeekNumber">1</span></h3>
+                <form id="weeklyForm" class="inline-form">
+                    <input type="number" id="weeklyWeight" step="0.01" placeholder="Weight (kg)">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </form>
+                <div id="weeklyStatus" class="status-message"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content glass">
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p id="modalMessage">Are you sure you want to proceed?</p>
+            <div class="modal-actions">
+                <button id="modalCancel" class="btn-secondary">Cancel</button>
+                <button id="modalConfirm" class="btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack | 12-Week Weight Loss Journey</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-weight-scale"></i>
+                    <h1>FitTrack</h1>
+                </div>
+                <nav class="nav">
+                    <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="btn-icon sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Setup Screen -->
+            <section id="setupScreen" class="screen setup-screen">
+                <div class="glass-card setup-card">
+                    <div class="setup-header">
+                        <i class="fas fa-flag-start setup-icon"></i>
+                        <h2>Start Your 12-Week Journey</h2>
+                        <p>Enter your starting details to generate a personalized weight loss plan</p>
+                    </div>
+                    
+                    <form id="setupForm" class="setup-form">
+                        <div class="form-group">
+                            <label for="startDate">
+                                <i class="fas fa-calendar-alt"></i> Start Date
+                            </label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="startWeight">
+                                <i class="fas fa-weight-hanging"></i> Current Weight (kg)
+                            </label>
+                            <input type="number" id="startWeight" min="20" max="500" step="0.01" placeholder="e.g., 85.50" required>
+                            <div class="hint">Between 20-500 kg</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="targetWeight">
+                                <i class="fas fa-bullseye"></i> Target Weight (kg)
+                            </label>
+                            <input type="number" id="targetWeight" min="20" max="500" step="0.01" placeholder="e.g., 70.00" required>
+                            <div class="hint">Between 20-500 kg</div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-rocket"></i> Generate My Plan
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="setup-info">
+                        <h3><i class="fas fa-chart-line"></i> How It Works</h3>
+                        <ul>
+                            <li>Creates a realistic weight loss curve based on exponential decay</li>
+                            <li>Tracks your progress against the target each week</li>
+                            <li>Provides insights and motivation along the way</li>
+                            <li>Your data stays private - stored only in your browser</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Screen -->
+            <section id="dashboardScreen" class="screen dashboard-screen hidden">
+                <div class="dashboard-header">
+                    <div class="program-info">
+                        <h2>Your Weight Loss Journey</h2>
+                        <div class="program-stats">
+                            <div class="stat-chip">
+                                <i class="fas fa-calendar-day"></i>
+                                <span>Started: <strong id="startDateDisplay">-</strong></span>
+                            </div>
+                            <div class="stat-chip">
+                                <i class="fas fa-weight-scale"></i>
+                                <span>Start: <strong id="startWeightDisplay">-</strong> kg</span>
+                            </div>
+                            <div class="stat-chip">
+                                <i class="fas fa-bullseye"></i>
+                                <span>Target: <strong id="targetWeightDisplay">-</strong> kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-selector">
+                        <label for="weekSelect"><i class="fas fa-calendar-week"></i> Select Week:</label>
+                        <select id="weekSelect"></select>
+                    </div>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <!-- Chart Container -->
+                    <div class="glass-card chart-container">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-line"></i> Progress Chart</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color target"></span>
+                                    <span>Target</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color actual"></span>
+                                    <span>Actual</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="progressChart" width="800" height="400"></canvas>
+                        </div>
+                        <div class="chart-tooltip" id="chartTooltip"></div>
+                    </div>
+                    
+                    <!-- Weekly Input & Stats -->
+                    <div class="dashboard-sidebar">
+                        <!-- Weekly Input Card -->
+                        <div class="glass-card weekly-input-card">
+                            <h3><i class="fas fa-edit"></i> Week <span id="currentWeek">1</span> Weight</h3>
+                            <div class="weekly-input">
+                                <div class="input-group">
+                                    <label for="weeklyWeight">Your Weight This Week (kg)</label>
+                                    <input type="number" id="weeklyWeight" min="20" max="500" step="0.01" placeholder="Enter weight">
+                                </div>
+                                <div class="weekly-info">
+                                    <p><i class="fas fa-bullseye"></i> Target for this week: <strong id="weekTargetWeight">-</strong> kg</p>
+                                    <p><i class="fas fa-calendar"></i> Expected loss: <strong id="weekExpectedLoss">-</strong> kg</p>
+                                </div>
+                                <button id="saveWeightBtn" class="btn-primary">
+                                    <i class="fas fa-save"></i> Save Weight
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Stats Card -->
+                        <div class="glass-card stats-card">
+                            <h3><i class="fas fa-chart-pie"></i> Progress Statistics</h3>
+                            <div class="stats-grid">
+                                <div class="stat-box">
+                                    <div class="stat-icon total-lost">
+                                        <i class="fas fa-weight-loss"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>Total Lost</h4>
+                                        <p class="stat-value" id="totalLostStat">- kg</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-box">
+                                    <div class="stat-icon avg-loss">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>Avg Weekly Loss</h4>
+                                        <p class="stat-value" id="avgWeeklyLossStat">- kg</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-box">
+                                    <div class="stat-icon progress">
+                                        <i class="fas fa-percentage"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>Progress</h4>
+                                        <p class="stat-value" id="progressPercentStat">- %</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-box">
+                                    <div class="stat-icon current-week">
+                                        <i class="fas fa-calendar-week"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>Current Week</h4>
+                                        <p class="stat-value" id="currentWeekStat">- / 12</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressBarFill"></div>
+                                </div>
+                                <div class="progress-labels">
+                                    <span>0%</span>
+                                    <span id="progressBarPercent">0%</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notes Section -->
+                <div class="glass-card notes-card">
+                    <h3><i class="fas fa-sticky-note"></i> Journey Notes</h3>
+                    <textarea id="journeyNotes" placeholder="Add notes about your journey, challenges, successes, or anything you want to remember..."></textarea>
+                    <button id="saveNotesBtn" class="btn-secondary">
+                        <i class="fas fa-save"></i> Save Notes
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-sliders-h"></i> Menu</h3>
+            <button class="btn-icon sidebar-close" id="sidebarClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <h4><i class="fas fa-chart-line"></i> Program</h4>
+                <button class="sidebar-btn" id="exportDataBtn">
+                    <i class="fas fa-file-export"></i> Export Data
+                </button>
+                <button class="sidebar-btn" id="importDataBtn">
+                    <i class="fas fa-file-import"></i> Import Data
+                </button>
+                <button class="sidebar-btn" id="shareSummaryBtn">
+                    <i class="fas fa-share-alt"></i> Share Summary
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <h4><i class="fas fa-cog"></i> Settings</h4>
+                <button class="sidebar-btn" id="resetProgramBtn">
+                    <i class="fas fa-redo"></i> Reset Program
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <h4><i class="fas fa-info-circle"></i> About</h4>
+                <p class="sidebar-info">FitTrack uses an exponential decay formula to generate realistic weight loss targets. Your data is stored locally in your browser.</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <p class="version">v1.0.0</p>
+        </div>
+    </aside>
+    
+    <!-- Modal Overlay -->
+    <div class="modal-overlay hidden" id="modalOverlay"></div>
+    
+    <!-- Import Modal -->
+    <div class="modal hidden" id="importModal">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-import"></i> Import Program Data</h3>
+            <button class="btn-icon modal-close" id="importModalClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Paste your exported program data below. This will replace your current program.</p>
+            <textarea id="importDataTextarea" placeholder='Paste JSON data here...'></textarea>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelImportBtn">Cancel</button>
+                <button class="btn-primary" id="confirmImportBtn">Import Data</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Share Modal -->
+    <div class="modal hidden" id="shareModal">
+        <div class="modal-header">
+            <h3><i class="fas fa-share-alt"></i> Share Progress Summary</h3>
+            <button class="btn-icon modal-close" id="shareModalClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="share-summary" id="shareSummaryContent"></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="copySummaryBtn">
+                    <i class="fas fa-copy"></i> Copy to Clipboard
+                </button>
+                <button class="btn-primary" id="closeShareBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal hidden" id="confirmationModal">
+        <div class="modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> Confirm Action</h3>
+            <button class="btn-icon modal-close" id="confirmationModalClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmationMessage">Are you sure you want to proceed?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelConfirmBtn">Cancel</button>
+                <button class="btn-primary" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
