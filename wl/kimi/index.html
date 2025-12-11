@@ -49,6 +49,9 @@
             <button class="nav-item" onclick="app.showShareSummary()">
                 <i class="fas fa-share"></i> Share Progress
             </button>
+            <button class="nav-item" onclick="app.resetProgram()">
+                <i class="fas fa-trash"></i> Reset All Data
+            </button>
         </nav>
     </aside>
 
@@ -161,7 +164,10 @@
             <div class="entry-card glass">
                 <h3>Record Weight for Week <span id="entryWeekNumber">1</span></h3>
                 <form id="weeklyForm" class="inline-form" novalidate>
-                    <input type="number" id="weeklyWeight" step="0.01" placeholder="Weight (kg)" inputmode="decimal">
+                    <div class="input-group">
+                        <input type="number" id="weeklyWeight" step="0.01" placeholder="Enter weight in kg" inputmode="decimal" class="weight-input">
+                        <span class="input-suffix">kg</span>
+                    </div>
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Save
                     </button>

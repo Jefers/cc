@@ -286,6 +286,44 @@ body {
     min-width: 120px;
 }
 
+/* Enhanced weight input styling */
+.input-group {
+    position: relative;
+    flex: 1;
+    min-width: 140px;
+}
+
+.weight-input {
+    width: 100%;
+    padding: 14px 16px;
+    padding-right: 40px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.weight-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.input-suffix {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-weight: 500;
+    pointer-events: none;
+}
+
 /* Buttons */
 .btn-primary {
     background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899, #06b6d4);
@@ -624,7 +662,7 @@ body {
         flex-direction: column;
     }
     
-    .inline-form input {
+    .input-group {
         width: 100%;
     }
     

@@ -1,8 +1,8 @@
 // --- app.js ---
 
 const app = {
-    // Constants
-    STORAGE_KEY: 'weightProgram_v1',
+    // Constants - UPDATED KEY
+    STORAGE_KEY: 'weightProgram_v2',
     DEFAULT_A: 0.35,
     WEEKS: 12,
     
@@ -15,6 +15,7 @@ const app = {
     
     // Initialize
     init() {
+        console.log('App initializing...');
         this.setupTheme();
         this.bindEvents();
         this.loadProgram();
@@ -44,7 +45,7 @@ const app = {
         document.getElementById('closeSidebar').addEventListener('click', () => this.closeSidebar());
         document.getElementById('overlay').addEventListener('click', () => this.closeSidebar());
         
-        // Setup form - use explicit submit handler
+        // Setup form
         const setupForm = document.getElementById('setupForm');
         setupForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -52,7 +53,7 @@ const app = {
             this.handleSetup(e);
         });
         
-        // Weekly form - use explicit submit handler
+        // Weekly form
         const weeklyForm = document.getElementById('weeklyForm');
         weeklyForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -60,12 +61,11 @@ const app = {
             this.handleWeeklyEntry(e);
         });
         
-        // Week slider with passive event
+        // Week slider
         const weekSlider = document.getElementById('weekSlider');
         weekSlider.addEventListener('input', (e) => {
-            e.preventDefault();
             this.updateCurrentWeek(parseInt(e.target.value));
-        }, { passive: false });
+        });
         
         // Modal buttons
         document.getElementById('modalCancel').addEventListener('click', () => this.closeModal());
@@ -78,55 +78,98 @@ const app = {
     // Program management
     loadProgram() {
         try {
+            console.log('Loading program from localStorage...');
             const saved = localStorage.getItem(this.STORAGE_KEY);
+            
             if (saved) {
+                console.log('Found saved data, parsing...');
                 this.program = JSON.parse(saved);
-                // Validate required fields
+                
+                // Validate loaded data
                 if (!this.validateProgram(this.program)) {
-                    throw new Error('Invalid program data');
+                    console.error('Validation failed for loaded program');
+                    throw new Error('Invalid program data structure');
                 }
+                
+                console.log('Program loaded successfully:', this.program);
                 this.showDashboard();
             } else {
+                console.log('No existing program found, showing setup');
                 this.showSetup();
             }
         } catch (e) {
             console.error('Error loading program:', e);
             this.showToast('Error loading saved data. Starting fresh.', 'error');
             localStorage.removeItem(this.STORAGE_KEY);
+            this.program = null;
             this.showSetup();
         }
     },
     
     saveProgram() {
         try {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.program));
+            console.log('Saving program to localStorage...', this.program);
+            
+            // Validate before saving
+            if (!this.validateProgram(this.program)) {
+                throw new Error('Invalid program data cannot be saved');
+            }
+            
+            const dataStr = JSON.stringify(this.program);
+            localStorage.setItem(this.STORAGE_KEY, dataStr);
+            console.log('Program saved successfully');
         } catch (e) {
             console.error('Save error:', e);
-            this.showToast('Failed to save data. Storage might be full.', 'error');
+            this.showToast(`Failed to save data: ${e.message}`, 'error');
+            throw e; // Re-throw to handle upstream
         }
     },
     
     // Validation
     validateProgram(program) {
-        if (!program || typeof program !== 'object') return false;
+        if (!program || typeof program !== 'object') {
+            console.error('Program is not an object');
+            return false;
+        }
         
         const required = ['startDate', 'startWeight', 'targetWeight', 'curveParams', 'targetCurve', 'actualWeights'];
-        if (!required.every(field => field in program)) return false;
+        const hasAllFields = required.every(field => {
+            const hasField = field in program;
+            if (!hasField) console.error(`Missing required field: ${field}`);
+            return hasField;
+        });
         
-        if (!Array.isArray(program.targetCurve) || program.targetCurve.length !== 12) return false;
+        if (!hasAllFields) return false;
         
-        if (typeof program.actualWeights !== 'object') return false;
+        // Validate targetCurve
+        const hasValidCurve = Array.isArray(program.targetCurve) && program.targetCurve.length === 12;
+        if (!hasValidCurve) {
+            console.error('targetCurve is not valid array of 12 items');
+            return false;
+        }
         
-        // Validate all values are numbers
-        if (isNaN(program.startWeight) || isNaN(program.targetWeight)) return false;
+        // Validate actualWeights
+        const hasValidWeights = typeof program.actualWeights === 'object' && program.actualWeights !== null;
+        if (!hasValidWeights) {
+            console.error('actualWeights is not a valid object');
+            return false;
+        }
         
+        // Validate numeric values
+        const hasValidNumbers = !isNaN(program.startWeight) && !isNaN(program.targetWeight);
+        if (!hasValidNumbers) {
+            console.error('startWeight or targetWeight is NaN');
+            return false;
+        }
+        
+        console.log('Program validation passed');
         return true;
     },
     
     // Exponential curve calculator
     calculateExponentialCurve(startWeight, targetWeight, a = this.DEFAULT_A) {
         if (startWeight <= targetWeight) {
-            // Handle equal weights gracefully
+            console.warn('Start weight is less than or equal to target weight');
             return new Array(12).fill(targetWeight);
         }
         
@@ -137,19 +180,26 @@ const app = {
         for (let t = 1; t <= 12; t++) {
             const Et = E(t);
             const value = targetWeight + (startWeight - targetWeight) * (Et - E12) / (1 - E12);
-            curve.push(Math.round(value * 100) / 100);
+            const roundedValue = Math.round(value * 100) / 100;
+            curve.push(roundedValue);
         }
         
+        console.log('Generated target curve:', curve);
         return curve;
     },
     
     // Setup
     handleSetup(e) {
-        if (this.isSubmitting) return;
+        if (this.isSubmitting) {
+            console.log('Already submitting, ignoring');
+            return;
+        }
         
         const startDate = document.getElementById('startDate').value;
         const startWeight = parseFloat(document.getElementById('startWeight').value);
         const targetWeight = parseFloat(document.getElementById('targetWeight').value);
+        
+        console.log('Setup form submitted:', { startDate, startWeight, targetWeight });
         
         // Validate inputs
         if (!startDate) {
@@ -178,7 +228,7 @@ const app = {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
         submitBtn.disabled = true;
         
-        // Create program
+        // Create program object
         const actualWeights = {};
         for (let i = 1; i <= 12; i++) {
             actualWeights[i] = null;
@@ -198,25 +248,73 @@ const app = {
             notes: ''
         };
         
-        this.saveProgram();
+        console.log('Created new program:', this.program);
         
-        // Restore button state
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        this.isSubmitting = false;
+        try {
+            this.saveProgram();
+            console.log('Program saved, showing dashboard...');
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            this.isSubmitting = false;
+            
+            this.showDashboard();
+            this.showToast('Program created successfully!', 'success');
+            this.triggerConfetti();
+        } catch (saveError) {
+            console.error('Failed to save program:', saveError);
+            this.showToast('Failed to create program. Please try again.', 'error');
+            
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            this.isSubmitting = false;
+        }
+    },
+    
+    // Reset function
+    resetProgram() {
+        console.log('Reset program requested');
         
-        this.showDashboard();
-        this.showToast('Program created successfully!', 'success');
-        this.triggerConfetti();
+        this.openModal(
+            'Reset All Data',
+            'This will permanently delete your entire weight loss program. This action cannot be undone. Are you sure?',
+            () => {
+                try {
+                    console.log('Removing program from localStorage...');
+                    localStorage.removeItem(this.STORAGE_KEY);
+                    this.program = null;
+                    this.currentWeek = 1;
+                    
+                    // Clear any chart data
+                    if (this.chartCtx) {
+                        this.chartCtx.clearRect(0, 0, this.chartCtx.canvas.width, this.chartCtx.canvas.height);
+                    }
+                    
+                    this.showToast('All data has been deleted', 'info');
+                    this.closeSidebar();
+                    this.showSetup();
+                    
+                    console.log('Program reset complete');
+                } catch (e) {
+                    console.error('Error during reset:', e);
+                    this.showToast('Error resetting data', 'error');
+                }
+            }
+        );
     },
     
     // Dashboard
     showDashboard() {
-        if (!this.program) {
-            this.showToast('No program to display', 'error');
+        if (!this.program || !this.validateProgram(this.program)) {
+            console.error('Invalid program, cannot show dashboard');
+            this.showToast('No valid program to display', 'error');
             this.showSetup();
             return;
         }
+        
+        console.log('Showing dashboard for program:', this.program);
         
         document.getElementById('setupScreen').classList.add('hidden');
         document.getElementById('dashboardScreen').classList.remove('hidden');
@@ -230,14 +328,14 @@ const app = {
     },
     
     showSetup() {
+        console.log('Showing setup screen');
+        
         document.getElementById('dashboardScreen').classList.add('hidden');
         document.getElementById('setupScreen').classList.remove('hidden');
         
         // Set today's date as default
         const today = new Date();
-        const dateStr = today.getFullYear() + '-' + 
-                       String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                       String(today.getDate()).padStart(2, '0');
+        const dateStr = today.toISOString().split('T')[0];
         document.getElementById('startDate').value = dateStr;
         
         // Reset form
@@ -297,21 +395,27 @@ const app = {
         
         this.program.actualWeights[this.currentWeek] = weight;
         this.program.notes = `Updated week ${this.currentWeek} at ${new Date().toISOString()}`;
-        this.saveProgram();
         
-        this.updateStats();
-        this.updateChart();
-        
-        const statusEl = document.getElementById('weeklyStatus');
-        statusEl.textContent = `Week ${this.currentWeek} weight saved successfully!`;
-        statusEl.className = 'status-message success show';
-        
-        setTimeout(() => {
-            statusEl.classList.remove('show');
-        }, 3000);
-        
-        this.showToast('Weight saved!', 'success');
-        this.triggerConfetti();
+        try {
+            this.saveProgram();
+            
+            this.updateStats();
+            this.updateChart();
+            
+            const statusEl = document.getElementById('weeklyStatus');
+            statusEl.textContent = `Week ${this.currentWeek} weight saved successfully!`;
+            statusEl.className = 'status-message success show';
+            
+            setTimeout(() => {
+                statusEl.classList.remove('show');
+            }, 3000);
+            
+            this.showToast('Weight saved!', 'success');
+            this.triggerConfetti();
+        } catch (saveError) {
+            console.error('Failed to save weekly entry:', saveError);
+            this.showToast('Failed to save weight. Please try again.', 'error');
+        }
     },
     
     // Statistics
@@ -326,7 +430,7 @@ const app = {
         
         // Total lost
         const entries = Object.entries(this.program.actualWeights)
-            .filter(([_, weight]) => weight !== null);
+            .filter(([_, weight]) => weight !== null && !isNaN(weight));
         
         if (entries.length > 0 && entries[entries.length - 1][1] < startWeight) {
             const totalLost = startWeight - entries[entries.length - 1][1];
@@ -379,7 +483,6 @@ const app = {
             this.debounce(resizeCanvas, 250)();
         });
         
-        // Initial resize with delay to ensure DOM is ready
         setTimeout(resizeCanvas, 100);
     },
     
@@ -391,7 +494,7 @@ const app = {
         const width = canvas.width;
         const height = canvas.height;
         
-        if (!width || !height) return; // Prevent drawing on zero-size canvas
+        if (!width || !height) return;
         
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
@@ -402,7 +505,7 @@ const app = {
         const chartHeight = Math.max(height - padding * 2, 1);
         
         // Get weight range
-        const allWeights = [...this.program.targetCurve, ...Object.values(this.program.actualWeights).filter(w => w !== null)];
+        const allWeights = [...this.program.targetCurve, ...Object.values(this.program.actualWeights).filter(w => w !== null && !isNaN(w))];
         if (allWeights.length === 0) return;
         
         const minWeight = Math.min(...allWeights) - 2;
@@ -494,7 +597,6 @@ const app = {
                 ctx.arc(x, y, 6, 0, 2 * Math.PI);
                 ctx.fill();
                 
-                // Add glow effect
                 ctx.shadowColor = '#10b981';
                 ctx.shadowBlur = 10;
                 ctx.fill();
@@ -624,7 +726,7 @@ const app = {
         }
         
         const entries = Object.entries(this.program.actualWeights)
-            .filter(([_, weight]) => weight !== null);
+            .filter(([_, weight]) => weight !== null && !isNaN(weight));
         
         if (entries.length === 0) {
             this.showToast('No data to share yet', 'info');
@@ -794,6 +896,8 @@ const app = {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing app...');
+    
     // Ensure DOM is ready before initializing
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => app.init());
