@@ -1319,3 +1319,187 @@ tooltipStyles.textContent = `
     }
 `;
 document.head.appendChild(tooltipStyles);
+
+// Add this function after the existing functions
+function initChart() {
+    // Canvas is initialized in updateChart
+    // This function exists to satisfy the initialization call
+    if (APP_STATE.program) {
+        updateChart();
+    }
+}
+
+// Add this function to calculate current week based on date
+function calculateCurrentWeek() {
+    if (!APP_STATE.program) return 1;
+    
+    const startDate = new Date(APP_STATE.program.startDate);
+    const today = new Date();
+    
+    // Calculate days difference
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const weeks = Math.floor(diffDays / 7) + 1; // Week 1 starts immediately
+    
+    // Clamp between 1 and 12
+    return Math.max(1, Math.min(12, weeks));
+}
+
+// Update the loadProgram function to set current week based on date
+function loadProgram() {
+    const programData = localStorage.getItem('weightProgram_v1');
+    
+    if (programData) {
+        try {
+            APP_STATE.program = JSON.parse(programData);
+            // Calculate current week based on start date
+            APP_STATE.currentWeek = calculateCurrentWeek();
+            showDashboard();
+        } catch (error) {
+            console.error('Error parsing program data:', error);
+            showToast('Error loading saved data. Starting fresh.', 'error');
+            showSetup();
+        }
+    } else {
+        showSetup();
+    }
+}
+
+// Update the showDashboard function to include chart initialization
+function showDashboard() {
+    DOM.setupScreen.classList.add('hidden');
+    DOM.dashboardScreen.classList.remove('hidden');
+    
+    // Update dashboard with program data
+    updateDashboard();
+    
+    // Initialize and update chart
+    updateChart();
+    
+    // Update stats
+    updateStats();
+}
+
+// Fix the handleSetupSubmit function to prevent default properly
+function handleSetupSubmit(e) {
+    e.preventDefault();
+    
+    const startDate = DOM.startDateInput.value;
+    const startWeight = parseFloat(DOM.startWeightInput.value);
+    const targetWeight = parseFloat(DOM.targetWeightInput.value);
+    
+    // Validate inputs
+    if (!validateWeightInputs()) {
+        return; // Stop if validation fails
+    }
+    
+    // Create program object
+    APP_STATE.program = {
+        startDate,
+        startWeight: roundKg(startWeight),
+        targetWeight: roundKg(targetWeight),
+        generatedAt: new Date().toISOString(),
+        curveParams: {
+            type: 'exponential',
+            a: 0.35
+        },
+        targetCurve: [],
+        actualWeights: {},
+        notes: ''
+    };
+    
+    // Generate target curve
+    APP_STATE.program.targetCurve = generateTargetCurve(
+        APP_STATE.program.startWeight,
+        APP_STATE.program.targetWeight,
+        APP_STATE.program.curveParams.a
+    );
+    
+    // Initialize actual weights object
+    for (let i = 1; i <= 12; i++) {
+        APP_STATE.program.actualWeights[i] = null;
+    }
+    
+    // Calculate current week based on start date
+    APP_STATE.currentWeek = calculateCurrentWeek();
+    
+    // Save and show dashboard
+    saveProgram();
+    showDashboard();
+    showToast('Weight loss program created successfully!', 'success');
+    triggerConfetti();
+}
+
+// Update validateWeightInputs to be more robust
+function validateWeightInputs() {
+    const startWeight = parseFloat(DOM.startWeightInput.value);
+    const targetWeight = parseFloat(DOM.targetWeightInput.value);
+    
+    let isValid = true;
+    
+    // Validate start weight
+    if (isNaN(startWeight) || startWeight < 20 || startWeight > 500) {
+        DOM.startWeightInput.style.borderColor = '#ef4444';
+        showToast('Start weight must be between 20-500 kg', 'error');
+        isValid = false;
+    } else {
+        DOM.startWeightInput.style.borderColor = '';
+    }
+    
+    // Validate target weight
+    if (isNaN(targetWeight) || targetWeight < 20 || targetWeight > 500) {
+        DOM.targetWeightInput.style.borderColor = '#ef4444';
+        showToast('Target weight must be between 20-500 kg', 'error');
+        isValid = false;
+    } else {
+        DOM.targetWeightInput.style.borderColor = '';
+    }
+    
+    // Validate that target weight is less than start weight
+    if (isValid && targetWeight >= startWeight) {
+        DOM.targetWeightInput.style.borderColor = '#ef4444';
+        const confirmMsg = 'Target weight is not less than start weight. Are you sure you want to continue?';
+        
+        // Use our confirmation modal instead of native confirm
+        APP_STATE.pendingAction = {
+            type: 'overrideWeightValidation'
+        };
+        
+        showConfirmation(confirmMsg, 'overrideWeightValidation');
+        return false; // Wait for user confirmation
+    }
+    
+    return isValid;
+}
+
+// Add this case to handleConfirmAction for weight validation override
+function handleConfirmAction() {
+    const actionType = DOM.confirmActionBtn.dataset.action;
+    
+    switch (actionType) {
+        case 'import':
+            APP_STATE.program = APP_STATE.pendingAction.data;
+            saveProgram();
+            showDashboard();
+            showToast('Program data imported successfully!', 'success');
+            triggerConfetti();
+            break;
+            
+        case 'reset':
+            localStorage.removeItem('weightProgram_v1');
+            APP_STATE.program = null;
+            showSetup();
+            showToast('Program reset successfully', 'success');
+            break;
+            
+        case 'overrideWeightValidation':
+            // User confirmed they want target >= start weight
+            DOM.targetWeightInput.style.borderColor = '';
+            // Now submit the form programmatically
+            DOM.setupForm.dispatchEvent(new Event('submit', { bubbles: true }));
+            break;
+    }
+    
+    hideModal('confirmation');
+    toggleSidebar(false);
+}
