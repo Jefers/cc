@@ -11,6 +11,7 @@ const app = {
     currentWeek: 1,
     chart: null,
     chartCtx: null,
+    isSubmitting: false,
     
     // Initialize
     init() {
@@ -43,51 +44,92 @@ const app = {
         document.getElementById('closeSidebar').addEventListener('click', () => this.closeSidebar());
         document.getElementById('overlay').addEventListener('click', () => this.closeSidebar());
         
-        // Setup form
-        document.getElementById('setupForm').addEventListener('submit', (e) => this.handleSetup(e));
+        // Setup form - use explicit submit handler
+        const setupForm = document.getElementById('setupForm');
+        setupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleSetup(e);
+        });
         
-        // Weekly form
-        document.getElementById('weeklyForm').addEventListener('submit', (e) => this.handleWeeklyEntry(e));
+        // Weekly form - use explicit submit handler
+        const weeklyForm = document.getElementById('weeklyForm');
+        weeklyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleWeeklyEntry(e);
+        });
         
-        // Week slider
+        // Week slider with passive event
         const weekSlider = document.getElementById('weekSlider');
-        weekSlider.addEventListener('input', (e) => this.updateCurrentWeek(parseInt(e.target.value)));
+        weekSlider.addEventListener('input', (e) => {
+            e.preventDefault();
+            this.updateCurrentWeek(parseInt(e.target.value));
+        }, { passive: false });
         
         // Modal buttons
         document.getElementById('modalCancel').addEventListener('click', () => this.closeModal());
         
-        // File import
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.json';
-        fileInput.id = 'fileInput';
-        fileInput.style.display = 'none';
+        // File input
+        const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', (e) => this.handleFileImport(e));
-        document.body.appendChild(fileInput);
     },
     
     // Program management
     loadProgram() {
-        const saved = localStorage.getItem(this.STORAGE_KEY);
-        if (saved) {
-            try {
+        try {
+            const saved = localStorage.getItem(this.STORAGE_KEY);
+            if (saved) {
                 this.program = JSON.parse(saved);
+                // Validate required fields
+                if (!this.validateProgram(this.program)) {
+                    throw new Error('Invalid program data');
+                }
                 this.showDashboard();
-            } catch (e) {
-                this.showToast('Error loading saved data', 'error');
+            } else {
                 this.showSetup();
             }
-        } else {
+        } catch (e) {
+            console.error('Error loading program:', e);
+            this.showToast('Error loading saved data. Starting fresh.', 'error');
+            localStorage.removeItem(this.STORAGE_KEY);
             this.showSetup();
         }
     },
     
     saveProgram() {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.program));
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.program));
+        } catch (e) {
+            console.error('Save error:', e);
+            this.showToast('Failed to save data. Storage might be full.', 'error');
+        }
+    },
+    
+    // Validation
+    validateProgram(program) {
+        if (!program || typeof program !== 'object') return false;
+        
+        const required = ['startDate', 'startWeight', 'targetWeight', 'curveParams', 'targetCurve', 'actualWeights'];
+        if (!required.every(field => field in program)) return false;
+        
+        if (!Array.isArray(program.targetCurve) || program.targetCurve.length !== 12) return false;
+        
+        if (typeof program.actualWeights !== 'object') return false;
+        
+        // Validate all values are numbers
+        if (isNaN(program.startWeight) || isNaN(program.targetWeight)) return false;
+        
+        return true;
     },
     
     // Exponential curve calculator
     calculateExponentialCurve(startWeight, targetWeight, a = this.DEFAULT_A) {
+        if (startWeight <= targetWeight) {
+            // Handle equal weights gracefully
+            return new Array(12).fill(targetWeight);
+        }
+        
         const E = (t) => Math.exp(-a * t);
         const E12 = E(12);
         const curve = [];
@@ -103,15 +145,20 @@ const app = {
     
     // Setup
     handleSetup(e) {
-        e.preventDefault();
+        if (this.isSubmitting) return;
         
         const startDate = document.getElementById('startDate').value;
         const startWeight = parseFloat(document.getElementById('startWeight').value);
         const targetWeight = parseFloat(document.getElementById('targetWeight').value);
         
-        // Validation
-        if (!startDate || !startWeight || !targetWeight) {
-            this.showToast('Please fill all fields', 'error');
+        // Validate inputs
+        if (!startDate) {
+            this.showToast('Please select a start date', 'error');
+            return;
+        }
+        
+        if (isNaN(startWeight) || isNaN(targetWeight)) {
+            this.showToast('Please enter valid numeric weights', 'error');
             return;
         }
         
@@ -124,6 +171,12 @@ const app = {
             const confirmed = confirm('Target weight should be less than start weight. Proceed anyway?');
             if (!confirmed) return;
         }
+        
+        this.isSubmitting = true;
+        const submitBtn = document.querySelector('#setupForm .btn-primary');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+        submitBtn.disabled = true;
         
         // Create program
         const actualWeights = {};
@@ -146,6 +199,12 @@ const app = {
         };
         
         this.saveProgram();
+        
+        // Restore button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        this.isSubmitting = false;
+        
         this.showDashboard();
         this.showToast('Program created successfully!', 'success');
         this.triggerConfetti();
@@ -153,14 +212,21 @@ const app = {
     
     // Dashboard
     showDashboard() {
-        if (!this.program) return;
+        if (!this.program) {
+            this.showToast('No program to display', 'error');
+            this.showSetup();
+            return;
+        }
         
         document.getElementById('setupScreen').classList.add('hidden');
         document.getElementById('dashboardScreen').classList.remove('hidden');
         
-        this.updateWeekSlider();
-        this.updateStats();
-        this.updateChart();
+        // Defer chart rendering to ensure DOM is ready
+        setTimeout(() => {
+            this.updateWeekSlider();
+            this.updateStats();
+            this.updateChart();
+        }, 100);
     },
     
     showSetup() {
@@ -168,7 +234,14 @@ const app = {
         document.getElementById('setupScreen').classList.remove('hidden');
         
         // Set today's date as default
-        document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        const dateStr = today.getFullYear() + '-' + 
+                       String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(today.getDate()).padStart(2, '0');
+        document.getElementById('startDate').value = dateStr;
+        
+        // Reset form
+        document.getElementById('setupForm').reset();
     },
     
     updateWeekSlider() {
@@ -179,15 +252,15 @@ const app = {
         // Determine current week based on start date
         const startDate = new Date(this.program.startDate);
         const today = new Date();
-        const diffTime = Math.abs(today - startDate);
-        const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7)) + 1;
+        const diffTime = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+        const diffWeeks = Math.floor(diffTime / 7) + 1;
         
         this.currentWeek = Math.min(Math.max(diffWeeks, 1), 12);
         slider.value = this.currentWeek;
         currentWeekDisplay.textContent = `Week ${this.currentWeek}`;
         entryWeekNumber.textContent = this.currentWeek;
         
-        // Check if this week has data
+        // Load existing weight for this week
         const weeklyWeightInput = document.getElementById('weeklyWeight');
         if (this.program.actualWeights[this.currentWeek]) {
             weeklyWeightInput.value = this.program.actualWeights[this.currentWeek];
@@ -217,7 +290,7 @@ const app = {
         
         const weight = parseFloat(document.getElementById('weeklyWeight').value);
         
-        if (!weight || weight < 20 || weight > 500) {
+        if (isNaN(weight) || weight < 20 || weight > 500) {
             this.showToast('Please enter a valid weight (20-500 kg)', 'error');
             return;
         }
@@ -252,8 +325,11 @@ const app = {
             targetThisWeek ? `${targetThisWeek.toFixed(2)} kg` : '--';
         
         // Total lost
-        if (currentWeight && currentWeight < startWeight) {
-            const totalLost = startWeight - currentWeight;
+        const entries = Object.entries(this.program.actualWeights)
+            .filter(([_, weight]) => weight !== null);
+        
+        if (entries.length > 0 && entries[entries.length - 1][1] < startWeight) {
+            const totalLost = startWeight - entries[entries.length - 1][1];
             document.getElementById('totalLost').textContent = 
                 `${totalLost.toFixed(2)} kg`;
         } else {
@@ -261,9 +337,6 @@ const app = {
         }
         
         // Average weekly loss
-        const entries = Object.entries(this.program.actualWeights)
-            .filter(([_, weight]) => weight !== null);
-        
         if (entries.length > 1) {
             const totalLost = startWeight - entries[entries.length - 1][1];
             const avgWeekly = totalLost / (entries.length - 1);
@@ -275,8 +348,8 @@ const app = {
         
         // Progress percentage
         const totalTarget = startWeight - this.program.targetWeight;
-        if (currentWeight && currentWeight < startWeight) {
-            const currentLost = startWeight - currentWeight;
+        if (entries.length > 0 && entries[entries.length - 1][1] < startWeight) {
+            const currentLost = startWeight - entries[entries.length - 1][1];
             const progress = (currentLost / totalTarget) * 100;
             document.getElementById('progressPercent').textContent = 
                 `${Math.min(progress, 100).toFixed(1)}%`;
@@ -288,18 +361,26 @@ const app = {
     // Chart
     initializeChart() {
         const canvas = document.getElementById('progressChart');
+        if (!canvas) return;
+        
         this.chartCtx = canvas.getContext('2d');
         
         // Set canvas size
         const resizeCanvas = () => {
             const container = canvas.parentElement;
+            if (!container || !container.offsetWidth || !container.offsetHeight) return;
+            
             canvas.width = container.offsetWidth;
             canvas.height = container.offsetHeight;
             this.updateChart();
         };
         
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        window.addEventListener('resize', () => {
+            this.debounce(resizeCanvas, 250)();
+        });
+        
+        // Initial resize with delay to ensure DOM is ready
+        setTimeout(resizeCanvas, 100);
     },
     
     updateChart() {
@@ -310,16 +391,20 @@ const app = {
         const width = canvas.width;
         const height = canvas.height;
         
+        if (!width || !height) return; // Prevent drawing on zero-size canvas
+        
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
         
         // Calculate dimensions
         const padding = 40;
-        const chartWidth = width - padding * 2;
-        const chartHeight = height - padding * 2;
+        const chartWidth = Math.max(width - padding * 2, 1);
+        const chartHeight = Math.max(height - padding * 2, 1);
         
         // Get weight range
         const allWeights = [...this.program.targetCurve, ...Object.values(this.program.actualWeights).filter(w => w !== null)];
+        if (allWeights.length === 0) return;
+        
         const minWeight = Math.min(...allWeights) - 2;
         const maxWeight = Math.max(...allWeights) + 2;
         
@@ -382,7 +467,7 @@ const app = {
         ctx.lineWidth = 2;
         
         const actualEntries = Object.entries(this.program.actualWeights)
-            .filter(([_, weight]) => weight !== null)
+            .filter(([_, weight]) => weight !== null && !isNaN(weight))
             .map(([week, weight]) => ({ week: parseInt(week), weight }));
         
         // Draw polyline for actual weights
@@ -467,16 +552,23 @@ const app = {
             return;
         }
         
-        const dataStr = JSON.stringify(this.program, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `weight-loss-program-${this.program.startDate}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        this.showToast('Data exported successfully!', 'success');
+        try {
+            const dataStr = JSON.stringify(this.program, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `weight-loss-program-${this.program.startDate}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            this.showToast('Data exported successfully!', 'success');
+        } catch (e) {
+            console.error('Export error:', e);
+            this.showToast('Export failed', 'error');
+        }
     },
     
     importData() {
@@ -492,9 +584,8 @@ const app = {
             try {
                 const imported = JSON.parse(event.target.result);
                 
-                // Validate
                 if (!this.validateProgram(imported)) {
-                    this.showToast('Invalid program file', 'error');
+                    this.showToast('Invalid program file format', 'error');
                     return;
                 }
                 
@@ -510,18 +601,19 @@ const app = {
                 );
                 
             } catch (err) {
-                this.showToast('Error reading file', 'error');
+                console.error('Import parsing error:', err);
+                this.showToast('Error reading file. Ensure it is valid JSON.', 'error');
             }
         };
+        
+        reader.onerror = () => {
+            this.showToast('Failed to read file', 'error');
+        };
+        
         reader.readAsText(file);
-    },
-    
-    validateProgram(program) {
-        const required = ['startDate', 'startWeight', 'targetWeight', 'curveParams', 'targetCurve', 'actualWeights'];
-        return required.every(field => field in program) &&
-               Array.isArray(program.targetCurve) &&
-               program.targetCurve.length === 12 &&
-               typeof program.actualWeights === 'object';
+        
+        // Reset file input
+        e.target.value = '';
     },
     
     // Sharing
@@ -551,7 +643,7 @@ const app = {
                        `Weeks Completed: ${entries.length}/12\n\n` +
                        `Generated by FitTrack Pro`;
         
-        if (navigator.share) {
+        if (navigator.share && navigator.canShare({ text: summary })) {
             navigator.share({
                 title: 'My Weight Loss Progress',
                 text: summary
@@ -564,11 +656,26 @@ const app = {
     },
     
     copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            this.showToast('Summary copied to clipboard!', 'success');
-        }).catch(() => {
-            this.showToast('Failed to copy summary', 'error');
-        });
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                this.showToast('Summary copied to clipboard!', 'success');
+            }).catch(() => {
+                this.showToast('Failed to copy summary', 'error');
+            });
+        } else {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                this.showToast('Summary copied to clipboard!', 'success');
+            } catch (e) {
+                this.showToast('Failed to copy summary', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
     },
     
     // UI Helpers
@@ -602,30 +709,43 @@ const app = {
     },
     
     showToast(message, type = 'info', duration = 3000) {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
-            info: 'fa-info-circle'
-        };
-        
-        toast.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`;
-        container.appendChild(toast);
-        
-        setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
+        try {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.innerHTML = `<i class="fas ${icons[type]}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            // Trigger reflow for animation
+            toast.offsetHeight;
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 300);
+            }, duration);
+        } catch (e) {
+            console.warn('Toast failed:', e);
+        }
     },
     
     triggerConfetti() {
-        // Simple confetti effect
+        // Limit confetti on mobile for performance
+        const isMobile = window.innerWidth <= 768;
+        const confettiCount = isMobile ? 20 : 50;
+        
         const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
-        const confettiCount = 50;
         
         for (let i = 0; i < confettiCount; i++) {
             const confetti = document.createElement('div');
@@ -656,10 +776,35 @@ const app = {
     showWeeklyEntry() {
         this.closeSidebar();
         document.getElementById('weekSlider').scrollIntoView({ behavior: 'smooth' });
+    },
+    
+    // Utility functions
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 };
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    app.init();
+    // Ensure DOM is ready before initializing
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    } else {
+        app.init();
+    }
+});
+
+// Handle visibility change to refresh chart
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && app.program) {
+        setTimeout(() => app.updateChart(), 100);
+    }
 });

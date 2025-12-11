@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>12-Week Weight Loss Tracker</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -62,7 +64,7 @@
                 </h1>
                 <p class="hero-subtitle">Set up your 12-week weight loss program</p>
                 
-                <form id="setupForm" class="form">
+                <form id="setupForm" class="form" novalidate>
                     <div class="form-group">
                         <label for="startDate">Start Date</label>
                         <input type="date" id="startDate" required>
@@ -70,17 +72,17 @@
                     
                     <div class="form-group">
                         <label for="startWeight">Starting Weight (kg)</label>
-                        <input type="number" id="startWeight" step="0.01" min="20" max="500" required>
+                        <input type="number" id="startWeight" step="0.01" min="20" max="500" required inputmode="decimal">
                     </div>
                     
                     <div class="form-group">
                         <label for="targetWeight">Target Weight (kg)</label>
-                        <input type="number" id="targetWeight" step="0.01" min="20" max="500" required>
+                        <input type="number" id="targetWeight" step="0.01" min="20" max="500" required inputmode="decimal">
                     </div>
                     
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">
-                            <i class="fas fa-play"></i> Start Program
+                            <i class="fas fa-play"></i> <span id="submitText">Start Program</span>
                         </button>
                     </div>
                 </form>
@@ -95,7 +97,7 @@
             <div class="week-selector glass">
                 <h3>Current Week</h3>
                 <div class="week-slider-container">
-                    <input type="range" id="weekSlider" min="1" max="12" value="1">
+                    <input type="range" id="weekSlider" min="1" max="12" value="1" class="slider">
                     <div class="week-labels">
                         <span>Week 1</span>
                         <span id="currentWeekDisplay">Week 1</span>
@@ -158,8 +160,8 @@
             <!-- Weekly Entry -->
             <div class="entry-card glass">
                 <h3>Record Weight for Week <span id="entryWeekNumber">1</span></h3>
-                <form id="weeklyForm" class="inline-form">
-                    <input type="number" id="weeklyWeight" step="0.01" placeholder="Weight (kg)">
+                <form id="weeklyForm" class="inline-form" novalidate>
+                    <input type="number" id="weeklyWeight" step="0.01" placeholder="Weight (kg)" inputmode="decimal">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Save
                     </button>
@@ -183,6 +185,9 @@
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
 
     <!-- Scripts -->
     <script src="app.js"></script>
