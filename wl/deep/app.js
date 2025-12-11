@@ -9,6 +9,9 @@ const APP_STATE = {
     pendingAction: null
 };
 
+// Unique storage key to prevent conflicts
+const STORAGE_KEY = 'fitTrack_weightProgram_v1';
+
 // DOM Elements
 const DOM = {
     // Screens
@@ -108,11 +111,13 @@ function init() {
 
 // Load program from localStorage
 function loadProgram() {
-    const programData = localStorage.getItem('weightProgram_v1');
+    const programData = localStorage.getItem(STORAGE_KEY);
     
     if (programData) {
         try {
             APP_STATE.program = JSON.parse(programData);
+            // Calculate current week based on start date
+            APP_STATE.currentWeek = calculateCurrentWeek();
             showDashboard();
         } catch (error) {
             console.error('Error parsing program data:', error);
@@ -128,7 +133,7 @@ function loadProgram() {
 function saveProgram() {
     if (APP_STATE.program) {
         APP_STATE.program.generatedAt = new Date().toISOString();
-        localStorage.setItem('weightProgram_v1', JSON.stringify(APP_STATE.program));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(APP_STATE.program));
     }
 }
 
@@ -182,6 +187,7 @@ function setupEventListeners() {
     DOM.closeShareBtn.addEventListener('click', () => hideModal('share'));
     DOM.copySummaryBtn.addEventListener('click', handleCopySummary);
     
+    // Reset program button - SIMPLE AND RELIABLE
     DOM.resetProgramBtn.addEventListener('click', handleResetProgram);
     
     // Confirmation modal
@@ -238,7 +244,9 @@ function handleSetupSubmit(e) {
     const targetWeight = parseFloat(DOM.targetWeightInput.value);
     
     // Validate inputs
-    if (!validateWeightInputs()) return;
+    if (!validateWeightInputs()) {
+        return; // Stop if validation fails
+    }
     
     // Create program object
     APP_STATE.program = {
@@ -267,11 +275,34 @@ function handleSetupSubmit(e) {
         APP_STATE.program.actualWeights[i] = null;
     }
     
+    // Calculate current week based on start date
+    APP_STATE.currentWeek = calculateCurrentWeek();
+    
     // Save and show dashboard
     saveProgram();
     showDashboard();
     showToast('Weight loss program created successfully!', 'success');
     triggerConfetti();
+}
+
+// Calculate current week based on start date
+function calculateCurrentWeek() {
+    if (!APP_STATE.program) return 1;
+    
+    const startDate = new Date(APP_STATE.program.startDate);
+    const today = new Date();
+    
+    // Calculate days difference
+    const diffTime = today - startDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // If start date is in the future, return week 1
+    if (diffDays < 0) return 1;
+    
+    const weeks = Math.floor(diffDays / 7) + 1; // Week 1 starts immediately
+    
+    // Clamp between 1 and 12
+    return Math.max(1, Math.min(12, weeks));
 }
 
 // Validate weight inputs
@@ -280,12 +311,11 @@ function validateWeightInputs() {
     const targetWeight = parseFloat(DOM.targetWeightInput.value);
     
     let isValid = true;
-    let errorMessage = '';
     
     // Validate start weight
     if (isNaN(startWeight) || startWeight < 20 || startWeight > 500) {
         DOM.startWeightInput.style.borderColor = '#ef4444';
-        errorMessage = 'Start weight must be between 20-500 kg';
+        showToast('Start weight must be between 20-500 kg', 'error');
         isValid = false;
     } else {
         DOM.startWeightInput.style.borderColor = '';
@@ -294,7 +324,7 @@ function validateWeightInputs() {
     // Validate target weight
     if (isNaN(targetWeight) || targetWeight < 20 || targetWeight > 500) {
         DOM.targetWeightInput.style.borderColor = '#ef4444';
-        errorMessage = 'Target weight must be between 20-500 kg';
+        showToast('Target weight must be between 20-500 kg', 'error');
         isValid = false;
     } else {
         DOM.targetWeightInput.style.borderColor = '';
@@ -303,18 +333,15 @@ function validateWeightInputs() {
     // Validate that target weight is less than start weight
     if (isValid && targetWeight >= startWeight) {
         DOM.targetWeightInput.style.borderColor = '#ef4444';
-        errorMessage = 'Target weight must be less than start weight';
-        isValid = false;
+        const confirmMsg = 'Target weight is not less than start weight. Are you sure you want to continue?';
         
-        // Ask for confirmation if user intentionally wants target >= start
-        if (confirm('Target weight is not less than start weight. Are you sure you want to continue?')) {
-            DOM.targetWeightInput.style.borderColor = '';
-            isValid = true;
-        }
-    }
-    
-    if (!isValid && errorMessage) {
-        showToast(errorMessage, 'error');
+        // Use our confirmation modal instead of native confirm
+        APP_STATE.pendingAction = {
+            type: 'overrideWeightValidation'
+        };
+        
+        showConfirmation(confirmMsg, 'overrideWeightValidation');
+        return false; // Wait for user confirmation
     }
     
     return isValid;
@@ -494,7 +521,10 @@ function updateStats() {
 
 // Initialize chart
 function initChart() {
-    // Chart is initialized in updateChart()
+    // Canvas is initialized in updateChart
+    if (APP_STATE.program) {
+        updateChart();
+    }
 }
 
 // Update chart with data
@@ -866,6 +896,13 @@ function hideAllModals() {
     DOM.modalOverlay.classList.remove('active');
 }
 
+// Show confirmation dialog
+function showConfirmation(message, actionType) {
+    DOM.confirmationMessage.textContent = message;
+    DOM.confirmActionBtn.dataset.action = actionType;
+    showModal('confirmation');
+}
+
 // Handle export data
 function handleExportData() {
     if (!APP_STATE.program) {
@@ -876,7 +913,8 @@ function handleExportData() {
     const exportData = {
         ...APP_STATE.program,
         exportDate: new Date().toISOString(),
-        exportVersion: '1.0'
+        exportVersion: '1.0',
+        storageKey: STORAGE_KEY
     };
     
     const dataStr = JSON.stringify(exportData, null, 2);
@@ -952,23 +990,31 @@ function isValidProgramData(data) {
     return true;
 }
 
-// Handle reset program
+// Handle reset program - SIMPLE AND RELIABLE
 function handleResetProgram() {
-    APP_STATE.pendingAction = {
-        type: 'reset'
-    };
+    // Show confirmation using browser's native confirm for reliability
+    const userConfirmed = confirm('⚠️ WARNING: This will delete ALL your progress data.\n\nThis action cannot be undone.\n\nAre you absolutely sure you want to reset?');
     
-    showConfirmation(
-        'This will delete your current program and all your progress. Are you sure you want to reset?',
-        'reset'
-    );
-}
-
-// Show confirmation dialog
-function showConfirmation(message, actionType) {
-    DOM.confirmationMessage.textContent = message;
-    DOM.confirmActionBtn.dataset.action = actionType;
-    showModal('confirmation');
+    if (userConfirmed) {
+        // Clear the program from localStorage
+        localStorage.removeItem(STORAGE_KEY);
+        
+        // Also remove any old keys that might exist
+        localStorage.removeItem('weightProgram_v1');
+        
+        // Show immediate feedback
+        showToast('Program reset successfully! Refreshing...', 'success');
+        
+        // Force page reload after a short delay
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    } else {
+        showToast('Reset cancelled', 'info');
+    }
+    
+    // Close sidebar if open
+    toggleSidebar(false);
 }
 
 // Handle confirmed action
@@ -984,11 +1030,15 @@ function handleConfirmAction() {
             triggerConfetti();
             break;
             
-        case 'reset':
-            localStorage.removeItem('weightProgram_v1');
-            APP_STATE.program = null;
-            showSetup();
-            showToast('Program reset successfully', 'success');
+        case 'overrideWeightValidation':
+            // User confirmed they want target >= start weight
+            if (DOM.targetWeightInput) {
+                DOM.targetWeightInput.style.borderColor = '';
+            }
+            // Now submit the form programmatically
+            if (DOM.setupForm) {
+                DOM.setupForm.dispatchEvent(new Event('submit', { bubbles: true }));
+            }
             break;
     }
     
@@ -1184,7 +1234,7 @@ function triggerConfetti() {
             confettiFall ${duration}s ease-in ${delay}s forwards
         `;
         
-        // Keyframes for animation
+        // Create style element for keyframes
         const style = document.createElement('style');
         style.textContent = `
             @keyframes confettiFall {
@@ -1208,6 +1258,9 @@ function triggerConfetti() {
             if (confetti.parentNode) {
                 confetti.parentNode.removeChild(confetti);
             }
+            if (style.parentNode) {
+                style.parentNode.removeChild(style);
+            }
         }, (duration + delay) * 1000);
     }
 }
@@ -1219,287 +1272,3 @@ function roundKg(value) {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
-
-// Add CSS for chart tooltip
-const tooltipStyles = document.createElement('style');
-tooltipStyles.textContent = `
-    .chart-tooltip {
-        position: absolute;
-        padding: var(--space-sm) var(--space-md);
-        background-color: var(--secondary-bg);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-md);
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity var(--transition-fast);
-        z-index: 10;
-        min-width: 150px;
-    }
-    
-    .tooltip-week {
-        font-weight: 700;
-        margin-bottom: var(--space-xs);
-        color: var(--primary-text);
-    }
-    
-    .tooltip-target, .tooltip-actual {
-        font-size: 0.9rem;
-        margin-bottom: var(--space-xs);
-        color: var(--secondary-text);
-    }
-    
-    .tooltip-difference {
-        font-size: 0.85rem;
-        margin-top: var(--space-xs);
-        padding-top: var(--space-xs);
-        border-top: 1px solid var(--border-color);
-    }
-    
-    .tooltip-difference.positive {
-        color: #10b981;
-    }
-    
-    .tooltip-difference.negative {
-        color: #ef4444;
-    }
-    
-    .share-header {
-        text-align: center;
-        margin-bottom: var(--space-lg);
-    }
-    
-    .share-stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-md);
-        margin-bottom: var(--space-lg);
-    }
-    
-    .share-stat {
-        padding: var(--space-md);
-        background-color: var(--tertiary-bg);
-        border-radius: var(--radius-md);
-        text-align: center;
-    }
-    
-    .share-stat.highlight {
-        background: var(--gradient-primary);
-        color: white;
-        grid-column: span 2;
-    }
-    
-    .share-stat-label {
-        display: block;
-        font-size: 0.875rem;
-        color: var(--secondary-text);
-        margin-bottom: var(--space-xs);
-    }
-    
-    .share-stat-value {
-        display: block;
-        font-size: 1.25rem;
-        font-weight: 700;
-    }
-    
-    .share-progress {
-        margin-bottom: var(--space-lg);
-    }
-    
-    .progress-text {
-        text-align: center;
-        margin-top: var(--space-sm);
-        font-weight: 600;
-    }
-    
-    .share-weeks {
-        text-align: center;
-        padding-top: var(--space-md);
-        border-top: 1px solid var(--border-color);
-    }
-`;
-document.head.appendChild(tooltipStyles);
-
-// Add this function after the existing functions
-function initChart() {
-    // Canvas is initialized in updateChart
-    // This function exists to satisfy the initialization call
-    if (APP_STATE.program) {
-        updateChart();
-    }
-}
-
-// Add this function to calculate current week based on date
-function calculateCurrentWeek() {
-    if (!APP_STATE.program) return 1;
-    
-    const startDate = new Date(APP_STATE.program.startDate);
-    const today = new Date();
-    
-    // Calculate days difference
-    const diffTime = Math.abs(today - startDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const weeks = Math.floor(diffDays / 7) + 1; // Week 1 starts immediately
-    
-    // Clamp between 1 and 12
-    return Math.max(1, Math.min(12, weeks));
-}
-
-// Update the loadProgram function to set current week based on date
-function loadProgram() {
-    const programData = localStorage.getItem('weightProgram_v1');
-    
-    if (programData) {
-        try {
-            APP_STATE.program = JSON.parse(programData);
-            // Calculate current week based on start date
-            APP_STATE.currentWeek = calculateCurrentWeek();
-            showDashboard();
-        } catch (error) {
-            console.error('Error parsing program data:', error);
-            showToast('Error loading saved data. Starting fresh.', 'error');
-            showSetup();
-        }
-    } else {
-        showSetup();
-    }
-}
-
-// Update the showDashboard function to include chart initialization
-function showDashboard() {
-    DOM.setupScreen.classList.add('hidden');
-    DOM.dashboardScreen.classList.remove('hidden');
-    
-    // Update dashboard with program data
-    updateDashboard();
-    
-    // Initialize and update chart
-    updateChart();
-    
-    // Update stats
-    updateStats();
-}
-
-// Fix the handleSetupSubmit function to prevent default properly
-function handleSetupSubmit(e) {
-    e.preventDefault();
-    
-    const startDate = DOM.startDateInput.value;
-    const startWeight = parseFloat(DOM.startWeightInput.value);
-    const targetWeight = parseFloat(DOM.targetWeightInput.value);
-    
-    // Validate inputs
-    if (!validateWeightInputs()) {
-        return; // Stop if validation fails
-    }
-    
-    // Create program object
-    APP_STATE.program = {
-        startDate,
-        startWeight: roundKg(startWeight),
-        targetWeight: roundKg(targetWeight),
-        generatedAt: new Date().toISOString(),
-        curveParams: {
-            type: 'exponential',
-            a: 0.35
-        },
-        targetCurve: [],
-        actualWeights: {},
-        notes: ''
-    };
-    
-    // Generate target curve
-    APP_STATE.program.targetCurve = generateTargetCurve(
-        APP_STATE.program.startWeight,
-        APP_STATE.program.targetWeight,
-        APP_STATE.program.curveParams.a
-    );
-    
-    // Initialize actual weights object
-    for (let i = 1; i <= 12; i++) {
-        APP_STATE.program.actualWeights[i] = null;
-    }
-    
-    // Calculate current week based on start date
-    APP_STATE.currentWeek = calculateCurrentWeek();
-    
-    // Save and show dashboard
-    saveProgram();
-    showDashboard();
-    showToast('Weight loss program created successfully!', 'success');
-    triggerConfetti();
-}
-
-// Update validateWeightInputs to be more robust
-function validateWeightInputs() {
-    const startWeight = parseFloat(DOM.startWeightInput.value);
-    const targetWeight = parseFloat(DOM.targetWeightInput.value);
-    
-    let isValid = true;
-    
-    // Validate start weight
-    if (isNaN(startWeight) || startWeight < 20 || startWeight > 500) {
-        DOM.startWeightInput.style.borderColor = '#ef4444';
-        showToast('Start weight must be between 20-500 kg', 'error');
-        isValid = false;
-    } else {
-        DOM.startWeightInput.style.borderColor = '';
-    }
-    
-    // Validate target weight
-    if (isNaN(targetWeight) || targetWeight < 20 || targetWeight > 500) {
-        DOM.targetWeightInput.style.borderColor = '#ef4444';
-        showToast('Target weight must be between 20-500 kg', 'error');
-        isValid = false;
-    } else {
-        DOM.targetWeightInput.style.borderColor = '';
-    }
-    
-    // Validate that target weight is less than start weight
-    if (isValid && targetWeight >= startWeight) {
-        DOM.targetWeightInput.style.borderColor = '#ef4444';
-        const confirmMsg = 'Target weight is not less than start weight. Are you sure you want to continue?';
-        
-        // Use our confirmation modal instead of native confirm
-        APP_STATE.pendingAction = {
-            type: 'overrideWeightValidation'
-        };
-        
-        showConfirmation(confirmMsg, 'overrideWeightValidation');
-        return false; // Wait for user confirmation
-    }
-    
-    return isValid;
-}
-
-// Add this case to handleConfirmAction for weight validation override
-function handleConfirmAction() {
-    const actionType = DOM.confirmActionBtn.dataset.action;
-    
-    switch (actionType) {
-        case 'import':
-            APP_STATE.program = APP_STATE.pendingAction.data;
-            saveProgram();
-            showDashboard();
-            showToast('Program data imported successfully!', 'success');
-            triggerConfetti();
-            break;
-            
-        case 'reset':
-            localStorage.removeItem('weightProgram_v1');
-            APP_STATE.program = null;
-            showSetup();
-            showToast('Program reset successfully', 'success');
-            break;
-            
-        case 'overrideWeightValidation':
-            // User confirmed they want target >= start weight
-            DOM.targetWeightInput.style.borderColor = '';
-            // Now submit the form programmatically
-            DOM.setupForm.dispatchEvent(new Event('submit', { bubbles: true }));
-            break;
-    }
-    
-    hideModal('confirmation');
-    toggleSidebar(false);
-}
