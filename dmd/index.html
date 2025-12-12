@@ -662,7 +662,7 @@ input:checked + .toggle-slider:before {
 <div class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></div>
 
 <script>
-// Thumbnail Manager using IndexedDB
+// Thumbnail Manager using IndexedDB (for caching external URLs only)
 class ThumbnailManager {
   constructor() {
     this.db = null;
@@ -835,7 +835,7 @@ class ThumbnailManager {
   }
 }
 
-// Intersection Observer for lazy loading
+// Intersection Observer for lazy loading (external URLs only)
 class LazyLoader {
   constructor() {
     this.observer = null;
@@ -864,37 +864,45 @@ class LazyLoader {
     const url = img.dataset.src;
     if (!url) return;
     
+    // Skip data URLs (they're already loaded)
+    if (url.startsWith('data:')) {
+      img.src = url;
+      img.classList.add('loaded');
+      return;
+    }
+    
     const thumbnailDiv = element.querySelector('.menu-thumbnail');
     const skeleton = document.createElement('div');
     skeleton.className = 'thumbnail-skeleton';
     thumbnailDiv.appendChild(skeleton);
     
     try {
-      let dataUrl = url;
-      
-      if (!url.startsWith('data:')) {
-        const cached = await this.thumbnailManager.getThumbnail(url);
-        if (cached) {
-          dataUrl = cached;
-        } else {
-          const response = await fetch(url);
-          const blob = await response.blob();
-          const reader = new FileReader();
-          dataUrl = await new Promise(resolve => {
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
-          });
-          
-          await this.thumbnailManager.saveThumbnail(url, dataUrl);
-        }
+      // Try to get from IndexedDB first
+      const cached = await this.thumbnailManager.getThumbnail(url);
+      if (cached) {
+        img.onload = () => {
+          img.classList.add('loaded');
+          skeleton.remove();
+        };
+        img.src = cached;
+      } else {
+        // Fetch and cache
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        const dataUrl = await new Promise(resolve => {
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+        
+        await this.thumbnailManager.saveThumbnail(url, dataUrl);
+        
+        img.onload = () => {
+          img.classList.add('loaded');
+          skeleton.remove();
+        };
+        img.src = dataUrl;
       }
-      
-      img.onload = () => {
-        img.classList.add('loaded');
-        skeleton.remove();
-      };
-      img.src = dataUrl;
-      
     } catch (error) {
       console.warn('Failed to load thumbnail:', error);
       skeleton.remove();
@@ -950,15 +958,15 @@ function loadItems() {
   const saved = localStorage.getItem('dynamicMenuItems');
   if (saved) {
     const items = JSON.parse(saved).filter(i => i?.title && i?.url);
+    // FIXED: Keep all thumbnails - both URLs and data URLs
     state.menuItems = items.map(item => ({
       title: item.title,
       url: item.url,
-      thumbnail: item.thumbnail && item.thumbnail.startsWith('http') ? item.thumbnail : null
+      thumbnail: item.thumbnail || null  // Keep whatever thumbnail is stored
     }));
   } else {
     state.menuItems = getDefaults();
   }
-  saveItems();
   updateStorageInfo();
 }
 
@@ -985,7 +993,7 @@ function isValidURL(str) {
   catch { return false; }
 }
 
-// Render
+// Render - UPDATED to handle data URLs and external URLs differently
 function render() {
   el.grid.innerHTML = '';
   if (!state.menuItems.length) {
@@ -1002,12 +1010,27 @@ function render() {
     wrapper.style.animationDelay = `${i * 0.05}s`;
 
     const glow = state.editMode ? '' : 'glow-border';
+    
+    // Handle thumbnails differently based on type
+    let thumbnailHTML = '';
+    if (item.thumbnail) {
+      if (item.thumbnail.startsWith('data:')) {
+        // Data URL - load directly
+        thumbnailHTML = `<img src="${item.thumbnail}" alt="${item.title}" class="loaded">`;
+      } else {
+        // External URL - lazy load
+        thumbnailHTML = `<img data-src="${item.thumbnail}" alt="${item.title}"><i class="fas fa-globe thumbnail-placeholder" style="display:none"></i>`;
+      }
+    } else {
+      // No thumbnail
+      thumbnailHTML = '<i class="fas fa-globe thumbnail-placeholder"></i>';
+    }
+    
     wrapper.innerHTML = `
       <div class="${glow}">
         <div class="menu-item ${state.editMode ? 'edit-mode' : ''}" data-index="${i}">
           <div class="menu-thumbnail">
-            ${item.thumbnail ? `<img data-src="${item.thumbnail}" alt="${item.title}">` : ''}
-            <i class="fas fa-globe thumbnail-placeholder" style="display:${item.thumbnail?'none':'flex'}"></i>
+            ${thumbnailHTML}
           </div>
           <div class="menu-title">${item.title}</div>
           <div class="menu-url">${getDomain(item.url)}</div>
@@ -1028,7 +1051,10 @@ function render() {
     }
     el.grid.appendChild(wrapper);
     
-    lazyLoader.observe(wrapper);
+    // Only lazy load if it's an external URL (not a data URL)
+    if (item.thumbnail && !item.thumbnail.startsWith('data:')) {
+      lazyLoader.observe(wrapper);
+    }
   });
 
   if (state.editMode) setupSortable();
@@ -1129,9 +1155,15 @@ function openEdit(i) {
   document.getElementById('edit-index').value = i;
   document.getElementById('item-title').value = item.title;
   document.getElementById('item-url').value = item.url;
-  document.getElementById('thumbnail-preview').innerHTML = item.thumbnail
-    ? `<img src="${item.thumbnail}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" class="loaded">`
-    : '<i class="fas fa-globe thumbnail-placeholder" style="font-size:32px;"></i>';
+  
+  // Show thumbnail preview
+  if (item.thumbnail) {
+    document.getElementById('thumbnail-preview').innerHTML = 
+      `<img src="${item.thumbnail}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" class="loaded">`;
+  } else {
+    document.getElementById('thumbnail-preview').innerHTML = '<i class="fas fa-globe thumbnail-placeholder" style="font-size:32px;"></i>';
+  }
+  
   state.currentThumbnail = item.thumbnail;
   el.modal.classList.add('active');
 }
@@ -1469,7 +1501,7 @@ async function processImport() {
   }
 }
 
-// Thumbnail Handling
+// Thumbnail Handling - UPDATED
 async function handleUpload(e) {
   const file = e.target.files[0];
   if (!file || !file.type.startsWith('image/')) return;
@@ -1482,16 +1514,14 @@ async function handleUpload(e) {
   try {
     const reader = new FileReader();
     reader.onload = async (ev) => {
+      // Compress the image
       const compressed = await thumbnailManager.compressImage(ev.target.result);
       
-      const tempId = 'upload-' + Date.now();
-      await thumbnailManager.saveThumbnail(tempId, compressed);
-      
+      // Set current thumbnail to the compressed data URL
       state.currentThumbnail = compressed;
       document.getElementById('thumbnail-preview').innerHTML = 
         `<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" class="loaded">`;
       showToast('Image uploaded and optimized');
-      updateStorageInfo();
     };
     reader.readAsDataURL(file);
   } catch (error) {
@@ -1508,6 +1538,7 @@ async function fetchFavicon() {
     const domain = new URL(url).hostname;
     const favicon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     
+    // Check if already cached
     const cached = await thumbnailManager.getThumbnail(favicon);
     
     if (cached) {
@@ -1516,6 +1547,7 @@ async function fetchFavicon() {
         `<img src="${cached}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" class="loaded">`;
       showToast('Favicon loaded from cache');
     } else {
+      // Fetch and cache
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = async () => {
