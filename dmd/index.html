@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <style>
 @property --angle {
@@ -269,7 +270,7 @@ body {
 }
 .modal.active { opacity: 1; visibility: visible; }
 .modal-content {
-  width: 90%; max-width: 420px;
+  width: 90%; max-width: 500px;
   background: var(--secondary-bg);
   border-radius: var(--radius-card);
   padding: 28px;
@@ -307,6 +308,102 @@ body {
   box-shadow: var(--glow-shadow);
 }
 .btn-secondary { background: var(--tertiary-bg); color: var(--primary-text); }
+
+/* Import Modal Specific */
+.import-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.import-option {
+  flex: 1;
+  text-align: center;
+  padding: 15px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.import-option:hover {
+  border-color: var(--accent-color);
+  background: rgba(99, 102, 241, 0.1);
+}
+.import-option i {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: var(--accent-color);
+}
+.file-input-label {
+  display: block;
+  padding: 10px 20px;
+  background: var(--tertiary-bg);
+  border-radius: var(--radius-btn);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.file-input-label:hover {
+  background: rgba(99, 102, 241, 0.2);
+}
+.paste-area {
+  width: 100%;
+  height: 200px;
+  padding: 15px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-btn);
+  background: rgba(255,255,255,0.05);
+  color: var(--primary-text);
+  font-family: monospace;
+  resize: vertical;
+  margin-bottom: 15px;
+}
+.paste-area:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 12px;
+}
+.preview-table th, .preview-table td {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+.preview-table th {
+  background: var(--tertiary-bg);
+}
+.preview-table tr:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* Import Actions */
+.import-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.import-mode-select {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.import-mode-btn {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  background: var(--tertiary-bg);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.import-mode-btn.active {
+  background: var(--accent-color);
+  color: white;
+}
 
 /* Theme Toggle */
 .theme-toggle {
@@ -436,6 +533,7 @@ input:checked + .toggle-slider:before {
   <div class="sidebar-item" id="add-new-item"><i class="fas fa-plus"></i><span>Add New Item</span></div>
   <div class="sidebar-item" id="save-changes"><i class="fas fa-save"></i><span>Save Changes</span></div>
   <div class="sidebar-item" id="export-menu"><i class="fas fa-download"></i><span>Export Menu</span></div>
+  <div class="sidebar-item" id="import-menu"><i class="fas fa-upload"></i><span>Import Menu</span></div>
   <div class="sidebar-item" id="clear-all"><i class="fas fa-trash"></i><span>Clear All</span></div>
 </aside>
 
@@ -482,6 +580,66 @@ input:checked + .toggle-slider:before {
         <button type="submit" class="btn btn-primary">Save</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal" id="import-modal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3>Import Menu Items</h3>
+      <button class="close-modal" id="close-import-modal" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--primary-text);">&times;</button>
+    </div>
+    
+    <div class="import-options">
+      <div class="import-option" id="import-json">
+        <i class="fas fa-file-code"></i>
+        <div>JSON File</div>
+      </div>
+      <div class="import-option" id="import-csv">
+        <i class="fas fa-file-csv"></i>
+        <div>CSV File</div>
+      </div>
+      <div class="import-option" id="import-paste">
+        <i class="fas fa-paste"></i>
+        <div>Paste Data</div>
+      </div>
+    </div>
+    
+    <div id="json-import" style="display:none;">
+      <label class="file-input-label">
+        <i class="fas fa-file-upload"></i> Select JSON File
+        <input type="file" id="json-file" accept=".json" style="display:none;">
+      </label>
+      <div id="json-preview" style="margin-top:15px;"></div>
+    </div>
+    
+    <div id="csv-import" style="display:none;">
+      <label class="file-input-label">
+        <i class="fas fa-file-upload"></i> Select CSV File
+        <input type="file" id="csv-file" accept=".csv,.txt" style="display:none;">
+      </label>
+      <div style="margin:10px 0;font-size:12px;color:var(--secondary-text);">
+        Expected columns: Title, URL, Thumbnail (optional), Category (optional), Tags (optional), Color (optional)
+      </div>
+      <div id="csv-preview" style="margin-top:15px;"></div>
+    </div>
+    
+    <div id="paste-import" style="display:none;">
+      <textarea class="paste-area" id="paste-data" placeholder="Paste your JSON or CSV data here..."></textarea>
+      <div id="paste-preview"></div>
+    </div>
+    
+    <div class="import-mode-select">
+      <div class="import-mode-btn active" data-mode="replace">Replace All</div>
+      <div class="import-mode-btn" data-mode="merge">Merge</div>
+      <div class="import-mode-btn" data-mode="append">Append</div>
+    </div>
+    
+    <div class="import-actions">
+      <button class="btn btn-secondary" id="cancel-import">Cancel</button>
+      <button class="btn btn-primary" id="process-import" disabled>Import Items</button>
+    </div>
   </div>
 </div>
 
@@ -758,7 +916,9 @@ const state = {
   currentTheme: 'dark',
   currentThumbnail: null,
   sortable: null,
-  confirmAction: null
+  confirmAction: null,
+  importData: null,
+  importMode: 'replace'
 };
 
 const el = {
@@ -768,6 +928,7 @@ const el = {
   editBanner: document.getElementById('edit-banner'),
   grid: document.getElementById('menu-grid'),
   modal: document.getElementById('item-modal'),
+  importModal: document.getElementById('import-modal'),
   confirm: document.getElementById('confirm-modal'),
   toast: document.getElementById('toast'),
   themeToggle: document.getElementById('theme-toggle'),
@@ -775,6 +936,7 @@ const el = {
   addBtn: document.getElementById('add-new-item'),
   saveBtn: document.getElementById('save-changes'),
   exportBtn: document.getElementById('export-menu'),
+  importBtn: document.getElementById('import-menu'),
   clearBtn: document.getElementById('clear-all'),
   storageInfo: document.getElementById('storage-info'),
   storageSize: document.getElementById('storage-size')
@@ -887,14 +1049,42 @@ function setupEvents() {
   el.addBtn.addEventListener('click', () => { openAdd(); el.sidebar.classList.remove('active'); });
   el.saveBtn.addEventListener('click', () => { saveItems(); showToast('Saved'); });
   el.exportBtn.addEventListener('click', exportMenu);
+  el.importBtn.addEventListener('click', openImport);
   el.clearBtn.addEventListener('click', confirmClear);
   el.themeToggle.addEventListener('click', toggleTheme);
 
+  // Modal events
   document.getElementById('item-form').addEventListener('submit', handleSubmit);
   document.getElementById('close-modal').addEventListener('click', () => el.modal.classList.remove('active'));
   document.getElementById('cancel-btn').addEventListener('click', () => el.modal.classList.remove('active'));
   document.getElementById('thumbnail-upload').addEventListener('change', handleUpload);
   document.getElementById('fetch-favicon').addEventListener('click', fetchFavicon);
+  
+  // Import modal events
+  document.getElementById('close-import-modal').addEventListener('click', () => el.importModal.classList.remove('active'));
+  document.getElementById('cancel-import').addEventListener('click', () => el.importModal.classList.remove('active'));
+  document.getElementById('process-import').addEventListener('click', processImport);
+  
+  // Import option buttons
+  document.getElementById('import-json').addEventListener('click', () => showImportOption('json'));
+  document.getElementById('import-csv').addEventListener('click', () => showImportOption('csv'));
+  document.getElementById('import-paste').addEventListener('click', () => showImportOption('paste'));
+  
+  // Import mode buttons
+  document.querySelectorAll('.import-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.import-mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.importMode = btn.dataset.mode;
+    });
+  });
+  
+  // File inputs
+  document.getElementById('json-file').addEventListener('change', handleJsonFile);
+  document.getElementById('csv-file').addEventListener('change', handleCsvFile);
+  document.getElementById('paste-data').addEventListener('input', handlePasteData);
+  
+  // Confirm modal
   document.getElementById('close-confirm-modal').addEventListener('click', () => el.confirm.classList.remove('active'));
   document.getElementById('confirm-cancel').addEventListener('click', () => el.confirm.classList.remove('active'));
   document.getElementById('confirm-action').addEventListener('click', () => {
@@ -995,12 +1185,288 @@ async function confirmClear() {
 }
 
 function exportMenu() {
-  const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.menuItems, null, 2));
+  const exportData = {
+    version: "1.0",
+    exportDate: new Date().toISOString(),
+    items: state.menuItems,
+    metadata: {
+      totalItems: state.menuItems.length,
+      theme: state.currentTheme
+    }
+  };
+  
+  const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
   const a = document.createElement('a');
   a.href = data;
-  a.download = 'dynamic-menu.json';
+  a.download = `dynamic-menu-${new Date().toISOString().split('T')[0]}.json`;
   a.click();
-  showToast('Exported!');
+  showToast(`Exported ${state.menuItems.length} items!`);
+}
+
+// Import Functions
+function openImport() {
+  state.importData = null;
+  document.getElementById('process-import').disabled = true;
+  document.getElementById('json-import').style.display = 'none';
+  document.getElementById('csv-import').style.display = 'none';
+  document.getElementById('paste-import').style.display = 'none';
+  document.getElementById('json-preview').innerHTML = '';
+  document.getElementById('csv-preview').innerHTML = '';
+  document.getElementById('paste-preview').innerHTML = '';
+  document.getElementById('paste-data').value = '';
+  el.sidebar.classList.remove('active');
+  el.importModal.classList.add('active');
+}
+
+function showImportOption(option) {
+  document.getElementById('json-import').style.display = 'none';
+  document.getElementById('csv-import').style.display = 'none';
+  document.getElementById('paste-import').style.display = 'none';
+  
+  if (option === 'json') {
+    document.getElementById('json-import').style.display = 'block';
+  } else if (option === 'csv') {
+    document.getElementById('csv-import').style.display = 'block';
+  } else if (option === 'paste') {
+    document.getElementById('paste-import').style.display = 'block';
+  }
+}
+
+function handleJsonFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const data = JSON.parse(event.target.result);
+      const items = extractItemsFromData(data);
+      
+      if (items.length === 0) {
+        showPreviewError('No valid items found in JSON file');
+        return;
+      }
+      
+      state.importData = items;
+      showPreview(items, 'json');
+      document.getElementById('process-import').disabled = false;
+    } catch (error) {
+      showPreviewError('Invalid JSON format: ' + error.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function handleCsvFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      if (results.errors.length > 0) {
+        showPreviewError('CSV parsing errors: ' + results.errors.map(e => e.message).join(', '));
+        return;
+      }
+      
+      const items = results.data.map(row => ({
+        title: row.Title || row.title || '',
+        url: row.URL || row.url || '',
+        thumbnail: row.Thumbnail || row.thumbnail || null,
+        category: row.Category || row.category || null,
+        tags: row.Tags ? row.Tags.split(/[;,]/).map(t => t.trim()).filter(t => t) : null,
+        backgroundColor: row.Color || row.color || null
+      })).filter(item => item.title && item.url);
+      
+      if (items.length === 0) {
+        showPreviewError('No valid items found in CSV file');
+        return;
+      }
+      
+      state.importData = items;
+      showPreview(items, 'csv');
+      document.getElementById('process-import').disabled = false;
+    },
+    error: function(error) {
+      showPreviewError('CSV parsing error: ' + error.message);
+    }
+  });
+}
+
+function handlePasteData(e) {
+  const text = e.target.value.trim();
+  if (!text) {
+    document.getElementById('paste-preview').innerHTML = '';
+    document.getElementById('process-import').disabled = true;
+    return;
+  }
+  
+  try {
+    let items = [];
+    
+    // Try parsing as JSON first
+    try {
+      const data = JSON.parse(text);
+      items = extractItemsFromData(data);
+    } catch (jsonError) {
+      // If not JSON, try parsing as CSV
+      const results = Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true
+      });
+      
+      if (results.errors.length === 0 && results.data.length > 0) {
+        items = results.data.map(row => ({
+          title: row.Title || row.title || '',
+          url: row.URL || row.url || '',
+          thumbnail: row.Thumbnail || row.thumbnail || null
+        })).filter(item => item.title && item.url);
+      }
+    }
+    
+    if (items.length === 0) {
+      showPreviewError('No valid items found in pasted data');
+      return;
+    }
+    
+    state.importData = items;
+    showPreview(items, 'paste');
+    document.getElementById('process-import').disabled = false;
+  } catch (error) {
+    showPreviewError('Invalid data format: ' + error.message);
+  }
+}
+
+function extractItemsFromData(data) {
+  // Handle different possible data structures
+  if (Array.isArray(data)) {
+    return data.map(item => ({
+      title: item.title || item.Title || '',
+      url: item.url || item.URL || '',
+      thumbnail: item.thumbnail || item.Thumbnail || null,
+      category: item.category || item.Category || null,
+      tags: item.tags || item.Tags || null,
+      backgroundColor: item.backgroundColor || item.color || item.Color || null
+    })).filter(item => item.title && item.url);
+  } else if (data.items && Array.isArray(data.items)) {
+    return data.items.map(item => ({
+      title: item.title || item.Title || '',
+      url: item.url || item.URL || '',
+      thumbnail: item.thumbnail || item.Thumbnail || null,
+      category: item.category || item.Category || null,
+      tags: item.tags || item.Tags || null,
+      backgroundColor: item.backgroundColor || item.color || item.Color || null
+    })).filter(item => item.title && item.url);
+  }
+  return [];
+}
+
+function showPreview(items, source) {
+  const preview = items.slice(0, 5);
+  const extra = items.length > 5 ? ` and ${items.length - 5} more...` : '';
+  
+  let html = `
+    <div style="margin-bottom:10px;color:var(--secondary-text);">
+      Found ${items.length} items${extra}
+    </div>
+    <table class="preview-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>URL</th>
+          <th>Thumbnail</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  
+  preview.forEach(item => {
+    html += `
+      <tr>
+        <td>${item.title}</td>
+        <td>${getDomain(item.url)}</td>
+        <td>${item.thumbnail ? '✓' : '✗'}</td>
+      </tr>
+    `;
+  });
+  
+  html += `</tbody></table>`;
+  
+  const previewElement = document.getElementById(`${source}-preview`);
+  if (previewElement) {
+    previewElement.innerHTML = html;
+  }
+}
+
+function showPreviewError(message) {
+  const html = `<div style="color:#ef4444;padding:10px;background:rgba(239,68,68,0.1);border-radius:var(--radius-btn);">${message}</div>`;
+  document.getElementById('process-import').disabled = true;
+  
+  // Try to find which preview container to use
+  const containers = ['json-preview', 'csv-preview', 'paste-preview'];
+  for (const containerId of containers) {
+    const container = document.getElementById(containerId);
+    if (container) {
+      container.innerHTML = html;
+      break;
+    }
+  }
+}
+
+async function processImport() {
+  if (!state.importData || state.importData.length === 0) {
+    showToast('No data to import');
+    return;
+  }
+  
+  try {
+    const validItems = state.importData.filter(item => 
+      item.title && item.url && isValidURL(item.url)
+    );
+    
+    if (validItems.length === 0) {
+      showToast('No valid items found to import');
+      return;
+    }
+    
+    // Apply import mode
+    if (state.importMode === 'replace') {
+      state.menuItems = validItems.map(item => ({
+        title: item.title,
+        url: item.url,
+        thumbnail: item.thumbnail
+      }));
+    } else if (state.importMode === 'merge') {
+      // Merge: remove duplicates based on URL
+      const existingUrls = new Set(state.menuItems.map(item => item.url));
+      const newItems = validItems.filter(item => !existingUrls.has(item.url));
+      state.menuItems = [...state.menuItems, ...newItems.map(item => ({
+        title: item.title,
+        url: item.url,
+        thumbnail: item.thumbnail
+      }))];
+    } else if (state.importMode === 'append') {
+      // Append: just add all items
+      state.menuItems = [...state.menuItems, ...validItems.map(item => ({
+        title: item.title,
+        url: item.url,
+        thumbnail: item.thumbnail
+      }))];
+    }
+    
+    saveItems();
+    render();
+    el.importModal.classList.remove('active');
+    createConfetti();
+    showToast(`Imported ${validItems.length} items (${state.importMode})`);
+    updateStorageInfo();
+    
+    // Clear import data
+    state.importData = null;
+  } catch (error) {
+    showToast('Import failed: ' + error.message);
+  }
 }
 
 // Thumbnail Handling
