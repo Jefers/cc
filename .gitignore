@@ -2,3 +2,4 @@
 cc.code-workspace
 menu.json 
 generate_links_csv.sh
+links_simple.csv
