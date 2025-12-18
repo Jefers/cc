@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZfit - Fitness Routine Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Custom Properties */
+        @property --angle {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
+        }
+
+        :root {
+            /* Dark mode colors (default) */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent-color: #6366f1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            
+            /* Light mode overrides */
+            --primary-bg-light: #ffffff;
+            --secondary-bg-light: #f8f9fa;
+            --tertiary-bg-light: #e9ecef;
+            --primary-text-light: #1a1a1a;
+            --secondary-text-light: #6c757d;
+            --border-color-light: rgba(0, 0, 0, 0.1);
+            
+            /* Design tokens */
+            --border-radius-card: 16px;
+            --border-radius-button: 12px;
+            --transition: all 0.3s ease;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            
+            /* Glowing border colors */
+            --glow-color-1: #6366f1;
+            --glow-color-2: #8b5cf6;
+            --glow-color-3: #ec4899;
+            --glow-color-4: #06b6d4;
+            
+            /* Current theme (dark by default) */
+            --current-primary-bg: var(--primary-bg);
+            --current-secondary-bg: var(--secondary-bg);
+            --current-tertiary-bg: var(--tertiary-bg);
+            --current-primary-text: var(--primary-text);
+            --current-secondary-text: var(--secondary-text);
+            --current-border-color: var(--border-color);
+        }
+
+        /* Light mode theme */
+        .light-mode {
+            --current-primary-bg: var(--primary-bg-light);
+            --current-secondary-bg: var(--secondary-bg-light);
+            --current-tertiary-bg: var(--tertiary-bg-light);
+            --current-primary-text: var(--primary-text-light);
+            --current-secondary-text: var(--secondary-text-light);
+            --current-border-color: var(--border-color-light);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--current-primary-bg);
+            color: var(--current-primary-text);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-bottom: 80px; /* Space for floating action button */
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Screen Reader Only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: var(--current-secondary-bg);
+            border-bottom: 1px solid var(--current-border-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--glow-color-1), var(--glow-color-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .theme-toggle {
+            background-color: var(--current-tertiary-bg);
+            border: 1px solid var(--current-border-color);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .theme-toggle i {
+            font-size: 20px;
+            color: var(--current-primary-text);
+        }
+
+        /* Main Content */
+        main {
+            padding: 30px 0;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--border-radius-button);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: var(--font-stack);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, var(--glow-color-2), var(--glow-color-3));
+            color: white;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--current-primary-text);
+            border: 1px solid var(--current-border-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--current-tertiary-bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--current-tertiary-bg);
+            color: var(--current-primary-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--current-border-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--glow-color-1), var(--glow-color-3));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            z-index: 99;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .fab:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.6);
+        }
+
+        /* CORRECTED Glowing Border Card - Fixed based on your working example */
+        .glow-border {
+            position: relative;
+            border-radius: var(--border-radius-card);
+            padding: 4px;
+            background: conic-gradient(from var(--angle), 
+                var(--glow-color-1), 
+                var(--glow-color-2), 
+                var(--glow-color-3), 
+                var(--glow-color-4), 
+                var(--glow-color-1));
+            animation: rotate 6s linear infinite;
+        }
+        
+        .glow-border::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: conic-gradient(from var(--angle), 
+                var(--glow-color-1), 
+                var(--glow-color-2), 
+                var(--glow-color-3), 
+                var(--glow-color-4), 
+                var(--glow-color-1));
+            border-radius: var(--border-radius-card);
+            filter: blur(20px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: rotate 6s linear infinite;
+        }
+        
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        /* Card Content (goes inside glow-border) */
+        .card {
+            background-color: var(--current-secondary-bg);
+            border-radius: calc(var(--border-radius-card) - 4px);
+            padding: 24px;
+            border: 1px solid var(--current-border-color);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Glassmorphism Card */
+        .card-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .light-mode .card-glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Exercise Card Specific */
+        .exercise-card {
+            margin-bottom: 20px;
+        }
+
+        .exercise-completed {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--current-border-color);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completion-time {
+            font-size: 14px;
+            color: var(--current-secondary-text);
+            margin-left: auto;
+        }
+
+        /* Markdown Content */
+        .markdown-content {
+            line-height: 1.7;
+        }
+
+        .markdown-content h3 {
+            font-size: 18px;
+            margin: 16px 0 8px 0;
+            color: var(--accent-color);
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .markdown-content li {
+            margin-bottom: 8px;
+        }
+
+        .markdown-content code {
+            background-color: var(--current-tertiary-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .markdown-content pre {
+            background-color: var(--current-tertiary-bg);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--current-tertiary-bg);
+            border: 1px solid var(--current-border-color);
+            border-radius: var(--border-radius-button);
+            color: var(--current-primary-text);
+            font-family: var(--font-stack);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background-color: rgba(99, 102, 241, 0.2);
+            color: var(--accent-color);
+        }
+
+        .badge-success {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px;
+            border-radius: var(--border-radius-button);
+            border-left: 4px solid var(--accent-color);
+            background-color: var(--current-tertiary-bg);
+            margin-bottom: 24px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 8px;
+            background-color: var(--current-tertiary-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--current-tertiary-bg);
+            border-radius: 34px;
+            transition: var(--transition);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--current-primary-text);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(90deg, var(--glow-color-1), var(--glow-color-3));
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: var(--current-secondary-text);
+            max-width: 400px;
+            margin: 0 auto 24px;
+        }
+
+        /* Grid Layout */
+        .routines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--current-secondary-bg);
+            border-radius: var(--border-radius-card);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            border: 1px solid var(--current-border-color);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--current-primary-text);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background-color: var(--current-tertiary-bg);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--current-secondary-bg);
+            border: 1px solid var(--current-border-color);
+            border-radius: var(--border-radius-button);
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.4s ease;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            color: var(--accent-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .routines-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .card-actions {
+                align-self: flex-end;
+            }
+            
+            .fab {
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+
+        /* Fade In Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h1>EZfit</h1>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="section-header fade-in">
+            <h2>My Fitness Routines</h2>
+            <button class="btn btn-gradient" id="createRoutineBtn">
+                <i class="fas fa-plus"></i> New Routine
+            </button>
+        </div>
+
+        <!-- Routines Grid -->
+        <div id="routinesContainer" class="routines-grid">
+            <!-- Routines will be loaded here dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state fade-in" style="display: none;">
+            <div class="empty-state-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <h3>No Routines Yet</h3>
+            <p>Create your first fitness routine to get started with tracking your workouts.</p>
+            <button class="btn btn-gradient" id="createFirstRoutineBtn">
+                <i class="fas fa-plus"></i> Create Your First Routine
+            </button>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fabButton" aria-label="Create new routine">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Routine Modal -->
+    <div class="modal" id="routineModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Create New Routine</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <form id="routineForm">
+                <input type="hidden" id="routineId">
+                
+                <div class="form-group">
+                    <label for="routineTitle" class="form-label">Routine Title</label>
+                    <input type="text" id="routineTitle" class="form-input" placeholder="e.g., Leg Day Alternative" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="routineIntro" class="form-label">Introduction</label>
+                    <textarea id="routineIntro" class="form-input form-textarea" placeholder="Describe your routine..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <div class="section-header">
+                        <h3>Exercises</h3>
+                        <button type="button" class="btn btn-outline btn-sm" id="addExerciseBtn">
+                            <i class="fas fa-plus"></i> Add Exercise
+                        </button>
+                    </div>
+                    
+                    <div id="exercisesContainer">
+                        <!-- Exercises will be added here -->
+                    </div>
+                </div>
+                
+                <div class="form-group" style="display: flex; gap: 12px;">
+                    <button type="submit" class="btn btn-gradient" style="flex: 1;">Save Routine</button>
+                    <button type="button" class="btn btn-outline" id="cancelBtn" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Exercise Template (Hidden) -->
+    <template id="exerciseTemplate">
+        <div class="exercise-card">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <input type="text" class="form-input exercise-title" placeholder="Exercise Name" required>
+                        <div style="margin-top: 8px;">
+                            <input type="text" class="form-input exercise-metrics" placeholder="e.g., 4 sets, 10 reps, 60 sec rest" style="font-size: 14px;">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-secondary remove-exercise" aria-label="Remove exercise">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <textarea class="form-input form-textarea exercise-details" placeholder="Exercise details (Markdown supported)..." rows="4"></textarea>
+                <div class="exercise-completed">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exercise-completed-checkbox">
+                        <span>Completed</span>
+                    </label>
+                    <div class="completion-time"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Routine Template (Hidden) -->
+    <template id="routineTemplate">
+        <div class="glow-border">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title routine-name"></h3>
+                    <div class="card-actions">
+                        <button class="btn btn-icon btn-outline edit-routine" aria-label="Edit routine">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-icon btn-outline delete-routine" aria-label="Delete routine">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="markdown-content routine-intro"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="toggle-container" style="justify-content: space-between; margin-top: 16px;">
+                    <span>Completion: <span class="completion-text">0%</span></span>
+                    <button class="btn btn-sm btn-outline export-routine" aria-label="Export routine">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+                <div class="exercises-list" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="toast-message">Routine saved successfully!</div>
+    </div>
+
+    <script>
+        // EZfit Fitness App
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const themeToggle = document.getElementById('themeToggle');
+            const createRoutineBtn = document.getElementById('createRoutineBtn');
+            const createFirstRoutineBtn = document.getElementById('createFirstRoutineBtn');
+            const fabButton = document.getElementById('fabButton');
+            const routineModal = document.getElementById('routineModal');
+            const modalClose = document.getElementById('modalClose');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const routineForm = document.getElementById('routineForm');
+            const routinesContainer = document.getElementById('routinesContainer');
+            const emptyState = document.getElementById('emptyState');
+            const addExerciseBtn = document.getElementById('addExerciseBtn');
+            const exercisesContainer = document.getElementById('exercisesContainer');
+            const toast = document.getElementById('toast');
+            
+            // Templates
+            const exerciseTemplate = document.getElementById('exerciseTemplate');
+            const routineTemplate = document.getElementById('routineTemplate');
+            
+            // State
+            let currentRoutineId = null;
+            let routines = loadRoutines();
+            
+            // Initialize
+            updateEmptyState();
+            renderRoutines();
+            addSampleDataIfEmpty();
+            
+            // Theme Toggle
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('light-mode');
+                const icon = themeToggle.querySelector('i');
+                if (document.body.classList.contains('light-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+            
+            // Create Routine Buttons
+            [createRoutineBtn, createFirstRoutineBtn, fabButton].forEach(btn => {
+                btn.addEventListener('click', function() {
+                    openRoutineModal();
+                });
+            });
+            
+            // Modal Controls
+            modalClose.addEventListener('click', closeRoutineModal);
+            cancelBtn.addEventListener('click', closeRoutineModal);
+            
+            // Add Exercise
+            addExerciseBtn.addEventListener('click', addExercise);
+            
+            // Routine Form Submission
+            routineForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveRoutine();
+            });
+            
+            // Close modal on outside click
+            routineModal.addEventListener('click', function(e) {
+                if (e.target === routineModal) {
+                    closeRoutineModal();
+                }
+            });
+            
+            // Functions
+            function openRoutineModal(routineId = null) {
+                currentRoutineId = routineId;
+                const modalTitle = document.getElementById('modalTitle');
+                
+                if (routineId) {
+                    // Edit existing routine
+                    modalTitle.textContent = 'Edit Routine';
+                    const routine = routines.find(r => r.id === routineId);
+                    if (routine) {
+                        document.getElementById('routineId').value = routine.id;
+                        document.getElementById('routineTitle').value = routine.title;
+                        document.getElementById('routineIntro').value = routine.intro;
+                        
+                        // Clear existing exercises
+                        exercisesContainer.innerHTML = '';
+                        
+                        // Add exercises
+                        routine.exercises.forEach(exercise => {
+                            addExercise(exercise);
+                        });
+                    }
+                } else {
+                    // Create new routine
+                    modalTitle.textContent = 'Create New Routine';
+                    document.getElementById('routineId').value = '';
+                    document.getElementById('routineTitle').value = '';
+                    document.getElementById('routineIntro').value = '';
+                    exercisesContainer.innerHTML = '';
+                    
+                    // Add one empty exercise by default
+                    addExercise();
+                }
+                
+                routineModal.classList.add('active');
+                document.getElementById('routineTitle').focus();
+            }
+            
+            function closeRoutineModal() {
+                routineModal.classList.remove('active');
+                currentRoutineId = null;
+                routineForm.reset();
+                exercisesContainer.innerHTML = '';
+            }
+            
+            function addExercise(exerciseData = null) {
+                const exerciseClone = exerciseTemplate.content.cloneNode(true);
+                const exerciseElement = exerciseClone.querySelector('.exercise-card');
+                
+                if (exerciseData) {
+                    exerciseElement.querySelector('.exercise-title').value = exerciseData.name || '';
+                    exerciseElement.querySelector('.exercise-metrics').value = exerciseData.metrics || '';
+                    exerciseElement.querySelector('.exercise-details').value = exerciseData.details || '';
+                    
+                    if (exerciseData.completed) {
+                        exerciseElement.querySelector('.exercise-completed-checkbox').checked = true;
+                        exerciseElement.querySelector('.completion-time').textContent = formatDate(exerciseData.completedAt);
+                    }
+                }
+                
+                // Remove exercise button
+                exerciseElement.querySelector('.remove-exercise').addEventListener('click', function() {
+                    if (exercisesContainer.children.length > 1) {
+                        exerciseElement.remove();
+                    } else {
+                        showToast('At least one exercise is required', 'error');
+                    }
+                });
+                
+                // Completion checkbox
+                exerciseElement.querySelector('.exercise-completed-checkbox').addEventListener('change', function() {
+                    const completionTime = exerciseElement.querySelector('.completion-time');
+                    if (this.checked) {
+                        completionTime.textContent = formatDate(new Date());
+                    } else {
+                        completionTime.textContent = '';
+                    }
+                });
+                
+                exercisesContainer.appendChild(exerciseElement);
+                
+                // Add fade-in animation
+                setTimeout(() => {
+                    exerciseElement.classList.add('fade-in');
+                }, 10);
+            }
+            
+            function saveRoutine() {
+                const id = document.getElementById('routineId').value || generateId();
+                const title = document.getElementById('routineTitle').value.trim();
+                const intro = document.getElementById('routineIntro').value.trim();
+                
+                // Get exercises
+                const exerciseElements = exercisesContainer.querySelectorAll('.exercise-card');
+                const exercises = [];
+                
+                exerciseElements.forEach(exerciseEl => {
+                    const name = exerciseEl.querySelector('.exercise-title').value.trim();
+                    const metrics = exerciseEl.querySelector('.exercise-metrics').value.trim();
+                    const details = exerciseEl.querySelector('.exercise-details').value.trim();
+                    const completed = exerciseEl.querySelector('.exercise-completed-checkbox').checked;
+                    const completedAt = completed ? new Date().toISOString() : null;
+                    
+                    exercises.push({
+                        id: generateId(),
+                        name,
+                        metrics,
+                        details,
+                        completed,
+                        completedAt
+                    });
+                });
+                
+                // Create or update routine
+                const routineIndex = routines.findIndex(r => r.id === id);
+                
+                if (routineIndex !== -1) {
+                    // Update existing
+                    routines[routineIndex] = {
+                        ...routines[routineIndex],
+                        title,
+                        intro,
+                        exercises,
+                        updatedAt: new Date().toISOString()
+                    };
+                } else {
+                    // Create new
+                    routines.push({
+                        id,
+                        title,
+                        intro,
+                        exercises,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+                
+                // Save to localStorage
+                saveRoutines();
+                
+                // Update UI
+                renderRoutines();
+                updateEmptyState();
+                
+                // Show success message
+                showToast(routineIndex !== -1 ? 'Routine updated!' : 'Routine created!');
+                
+                // Close modal
+                closeRoutineModal();
+            }
+            
+            function deleteRoutine(routineId) {
+                if (confirm('Are you sure you want to delete this routine?')) {
+                    routines = routines.filter(r => r.id !== routineId);
+                    saveRoutines();
+                    renderRoutines();
+                    updateEmptyState();
+                    showToast('Routine deleted');
+                }
+            }
+            
+            function toggleExerciseCompletion(routineId, exerciseId, completed) {
+                const routine = routines.find(r => r.id === routineId);
+                if (routine) {
+                    const exercise = routine.exercises.find(e => e.id === exerciseId);
+                    if (exercise) {
+                        exercise.completed = completed;
+                        exercise.completedAt = completed ? new Date().toISOString() : null;
+                        routine.updatedAt = new Date().toISOString();
+                        saveRoutines();
+                        renderRoutines();
+                    }
+                }
+            }
+            
+            function renderRoutines() {
+                routinesContainer.innerHTML = '';
+                
+                routines.forEach(routine => {
+                    const routineClone = routineTemplate.content.cloneNode(true);
+                    const routineElement = routineClone.querySelector('.glow-border');
+                    const completedExercises = routine.exercises.filter(e => e.completed).length;
+                    const totalExercises = routine.exercises.length;
+                    const completionPercentage = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
+                    
+                    // Set routine data
+                    routineElement.querySelector('.routine-name').textContent = routine.title;
+                    routineElement.querySelector('.routine-intro').innerHTML = marked.parse(routine.intro || '');
+                    routineElement.querySelector('.progress-fill').style.width = `${completionPercentage}%`;
+                    routineElement.querySelector('.completion-text').textContent = `${completionPercentage}%`;
+                    
+                    // Exercises list
+                    const exercisesList = routineElement.querySelector('.exercises-list');
+                    routine.exercises.forEach(exercise => {
+                        const exerciseEl = document.createElement('div');
+                        exerciseEl.className = 'card exercise-card';
+                        exerciseEl.innerHTML = `
+                            <div class="card-header">
+                                <div>
+                                    <h4 style="margin: 0;">${exercise.name || 'Unnamed Exercise'}</h4>
+                                    ${exercise.metrics ? `<div style="margin-top: 4px; font-size: 14px; color: var(--current-secondary-text);">${exercise.metrics}</div>` : ''}
+                                </div>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" ${exercise.completed ? 'checked' : ''}>
+                                    <span>Done</span>
+                                </label>
+                            </div>
+                            <div class="markdown-content">${marked.parse(exercise.details || '')}</div>
+                            ${exercise.completedAt ? `<div style="font-size: 14px; color: var(--current-secondary-text); margin-top: 12px;">Completed: ${formatDate(exercise.completedAt)}</div>` : ''}
+                        `;
+                        
+                        // Add completion toggle
+                        const checkbox = exerciseEl.querySelector('input[type="checkbox"]');
+                        checkbox.addEventListener('change', function() {
+                            toggleExerciseCompletion(routine.id, exercise.id, this.checked);
+                        });
+                        
+                        exercisesList.appendChild(exerciseEl);
+                    });
+                    
+                    // Edit button
+                    routineElement.querySelector('.edit-routine').addEventListener('click', function() {
+                        openRoutineModal(routine.id);
+                    });
+                    
+                    // Delete button
+                    routineElement.querySelector('.delete-routine').addEventListener('click', function() {
+                        deleteRoutine(routine.id);
+                    });
+                    
+                    // Export button
+                    routineElement.querySelector('.export-routine').addEventListener('click', function() {
+                        exportRoutine(routine);
+                    });
+                    
+                    routinesContainer.appendChild(routineElement);
+                    
+                    // Add fade-in animation
+                    setTimeout(() => {
+                        routineElement.classList.add('fade-in');
+                    }, 10);
+                });
+            }
+            
+            function exportRoutine(routine) {
+                const exportData = {
+                    title: routine.title,
+                    intro: routine.intro,
+                    exercises: routine.exercises,
+                    exportedAt: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `${routine.title.replace(/\s+/g, '_')}_routine.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showToast('Routine exported!');
+            }
+            
+            function updateEmptyState() {
+                if (routines.length === 0) {
+                    emptyState.style.display = 'block';
+                    routinesContainer.style.display = 'none';
+                } else {
+                    emptyState.style.display = 'none';
+                    routinesContainer.style.display = 'grid';
+                }
+            }
+            
+            function addSampleDataIfEmpty() {
+                if (routines.length === 0) {
+                    // Add sample routine from transcript
+                    const sampleRoutine = {
+                        id: generateId(),
+                        title: "No More Leg Day Soreness",
+                        intro: "A science-backed leg routine that provides same muscle activation as squats but with recovery in 3 hours instead of 72. Based on research from Vincent & Vincent (muscle damage markers) and West et al. (sled drags).",
+                        exercises: [
+                            {
+                                id: generateId(),
+                                name: "Heavy Sled Push",
+                                metrics: "4-6 sets, 20 yards, 75% body weight, 2-3 min rest",
+                                details: "**Method:**\n- Grab vertical posts, arms 95% straight\n- Lean forward at 45°, weight on balls of feet\n- Look down 10 ft ahead, brace core\n- Drive one foot hard into ground, then the other\n- Slow, powerful march (not a jog)\n\n**Why it works:**\n- Zero creatine kinase spike (no muscle damage)\n- Recovers in 3 hours vs 72 hours for squats\n- Same muscle activation as back squats\n- No bilateral deficit (each leg works at 100%)",
+                                completed: false,
+                                completedAt: null
+                            },
+                            {
+                                id: generateId(),
+                                name: "High-Resistance Bike Intervals",
+                                metrics: "10 rounds, 30 sec hard, 90 sec rest, 40-60 RPM",
+                                details: "**Method:**\n- Crank resistance way up (feels heavy)\n- Pedal slowly at 40-60 RPM\n- Push against weight with every stroke\n- 10 rounds of 30 seconds all-out\n- 90 seconds rest between rounds\n\n**Why it works:**\n- Mimics track cyclists' quad development\n- Progressive cycling causes measurable quad growth\n- Minimal muscle damage, fast recovery\n- Can do multiple times per week",
+                                completed: false,
+                                completedAt: null
+                            },
+                            {
+                                id: generateId(),
+                                name: "Incline Walking",
+                                metrics: "20-30 minutes, 12-15% incline, challenging pace",
+                                details: "**Method:**\n- Set treadmill to 12-15% incline\n- Walk at pace where breathing hard but can talk\n- Or find a hill outside: walk up, walk down, repeat\n- Zero technique to learn, no form to worry about\n\n**Why it works:**\n- 345% increase in glute activation at 10%+ incline\n- Zero impact, knees feel great\n- Can do every day as active recovery\n- Works quads and calves against gravity",
+                                completed: true,
+                                completedAt: new Date(Date.now() - 86400000).toISOString() // Yesterday
+                            },
+                            {
+                                id: generateId(),
+                                name: "Hill Sprints",
+                                metrics: "6-8 sprints, 10-15 sec each, 10 min total",
+                                details: "**Method:**\n- Find a steep hill\n- Sprint up for 10-15 seconds\n- Walk back down for recovery\n- Repeat for 6-8 sprints total\n- Done in 10 minutes\n\n**Why it works:**\n- Recruits type 2 fast-twitch muscle fibers\n- Triggers massive surge in testosterone, growth hormone\n- Builds more muscle in less time than walking\n- Like doing 8 reps with heavy weight",
+                                completed: false,
+                                completedAt: null
+                            }
+                        ],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    routines.push(sampleRoutine);
+                    saveRoutines();
+                    renderRoutines();
+                    updateEmptyState();
+                }
+            }
+            
+            function showToast(message, type = 'success') {
+                const toastIcon = toast.querySelector('.toast-icon i');
+                const toastMessage = toast.querySelector('.toast-message');
+                
+                // Set icon based on type
+                if (type === 'error') {
+                    toastIcon.className = 'fas fa-exclamation-circle';
+                    toastIcon.style.color = '#ef4444';
+                } else {
+                    toastIcon.className = 'fas fa-check-circle';
+                    toastIcon.style.color = 'var(--accent-color)';
+                }
+                
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Utility Functions
+            function generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+            
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            
+            // LocalStorage Functions
+            function loadRoutines() {
+                try {
+                    const routinesJson = localStorage.getItem('ezfit-routines');
+                    return routinesJson ? JSON.parse(routinesJson) : [];
+                } catch (e) {
+                    console.error('Error loading routines:', e);
+                    return [];
+                }
+            }
+            
+            function saveRoutines() {
+                try {
+                    localStorage.setItem('ezfit-routines', JSON.stringify(routines));
+                } catch (e) {
+                    console.error('Error saving routines:', e);
+                }
+            }
+            
+            // Initialize Marked.js for markdown parsing
+            marked.setOptions({
+                breaks: true,
+                gfm: true
+            });
+        });
+    </script>
+    
+    <!-- Marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
