@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hours Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .name-input {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .name-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: white;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .date-range {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #5568d3;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .date-filter input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .chart-container {
+            padding: 30px;
+            height: 500px;
+            position: relative;
+        }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 400px;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #333;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 400px;
+            width: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            max-width: 60px;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 5px;
+        }
+
+        .bar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .bar.red { background: linear-gradient(to top, #ef4444, #f87171); }
+        .bar.orange { background: linear-gradient(to top, #f59e0b, #fbbf24); }
+        .bar.green { background: linear-gradient(to top, #10b981, #34d399); }
+
+        .bar-label {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .bar-date {
+            font-weight: 600;
+        }
+
+        .bar-time {
+            color: #999;
+        }
+
+        .summary {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            background: white;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .no-data {
+            display: none;
+            text-align: center;
+            padding: 60px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                padding: 15px;
+                overflow-x: auto;
+            }
+            
+            .chart {
+                min-width: 600px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-filter {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <input type="text" id="userName" class="name-input" placeholder="Enter Name">
+            <div class="date-range" id="dateRange">Nov 28 → Dec 20</div>
+        </div>
+
+        <div class="controls">
+            <div class="file-input-wrapper">
+                <input type="file" id="csvFile" accept=".csv">
+                <label for="csvFile" class="file-input-label">📁 Import CSV</label>
+            </div>
+            <div class="date-filter">
+                <label>From:</label>
+                <input type="date" id="startDate">
+                <label>To:</label>
+                <input type="date" id="endDate">
+                <button onclick="filterByDate()" style="padding: 8px 15px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Filter</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(to top, #ef4444, #f87171);"></div>
+                <span>0-2 hours</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(to top, #f59e0b, #fbbf24);"></div>
+                <span>3-5 hours</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(to top, #10b981, #34d399);"></div>
+                <span>6-8 hours</span>
+            </div>
+        </div>
+
+        <div class="no-data" id="noData">
+            <p>📊 No data to display</p>
+            <p style="font-size: 14px; margin-top: 10px;">Please import a CSV file to get started</p>
+        </div>
+
+        <div class="chart-container" id="chartContainer">
+            <div class="chart" id="chart">
+                <div class="y-axis">
+                    <span>8h</span>
+                    <span>6h</span>
+                    <span>4h</span>
+                    <span>2h</span>
+                    <span>0h</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <div class="stat">
+                <div class="stat-value" id="totalHours">0h 0m</div>
+                <div>Total Hours</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="avgHours">0h 0m</div>
+                <div>Daily Average</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let hoursData = [];
+        let filteredData = [];
+
+        // Load saved data and name from localStorage
+        window.onload = function() {
+            const savedName = localStorage.getItem('userName');
+            if (savedName) {
+                document.getElementById('userName').value = savedName;
+            }
+
+            const savedData = localStorage.getItem('hoursData');
+            if (savedData) {
+                hoursData = JSON.parse(savedData);
+                filteredData = [...hoursData];
+                renderChart();
+            }
+        };
+
+        // Save name to localStorage
+        document.getElementById('userName').addEventListener('input', function(e) {
+            localStorage.setItem('userName', e.target.value);
+        });
+
+        // CSV File Upload
+        document.getElementById('csvFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                parseCSV(event.target.result);
+            };
+            reader.readAsText(file);
+        });
+
+        // Parse CSV
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            hoursData = [];
+
+            // Skip header if it exists
+            const startIndex = lines[0].includes('Date') ? 1 : 0;
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const parts = line.split(',');
+                if (parts.length >= 2) {
+                    const date = parts[0].trim();
+                    const time = parts[1].trim();
+                    
+                    // Validate date and time
+                    if (isValidDate(date) && isValidTime(time)) {
+                        hoursData.push({
+                            date: date,
+                            time: time,
+                            timestamp: new Date(date).getTime()
+                        });
+                    }
+                }
+            }
+
+            // Sort by date
+            hoursData.sort((a, b) => a.timestamp - b.timestamp);
+
+            // Save to localStorage
+            localStorage.setItem('hoursData', JSON.stringify(hoursData));
+
+            // Set date filters
+            if (hoursData.length > 0) {
+                document.getElementById('startDate').value = hoursData[0].date;
+                document.getElementById('endDate').value = hoursData[hoursData.length - 1].date;
+                updateDateRange();
+            }
+
+            filteredData = [...hoursData];
+            renderChart();
+        }
+
+        // Validate date format (YYYY-MM-DD)
+        function isValidDate(dateString) {
+            const regex = /^\d{4}-\d{2}-\d{2}$/;
+            return regex.test(dateString);
+        }
+
+        // Validate time format (H:MM)
+        function isValidTime(timeString) {
+            const regex = /^\d{1,2}:\d{2}$/;
+            return regex.test(timeString);
+        }
+
+        // Render chart
+        function renderChart() {
+            const chart = document.getElementById('chart');
+            const noData = document.getElementById('noData');
+            const chartContainer = document.getElementById('chartContainer');
+
+            // Clear existing bars
+            const existingBars = chart.querySelectorAll('.bar-wrapper');
+            existingBars.forEach(bar => bar.remove());
+
+            if (filteredData.length === 0) {
+                chart.style.display = 'none';
+                noData.style.display = 'block';
+                updateStats(0, 0);
+                return;
+            }
+
+            chart.style.display = 'flex';
+            noData.style.display = 'none';
+
+            filteredData.forEach(data => {
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'bar-wrapper';
+
+                // Parse time
+                const [hours, minutes] = data.time.split(':').map(Number);
+                const totalHours = hours + (minutes / 60);
+
+                // Create bar
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                const height = (totalHours / 8) * 400; // 8 hours max
+                bar.style.height = `${height}px`;
+
+                // Set color based on hours
+                if (totalHours <= 2) {
+                    bar.classList.add('red');
+                } else if (totalHours <= 5) {
+                    bar.classList.add('orange');
+                } else {
+                    bar.classList.add('green');
+                }
+
+                // Add tooltip
+                bar.title = `${data.date}: ${data.time}`;
+
+                // Create labels
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                
+                const dateObj = new Date(data.date);
+                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                const dayDate = dateObj.getDate();
+
+                label.innerHTML = `
+                    <div class="bar-date">${dayName}</div>
+                    <div class="bar-time">${dayDate}</div>
+                `;
+
+                barWrapper.appendChild(bar);
+                barWrapper.appendChild(label);
+                chart.appendChild(barWrapper);
+            });
+
+            updateStats();
+        }
+
+        // Update statistics
+        function updateStats() {
+            let totalMinutes = 0;
+            
+            filteredData.forEach(data => {
+                const [hours, minutes] = data.time.split(':').map(Number);
+                totalMinutes += hours * 60 + minutes;
+            });
+
+            const totalHours = Math.floor(totalMinutes / 60);
+            const remainingMinutes = totalMinutes % 60;
+            const avgMinutes = filteredData.length > 0 ? Math.round(totalMinutes / filteredData.length) : 0;
+            const avgHours = Math.floor(avgMinutes / 60);
+            const avgMins = avgMinutes % 60;
+
+            document.getElementById('totalHours').textContent = `${totalHours}h ${remainingMinutes}m`;
+            document.getElementById('avgHours').textContent = `${avgHours}h ${avgMins}m`;
+        }
+
+        // Filter by date
+        function filterByDate() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            filteredData = hoursData.filter(data => {
+                return data.date >= startDate && data.date <= endDate;
+            });
+
+            updateDateRange();
+            renderChart();
+        }
+
+        // Update date range display
+        function updateDateRange() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (startDate && endDate) {
+                const start = new Date(startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const end = new Date(endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                document.getElementById('dateRange').textContent = `${start} → ${end}`;
+            }
+        }
+
+        // Sample CSV format generator (for user reference)
+        console.log(`Sample CSV format:
+Date,Hours
+2024-11-28,7:09
+2024-11-29,6:21
+2024-11-30,6:30
+2024-12-01,6:03
+2024-12-02,5:27`);
+    </script>
+</body>
+</html>
