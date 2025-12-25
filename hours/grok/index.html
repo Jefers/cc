@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hours Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title-wrapper">
+      <h1 id="chartTitle">Someone's Hours</h1>
+      <button id="editNameBtn" class="small-btn">✎</button>
+    </div>
+    <div class="controls">
+  <input type="text" id="nameInput" placeholder="Enter name..." style="display:none"/>
+  
+  <div class="file-group">
+    <div class="file-input-wrapper">
+      <input type="file" id="csvFile" accept=".csv" />
+      <label for="csvFile" class="file-label">Import CSV</label>
+    </div>
+    
+    <button id="exportBtn" class="export-btn" style="display:none">
+      Export CSV ↓
+    </button>
+  </div>
+</div>
+  </div>
+
+  <div class="chart-container" id="chartContainer">
+    <div class="y-axis-labels">
+      <span>8h</span>
+      <span>6h</span>
+      <span>4h</span>
+      <span>2h</span>
+      <span>0h</span>
+    </div>
+    <div class="chart" id="chart"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="color-box purple"></div>
+      <span>0–2 h</span>
+    </div>
+    <div class="legend-item">
+      <div class="color-box orange"></div>
+      <span>2–4 h</span>
+    </div>
+    <div class="legend-item">
+      <div class="color-box yellow"></div>
+      <span>4–6 h</span>
+    </div>
+    <div class="legend-item">
+      <div class="color-box green"></div>
+      <span>6+ h</span>
+    </div>
+  </div>
+
+  <div class="summary" id="summary"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

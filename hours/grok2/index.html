@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hours Tracker - Cosmic Edition</title>
+
+<style>
+  :root {
+    --bg-start: #0f0f1a;
+    --bg-end: #131327;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shine: rgba(100, 140, 255, 0.12);
+    --text-main: #f1f5ff;
+    --text-muted: #a0a0c0;
+    --text-accent: #c0d0ff;
+    --btn-bg: rgba(100, 140, 255, 0.18);
+    --btn-hover: rgba(100, 140, 255, 0.35);
+    --chart-height: 520px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .glass-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-container::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle at 30% 20%, var(--glass-shine), transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.6px;
+  }
+
+  .edit-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .edit-btn:hover { background: rgba(255,255,255,0.18); color: white; }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: var(--btn-bg);
+    color: var(--text-accent);
+    border: none;
+    font-weight: 500;
+    font-size: 0.94rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .btn:hover {
+    background: var(--btn-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(80,120,255,0.25);
+  }
+
+  #file-input { display: none; }
+
+  /* ── Chart ──────────────────────────────────────────────────────────────── */
+
+  .chart-wrapper {
+    position: relative;
+    height: var(--chart-height);
+    background: rgba(0,0,0,0.18);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.04);
+    margin-bottom: 180px; /* space for labels */
+  }
+
+  .y-axis {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    bottom: 120px;
+    width: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: right;
+    pointer-events: none;
+  }
+
+  .chart-area {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: 0 28px 0 78px;
+  }
+
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    min-width: 26px;
+    max-width: 58px;
+  }
+
+  .bar {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    transition: height 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+  }
+
+  .bar:hover .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+  }
+
+  .tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(10,10,30,0.94);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s;
+    z-index: 20;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  }
+
+  /* Gradients */
+  .color-low    { background: linear-gradient(180deg, #a855f7, #7c3aed); }
+  .color-med    { background: linear-gradient(180deg, #f97316, #ea580c); }
+  .color-high   { background: linear-gradient(180deg, #eab308, #ca8a04); }
+  .color-very   { background: linear-gradient(180deg, #22c55e, #16a34a); }
+
+  /* X Labels */
+  .x-axis-container {
+    position: absolute;
+    bottom: -150px;
+    left: 78px;
+    right: 28px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .x-label {
+    font-size: 0.82rem;
+    color: var(--text-accent);
+    transform: rotate(-90deg);
+    transform-origin: center top;
+    white-space: nowrap;
+    width: 100px;
+    text-align: center;
+    opacity: 0.9;
+  }
+
+  /* Meta */
+  .meta-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 24px;
+    background: rgba(0,0,0,0.22);
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .legend-box {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+  }
+
+  .summary-box {
+    background: rgba(255,255,255,0.05);
+    padding: 16px 40px;
+    border-radius: 12px;
+    font-size: 1.15rem;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  @media (max-width: 768px) {
+    :root { --chart-height: 540px; }
+    .chart-wrapper { margin-bottom: 200px; }
+    .x-axis-container { bottom: -170px; }
+    .x-label { font-size: 0.76rem; width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="glass-container">
+  <header>
+    <div class="header-left">
+      <h1 id="app-title">Hours Tracker</h1>
+      <button class="edit-btn" id="edit-title-btn">✎</button>
+    </div>
+    <div class="header-right">
+      <input type="file" id="file-input" accept=".csv">
+      <button class="btn" id="import-btn">Import CSV</button>
+      <button class="btn hidden" id="export-btn">Export CSV</button>
+    </div>
+  </header>
+
+  <section class="chart-wrapper">
+    <div class="y-axis" id="y-axis"></div>
+    <div class="chart-area" id="chart-area"></div>
+    <div class="x-axis-container" id="x-axis"></div>
+  </section>
+
+  <div class="meta-section">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-box" style="background:var(--grad-low)"></div>Low</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--grad-med)"></div>Medium</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--grad-high)"></div>High</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--grad-very)"></div>Very High</div>
+    </div>
+    <div class="summary-box">
+      <span id="summary-text">Total Hours: 0.00</span>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── State & Elements ────────────────────────────────────────────────────────
+let appData = [];
+const appTitle = document.getElementById('app-title');
+const editBtn = document.getElementById('edit-title-btn');
+const importBtn = document.getElementById('import-btn');
+const exportBtn = document.getElementById('export-btn');
+const fileInput = document.getElementById('file-input');
+const chartArea = document.getElementById('chart-area');
+const xAxis = document.getElementById('x-axis');
+const yAxis = document.getElementById('y-axis');
+const summary = document.getElementById('summary-text');
+
+// ── Title Edit ──────────────────────────────────────────────────────────────
+editBtn.onclick = () => {
+  const input = document.createElement('input');
+  input.value = appTitle.textContent;
+  input.style.cssText = 'background:transparent;border:none;color:inherit;font:inherit;width:320px;max-width:60vw;outline:none;';
+  appTitle.replaceWith(input);
+  input.focus();
+  const save = () => {
+    const v = input.value.trim() || 'Hours Tracker';
+    localStorage.setItem('ht_title', v);
+    const h1 = document.createElement('h1');
+    h1.id = 'app-title';
+    h1.textContent = v;
+    input.replaceWith(h1);
+  };
+  input.onblur = save;
+  input.onkeydown = e => { if (e.key === 'Enter') input.blur(); };
+};
+
+// ── CSV Handling ────────────────────────────────────────────────────────────
+importBtn.onclick = () => fileInput.click();
+
+fileInput.onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => processCSV(ev.target.result);
+  reader.readAsText(file);
+};
+
+function processCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const data = [];
+
+  for (let i = 1; i < lines.length; i++) { // skip header
+    const [date, time] = lines[i].split(',').map(s => s.trim());
+    if (!date || !time) continue;
+    const [h, m] = time.split(':').map(Number);
+    if (isNaN(h) || isNaN(m)) continue;
+    data.push({ date, hours: h + m/60, rawTime: time });
+  }
+
+  if (data.length === 0) return alert('No valid data found');
+  data.sort((a,b) => a.date.localeCompare(b.date));
+  appData = data;
+  exportBtn.classList.remove('hidden');
+  renderChart();
+}
+
+// ── Export ──────────────────────────────────────────────────────────────────
+exportBtn.onclick = () => {
+  if (!appData.length) return;
+  let csv = "Date,Hours\n";
+  appData.forEach(d => csv += `${d.date},${d.rawTime}\n`);
+  const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `hours_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+// ── Render ──────────────────────────────────────────────────────────────────
+function renderChart() {
+  chartArea.innerHTML = '';
+  xAxis.innerHTML = '';
+  yAxis.innerHTML = '';
+
+  const maxH = Math.max(...appData.map(d => d.hours), 1);
+  const ceilMax = Math.ceil(maxH);
+
+  // Y-axis
+  yAxis.innerHTML = `<span class="y-label">${ceilMax}h</span><span class="y-label">0h</span>`;
+
+  let total = 0, daysWithHours = 0;
+
+  appData.forEach(item => {
+    const { hours, rawTime, date } = item;
+    if (hours > 0) { total += hours; daysWithHours++; }
+
+    // Bar group
+    const group = document.createElement('div');
+    group.className = 'bar-group';
+
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = hours > 0 ? `${(hours / maxH) * 100}%` : '0%';
+
+    // Color
+    const pct = hours / maxH;
+    if (pct <= 0.3) bar.classList.add('color-low');
+    else if (pct <= 0.6) bar.classList.add('color-med');
+    else if (pct <= 0.85) bar.classList.add('color-high');
+    else bar.classList.add('color-very');
+
+    // Tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = `${rawTime} • ${hours.toFixed(2)}h`;
+    bar.appendChild(tooltip);
+
+    group.appendChild(bar);
+
+    // Label
+    const label = document.createElement('div');
+    label.className = 'x-label';
+    const d = new Date(item.date);
+    label.textContent = d.toLocaleDateString('en-US', {weekday:'short', day:'numeric'});
+    xAxis.appendChild(label);
+
+    chartArea.appendChild(group);
+  });
+
+  summary.innerHTML = `Total Hours: <span>${total.toFixed(2)}</span>`;
+}
+
+// Init
+if (localStorage.getItem('ht_title')) {
+  appTitle.textContent = localStorage.getItem('ht_title');
+}
+</script>
+</body>
+</html>

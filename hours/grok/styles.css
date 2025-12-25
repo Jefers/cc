@@ -1,0 +1,229 @@
+/* styles.css – December 2025 – fixed layout, percentage height, tooltips, max-hours scaling */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #0f0f1a 0%, #131327 100%);
+  color: #e5e7ff;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1480px;
+  margin: 0 auto;
+  background: rgba(20, 20, 45, 0.78);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.42);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.file-label,
+.export-btn,
+.small-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.file-label,
+.export-btn {
+  background: rgba(100, 140, 255, 0.18);
+  color: #c0d0ff;
+}
+
+.file-label:hover,
+.export-btn:hover {
+  background: rgba(100, 140, 255, 0.32);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(80,120,255,0.18);
+}
+
+.small-btn {
+  background: rgba(255,255,255,0.08);
+  color: #c0c0ff;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.small-btn:hover {
+  background: rgba(255,255,255,0.18);
+  color: white;
+  transform: scale(1.06);
+}
+
+/* ── Chart ─────────────────────────────────────────────────────────────────── */
+
+.chart-container {
+  position: relative;
+  height: 520px;                      /* ← explicit pixel height – critical for % to work */
+  margin: 32px 0 80px;
+  background: rgba(15,15,35,0.52);
+  border-radius: 16px;
+  border: 1px solid rgba(80,100,255,0.1);
+  overflow: visible;
+}
+
+.y-axis-labels {
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 130px;
+  width: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #a0a0c0;
+  font-size: 0.84rem;
+  text-align: right;
+  pointer-events: none;
+}
+
+.chart {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 0 24px 150px 80px;
+}
+
+.bar-wrapper {
+  flex: 1 1 0;
+  min-width: 24px;
+  max-width: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  transition: height 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+/* Tooltip */
+.bar:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,10,30,0.92);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  z-index: 20;
+  margin-bottom: 10px;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Colors */
+.bar.purple { background: linear-gradient(to top, #7c3aed, #b794f4); }
+.bar.orange { background: linear-gradient(to top, #ea580c, #fb923c); }
+.bar.yellow { background: linear-gradient(to top, #ca8a04, #fde047); }
+.bar.green  { background: linear-gradient(to top, #059669, #34d399); }
+
+/* X-axis labels – Day name first, anti-clockwise rotation */
+.label {
+  position: absolute;
+  left: 50%;
+  bottom: -150px;                   /* your preferred value */
+  transform: translateX(-50%) rotate(-90deg);
+  transform-origin: center top;
+  font-size: 0.82rem;
+  color: #c8c8ff;
+  white-space: nowrap;
+  height: 110px;
+  line-height: 110px;
+  text-align: center;
+  pointer-events: none;
+  letter-spacing: 0.4px;
+}
+
+/* Legend & Summary */
+.legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin: 30px 0 20px;
+  font-size: 0.96rem;
+  color: #d0d0ff;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+}
+
+.summary {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #b0d0ff;
+  padding: 16px;
+  background: rgba(20,40,80,0.38);
+  border-radius: 14px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .chart-container { height: 540px; }
+  .chart { padding: 0 14px 170px 76px; gap: 4px; }
+  .label { font-size: 0.76rem; height: 100px; bottom: -160px; }
+  .bar-wrapper { max-width: 42px; min-width: 20px; }
+}
