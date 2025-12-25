@@ -3,254 +3,261 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Hours Tracker - Cosmic Edition</title>
-
+<title>Hours Tracker - Compact Edition</title>
 <style>
   :root {
+    /* Theme */
     --bg-start: #0f0f1a;
     --bg-end: #131327;
     --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shine: rgba(100, 140, 255, 0.12);
-    --text-main: #f1f5ff;
+    --text-main: #ffffff;
     --text-muted: #a0a0c0;
-    --text-accent: #c0d0ff;
+    --text-axis: #c8c8ff;
     --btn-bg: rgba(100, 140, 255, 0.18);
-    --btn-hover: rgba(100, 140, 255, 0.35);
-    --chart-height: 520px;
+    --btn-bg-hover: rgba(100, 140, 255, 0.32);
+    --btn-glow: rgba(100, 140, 255, 0.4);
+
+    /* Bar Gradients - RESTORED - this was the missing piece */
+    --grad-low: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
+    --grad-med: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+    --grad-high: linear-gradient(180deg, #eab308 0%, #ca8a04 100%);
+    --grad-very: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+
+    --chart-height: 260px;
+    --container-radius: 20px;
   }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family:system-ui,sans-serif; }
+
   body {
-    font-family: system-ui, sans-serif;
     background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
-    color: var(--text-main);
-    min-height: 100vh;
-    padding: 20px;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:var(--text-main);
+    padding:20px;
   }
 
   .glass-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-    padding: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .glass-container::before {
-    content: '';
-    position: absolute;
-    inset: -50%;
-    background: radial-gradient(circle at 30% 20%, var(--glass-shine), transparent 60%);
-    pointer-events: none;
-    z-index: -1;
+    width:100%;
+    max-width:1000px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(12px);
+    border:1px solid var(--glass-border);
+    border-radius:var(--container-radius);
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    padding:30px;
+    position:relative;
+    overflow:hidden;
   }
 
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-    gap: 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:15px;
   }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+  .header-left { display:flex; align-items:center; gap:15px; flex:1; }
 
   h1 {
-    font-size: clamp(1.9rem, 5vw, 2.5rem);
-    font-weight: 600;
-    letter-spacing: -0.6px;
+    font-size:clamp(1.5rem, 2vw, 2rem);
+    font-weight:700;
+    letter-spacing:-0.5px;
+    color:#fff;
+    cursor:pointer;
   }
 
   .edit-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.07);
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.3rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    width:32px; height:32px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.05);
+    border:none;
+    color:var(--text-muted);
+    cursor:pointer;
+    transition:all 0.3s;
   }
 
-  .edit-btn:hover { background: rgba(255,255,255,0.18); color: white; }
+  .edit-btn:hover { background:rgba(255,255,255,0.15); color:#fff; }
 
   .btn {
-    padding: 10px 20px;
-    border-radius: 10px;
-    background: var(--btn-bg);
-    color: var(--text-accent);
-    border: none;
-    font-weight: 500;
-    font-size: 0.94rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    padding:10px 20px;
+    border-radius:10px;
+    border:1px solid var(--glass-border);
+    background:var(--btn-bg);
+    color:#fff;
+    font-size:0.9rem;
+    font-weight:500;
+    cursor:pointer;
+    transition:all 0.3s;
   }
 
-  .btn:hover {
-    background: var(--btn-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(80,120,255,0.25);
-  }
+  .btn:hover { background:var(--btn-bg-hover); transform:translateY(-1px); box-shadow:0 4px 12px var(--btn-glow); }
 
-  #file-input { display: none; }
-
-  /* ── Chart ──────────────────────────────────────────────────────────────── */
+  .hidden { display:none !important; }
 
   .chart-wrapper {
-    position: relative;
-    height: var(--chart-height);
-    background: rgba(0,0,0,0.18);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.04);
-    margin-bottom: 180px; /* space for labels */
+    display:flex;
+    position:relative;
+    background:rgba(0,0,0,0.2);
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.03);
+    height:var(--chart-height);
+    margin-bottom:30px;
+    padding-right:10px;
   }
 
   .y-axis {
-    position: absolute;
-    left: 16px;
-    top: 16px;
-    bottom: 120px;
-    width: 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    text-align: right;
-    pointer-events: none;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    height:100%;
+    padding:10px 10px 10px 20px;
+    margin-right:10px;
+    flex-shrink:0;
+    border-right:1px solid rgba(255,255,255,0.05);
+  }
+
+  .y-label {
+    color:var(--text-muted);
+    font-size:0.75rem;
+    text-align:right;
+    width:30px;
+    position:relative;
+    top:-6px;
   }
 
   .chart-area {
-    height: 100%;
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    padding: 0 28px 0 78px;
+    flex:1;
+    display:flex;
+    align-items:flex-end;
+    justify-content:flex-start;
+    height:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:25px;
+    position:relative;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,0.2) transparent;
   }
 
+  .chart-area::-webkit-scrollbar { height:6px; }
+  .chart-area::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.2); border-radius:20px; }
+
   .bar-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    position: relative;
-    min-width: 26px;
-    max-width: 58px;
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+    margin:0 6px;
+    position:relative;
+    width:30px;
+    min-width:30px;
   }
 
   .bar {
-    width: 100%;
-    border-radius: 8px 8px 0 0;
-    transition: height 0.6s cubic-bezier(0.34,1.56,0.64,1);
-    box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+    width:100%;
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    transition:height 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    position:relative;
+    cursor:pointer;
   }
 
-  .bar:hover .tooltip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-12px);
-  }
+  .color-low { background: var(--grad-low); box-shadow:0 0 10px rgba(168,85,247,0.3); }
+  .color-med { background: var(--grad-med); box-shadow:0 0 10px rgba(249,115,22,0.3); }
+  .color-high { background: var(--grad-high); box-shadow:0 0 10px rgba(234,179,8,0.3); }
+  .color-very { background: var(--grad-very); box-shadow:0 0 10px rgba(34,197,94,0.3); }
 
   .tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-8px);
-    background: rgba(10,10,30,0.94);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 0.83rem;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.2s;
-    z-index: 20;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    position:absolute;
+    bottom:100%;
+    left:50%;
+    transform:translateX(-50%) translateY(-5px);
+    background:rgba(15,15,26,0.95);
+    border:1px solid rgba(255,255,255,0.1);
+    color:#fff;
+    padding:4px 8px;
+    border-radius:4px;
+    font-size:0.7rem;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s, transform 0.2s;
+    z-index:10;
   }
 
-  /* Gradients */
-  .color-low    { background: linear-gradient(180deg, #a855f7, #7c3aed); }
-  .color-med    { background: linear-gradient(180deg, #f97316, #ea580c); }
-  .color-high   { background: linear-gradient(180deg, #eab308, #ca8a04); }
-  .color-very   { background: linear-gradient(180deg, #22c55e, #16a34a); }
-
-  /* X Labels */
-  .x-axis-container {
-    position: absolute;
-    bottom: -150px;
-    left: 78px;
-    right: 28px;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
+  .bar-group:hover .tooltip {
+    opacity:1;
+    transform:translateX(-50%) translateY(-8px);
   }
 
   .x-label {
-    font-size: 0.82rem;
-    color: var(--text-accent);
-    transform: rotate(-90deg);
-    transform-origin: center top;
-    white-space: nowrap;
-    width: 100px;
-    text-align: center;
-    opacity: 0.9;
+    font-size:0.75rem;
+    color:var(--text-axis);
+    white-space:nowrap;
+    position:absolute;
+    bottom:-10px;
+    transform:rotate(-90deg);
+    transform-origin:center;
+    text-align:right;
+    width:100px;
+    left:-35px;
+    opacity:0.7;
+    pointer-events:none;
   }
 
-  /* Meta */
   .meta-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    align-items:center;
   }
 
   .legend {
-    display: flex;
-    gap: 24px;
-    background: rgba(0,0,0,0.22);
-    padding: 12px 28px;
-    border-radius: 50px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    display:flex;
+    gap:15px;
+    background:rgba(0,0,0,0.2);
+    padding:8px 20px;
+    border-radius:50px;
   }
 
   .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.75rem;
+    color:var(--text-muted);
   }
 
   .legend-box {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
+    width:10px;
+    height:10px;
+    border-radius:2px;
   }
 
   .summary-box {
-    background: rgba(255,255,255,0.05);
-    padding: 16px 40px;
-    border-radius: 12px;
-    font-size: 1.15rem;
-    border: 1px solid rgba(255,255,255,0.06);
+    background:rgba(255,255,255,0.05);
+    padding:10px 25px;
+    border-radius:12px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,0.05);
   }
 
-  @media (max-width: 768px) {
-    :root { --chart-height: 540px; }
-    .chart-wrapper { margin-bottom: 200px; }
-    .x-axis-container { bottom: -170px; }
-    .x-label { font-size: 0.76rem; width: 80px; }
+  .summary-text { font-size:1rem; color:#fff; }
+  .summary-text span { font-weight:700; color:#648cff; }
+
+  @media (max-width:768px) {
+    .glass-container { padding:15px; }
+    header { flex-direction:column; align-items:flex-start; }
+    .header-right { width:100%; justify-content:space-between; }
+    .btn { padding:8px 12px; font-size:0.8rem; flex:1; }
   }
 </style>
 </head>
@@ -263,7 +270,7 @@
       <button class="edit-btn" id="edit-title-btn">✎</button>
     </div>
     <div class="header-right">
-      <input type="file" id="file-input" accept=".csv">
+      <input type="file" id="csv-file-input" accept=".csv" style="display:none;">
       <button class="btn" id="import-btn">Import CSV</button>
       <button class="btn hidden" id="export-btn">Export CSV</button>
     </div>
@@ -271,8 +278,11 @@
 
   <section class="chart-wrapper">
     <div class="y-axis" id="y-axis"></div>
-    <div class="chart-area" id="chart-area"></div>
-    <div class="x-axis-container" id="x-axis"></div>
+    <div class="chart-area" id="chart-area">
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:0.9rem;font-style:italic;">
+        No Data - Import CSV
+      </div>
+    </div>
   </section>
 
   <div class="meta-section">
@@ -283,144 +293,157 @@
       <div class="legend-item"><div class="legend-box" style="background:var(--grad-very)"></div>Very High</div>
     </div>
     <div class="summary-box">
-      <span id="summary-text">Total Hours: 0.00</span>
+      <p class="summary-text" id="summary-text">Total Hours: <span>0.00</span></p>
     </div>
   </div>
 </main>
 
 <script>
-// ── State & Elements ────────────────────────────────────────────────────────
+// State & Elements
 let appData = [];
 const appTitle = document.getElementById('app-title');
-const editBtn = document.getElementById('edit-title-btn');
+const editTitleBtn = document.getElementById('edit-title-btn');
 const importBtn = document.getElementById('import-btn');
 const exportBtn = document.getElementById('export-btn');
-const fileInput = document.getElementById('file-input');
+const fileInput = document.getElementById('csv-file-input');
 const chartArea = document.getElementById('chart-area');
-const xAxis = document.getElementById('x-axis');
 const yAxis = document.getElementById('y-axis');
-const summary = document.getElementById('summary-text');
+const summaryText = document.getElementById('summary-text');
 
-// ── Title Edit ──────────────────────────────────────────────────────────────
-editBtn.onclick = () => {
+// Title persistence
+const savedTitle = localStorage.getItem('ht_title');
+if (savedTitle) appTitle.textContent = savedTitle;
+
+editTitleBtn.addEventListener('click', () => {
   const input = document.createElement('input');
+  input.type = 'text';
   input.value = appTitle.textContent;
-  input.style.cssText = 'background:transparent;border:none;color:inherit;font:inherit;width:320px;max-width:60vw;outline:none;';
   appTitle.replaceWith(input);
   input.focus();
+
   const save = () => {
-    const v = input.value.trim() || 'Hours Tracker';
+    const v = input.value.trim() || "Hours Tracker";
     localStorage.setItem('ht_title', v);
     const h1 = document.createElement('h1');
     h1.id = 'app-title';
     h1.textContent = v;
     input.replaceWith(h1);
   };
-  input.onblur = save;
-  input.onkeydown = e => { if (e.key === 'Enter') input.blur(); };
-};
 
-// ── CSV Handling ────────────────────────────────────────────────────────────
-importBtn.onclick = () => fileInput.click();
+  input.addEventListener('blur', save);
+  input.addEventListener('keypress', e => e.key === 'Enter' && input.blur());
+});
 
-fileInput.onchange = e => {
+// CSV Import
+importBtn.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => processCSV(ev.target.result);
   reader.readAsText(file);
-};
+});
 
-function processCSV(text) {
-  const lines = text.trim().split(/\r?\n/);
-  const data = [];
+function processCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const parsed = [];
 
-  for (let i = 1; i < lines.length; i++) { // skip header
-    const [date, time] = lines[i].split(',').map(s => s.trim());
-    if (!date || !time) continue;
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const parts = lines[i].split(',');
+    if (i === 0 && parts[0].trim().toLowerCase() === 'date' && parts[1].trim().toLowerCase() === 'hours') continue;
+    if (parts.length < 2) continue;
+
+    const date = parts[0].trim();
+    const time = parts[1].trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+
     const [h, m] = time.split(':').map(Number);
     if (isNaN(h) || isNaN(m)) continue;
-    data.push({ date, hours: h + m/60, rawTime: time });
+
+    parsed.push({ date, hours: h + m/60, timeStr: time });
   }
 
-  if (data.length === 0) return alert('No valid data found');
-  data.sort((a,b) => a.date.localeCompare(b.date));
-  appData = data;
-  exportBtn.classList.remove('hidden');
-  renderChart();
+  if (parsed.length > 0) {
+    parsed.sort((a,b) => a.date.localeCompare(b.date));
+    appData = parsed;
+    renderChart();
+    exportBtn.classList.remove('hidden');
+  } else {
+    alert('No valid data. Use format: Date,Hours (YYYY-MM-DD, H:MM)');
+  }
 }
 
-// ── Export ──────────────────────────────────────────────────────────────────
-exportBtn.onclick = () => {
+// Export
+exportBtn.addEventListener('click', () => {
   if (!appData.length) return;
   let csv = "Date,Hours\n";
-  appData.forEach(d => csv += `${d.date},${d.rawTime}\n`);
+  appData.forEach(d => csv += `${d.date},${d.timeStr}\n`);
   const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
   const a = document.createElement('a');
   a.href = url;
-  a.download = `hours_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = 'hours_export.csv';
   a.click();
   URL.revokeObjectURL(url);
-};
+});
 
-// ── Render ──────────────────────────────────────────────────────────────────
+// Render
 function renderChart() {
   chartArea.innerHTML = '';
-  xAxis.innerHTML = '';
   yAxis.innerHTML = '';
 
-  const maxH = Math.max(...appData.map(d => d.hours), 1);
-  const ceilMax = Math.ceil(maxH);
+  if (!appData.length) return;
 
-  // Y-axis
-  yAxis.innerHTML = `<span class="y-label">${ceilMax}h</span><span class="y-label">0h</span>`;
+  const maxHours = Math.max(...appData.map(d => d.hours), 1);
+  const ceiling = Math.ceil(maxHours / 2) * 2; // Round up to even for clean steps
 
-  let total = 0, daysWithHours = 0;
+  // Y-axis every 2h
+  for (let h = ceiling; h >= 0; h -= 2) {
+    const span = document.createElement('span');
+    span.className = 'y-label';
+    span.textContent = `${h}h`;
+    yAxis.appendChild(span);
+  }
 
+  let total = 0;
   appData.forEach(item => {
-    const { hours, rawTime, date } = item;
-    if (hours > 0) { total += hours; daysWithHours++; }
+    const pct = (item.hours / maxHours) * 100;
+    total += item.hours;
 
-    // Bar group
     const group = document.createElement('div');
     group.className = 'bar-group';
 
     const bar = document.createElement('div');
     bar.className = 'bar';
-    bar.style.height = hours > 0 ? `${(hours / maxH) * 100}%` : '0%';
+    bar.style.height = item.hours > 0 ? `${pct}%` : '0%';
 
-    // Color
-    const pct = hours / maxH;
-    if (pct <= 0.3) bar.classList.add('color-low');
-    else if (pct <= 0.6) bar.classList.add('color-med');
-    else if (pct <= 0.85) bar.classList.add('color-high');
-    else bar.classList.add('color-very');
+    if (item.hours > 0) {
+      let cls = 'color-low';
+      if (pct > 75) cls = 'color-very';
+      else if (pct > 50) cls = 'color-high';
+      else if (pct > 25) cls = 'color-med';
+      bar.classList.add(cls);
+    }
 
-    // Tooltip
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
-    tooltip.textContent = `${rawTime} • ${hours.toFixed(2)}h`;
+    tooltip.textContent = `${item.timeStr} • ${item.hours.toFixed(2)}h`;
     bar.appendChild(tooltip);
 
-    group.appendChild(bar);
-
-    // Label
     const label = document.createElement('div');
     label.className = 'x-label';
     const d = new Date(item.date);
     label.textContent = d.toLocaleDateString('en-US', {weekday:'short', day:'numeric'});
-    xAxis.appendChild(label);
 
+    group.append(bar, label);
     chartArea.appendChild(group);
   });
 
-  summary.innerHTML = `Total Hours: <span>${total.toFixed(2)}</span>`;
+  summaryText.innerHTML = `Total Hours: <span>${total.toFixed(2)}</span>`;
 }
 
-// Init
-if (localStorage.getItem('ht_title')) {
-  appTitle.textContent = localStorage.getItem('ht_title');
-}
+init();
 </script>
 </body>
 </html>

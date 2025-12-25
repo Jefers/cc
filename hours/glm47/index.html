@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hours Tracker - Cosmic Edition</title>
+    <title>Hours Tracker - Compact Edition</title>
     <style>
         /* 
          * CSS VARIABLES & RESET 
@@ -14,7 +14,6 @@
             --bg-end: #131327;
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shine: rgba(255, 255, 255, 0.15);
             
             /* Text Colors */
             --text-main: #ffffff;
@@ -33,7 +32,7 @@
             --grad-very: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);    /* Green */
 
             /* Dimensions */
-            --chart-height: 520px;
+            --chart-height: 260px; /* Halved from 520px */
             --container-radius: 20px;
         }
 
@@ -71,7 +70,6 @@
             overflow: hidden;
         }
 
-        /* Subtle ambient glow behind container */
         .glass-container::before {
             content: '';
             position: absolute;
@@ -91,7 +89,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -104,7 +102,7 @@
         }
 
         h1 {
-            font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+            font-size: clamp(1.5rem, 2vw, 2rem);
             font-weight: 700;
             letter-spacing: -0.5px;
             color: #fff;
@@ -181,97 +179,109 @@
             display: none !important;
         }
 
-        #file-input {
-            display: none;
-        }
-
         /* 
          * CHART SECTION 
          */
         .chart-wrapper {
+            display: flex;
             position: relative;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.03);
             height: var(--chart-height);
-            display: flex;
-            padding: 20px 20px 0; /* Bottom padding handled by layout logic */
-            margin-bottom: 40px; /* Space for rotated X labels */
+            margin-bottom: 30px; /* Space for tooltips etc */
+            padding-right: 10px; /* Space for scrollbar */
         }
 
         /* Y-Axis */
         .y-axis {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-between; /* Distributes labels from 0 to Max */
             height: 100%;
-            padding-bottom: 20px; /* Align bottom with bars */
-            margin-right: 15px;
+            padding: 10px 10px 10px 20px; /* Left padding for container edge */
+            margin-right: 10px;
             flex-shrink: 0;
+            border-right: 1px solid rgba(255,255,255,0.05);
         }
 
         .y-label {
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-align: right;
-            width: 40px;
-            padding-right: 10px;
+            width: 30px;
             position: relative;
-            top: -6px; /* Center visually */
+            top: -6px; /* Center visual alignment with grid lines */
         }
 
-        /* CHART BARS AREA */
+        /* SCROLLABLE CHART AREA */
         .chart-area {
             flex: 1;
             display: flex;
             align-items: flex-end;
-            justify-content: space-between; /* Spread bars evenly */
+            justify-content: flex-start; /* Allow scrolling naturally */
             height: 100%;
-            padding-bottom: 20px;
+            overflow-x: auto; /* Enable horizontal scrolling */
+            overflow-y: hidden; /* Prevent vertical scroll */
+            padding-bottom: 25px; /* Space for X-axis labels below */
             position: relative;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            
+            /* Custom Scrollbar Styling */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.2) transparent;
+        }
+
+        .chart-area::-webkit-scrollbar {
+            height: 6px;
+        }
+        .chart-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chart-area::-webkit-scrollbar-thumb {
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 20px;
         }
 
         .bar-group {
-            flex: 1;
+            flex-shrink: 0; /* Don't squish bars, let them scroll */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
             height: 100%;
-            margin: 0 4px; /* Gap between bars */
+            margin: 0 6px; /* Gap between bars */
             position: relative;
-            min-width: 24px;
-            max-width: 56px;
+            width: 30px; /* Fixed width for bars to keep them readable */
+            min-width: 30px;
         }
 
         .bar {
             width: 100%;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
             transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
             position: relative;
             cursor: pointer;
         }
 
         /* Color Classes */
-        .color-low { background: var(--grad-low); box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
-        .color-med { background: var(--grad-med); box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); }
-        .color-high { background: var(--grad-high); box-shadow: 0 0 15px rgba(234, 179, 8, 0.3); }
-        .color-very { background: var(--grad-very); box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+        .color-low { background: var(--grad-low); box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); }
+        .color-med { background: var(--grad-med); box-shadow: 0 0 10px rgba(249, 115, 22, 0.3); }
+        .color-high { background: var(--grad-high); box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+        .color-very { background: var(--grad-very); box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
 
         /* Tooltip */
         .tooltip {
             position: absolute;
             bottom: 100%;
             left: 50%;
-            transform: translateX(-50%) translateY(-8px);
+            transform: translateX(-50%) translateY(-5px);
             background: rgba(15, 15, 26, 0.95);
             border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
@@ -279,47 +289,27 @@
             z-index: 10;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-
-        .tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: rgba(15, 15, 26, 0.95) transparent transparent transparent;
-        }
-
+        
+        /* Show tooltip on hover of the group to catch empty space clicks too */
         .bar-group:hover .tooltip {
             opacity: 1;
-            transform: translateX(-50%) translateY(-12px);
+            transform: translateX(-50%) translateY(-8px);
         }
 
-        /* X-AXIS LABELS */
-        .x-axis-container {
-            position: absolute;
-            bottom: -150px; /* Pushed down as requested */
-            left: 75px; /* Offset for Y-axis */
-            right: 20px;
-            display: flex;
-            justify-content: space-between; /* Must match chart-area justify */
-            height: 0; /* Taking no layout flow space inside wrapper */
-        }
-
+        /* X-AXIS LABEL (Inside Bar Group) */
         .x-label {
-            font-size: 0.82rem;
+            font-size: 0.75rem;
             color: var(--text-axis);
-            transform: rotate(-90deg);
             white-space: nowrap;
+            position: absolute;
+            bottom: -10px; /* 10px from bottom of the bar */
+            transform: rotate(-90deg);
             transform-origin: center;
             text-align: right;
-            width: 100px; /* Provide width for rotation */
-            position: relative;
-            /* Center align logic: The label is inside a flex item matching bar width. 
-               We need to position it specifically. */
-            left: -40px; /* Center adjustment */
-            opacity: 0.8;
+            width: 100px; /* Width for rotation area */
+            left: -35px; /* Center over bar */
+            opacity: 0.7;
+            pointer-events: none;
         }
 
         /* 
@@ -328,42 +318,42 @@
         .meta-section {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
         .legend {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             background: rgba(0,0,0,0.2);
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 50px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
+            gap: 6px;
+            font-size: 0.75rem;
             color: var(--text-muted);
         }
 
         .legend-box {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
         }
 
         .summary-box {
             background: rgba(255,255,255,0.05);
-            padding: 15px 30px;
+            padding: 10px 25px;
             border-radius: 12px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .summary-text {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #fff;
         }
 
@@ -376,17 +366,14 @@
          * RESPONSIVE 
          */
         @media (max-width: 768px) {
-            :root {
-                --chart-height: 540px;
-            }
-            
             .glass-container {
-                padding: 20px;
+                padding: 15px;
             }
 
             header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 10px;
             }
 
             .header-right {
@@ -395,25 +382,14 @@
             }
 
             .btn {
-                padding: 8px 16px;
+                padding: 8px 12px;
                 font-size: 0.8rem;
                 flex: 1;
                 justify-content: center;
             }
 
-            /* Adjust x-axis for mobile */
-            .x-axis-container {
-                bottom: -170px; 
-            }
-
-            .bar-group {
-                margin: 0 2px;
-            }
-
-            .x-label {
-                font-size: 0.75rem;
-                width: 80px;
-                left: -32px;
+            .chart-wrapper {
+                padding-right: 5px;
             }
         }
     </style>
@@ -425,7 +401,6 @@
             <div class="header-left">
                 <h1 id="app-title" title="Click to edit">Hours Tracker</h1>
                 <button class="edit-btn" id="edit-title-btn" aria-label="Edit Title">
-                    <!-- Pencil Icon -->
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -433,7 +408,12 @@
                 </button>
             </div>
             <div class="header-right">
-                <input type="file" id="csv-file-input" accept=".csv">
+                <!-- 
+                     NOTE: This hidden input is technically required by browsers to handle file uploads. 
+                     We hide it with CSS so users only see the styled "Import" button.
+                -->
+                <input type="file" id="csv-file-input" accept=".csv" style="display:none;">
+                
                 <button class="btn" id="import-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -454,25 +434,17 @@
         </header>
 
         <section class="chart-wrapper">
-            <!-- Y Axis -->
+            <!-- Y Axis (Left Side) -->
             <div class="y-axis" id="y-axis">
-                <!-- Labels injected by JS -->
-                <span class="y-label">0h</span>
-                <span class="y-label">--</span>
+                <!-- Labels injected by JS (0, 2, 4, 6... Max) -->
             </div>
 
-            <!-- Bars Area -->
+            <!-- Chart Area (Scrollable) -->
             <div class="chart-area" id="chart-area">
-                <!-- Bars injected by JS -->
                 <!-- Empty State Placeholder -->
-                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,0.3); font-style:italic;">
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,0.3); font-size:0.9rem; font-style:italic;">
                     No Data - Please Import CSV
                 </div>
-            </div>
-
-            <!-- X Axis Labels (Absolute Positioned) -->
-            <div class="x-axis-container" id="x-axis">
-                <!-- Labels injected by JS -->
             </div>
         </section>
 
@@ -514,22 +486,16 @@
         const exportBtn = document.getElementById('export-btn');
         const fileInput = document.getElementById('csv-file-input');
         const chartArea = document.getElementById('chart-area');
-        const xAxis = document.getElementById('x-axis');
         const yAxis = document.getElementById('y-axis');
         const summaryText = document.getElementById('summary-text');
 
         // --- Initialization ---
         function init() {
-            // Load Title
             const savedTitle = localStorage.getItem('ht_title');
             if (savedTitle) {
                 title = savedTitle;
                 appTitle.textContent = title;
             }
-
-            // Placeholder data for first load if desired, 
-            // but prompt implies waiting for import. 
-            // We'll leave empty state as defined in HTML.
         }
 
         // --- Title Editing ---
@@ -538,7 +504,6 @@
             input.type = 'text';
             input.value = title;
             
-            // Replace h1 with input
             appTitle.replaceWith(input);
             input.focus();
 
@@ -547,22 +512,16 @@
                 title = newTitle;
                 localStorage.setItem('ht_title', title);
                 
-                // Restore H1
                 const h1 = document.createElement('h1');
                 h1.id = 'app-title';
                 h1.textContent = title;
                 h1.title = "Click to edit";
                 input.replaceWith(h1);
-                
-                // Re-bind element reference
-                document.getElementById('app-title'); // Not strictly needed as we aren't adding listener to h1, but good practice
             };
 
             input.addEventListener('blur', saveTitle);
             input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    input.blur();
-                }
+                if (e.key === 'Enter') input.blur();
             });
         });
 
@@ -575,9 +534,8 @@
 
             const reader = new FileReader();
             reader.onload = (event) => {
-                const text = event.target.result;
-                processCSV(text);
-                fileInput.value = ''; // Reset input
+                processCSV(event.target.result);
+                fileInput.value = ''; 
             };
             reader.readAsText(file);
         });
@@ -586,16 +544,13 @@
             const lines = csvText.trim().split('\n');
             const parsedData = [];
             
-            // Parse lines
             for (let i = 0; i < lines.length; i++) {
-                // Skip empty lines
                 if(!lines[i].trim()) continue;
 
                 const parts = lines[i].split(',');
                 if (i === 0) {
-                    // Check header
                     if (parts[0].trim().toLowerCase() === 'date' && parts[1].trim().toLowerCase() === 'hours') {
-                        continue; // Skip header
+                        continue; 
                     }
                 }
 
@@ -603,24 +558,20 @@
                     const dateStr = parts[0].trim();
                     const timeStr = parts[1].trim();
                     
-                    // Validate Date YYYY-MM-DD
                     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
 
-                    // Parse Time H:MM or HH:MM
                     const hoursDecimal = parseTime(timeStr);
                     
                     if (hoursDecimal !== null) {
                         parsedData.push({
                             date: dateStr,
-                            hours: hoursDecimal,
-                            rawTime: timeStr // Keep original for tooltip if desired, or format later
+                            hours: hoursDecimal
                         });
                     }
                 }
             }
 
             if (parsedData.length > 0) {
-                // Sort by date ascending
                 parsedData.sort((a, b) => new Date(a.date) - new Date(b.date));
                 appData = parsedData;
                 renderChart();
@@ -633,10 +584,8 @@
         function parseTime(timeStr) {
             const parts = timeStr.split(':');
             if (parts.length !== 2) return null;
-            
             const h = parseInt(parts[0], 10);
             const m = parseInt(parts[1], 10);
-
             if (isNaN(h) || isNaN(m)) return null;
             return h + (m / 60);
         }
@@ -645,20 +594,15 @@
         exportBtn.addEventListener('click', () => {
             if (appData.length === 0) return;
 
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Date,Hours\n"; // Header
-
+            let csvContent = "data:text/csv;charset=utf-8,Date,Hours\n";
             appData.forEach(row => {
-                // Format hours back to H:MM
                 const h = Math.floor(row.hours);
                 const m = Math.round((row.hours - h) * 60);
-                const timeStr = `${h}:${m.toString().padStart(2, '0')}`;
-                csvContent += `${row.date},${timeStr}\n`;
+                csvContent += `${row.date},${h}:${m.toString().padStart(2, '0')}\n`;
             });
 
-            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", encodeURI(csvContent));
             link.setAttribute("download", "hours_worked_export.csv");
             document.body.appendChild(link);
             link.click();
@@ -667,89 +611,86 @@
 
         // --- Rendering ---
         function renderChart() {
-            // 1. Clear containers
             chartArea.innerHTML = '';
-            xAxis.innerHTML = '';
             yAxis.innerHTML = '';
 
-            // 2. Calculations
             const maxHours = Math.max(...appData.map(d => d.hours));
-            const ceiling = maxHours === 0 ? 8 : Math.ceil(maxHours); // Avoid divide by zero, default to 8h
+            
+            // Calculate Ceiling (Round up to nearest even number for clean Y-axis steps)
+            let ceiling = maxHours === 0 ? 8 : Math.ceil(maxHours);
+            if (ceiling % 2 !== 0) ceiling += 1; // Ensure even
+            
             const totalHours = appData.reduce((acc, curr) => acc + curr.hours, 0);
 
-            // 3. Update Y-Axis (0 and Ceiling)
-            // We need two labels in flex-column: Space-between
-            const labelTop = document.createElement('span');
-            labelTop.className = 'y-label';
-            labelTop.textContent = `${ceiling}h`;
+            // --- Render Y-Axis (Every 2 hours) ---
+            for (let h = 0; h <= ceiling; h += 2) {
+                const label = document.createElement('span');
+                label.className = 'y-label';
+                label.textContent = `${h}h`;
+                // We append in order, flex-column space-between handles the position
+                // However, space-between works best if we know the exact number of items
+                // To guarantee alignment with a variable top number, we should append from top down
+                // OR use absolute positioning.
+                // Let's use simple flex order: First appended is top, last is bottom.
+                // So iterate Ceiling down to 0.
+            }
             
-            const labelBot = document.createElement('span');
-            labelBot.className = 'y-label';
-            labelBot.textContent = `0h`;
+            // Re-looping for order
+            for (let h = ceiling; h >= 0; h -= 2) {
+                const label = document.createElement('span');
+                label.className = 'y-label';
+                label.textContent = `${h}h`;
+                yAxis.appendChild(label);
+            }
 
-            yAxis.appendChild(labelTop);
-            yAxis.appendChild(labelBot); // Flexbox puts them at ends
-
-            // 4. Create Bars & X-Labels
+            // --- Render Bars ---
             appData.forEach(item => {
                 const heightPercent = (item.hours / ceiling) * 100;
                 
-                // Bar Group (Wrapper)
                 const group = document.createElement('div');
                 group.className = 'bar-group';
 
                 // Tooltip
                 const tooltip = document.createElement('div');
                 tooltip.className = 'tooltip';
-                
-                // Formatting logic for Tooltip: "HH:MM • X.XXh"
                 const hrs = Math.floor(item.hours);
                 const mins = Math.round((item.hours - hrs) * 60);
-                const timeDisplay = `${hrs}:${mins.toString().padStart(2, '0')}`;
-                tooltip.textContent = `${timeDisplay} • ${item.hours.toFixed(2)}h`;
+                tooltip.textContent = `${hrs}:${mins.toString().padStart(2, '0')} • ${item.hours.toFixed(2)}h`;
 
-                // Bar Visual
+                // Bar
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 
                 if (item.hours > 0) {
                     bar.style.height = `${heightPercent}%`;
-                    
-                    // Color Logic based on relative height %
                     let colorClass = 'color-low';
                     if (heightPercent > 75) colorClass = 'color-very';
                     else if (heightPercent > 50) colorClass = 'color-high';
                     else if (heightPercent > 25) colorClass = 'color-med';
-                    
                     bar.classList.add(colorClass);
                 } else {
-                    bar.style.height = '0%'; // Completely invisible for zero
+                    bar.style.height = '0%';
                 }
 
-                group.appendChild(tooltip);
-                group.appendChild(bar);
-                chartArea.appendChild(group);
-
-                // X-Axis Label
+                // X-Axis Label (Inside Group)
                 const xLabelDiv = document.createElement('div');
                 xLabelDiv.className = 'x-label';
-                
-                // Format: "Sun 23"
                 const dateObj = new Date(item.date);
                 const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
                 const dayNum = dateObj.getDate();
                 xLabelDiv.textContent = `${dayName} ${dayNum}`;
+
+                group.appendChild(tooltip);
+                group.appendChild(bar);
+                group.appendChild(xLabelDiv); // Appended last, positioned absolute bottom
                 
-                xAxis.appendChild(xLabelDiv);
+                chartArea.appendChild(group);
             });
 
-            // 5. Update Summary
             summaryText.innerHTML = `Total Hours: <span>${totalHours.toFixed(2)}</span>`;
         }
 
-        // Initialize App
         init();
-
     </script>
 </body>
 </html>
