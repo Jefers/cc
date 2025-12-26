@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Tracker - Spend Visualizer</title>
+    <style>
+        /* 
+         * CSS VARIABLES & RESET 
+         */
+        :root {
+            /* Theme Colors */
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            /* Text Colors */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-axis: #cbd5e1;
+
+            /* Button Colors */
+            --btn-bg: rgba(56, 189, 248, 0.15);
+            --btn-bg-hover: rgba(56, 189, 248, 0.3);
+            --btn-glow: rgba(56, 189, 248, 0.4);
+
+            /* Bar Gradients (Spend Heat) */
+            /* Low: Teal -> High: Red */
+            --grad-low: linear-gradient(180deg, #2dd4bf 0%, #0d9488 100%);       /* Teal */
+            --grad-med: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);       /* Blue */
+            --grad-high: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);      /* Purple */
+            --grad-very: linear-gradient(180deg, #f472b6 0%, #db2777 100%);     /* Pink */
+
+            /* Dimensions */
+            --chart-height: 300px;
+            --container-radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        /* 
+         * GLASS CONTAINER 
+         */
+        .glass-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--container-radius);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient Glow Background */
+        .glass-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.08), transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 
+         * HEADER 
+         */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 2vw, 2.2rem);
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            padding-bottom: 2px;
+            display: inline-block;
+        }
+
+        h1 input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: inherit;
+            font-weight: inherit;
+            width: 100%;
+            outline: none;
+            border-bottom: 1px solid #38bdf8;
+        }
+
+        .edit-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            transform: rotate(45deg);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 
+         * BUTTONS 
+         */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--btn-bg);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--btn-bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--btn-glow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 
+         * CHART SECTION 
+         */
+        .chart-wrapper {
+            display: flex;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.03);
+            height: var(--chart-height);
+            margin-bottom: 30px;
+            padding-right: 10px;
+        }
+
+        /* Y-Axis */
+        .y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 10px 10px 10px 20px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            width: 60px;
+        }
+
+        .y-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-align: right;
+            width: 100%;
+            position: relative;
+            top: -6px; 
+        }
+
+        /* SCROLLABLE CHART AREA */
+        .chart-area {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start; 
+            height: 100%;
+            overflow-x: auto; 
+            overflow-y: hidden;
+            padding-bottom: 30px; 
+            position: relative;
+            
+            /* Scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.2) transparent;
+        }
+
+        .chart-area::-webkit-scrollbar {
+            height: 6px;
+        }
+        .chart-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chart-area::-webkit-scrollbar-thumb {
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 20px;
+        }
+
+        .bar-group {
+            flex-shrink: 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            margin: 0 2px; /* Tighter gap for money data (more days usually) */
+            position: relative;
+            width: 12px; /* Narrower bars for financial data */
+            min-width: 12px;
+        }
+
+        .bar {
+            width: 100%;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            transition: height 0.4s cubic-bezier(0.4, 0.0, 0.2, 1), background 0.3s, filter 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            filter: brightness(1.2);
+            z-index: 5;
+        }
+
+        /* Zero-height bar marker */
+        .bar[data-amount="0"] {
+            height: 2px !important;
+            background: rgba(255,255,255,0.1) !important;
+            box-shadow: none !important;
+            margin-top: auto; 
+            margin-bottom: 0;
+        }
+
+        /* Color Classes */
+        .color-low { background: var(--grad-low); box-shadow: 0 0 8px rgba(45, 212, 191, 0.2); }
+        .color-med { background: var(--grad-med); box-shadow: 0 0 8px rgba(56, 189, 248, 0.2); }
+        .color-high { background: var(--grad-high); box-shadow: 0 0 8px rgba(167, 139, 250, 0.2); }
+        .color-very { background: var(--grad-very); box-shadow: 0 0 8px rgba(244, 114, 182, 0.2); }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 20;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+        
+        .tooltip .tooltip-date {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .bar-group:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-12px);
+        }
+
+        /* X-AXIS LABEL */
+        .x-label {
+            font-size: 0.65rem;
+            color: var(--text-axis);
+            white-space: nowrap;
+            position: absolute;
+            bottom: -22px;
+            transform: rotate(-45deg);
+            transform-origin: top left;
+            text-align: right;
+            width: 60px;
+            left: 10px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* 
+         * LEGEND & SUMMARY 
+         */
+        .meta-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .legend-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .summary-box {
+            background: rgba(56, 189, 248, 0.1);
+            padding: 12px 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+
+        .summary-text {
+            font-size: 1rem;
+            color: #e2e8f0;
+        }
+
+        .summary-text span {
+            font-weight: 800;
+            color: #38bdf8;
+            font-size: 1.2rem;
+        }
+
+        /* 
+         * RESPONSIVE 
+         */
+        @media (max-width: 768px) {
+            .glass-container { padding: 15px; }
+            h1 { font-size: 1.5rem; }
+            .legend { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .bar-group { width: 10px; min-width: 10px; margin: 0 1px; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="glass-container">
+        <header>
+            <div class="header-left">
+                <h1 id="app-title" title="Click to edit">Money Tracker</h1>
+                <button class="edit-btn" id="edit-title-btn" aria-label="Edit Title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="header-right">
+                <input type="file" id="csv-file-input" accept=".csv" style="display:none;">
+                <button class="btn" id="import-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Import CSV
+                </button>
+                <button class="btn hidden" id="export-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Export CSV
+                </button>
+            </div>
+        </header>
+
+        <section class="chart-wrapper">
+            <div class="y-axis" id="y-axis">
+                <!-- Labels injected via JS -->
+            </div>
+            <div class="chart-area" id="chart-area">
+                <!-- Empty State Placeholder -->
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,0.2); font-size:0.9rem; font-style:italic; text-align:center; padding:20px;">
+                    No Data.<br>Please import a CSV with Date and Amount columns.
+                </div>
+            </div>
+        </section>
+
+        <div class="meta-section">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box" style="background: var(--grad-low)"></div> Low
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background: var(--grad-med)"></div> Medium
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background: var(--grad-high)"></div> High
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background: var(--grad-very)"></div> Very High
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <p class="summary-text" id="summary-text">Total Spend: <span>$0.00</span></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        /**
+         * MONEY TRACKER LOGIC
+         */
+
+        // State
+        let chartData = []; // Array of { date: "YYYY-MM-DD", amount: 123.45 }
+        let title = "Money Tracker";
+
+        // DOM Elements
+        const appTitle = document.getElementById('app-title');
+        const editTitleBtn = document.getElementById('edit-title-btn');
+        const importBtn = document.getElementById('import-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const fileInput = document.getElementById('csv-file-input');
+        const chartArea = document.getElementById('chart-area');
+        const yAxis = document.getElementById('y-axis');
+        const summaryText = document.getElementById('summary-text');
+
+        // --- Utils ---
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        };
+
+        // --- Initialization ---
+        function init() {
+            const savedTitle = localStorage.getItem('mt_title');
+            if (savedTitle) {
+                title = savedTitle;
+                appTitle.textContent = title;
+            }
+        }
+
+        // --- Title Editing ---
+        editTitleBtn.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = title;
+            
+            appTitle.replaceWith(input);
+            input.focus();
+
+            const saveTitle = () => {
+                const newTitle = input.value.trim() || "Money Tracker";
+                title = newTitle;
+                localStorage.setItem('mt_title', title);
+                
+                const h1 = document.createElement('h1');
+                h1.id = 'app-title';
+                h1.textContent = title;
+                h1.title = "Click to edit";
+                input.replaceWith(h1);
+                
+                // Re-bind element since we replaced it
+                document.getElementById('app-title').addEventListener('click', () => {
+                    editTitleBtn.click();
+                });
+            };
+
+            input.addEventListener('blur', saveTitle);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') input.blur();
+            });
+        });
+
+        appTitle.addEventListener('click', () => {
+            editTitleBtn.click();
+        });
+
+        // --- CSV Import ---
+        importBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                processCSV(event.target.result);
+                fileInput.value = ''; 
+            };
+            reader.readAsText(file);
+        });
+
+        function processCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            
+            // 1. Parse Raw Lines
+            const rawTransactions = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                const parts = lines[i].split(',');
+                
+                // Simple header detection (skip if first row contains text)
+                if (i === 0 && isNaN(Date.parse(parts[0]))) {
+                    continue;
+                }
+
+                if (parts.length >= 2) {
+                    const dateStr = parts[0].trim();
+                    const amountStr = parts[1].trim();
+                    
+                    // Basic date validation (YYYY-MM-DD preferred)
+                    const dateObj = new Date(dateStr);
+                    if (isNaN(dateObj.getTime())) continue;
+
+                    const amount = parseFloat(amountStr);
+                    if (isNaN(amount)) continue;
+
+                    rawTransactions.push({ date: dateStr, amount: Math.abs(amount) });
+                }
+            }
+
+            if (rawTransactions.length === 0) {
+                alert('No valid data found. Ensure format is: Date,Amount (YYYY-MM-DD, 100.50)');
+                return;
+            }
+
+            // 2. Aggregate by Date
+            const dailyMap = new Map();
+
+            rawTransactions.forEach(tx => {
+                if (dailyMap.has(tx.date)) {
+                    dailyMap.set(tx.date, dailyMap.get(tx.date) + tx.amount);
+                } else {
+                    dailyMap.set(tx.date, tx.amount);
+                }
+            });
+
+            // 3. Sort Dates to find Range
+            const sortedDates = Array.from(dailyMap.keys()).sort((a, b) => new Date(a) - new Date(b));
+            const minDateStr = sortedDates[0];
+            const maxDateStr = sortedDates[sortedDates.length - 1];
+
+            // 4. Generate Full Date Range (Gap Filling)
+            const fullRangeData = [];
+            let currDate = new Date(minDateStr);
+            const endDate = new Date(maxDateStr);
+
+            while (currDate <= endDate) {
+                const dateKey = currDate.toISOString().split('T')[0];
+                const amount = dailyMap.has(dateKey) ? dailyMap.get(dateKey) : 0;
+                
+                fullRangeData.push({
+                    date: dateKey,
+                    amount: amount
+                });
+
+                // Next day
+                currDate.setDate(currDate.getDate() + 1);
+            }
+
+            chartData = fullRangeData;
+            renderChart();
+            exportBtn.classList.remove('hidden');
+        }
+
+        // --- CSV Export ---
+        exportBtn.addEventListener('click', () => {
+            if (chartData.length === 0) return;
+
+            let csvContent = "data:text/csv;charset=utf-8,Date,Total_Spend\n";
+            chartData.forEach(row => {
+                csvContent += `${row.date},${row.amount.toFixed(2)}\n`;
+            });
+
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "money_tracker_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // --- Rendering ---
+        function renderChart() {
+            chartArea.innerHTML = '';
+            yAxis.innerHTML = '';
+
+            // Find Max Amount for Scaling
+            const amounts = chartData.map(d => d.amount);
+            const maxAmount = Math.max(...amounts);
+            
+            // Calculate Ceiling (Round up to nearest nice number)
+            // e.g., if max is 124, ceiling becomes 150 or 200.
+            let ceiling = maxAmount === 0 ? 100 : maxAmount * 1.1; // Add 10% breathing room
+            ceiling = Math.ceil(ceiling / 10) * 10; // Round to nearest 10
+            
+            // If ceiling is too small (e.g. $2), force minimum 10
+            if(ceiling < 10) ceiling = 10;
+
+            const totalSpend = chartData.reduce((acc, curr) => acc + curr.amount, 0);
+
+            // --- Render Y-Axis ---
+            // Create 5 steps
+            const steps = 5;
+            for (let i = steps; i >= 0; i--) {
+                const value = (ceiling / steps) * i;
+                const label = document.createElement('span');
+                label.className = 'y-label';
+                
+                // Format label nicely (e.g. $100, $1.2k)
+                let labelText = `$${Math.round(value)}`;
+                if(value >= 1000) {
+                    labelText = `$${(value/1000).toFixed(1)}k`;
+                }
+                
+                label.textContent = labelText;
+                yAxis.appendChild(label);
+            }
+
+            // --- Render Bars ---
+            chartData.forEach(item => {
+                const heightPercent = (item.amount / ceiling) * 100;
+                
+                const group = document.createElement('div');
+                group.className = 'bar-group';
+
+                // Tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                const dateObj = new Date(item.date);
+                const dateDisplay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                
+                tooltip.innerHTML = `
+                    <span class="tooltip-date">${dateDisplay}</span>
+                    ${item.amount > 0 ? formatCurrency(item.amount) : 'No Spend'}
+                `;
+
+                // Bar
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.dataset.amount = item.amount.toFixed(2); // For styling logic
+                
+                if (item.amount > 0) {
+                    bar.style.height = `${heightPercent}%`;
+                    
+                    // Color Logic based on percent of ceiling
+                    let colorClass = 'color-low';
+                    if (heightPercent > 75) colorClass = 'color-very';
+                    else if (heightPercent > 50) colorClass = 'color-high';
+                    else if (heightPercent > 25) colorClass = 'color-med';
+                    bar.classList.add(colorClass);
+                } else {
+                    // Data attribute triggers special CSS for "empty" day
+                    bar.setAttribute('data-amount', '0');
+                }
+
+                // X-Axis Label (Show for 1st, 15th, or irregular to save space? 
+                // Or just show every few days if data is large. 
+                // Let's show 1st of every month or just let them crowd if range is small)
+                const xLabelDiv = document.createElement('div');
+                xLabelDiv.className = 'x-label';
+                
+                // Only show label if it's the 1st, 15th, or a Sunday, or if range is short
+                const dayOfMonth = dateObj.getDate();
+                const dayOfWeek = dateObj.getDay();
+                
+                // Logic: Show label if Day is 1 or 15. 
+                // If range is < 30 days total, show every Sunday.
+                const rangeDays = chartData.length;
+                let showLabel = (dayOfMonth === 1 || dayOfMonth === 15);
+                
+                if (rangeDays < 35) {
+                    showLabel = true; // Show all for short range
+                }
+
+                if (showLabel) {
+                    xLabelDiv.textContent = `${dateObj.getMonth()+1}/${dayObj.getDate()}`;
+                }
+
+                group.appendChild(tooltip);
+                group.appendChild(bar);
+                group.appendChild(xLabelDiv);
+                
+                chartArea.appendChild(group);
+            });
+
+            summaryText.innerHTML = `Total Spend: <span>${formatCurrency(totalSpend)}</span>`;
+        }
+
+        init();
+    </script>
+</body>
+</html>

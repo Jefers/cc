@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Fractal Explorer</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --panel-bg: rgba(20, 20, 30, 0.75);
+            --text-color: #e0e0e0;
+            --accent-color: #00d2ff;
+            --accent-hover: #3a8cff;
+            --border-radius: 12px;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Canvas Layers */
+        .canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Hidden state helper */
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+        }
+
+        /* UI Overlay */
+        .ui-layer {
+            position: absolute;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let clicks pass through to canvas where needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        header {
+            pointer-events: auto;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            align-self: flex-start;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.4;
+        }
+
+        .controls-panel {
+            pointer-events: auto;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            align-self: flex-end;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            font-weight: bold;
+        }
+
+        /* Custom Select */
+        select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        select:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Buttons Grid */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        button.active {
+            background: var(--accent-color);
+            color: #000;
+            font-weight: bold;
+            border-color: var(--accent-color);
+        }
+
+        /* Range Slider */
+        input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 210, 255, 0.9);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            z-index: 20;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Instructions Overlay (Fade out) */
+        .instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+        .instructions h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .instructions p {
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .controls-panel {
+                width: 100%;
+                border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+            header {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- WebGL Canvas for Mandelbrot -->
+    <div class="canvas-container" id="webgl-container">
+        <canvas id="glCanvas"></canvas>
+    </div>
+
+    <!-- 2D Canvas for Geometric Fractals -->
+    <div class="canvas-container hidden" id="2d-container">
+        <canvas id="ctxCanvas"></canvas>
+    </div>
+
+    <div class="ui-layer">
+        <header>
+            <h1>Fractal Explorer</h1>
+            <p class="subtitle" id="description">Rendering the Mandelbrot set using WebGL.</p>
+        </header>
+
+        <div class="instructions" id="instructions">
+            <h2>Explore</h2>
+            <p>Drag to Pan &bull; Scroll to Zoom</p>
+        </div>
+
+        <aside class="controls-panel">
+            <div class="control-group">
+                <label for="fractalSelect">Fractal Type</label>
+                <select id="fractalSelect">
+                    <option value="mandelbrot">Mandelbrot Set (WebGL)</option>
+                    <option value="tree">Recursive Tree</option>
+                    <option value="sierpinski">Sierpinski Triangle</option>
+                    <option value="fern">Barnsley Fern</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Animation</label>
+                <div class="btn-grid">
+                    <button id="btn-animate">Auto Zoom/Grow</button>
+                    <button id="btn-reset">Reset View</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="colorSelect">Color Palette</label>
+                <select id="colorSelect">
+                    <option value="classic">Classic (Blue/Black)</option>
+                    <option value="fire">Inferno (Red/Orange)</option>
+                    <option value="matrix">Matrix (Green/Black)</option>
+                    <option value="rainbow">Rainbow Cycle</option>
+                    <option value="zebra">Zebra Stripes</option>
+                </select>
+            </div>
+            
+            <div class="control-group" id="speedControl">
+                <label for="speedRange">Animation Speed</label>
+                <input type="range" id="speedRange" min="1" max="100" value="30">
+            </div>
+
+            <div class="control-group">
+                <p style="font-size: 0.7rem; color: #666;">Render Stats: <span id="fps-counter">60 FPS</span></p>
+            </div>
+        </aside>
+    </div>
+
+    <div class="toast" id="toast">Mode Changed</div>
+
+    <!-- WebGL Shaders -->
+    <script id="vs" type="x-shader/x-vertex">
+        attribute vec2 position;
+        void main() {
+            gl_Position = vec4(position, 0.0, 1.0);
+        }
+    </script>
+
+    <script id="fs" type="x-shader/x-fragment">
+        precision highp float;
+        uniform vec2 u_resolution;
+        uniform vec2 u_center;
+        uniform float u_zoom;
+        uniform int u_colorMode;
+        uniform float u_time;
+
+        // Color Palettes
+        vec3 palette(float t, int mode) {
+            vec3 a, b, c, d;
+            
+            if (mode == 0) { // Classic Blue
+                a = vec3(0.5, 0.5, 0.5);
+                b = vec3(0.5, 0.5, 0.5);
+                c = vec3(1.0, 1.0, 1.0);
+                d = vec3(0.00, 0.33, 0.67);
+            } else if (mode == 1) { // Fire
+                a = vec3(0.5, 0.5, 0.5);
+                b = vec3(0.5, 0.5, 0.5);
+                c = vec3(1.0, 1.0, 0.5);
+                d = vec3(0.80, 0.90, 0.30);
+            } else if (mode == 2) { // Matrix
+                a = vec3(0.0, 0.5, 0.0);
+                b = vec3(0.0, 0.5, 0.0);
+                c = vec3(0.0, 1.0, 0.2);
+                d = vec3(0.0, 0.33, 0.67);
+            } else if (mode == 3) { // Rainbow
+                a = vec3(0.5, 0.5, 0.5);
+                b = vec3(0.5, 0.5, 0.5);
+                c = vec3(1.0, 1.0, 1.0);
+                d = vec3(0.30, 0.20, 0.20);
+            } else { // Zebra
+                if(sin(t*20.0) > 0.0) return vec3(0.0);
+                return vec3(1.0);
+            }
+
+            return a + b * cos(6.28318 * (c * t + d));
+        }
+
+        void main() {
+            vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+            uv = uv * 2.0 - 1.0;
+            uv.x *= u_resolution.x / u_resolution.y;
+
+            // Map to complex plane based on zoom and center
+            vec2 c = uv / u_zoom + u_center;
+            vec2 z = vec2(0.0);
+            
+            float iter = 0.0;
+            const float MAX_ITER = 200.0;
+
+            // Main Mandelbrot loop
+            for (float i = 0.0; i < MAX_ITER; i++) {
+                z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
+                if (length(z) > 4.0) break;
+                iter++;
+            }
+
+            if (iter == MAX_ITER) {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            } else {
+                // Smooth coloring
+                float sn = iter - log2(log2(dot(z,z))) + 4.0;
+                float t = sn / 60.0 + u_time * 0.05; 
+                vec3 col = palette(t, u_colorMode);
+                gl_FragColor = vec4(col, 1.0);
+            }
+        }
+    </script>
+
+    <script>
+        /**
+         * Fractal Explorer Engine
+         * Handles WebGL for Mandelbrot and Canvas 2D for geometric fractals.
+         */
+        
+        // --- Configuration & State ---
+        const state = {
+            fractalType: 'mandelbrot',
+            animating: false,
+            speed: 0.03,
+            zoom: 0.8,
+            targetZoom: 0.8,
+            pan: { x: -0.5, y: 0.0 },
+            time: 0,
+            colorMode: 0,
+            // Geometric specific
+            treeDepth: 0,
+            maxTreeDepth: 10,
+            fernPoints: 0,
+            maxFernPoints: 50000,
+            sierpinskiDepth: 0
+        };
+
+        // --- Elements ---
+        const glCanvas = document.getElementById('glCanvas');
+        const webglContainer = document.getElementById('webgl-container');
+        const ctxCanvas = document.getElementById('ctxCanvas');
+        const ctx2dContainer = document.getElementById('2d-container');
+        const ctx = ctxCanvas.getContext('2d');
+        let gl;
+        let program;
+        let animationFrameId;
+
+        // UI Elements
+        const fractalSelect = document.getElementById('fractalSelect');
+        const colorSelect = document.getElementById('colorSelect');
+        const btnAnimate = document.getElementById('btn-animate');
+        const btnReset = document.getElementById('btn-reset');
+        const speedRange = document.getElementById('speedRange');
+        const descriptionEl = document.getElementById('description');
+        const toastEl = document.getElementById('toast');
+        const fpsEl = document.getElementById('fps-counter');
+
+        // --- Initialization ---
+
+        function init() {
+            // Setup WebGL
+            gl = glCanvas.getContext('webgl');
+            if (!gl) {
+                showToast("WebGL not supported, falling back...");
+            } else {
+                setupWebGL();
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+            
+            // Start Loop
+            lastTime = performance.now();
+            loop();
+        }
+
+        function resize() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            glCanvas.width = w;
+            glCanvas.height = h;
+            ctxCanvas.width = w;
+            ctxCanvas.height = h;
+
+            if (gl) gl.viewport(0, 0, w, h);
+        }
+
+        // --- WebGL Logic (Mandelbrot) ---
+
+        function setupWebGL() {
+            const vsSource = document.getElementById('vs').text;
+            const fsSource = document.getElementById('fs').text;
+
+            const vs = compileShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fs = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+            program = gl.createProgram();
+            gl.attachShader(program, vs);
+            gl.attachShader(program, fs);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                console.error(gl.getProgramInfoLog(program));
+                return;
+            }
+
+            // Buffer setup (full screen quad)
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(
+                gl.ARRAY_BUFFER,
+                new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]),
+                gl.STATIC_DRAW
+            );
+
+            const positionLocation = gl.getAttribLocation(program, "position");
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            
+            gl.useProgram(program);
+        }
+
+        function compileShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error(gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        function drawMandelbrot(dt) {
+            if (!gl || !program) return;
+
+            // Animation Logic
+            if (state.animating) {
+                state.zoom *= (1.0 + state.speed * dt);
+            }
+
+            // Uniforms
+            const uResolution = gl.getUniformLocation(program, "u_resolution");
+            const uCenter = gl.getUniformLocation(program, "u_center");
+            const uZoom = gl.getUniformLocation(program, "u_zoom");
+            const uColorMode = gl.getUniformLocation(program, "u_colorMode");
+            const uTime = gl.getUniformLocation(program, "u_time");
+
+            gl.uniform2f(uResolution, glCanvas.width, glCanvas.height);
+            gl.uniform2f(uCenter, state.pan.x, state.pan.y);
+            gl.uniform1f(uZoom, state.zoom);
+            gl.uniform1i(uColorMode, state.colorMode);
+            gl.uniform1f(uTime, state.time);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+
+        // --- Canvas 2D Logic (Geometric) ---
+
+        function drawTree(dt) {
+            // Clear with trail effect
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.3)';
+            ctx.fillRect(0, 0, ctxCanvas.width, ctxCanvas.height);
+
+            // Setup Transform
+            ctx.save();
+            ctx.translate(ctxCanvas.width / 2, ctxCanvas.height);
+            
+            // Animation Logic
+            if (state.animating) {
+                state.treeDepth += state.speed * dt * 5;
+                if (state.treeDepth > state.maxTreeDepth) state.treeDepth = 0;
+            } else {
+                 // Idle animation subtle sway
+                 state.time += dt;
+            }
+
+            // Color
+            const hue = (state.time * 20) % 360;
+            ctx.strokeStyle = `hsl(${hue}, 80%, 60%)`;
+            ctx.lineWidth = 2;
+            
+            // Recursive Draw
+            const len = Math.min(ctxCanvas.height * 0.25, 150);
+            drawBranch(0, 0, len, -Math.PI / 2, Math.floor(state.treeDepth));
+            
+            ctx.restore();
+        }
+
+        function drawBranch(x, y, len, angle, depth) {
+            if (depth === 0) return;
+
+            const endX = x + len * Math.cos(angle);
+            const endY = y + len * Math.sin(angle);
+
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            // Dynamic sway for idle
+            let sway = 0;
+            if (!state.animating) {
+                sway = Math.sin(state.time * 2 + depth) * 0.05;
+            }
+
+            const subLen = len * 0.7;
+            drawBranch(endX, endY, subLen, angle - 0.4 + sway, depth - 1);
+            drawBranch(endX, endY, subLen, angle + 0.4 + sway, depth - 1);
+        }
+
+        function drawFern(dt) {
+            // Don't clear fully to allow accumulation
+            if (state.fernPoints < 500) {
+                ctx.fillStyle = 'rgb(5,5,5)';
+                ctx.fillRect(0, 0, ctxCanvas.width, ctxCanvas.height);
+            }
+
+            // Animation Logic
+            if (state.animating) {
+                const pointsToAdd = Math.floor(state.speed * dt * 5000);
+                state.fernPoints += pointsToAdd;
+                if (state.fernPoints > state.maxFernPoints) {
+                    state.fernPoints = 0; // Reset loop
+                    ctx.fillStyle = 'rgb(5,5,5)';
+                    ctx.fillRect(0, 0, ctxCanvas.width, ctxCanvas.height);
+                }
+            } else if (state.fernPoints < state.maxFernPoints) {
+                // If paused but not finished, draw a bit until full
+                 state.fernPoints += 1000;
+            }
+
+            // Color
+            const hue = (state.colorMode === 2) ? 120 : (state.colorMode === 1 ? 10 : 180);
+            ctx.fillStyle = `hsl(${hue}, 100%, 60%)`;
+
+            let x = 0, y = 0;
+            // Scale to fit screen
+            const scale = Math.min(ctxCanvas.width, ctxCanvas.height) / 12;
+            const offsetX = ctxCanvas.width / 2;
+            const offsetY = ctxCanvas.height / 1.2;
+
+            ctx.beginPath();
+            for (let i = 0; i < state.fernPoints; i++) {
+                // Optimization: Draw multiple points per frame loop logic effectively by batching
+                // But here we calculate on fly for simplicity
+                
+                let nextX, nextY;
+                let r = Math.random();
+                if (r < 0.01) {
+                    nextX = 0;
+                    nextY = 0.16 * y;
+                } else if (r < 0.86) {
+                    nextX = 0.85 * x + 0.04 * y;
+                    nextY = -0.04 * x + 0.85 * y + 1.6;
+                } else if (r < 0.93) {
+                    nextX = 0.20 * x - 0.26 * y;
+                    nextY = 0.23 * x + 0.22 * y + 1.6;
+                } else {
+                    nextX = -0.15 * x + 0.28 * y;
+                    nextY = 0.26 * x + 0.24 * y + 0.44;
+                }
+                x = nextX;
+                y = nextY;
+
+                ctx.fillRect(offsetX + x * scale, offsetY - y * scale, 1, 1);
+            }
+        }
+
+        function drawSierpinski(dt) {
+            ctx.fillStyle = 'rgba(5,5,5,0.2)'; // Trails
+            ctx.fillRect(0,0, ctxCanvas.width, ctxCanvas.height);
+
+            if (state.animating) {
+                state.sierpinskiDepth += state.speed * dt * 2;
+                if (state.sierpinskiDepth > 7) state.sierpinskiDepth = 0;
+            }
+
+            const size = Math.min(ctxCanvas.width, ctxCanvas.height) * 0.8;
+            const h = size * (Math.sqrt(3)/2);
+            const x1 = ctxCanvas.width/2 - size/2;
+            const y1 = ctxCanvas.height/2 + h/3;
+            const x2 = ctxCanvas.width/2 + size/2;
+            const y2 = ctxCanvas.height/2 + h/3;
+            const x3 = ctxCanvas.width/2;
+            const y3 = ctxCanvas.height/2 - 2*h/3;
+
+            const hue = (state.time * 50) % 360;
+            ctx.strokeStyle = `hsl(${hue}, 70%, 60%)`;
+            ctx.lineWidth = 1;
+
+            drawTriangle(x1, y1, x2, y2, x3, y3, Math.floor(state.sierpinskiDepth));
+        }
+
+        function drawTriangle(x1, y1, x2, y2, x3, y3, depth) {
+            if (depth === 0) {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.lineTo(x3, y3);
+                ctx.closePath();
+                ctx.stroke();
+                return;
+            }
+
+            const mx1 = (x1 + x2) / 2;
+            const my1 = (y1 + y2) / 2;
+            const mx2 = (x2 + x3) / 2;
+            const my2 = (y2 + y3) / 2;
+            const mx3 = (x1 + x3) / 2;
+            const my3 = (y1 + y3) / 2;
+
+            drawTriangle(x1, y1, mx1, my1, mx3, my3, depth - 1);
+            drawTriangle(mx1, my1, x2, y2, mx2, my2, depth - 1);
+            drawTriangle(mx3, my3, mx2, my2, x3, y3, depth - 1);
+        }
+
+
+        // --- Main Loop ---
+
+        let lastTime = 0;
+        function loop(timestamp) {
+            const dt = (timestamp - lastTime) / 1000 || 0;
+            lastTime = timestamp;
+            state.time += dt;
+
+            // Switch Logic
+            if (state.fractalType === 'mandelbrot') {
+                drawMandelbrot(dt);
+            } else if (state.fractalType === 'tree') {
+                drawTree(dt);
+            } else if (state.fractalType === 'fern') {
+                drawFern(dt);
+            } else if (state.fractalType === 'sierpinski') {
+                drawSierpinski(dt);
+            }
+
+            // FPS Counter (rough)
+            if (Math.random() < 0.05) {
+                fpsEl.textContent = Math.round(1/dt) + " FPS";
+            }
+
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        // --- Interaction Handlers ---
+
+        function switchFractal(type) {
+            state.fractalType = type;
+            
+            // Toggle Visibility
+            if (type === 'mandelbrot') {
+                webglContainer.classList.remove('hidden');
+                ctx2dContainer.classList.add('hidden');
+                descriptionEl.textContent = "The classic Mandelbrot set. Scroll to zoom deep into the infinite complexity.";
+                state.speed = 0.03; // Reset speed appropriate for zoom
+                speedRange.value = 30;
+            } else {
+                webglContainer.classList.add('hidden');
+                ctx2dContainer.classList.remove('hidden');
+                
+                // Clear 2D canvas
+                ctx.fillStyle = '#050505';
+                ctx.fillRect(0, 0, ctxCanvas.width, ctxCanvas.height);
+
+                if (type === 'tree') {
+                    descriptionEl.textContent = "A recursive Pythagoras tree. Watch it grow and sway in the digital wind.";
+                    state.speed = 0.1;
+                    speedRange.value = 50;
+                } else if (type === 'fern') {
+                    descriptionEl.textContent = "Barnsley Fern. Generated using iterated function systems (chaos game).";
+                    state.fernPoints = 0; // Reset to grow from scratch
+                    state.speed = 0.5;
+                    speedRange.value = 60;
+                } else if (type === 'sierpinski') {
+                    descriptionEl.textContent = "Sierpinski Triangle. A geometric fractal with infinite perimeter but finite area.";
+                    state.speed = 0.1;
+                    speedRange.value = 50;
+                }
+            }
+            
+            // Reset Animation State
+            state.animating = false;
+            btnAnimate.classList.remove('active');
+            btnAnimate.textContent = "Auto Zoom/Grow";
+        }
+
+        // Input Event Listeners
+        fractalSelect.addEventListener('change', (e) => {
+            switchFractal(e.target.value);
+            showToast(`Switched to ${e.target.options[e.target.selectedIndex].text}`);
+        });
+
+        colorSelect.addEventListener('change', (e) => {
+            state.colorMode = parseInt(e.target.value);
+            // For 2D fractals, color mode maps loosely to logic, handled in draw functions
+            showToast("Color Palette Updated");
+        });
+
+        btnAnimate.addEventListener('click', () => {
+            state.animating = !state.animating;
+            btnAnimate.classList.toggle('active');
+            btnAnimate.textContent = state.animating ? "Pause" : "Auto Zoom/Grow";
+            
+            // Fade out instructions on first interaction
+            document.getElementById('instructions').style.opacity = '0';
+        });
+
+        btnReset.addEventListener('click', () => {
+            state.zoom = 0.8;
+            state.pan = { x: -0.5, y: 0.0 };
+            state.treeDepth = 0;
+            state.sierpinskiDepth = 0;
+            state.fernPoints = 0;
+            // Clear canvas for non-mandelbrot
+            if(state.fractalType !== 'mandelbrot') {
+                ctx.fillStyle = '#050505';
+                ctx.fillRect(0, 0, ctxCanvas.width, ctxCanvas.height);
+            }
+            showToast("View Reset");
+        });
+
+        speedRange.addEventListener('input', (e) => {
+            // Map 1-100 to useful values
+            state.speed = parseInt(e.target.value) / 1000; 
+        });
+
+        // --- Mouse Interaction (Pan & Zoom) ---
+        
+        let isDragging = false;
+        let lastMouse = { x: 0, y: 0 };
+
+        function getMousePos(e) {
+            return {
+                x: e.clientX,
+                y: e.clientY
+            };
+        }
+
+        window.addEventListener('mousedown', (e) => {
+            // Ignore if clicking on UI
+            if (e.target.closest('.controls-panel') || e.target.closest('header')) return;
+            
+            isDragging = true;
+            lastMouse = getMousePos(e);
+            document.getElementById('instructions').style.opacity = '0';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const pos = getMousePos(e);
+            const dx = pos.x - lastMouse.x;
+            const dy = pos.y - lastMouse.y;
+
+            if (state.fractalType === 'mandelbrot') {
+                // Adjust pan based on zoom level
+                state.pan.x -= dx / (glCanvas.width * state.zoom);
+                state.pan.y += dy / (glCanvas.height * state.zoom);
+            } else {
+                // Simple pan for 2D (just clearing screen to simulate move would be complex without transform stack)
+                // So we disable panning for 2D fractals to keep code simple, 
+                // OR we could implement a global offset variable in 2D draw functions.
+                // Let's implement a simple 2D pan offset for Tree.
+                if (state.fractalType === 'tree') {
+                   // Not implemented to keep animation math clean
+                }
+            }
+
+            lastMouse = pos;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = 1.1;
+            if (e.deltaY < 0) {
+                // Zoom In
+                if (state.fractalType === 'mandelbrot') state.zoom *= zoomFactor;
+                else if (state.fractalType === 'tree') state.treeDepth += 0.5;
+            } else {
+                // Zoom Out
+                if (state.fractalType === 'mandelbrot') state.zoom /= zoomFactor;
+                else if (state.fractalType === 'tree') state.treeDepth -= 0.5;
+            }
+            document.getElementById('instructions').style.opacity = '0';
+        }, { passive: false });
+
+
+        // --- Utilities ---
+
+        function showToast(msg) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+            }, 2000);
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
