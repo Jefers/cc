@@ -26,7 +26,7 @@
             --btn-glow: rgba(56, 189, 248, 0.4);
 
             /* Bar Gradients (Spend Heat) */
-            /* Low: Teal -> High: Red */
+            /* Low: Teal -> High: Pink/Red */
             --grad-low: linear-gradient(180deg, #2dd4bf 0%, #0d9488 100%);       /* Teal */
             --grad-med: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);       /* Blue */
             --grad-high: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);      /* Purple */
@@ -253,9 +253,9 @@
             align-items: center;
             justify-content: flex-end;
             height: 100%;
-            margin: 0 2px; /* Tighter gap for money data (more days usually) */
+            margin: 0 2px; 
             position: relative;
-            width: 12px; /* Narrower bars for financial data */
+            width: 12px; 
             min-width: 12px;
         }
 
@@ -464,7 +464,7 @@
             </div>
 
             <div class="summary-box">
-                <p class="summary-text" id="summary-text">Total Spend: <span>$0.00</span></p>
+                <p class="summary-text" id="summary-text">Total Spend: <span>0.00</span></p>
             </div>
         </div>
     </main>
@@ -475,7 +475,7 @@
          */
 
         // State
-        let chartData = []; // Array of { date: "YYYY-MM-DD", amount: 123.45 }
+        let chartData = []; 
         let title = "Money Tracker";
 
         // DOM Elements
@@ -489,8 +489,9 @@
         const summaryText = document.getElementById('summary-text');
 
         // --- Utils ---
-        const formatCurrency = (amount) => {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        const formatNumber = (amount) => {
+            // Formats to 2 decimal places without currency symbol
+            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
 
         // --- Initialization ---
@@ -522,7 +523,6 @@
                 h1.title = "Click to edit";
                 input.replaceWith(h1);
                 
-                // Re-bind element since we replaced it
                 document.getElementById('app-title').addEventListener('click', () => {
                     editTitleBtn.click();
                 });
@@ -671,10 +671,10 @@
                 const label = document.createElement('span');
                 label.className = 'y-label';
                 
-                // Format label nicely (e.g. $100, $1.2k)
-                let labelText = `$${Math.round(value)}`;
+                // Format label nicely (e.g. 100, 1.2k) - NO $ SYMBOL
+                let labelText = `${Math.round(value)}`;
                 if(value >= 1000) {
-                    labelText = `$${(value/1000).toFixed(1)}k`;
+                    labelText = `${(value/1000).toFixed(1)}k`;
                 }
                 
                 label.textContent = labelText;
@@ -696,13 +696,13 @@
                 
                 tooltip.innerHTML = `
                     <span class="tooltip-date">${dateDisplay}</span>
-                    ${item.amount > 0 ? formatCurrency(item.amount) : 'No Spend'}
+                    ${item.amount > 0 ? formatNumber(item.amount) : 'No Spend'}
                 `;
 
                 // Bar
                 const bar = document.createElement('div');
                 bar.className = 'bar';
-                bar.dataset.amount = item.amount.toFixed(2); // For styling logic
+                bar.dataset.amount = item.amount.toFixed(2); 
                 
                 if (item.amount > 0) {
                     bar.style.height = `${heightPercent}%`;
@@ -718,18 +718,11 @@
                     bar.setAttribute('data-amount', '0');
                 }
 
-                // X-Axis Label (Show for 1st, 15th, or irregular to save space? 
-                // Or just show every few days if data is large. 
-                // Let's show 1st of every month or just let them crowd if range is small)
+                // X-Axis Label
                 const xLabelDiv = document.createElement('div');
                 xLabelDiv.className = 'x-label';
                 
-                // Only show label if it's the 1st, 15th, or a Sunday, or if range is short
                 const dayOfMonth = dateObj.getDate();
-                const dayOfWeek = dateObj.getDay();
-                
-                // Logic: Show label if Day is 1 or 15. 
-                // If range is < 30 days total, show every Sunday.
                 const rangeDays = chartData.length;
                 let showLabel = (dayOfMonth === 1 || dayOfMonth === 15);
                 
@@ -738,7 +731,7 @@
                 }
 
                 if (showLabel) {
-                    xLabelDiv.textContent = `${dateObj.getMonth()+1}/${dayObj.getDate()}`;
+                    xLabelDiv.textContent = `${dateObj.getMonth()+1}/${dayOfMonth}`;
                 }
 
                 group.appendChild(tooltip);
@@ -748,7 +741,8 @@
                 chartArea.appendChild(group);
             });
 
-            summaryText.innerHTML = `Total Spend: <span>${formatCurrency(totalSpend)}</span>`;
+            // Updated Summary Text to remove currency symbol
+            summaryText.innerHTML = `Total Spend: <span>${formatNumber(totalSpend)}</span>`;
         }
 
         init();
