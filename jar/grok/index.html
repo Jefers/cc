@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jar Money</title>
+<meta name="theme-color" content="#f8f9fa"/>
+<link rel="manifest" href="data:application/manifest+json,{
+  &quot;name&quot;: &quot;Jar Money&quot;,
+  &quot;short_name&quot;: &quot;Jars&quot;,
+  &quot;start_url&quot;: &quot;.&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;background_color&quot;: &quot;#f8f9fa&quot;,
+  &quot;theme_color&quot;: &quot;#a5d8ff&quot;
+}"/>
+
+<style>
+/* ========================================= */
+/*                styles.css                 */
+/* ========================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacOSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #f8f9fa;
+  color: #2d3436;
+  min-height: 100vh;
+  padding-bottom: 5.5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+main {
+  padding: 1rem 1.25rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* Header / Big number area */
+.big-money {
+  text-align: center;
+  margin: 2rem 0 2.5rem;
+}
+
+.big-money .label {
+  font-size: 1.1rem;
+  color: #636e72;
+  margin-bottom: 0.4rem;
+}
+
+.big-money .amount {
+  font-size: 3.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+/* Status message */
+.status {
+  text-align: center;
+  font-size: 1.15rem;
+  margin: 0 1rem 2.5rem;
+  line-height: 1.4;
+  color: #2d3436;
+}
+
+/* Jar cards */
+.jars-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.jar-card {
+  background: white;
+  border-radius: 1.25rem;
+  padding: 1.5rem 1.4rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.13s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.jar-card:active {
+  transform: scale(0.985);
+}
+
+.jar-card .name {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #2d3436;
+}
+
+.jar-card .amount {
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+/* Form styling */
+.form-group {
+  margin-bottom: 1.8rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 1.05rem;
+  color: #495057;
+}
+
+input[type="number"],
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  font-size: 1.25rem;
+  border: 2px solid #dee2e6;
+  border-radius: 1rem;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus {
+  outline: none;
+  border-color: #74c0fc;
+  box-shadow: 0 0 0 3px rgba(116,192,252,0.2);
+}
+
+input[type="number"] {
+  font-size: 2.4rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Buttons */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  background: #228be6;
+  border: none;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.13s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: #228be6;
+}
+
+.btn-secondary {
+  background: #868e96;
+  color: white;
+}
+
+/* Bottom navigation */
+.nav-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4.8rem;
+  background: white;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  color: #868e96;
+  transition: color 0.2s;
+  text-decoration: none;
+  user-select: none;
+}
+
+.nav-item.active {
+  color: #228be6;
+}
+
+.nav-emoji {
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+}
+
+/* List items (activity, bills) */
+.list-item {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.list-item .left {
+  flex: 1;
+}
+
+.list-item .right {
+  text-align: right;
+  min-width: 90px;
+}
+
+.out .amount {
+  color: #e03131;
+}
+
+.in .amount {
+  color: #2f9e44;
+}
+
+/* Bills specific */
+.bill-status {
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+}
+
+.paid {
+  background: #e9fac8;
+  color: #2f9e44;
+}
+
+.unpaid {
+  background: #fff3cd;
+  color: #e67700;
+}
+
+/* Small text helpers */
+.text-muted {
+  color: #868e96;
+  font-size: 0.95rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 0.6rem; }
+.mt-2 { margin-top: 1.2rem; }
+.mt-3 { margin-top: 2rem; }
+.mb-2 { margin-bottom: 1.2rem; }
+.mb-3 { margin-bottom: 2rem; }
+
+/* Screen titles */
+.screen-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 1.8rem 0 2.2rem;
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== -->
+<!--       SCREENS        -->
+<!-- ==================== -->
+
+<main>
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="big-money">
+      <div class="label">This month · You have</div>
+      <div class="amount" id="total-amount">0</div>
+    </div>
+
+    <div class="status" id="status-message">Everything seems okay.</div>
+
+    <div class="jars-grid" id="jars-container"></div>
+  </div>
+
+  <!-- ADD MONEY -->
+  <div id="add" class="screen">
+    <h1 class="screen-title">Money came in</h1>
+
+    <div class="form-group">
+      <label for="add-amount">Amount</label>
+      <input type="number" id="add-amount" inputmode="numeric" min="0" step="0.01" placeholder="0" required autofocus>
+    </div>
+
+    <div class="form-group">
+      <label for="add-jar">Where did it go?</label>
+      <select id="add-jar"></select>
+    </div>
+
+    <div class="form-group">
+      <label for="add-note">Where did it come from? (optional)</label>
+      <input type="text" id="add-note" placeholder="Salary · Gift · Refund...">
+    </div>
+
+    <button class="btn btn-primary" id="btn-add-confirm">Add money</button>
+    <button class="btn btn-secondary mt-2" id="btn-add-cancel">Cancel</button>
+  </div>
+
+  <!-- SPEND MONEY -->
+  <div id="spend" class="screen">
+    <h1 class="screen-title">Money went out</h1>
+
+    <div class="form-group">
+      <label for="spend-amount">Amount</label>
+      <input type="number" id="spend-amount" inputmode="numeric" min="0" step="0.01" placeholder="0" required autofocus>
+    </div>
+
+    <div class="form-group">
+      <label for="spend-category">What was it for?</label>
+      <select id="spend-category">
+        <option value="Food">Food</option>
+        <option value="Coffee">Coffee</option>
+        <option value="Groceries">Groceries</option>
+        <option value="Clothes">Clothes</option>
+        <option value="Family">Family</option>
+        <option value="Something else">Something else</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="spend-jar">Which jar?</label>
+      <select id="spend-jar"></select>
+    </div>
+
+    <button class="btn btn-primary" id="btn-spend-confirm">Done</button>
+    <button class="btn btn-secondary mt-2" id="btn-spend-cancel">Cancel</button>
+  </div>
+
+  <!-- BILLS -->
+  <div id="bills" class="screen">
+    <h1 class="screen-title">Bills this month</h1>
+
+    <div id="bills-paid" class="mb-3">
+      <h3 style="margin-bottom:0.8rem">Paid</h3>
+      <div id="paid-list"></div>
+    </div>
+
+    <div id="bills-upcoming">
+      <h3 style="margin-bottom:0.8rem">Coming up</h3>
+      <div id="upcoming-list"></div>
+    </div>
+
+    <button class="btn btn-primary mt-3" id="btn-add-bill">Add a bill</button>
+  </div>
+
+  <!-- JAR DETAIL -->
+  <div id="jar-detail" class="screen">
+    <h1 class="screen-title" id="jar-detail-title"></h1>
+
+    <div class="big-money">
+      <div class="label">You have</div>
+      <div class="amount" id="jar-detail-amount">0</div>
+    </div>
+
+    <h3 style="margin:1.6rem 0 0.9rem">Recent activity</h3>
+    <div id="jar-activity-list"></div>
+
+    <div class="mt-3">
+      <button class="btn btn-primary" id="btn-jar-add">Add money</button>
+      <button class="btn btn-primary mt-2" id="btn-jar-spend">Spend money</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAVIGATION -->
+<nav class="nav-bottom">
+  <a href="#" class="nav-item active" data-screen="home">
+    <span class="nav-emoji">🏠</span>
+    <span>Home</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="add">
+    <span class="nav-emoji">➕</span>
+    <span>Add</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="spend">
+    <span class="nav-emoji">➖</span>
+    <span>Spend</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="bills">
+    <span class="nav-emoji">📦</span>
+    <span>Bills</span>
+  </a>
+</nav>
+
+<script>
+// =============================================
+//                  app.js
+// =============================================
+
+const STORAGE_KEYS = {
+  jars: 'jars-money-jars',
+  movements: 'jars-money-movements',
+  bills: 'jars-money-bills',
+  state: 'jars-money-state'
+};
+
+let jars = [];
+let movements = [];
+let bills = [];
+let state = {
+  setupComplete: false,
+  currentMonth: getCurrentMonthKey(),
+  lastNudgeDate: null
+};
+
+// ── Utils ────────────────────────────────────────
+
+function getCurrentMonthKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`;
+}
+
+function formatAmount(n) {
+  return Number(n).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+}
+
+function parseAmount(str) {
+  return Number(str) || 0;
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEYS.jars, JSON.stringify(jars));
+  localStorage.setItem(STORAGE_KEYS.movements, JSON.stringify(movements));
+  localStorage.setItem(STORAGE_KEYS.bills, JSON.stringify(bills));
+  localStorage.setItem(STORAGE_KEYS.state, JSON.stringify(state));
+}
+
+function loadData() {
+  const savedJars = localStorage.getItem(STORAGE_KEYS.jars);
+  const savedMovements = localStorage.getItem(STORAGE_KEYS.movements);
+  const savedBills = localStorage.getItem(STORAGE_KEYS.bills);
+  const savedState = localStorage.getItem(STORAGE_KEYS.state);
+
+  if (savedJars) jars = JSON.parse(savedJars);
+  if (savedMovements) movements = JSON.parse(savedMovements);
+  if (savedBills) bills = JSON.parse(savedBills);
+  if (savedState) state = JSON.parse(savedState);
+
+  // Initialize default jars if empty
+  if (jars.length === 0) {
+    jars = [
+      { id: 'bills', name: 'Bills', amount: 0, removable: false },
+      { id: 'everyday', name: 'Everyday', amount: 0, removable: false },
+      { id: 'savings', name: 'Savings', amount: 0, removable: true }
+    ];
+    state.setupComplete = true;
+    saveData();
+  }
+
+  // Check if month changed → reset bills paid status
+  const current = getCurrentMonthKey();
+  if (state.currentMonth !== current) {
+    state.currentMonth = current;
+    bills.forEach(b => b.paidThisMonth = false);
+    saveData();
+  }
+}
+
+// ── DOM Elements ─────────────────────────────────
+
+const screens = {
+  home: document.getElementById('home'),
+  add: document.getElementById('add'),
+  spend: document.getElementById('spend'),
+  bills: document.getElementById('bills'),
+  jarDetail: document.getElementById('jar-detail')
+};
+
+const navItems = document.querySelectorAll('.nav-item');
+
+// ── Navigation ───────────────────────────────────
+
+function showScreen(screenId) {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[screenId].classList.add('active');
+
+  navItems.forEach(item => item.classList.remove('active'));
+  document.querySelector(`.nav-item[data-screen="${screenId}"]`)?.classList.add('active');
+
+  if (screenId === 'home') renderHome();
+  if (screenId === 'jar-detail') renderJarDetail(currentJarId);
+}
+
+let currentJarId = null;
+
+navItems.forEach(item => {
+  item.addEventListener('click', e => {
+    e.preventDefault();
+    const screen = item.dataset.screen;
+    if (screen) showScreen(screen);
+  });
+});
+
+// ── Home Screen ──────────────────────────────────
+
+function renderHome() {
+  const total = jars.reduce((sum, j) => sum + j.amount, 0);
+  document.getElementById('total-amount').textContent = formatAmount(total);
+
+  let statusText = "Everything seems okay.";
+
+  const billsJar = jars.find(j => j.id === 'bills');
+  if (billsJar && billsJar.amount > 0) {
+    statusText = "Bills look covered 👍";
+  } else if (bills.length > 0) {
+    statusText = "Let’s keep an eye on things.";
+  }
+
+  document.getElementById('status-message').textContent = statusText;
+
+  const container = document.getElementById('jars-container');
+  container.innerHTML = '';
+
+  jars.forEach(jar => {
+    const card = document.createElement('div');
+    card.className = 'jar-card';
+    card.innerHTML = `
+      <div class="name">${jar.name}</div>
+      <div class="amount">${formatAmount(jar.amount)}</div>
+    `;
+    card.addEventListener('click', () => {
+      currentJarId = jar.id;
+      showScreen('jar-detail');
+    });
+    container.appendChild(card);
+  });
+}
+
+// ── Add Money ────────────────────────────────────
+
+document.getElementById('btn-add-confirm').addEventListener('click', () => {
+  const amountEl = document.getElementById('add-amount');
+  const jarSelect = document.getElementById('add-jar');
+  const note = document.getElementById('add-note').value.trim();
+
+  const amount = parseAmount(amountEl.value);
+  if (amount <= 0) return;
+
+  const jarId = jarSelect.value;
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return;
+
+  jar.amount += amount;
+  movements.push({
+    id: Date.now().toString(),
+    amount,
+    direction: 'in',
+    jarId,
+    date: new Date().toISOString(),
+    description: note || 'Money came in'
+  });
+
+  saveData();
+  amountEl.value = '';
+  document.getElementById('add-note').value = '';
+
+  alert('Money added 👍');
+  showScreen('home');
+});
+
+document.getElementById('btn-add-cancel').addEventListener('click', () => showScreen('home'));
+
+function populateJarSelects(excludeBillsForSpend = false) {
+  const selects = [
+    document.getElementById('add-jar'),
+    document.getElementById('spend-jar')
+  ];
+
+  selects.forEach(select => {
+    if (!select) return;
+    select.innerHTML = '';
+    jars.forEach(jar => {
+      if (excludeBillsForSpend && jar.id === 'bills') return;
+      const opt = document.createElement('option');
+      opt.value = jar.id;
+      opt.textContent = jar.name;
+      select.appendChild(opt);
+    });
+  });
+}
+
+// ── Spend Money ──────────────────────────────────
+
+document.getElementById('btn-spend-confirm').addEventListener('click', () => {
+  const amountEl = document.getElementById('spend-amount');
+  const category = document.getElementById('spend-category').value;
+  const jarSelect = document.getElementById('spend-jar');
+
+  const amount = parseAmount(amountEl.value);
+  if (amount <= 0) return;
+
+  const jarId = jarSelect.value;
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar || jar.amount < amount) {
+    alert("Not enough in this jar.");
+    return;
+  }
+
+  jar.amount -= amount;
+  movements.push({
+    id: Date.now().toString(),
+    amount,
+    direction: 'out',
+    jarId,
+    date: new Date().toISOString(),
+    description: category
+  });
+
+  saveData();
+  amountEl.value = '';
+
+  showScreen('home');
+});
+
+document.getElementById('btn-spend-cancel').addEventListener('click', () => showScreen('home'));
+
+// ── Jar Detail ───────────────────────────────────
+
+function renderJarDetail(jarId) {
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return showScreen('home');
+
+  document.getElementById('jar-detail-title').textContent = jar.name;
+  document.getElementById('jar-detail-amount').textContent = formatAmount(jar.amount);
+
+  const list = document.getElementById('jar-activity-list');
+  list.innerHTML = '';
+
+  const relevant = movements
+    .filter(m => m.jarId === jarId)
+    .sort((a,b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 12);
+
+  relevant.forEach(m => {
+    const item = document.createElement('div');
+    item.className = `list-item ${m.direction}`;
+    item.innerHTML = `
+      <div class="left">
+        <div>${m.description}</div>
+        <div class="text-muted">${new Date(m.date).toLocaleDateString()}</div>
+      </div>
+      <div class="right">
+        <div class="amount ${m.direction === 'in' ? 'in' : 'out'}">
+          ${m.direction === 'in' ? '+' : '-'}${formatAmount(m.amount)}
+        </div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+
+  document.getElementById('btn-jar-add').onclick = () => showScreen('add');
+  document.getElementById('btn-jar-spend').onclick = () => showScreen('spend');
+}
+
+// ── Bills ────────────────────────────────────────
+
+function renderBills() {
+  const paidContainer = document.getElementById('paid-list');
+  const upcomingContainer = document.getElementById('upcoming-list');
+
+  paidContainer.innerHTML = '';
+  upcomingContainer.innerHTML = '';
+
+  const currentMonthBills = bills.filter(b => !b.paidThisMonth);
+
+  // Paid
+  bills.filter(b => b.paidThisMonth).forEach(bill => {
+    const item = createBillItem(bill, true);
+    paidContainer.appendChild(item);
+  });
+
+  // Upcoming
+  currentMonthBills.forEach(bill => {
+    const item = createBillItem(bill, false);
+    upcomingContainer.appendChild(item);
+  });
+
+  if (currentMonthBills.length === 0 && bills.length > 0) {
+    upcomingContainer.innerHTML = '<div class="text-center text-muted mt-3">All bills covered this month 🎉</div>';
+  }
+}
+
+function createBillItem(bill, isPaid) {
+  const div = document.createElement('div');
+  div.className = 'list-item';
+  const amountText = bill.frequency === 'fixed' ? formatAmount(bill.amount) : (bill.lastAmount ? formatAmount(bill.lastAmount) : '—');
+
+  div.innerHTML = `
+    <div class="left">
+      <div>${bill.name}</div>
+      <div class="text-muted">${bill.frequency === 'fixed' ? 'Fixed' : 'Variable'} • Due ${bill.dueDay}</div>
+    </div>
+    <div class="right">
+      <div>${amountText}</div>
+      ${isPaid
+        ? '<span class="bill-status paid">Paid</span>'
+        : `<button class="btn btn-primary" style="padding:0.6rem 1rem;font-size:1rem;" data-bill-id="${bill.id}">Mark as paid</button>`
+      }
+    </div>
+  `;
+
+  if (!isPaid) {
+    div.querySelector('button').addEventListener('click', () => markBillAsPaid(bill.id));
+  }
+
+  return div;
+}
+
+function markBillAsPaid(billId) {
+  const bill = bills.find(b => b.id === billId);
+  if (!bill || bill.paidThisMonth) return;
+
+  let amount = bill.amount;
+  if (bill.frequency === 'variable') {
+    amount = prompt("How much was this bill this month?", bill.lastAmount || '');
+    amount = parseAmount(amount);
+    if (amount <= 0) return;
+    bill.lastAmount = amount;
+  }
+
+  const billsJar = jars.find(j => j.id === 'bills');
+  if (billsJar.amount < amount) {
+    alert("Not enough in Bills jar.");
+    return;
+  }
+
+  billsJar.amount -= amount;
+  movements.push({
+    id: Date.now().toString(),
+    amount,
+    direction: 'out',
+    jarId: 'bills',
+    date: new Date().toISOString(),
+    description: `Bill: ${bill.name}`
+  });
+
+  bill.paidThisMonth = true;
+  saveData();
+
+  renderBills();
+  renderHome();
+}
+
+// Add new bill
+document.getElementById('btn-add-bill').addEventListener('click', () => {
+  const name = prompt("What is the bill?");
+  if (!name) return;
+
+  const frequency = prompt("How often? (fixed / variable)", "fixed")?.toLowerCase();
+  if (!['fixed','variable'].includes(frequency)) return;
+
+  const amount = frequency === 'fixed' ? parseAmount(prompt("Amount:")) : 0;
+  if (frequency === 'fixed' && amount <= 0) return;
+
+  const dueDay = prompt("Due day of month (1-31):");
+  if (!dueDay || isNaN(dueDay) || dueDay < 1 || dueDay > 31) return;
+
+  bills.push({
+    id: Date.now().toString(),
+    name,
+    frequency,
+    amount: frequency === 'fixed' ? amount : 0,
+    lastAmount: 0,
+    dueDay: Number(dueDay),
+    paidThisMonth: false
+  });
+
+  saveData();
+  renderBills();
+});
+
+// ── Init ─────────────────────────────────────────
+
+function init() {
+  loadData();
+  populateJarSelects();
+  renderHome();
+  renderBills();
+
+  // Initial screen
+  showScreen('home');
+}
+
+init();
+</script>
+</body>
+</html>

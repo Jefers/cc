@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Jars</title>
+    <style>
+        /* Base styles */
+        :root {
+            --primary: #4a6fa5;
+            --primary-light: #6b8dbd;
+            --light: #f8f9fa;
+            --light-gray: #e9ecef;
+            --medium-gray: #adb5bd;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --border-radius: 16px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --font-size-sm: 14px;
+            --font-size-md: 16px;
+            --font-size-lg: 20px;
+            --font-size-xl: 24px;
+            --font-size-xxl: 32px;
+            --font-size-xxxl: 48px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
+            padding-bottom: 72px; /* Space for bottom nav */
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: var(--font-size-xxl);
+            margin-bottom: var(--spacing-md);
+        }
+
+        h2 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-md);
+        }
+
+        h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Layout */
+        .container {
+            padding: var(--spacing-lg);
+        }
+
+        .screen {
+            display: none;
+            padding: var(--spacing-lg) var(--spacing-md);
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary);
+            color: white;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: var(--spacing-lg);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            font-size: var(--font-size-md);
+        }
+
+        input, select {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-lg);
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Home screen */
+        .summary {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .balance {
+            font-size: var(--font-size-xxxl);
+            font-weight: 700;
+            margin: var(--spacing-md) 0;
+            color: var(--primary);
+        }
+
+        .status {
+            font-size: var(--font-size-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            background-color: var(--light-gray);
+            display: inline-block;
+            margin-top: var(--spacing-md);
+        }
+
+        .jars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .jar-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .jar-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .jar-name {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        .jar-amount {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: var(--spacing-md) 0;
+            border-top: 1px solid var(--light-gray);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* Bills screen */
+        .bill-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .bill-section h3 {
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .bill-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bill-info {
+            flex: 1;
+        }
+
+        .bill-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .bill-details {
+            font-size: var(--font-size-sm);
+            color: var(--medium-gray);
+        }
+
+        .bill-actions button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-left: var(--spacing-md);
+        }
+
+        /* Activity list */
+        .activity-list {
+            margin-top: var(--spacing-lg);
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-desc {
+            font-weight: 600;
+        }
+
+        .activity-amount {
+            font-weight: 700;
+        }
+
+        .activity-in {
+            color: var(--success);
+        }
+
+        .activity-out {
+            color: var(--dark);
+        }
+
+        /* Nudge */
+        .nudge {
+            background-color: var(--warning);
+            color: var(--dark);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin: var(--spacing-xl) 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Utility classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-md {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .jars {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen active">
+        <div class="container">
+            <div class="summary">
+                <h1>This month</h1>
+                <div class="balance" id="total-balance">You have 0</div>
+                <div class="status" id="status-message">Everything seems okay.</div>
+            </div>
+            
+            <div id="nudge" class="nudge hidden">
+                You took some from savings today.
+            </div>
+            
+            <div class="jars">
+                <div class="jar-card" data-jar="bills">
+                    <div class="jar-name">Bills</div>
+                    <div class="jar-amount" id="bills-amount">0</div>
+                </div>
+                <div class="jar-card" data-jar="everyday">
+                    <div class="jar-name">Everyday</div>
+                    <div class="jar-amount" id="everyday-amount">0</div>
+                </div>
+                <div class="jar-card" data-jar="savings">
+                    <div class="jar-name">Savings</div>
+                    <div class="jar-amount" id="savings-amount">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Money Screen -->
+    <div id="add-money-screen" class="screen">
+        <div class="container">
+            <h1>Money came in</h1>
+            
+            <div class="form-group">
+                <label for="add-amount">Amount</label>
+                <input type="number" id="add-amount" placeholder="0" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="add-jar">Where did it go?</label>
+                <select id="add-jar">
+                    <option value="bills">Bills</option>
+                    <option value="everyday">Everyday</option>
+                    <option value="savings">Savings</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="add-source">Where did it come from?</label>
+                <input type="text" id="add-source" placeholder="e.g., Work, Gift">
+            </div>
+            
+            <button class="btn" id="add-money-btn">Add money</button>
+        </div>
+    </div>
+
+    <!-- Spend Money Screen -->
+    <div id="spend-money-screen" class="screen">
+        <div class="container">
+            <h1>Money went out</h1>
+            
+            <div class="form-group">
+                <label for="spend-amount">Amount</label>
+                <input type="number" id="spend-amount" placeholder="0" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="spend-category">What was it for?</label>
+                <select id="spend-category">
+                    <option value="Food">Food</option>
+                    <option value="Coffee">Coffee</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Clothes">Clothes</option>
+                    <option value="Family">Family</option>
+                    <option value="Something else">Something else</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="spend-jar">Which jar?</label>
+                <select id="spend-jar">
+                    <option value="bills">Bills</option>
+                    <option value="everyday">Everyday</option>
+                    <option value="savings">Savings</option>
+                </select>
+            </div>
+            
+            <button class="btn" id="spend-money-btn">Done</button>
+        </div>
+    </div>
+
+    <!-- Bills Screen -->
+    <div id="bills-screen" class="screen">
+        <div class="container">
+            <h1>Bills this month</h1>
+            
+            <div class="bill-section">
+                <h3>Paid bills</h3>
+                <div id="paid-bills-list">
+                    <!-- Paid bills will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="bill-section">
+                <h3>Coming up</h3>
+                <div id="upcoming-bills-list">
+                    <!-- Upcoming bills will be inserted here -->
+                </div>
+            </div>
+            
+            <button class="btn btn-outline" id="add-bill-btn">Add a bill</button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Bill Screen -->
+    <div id="bill-form-screen" class="screen">
+        <div class="container">
+            <h1 id="bill-form-title">Add a bill</h1>
+            
+            <div class="form-group">
+                <label for="bill-name">What is it?</label>
+                <input type="text" id="bill-name" placeholder="e.g., Rent, Electricity">
+            </div>
+            
+            <div class="form-group">
+                <label for="bill-frequency">How often?</label>
+                <select id="bill-frequency">
+                    <option value="fixed">Every month</option>
+                    <option value="variable">Changes each month</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="bill-amount">Amount</label>
+                <input type="number" id="bill-amount" placeholder="0" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="bill-due-day">Due day</label>
+                <select id="bill-due-day">
+                    <!-- Days 1-31 will be populated by JS -->
+                </select>
+            </div>
+            
+            <button class="btn" id="save-bill-btn">Save bill</button>
+        </div>
+    </div>
+
+    <!-- Jar Detail Screen -->
+    <div id="jar-detail-screen" class="screen">
+        <div class="container">
+            <h1 id="jar-name">Bills</h1>
+            <div class="balance" id="jar-balance">You have 0</div>
+            
+            <div class="activity-list" id="jar-activity">
+                <!-- Activity items will be inserted here -->
+            </div>
+            
+            <button class="btn" id="jar-add-money">Add money</button>
+            <button class="btn btn-secondary" id="jar-spend-money">Spend money</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-screen="home">
+            <i>🏠</i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" data-screen="add-money">
+            <i>➕</i>
+            <span>Add Money</span>
+        </div>
+        <div class="nav-item" data-screen="spend-money">
+            <i>➖</i>
+            <span>Spend Money</span>
+        </div>
+        <div class="nav-item" data-screen="bills">
+            <i>📦</i>
+            <span>Bills</span>
+        </div>
+    </div>
+
+    <script>
+        // App data model stored in localStorage
+        const STORAGE_KEY = 'money-jars-app';
+        
+        // Default data structure
+        const defaultData = {
+            jars: [
+                { id: 'bills', name: 'Bills', amount: 0, removable: false },
+                { id: 'everyday', name: 'Everyday', amount: 0, removable: false },
+                { id: 'savings', name: 'Savings', amount: 0, removable: false }
+            ],
+            movements: [],
+            bills: [],
+            appState: {
+                setupComplete: true,
+                currentMonth: new Date().getMonth() + 1, // 1-12
+                currentYear: new Date().getFullYear(),
+                lastNudgeDate: null
+            }
+        };
+        
+        // Initialize app data
+        function initApp() {
+            let appData = localStorage.getItem(STORAGE_KEY);
+            
+            if (!appData) {
+                // First time setup
+                appData = defaultData;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            } else {
+                appData = JSON.parse(appData);
+                // Ensure default jars exist
+                const jarIds = appData.jars.map(j => j.id);
+                if (!jarIds.includes('bills')) {
+                    appData.jars.push({ id: 'bills', name: 'Bills', amount: 0, removable: false });
+                }
+                if (!jarIds.includes('everyday')) {
+                    appData.jars.push({ id: 'everyday', name: 'Everyday', amount: 0, removable: false });
+                }
+                if (!jarIds.includes('savings')) {
+                    appData.jars.push({ id: 'savings', name: 'Savings', amount: 0, removable: false });
+                }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            }
+            
+            return appData;
+        }
+        
+        // Get current app data
+        function getAppData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : defaultData;
+        }
+        
+        // Save app data
+        function saveAppData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // Update current month and reset bills if needed
+        function updateCurrentMonth() {
+            const data = getAppData();
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1; // 1-12
+            const currentYear = now.getFullYear();
+            
+            // Reset bills if month changed
+            if (data.appState.currentMonth !== currentMonth || data.appState.currentYear !== currentYear) {
+                data.appState.currentMonth = currentMonth;
+                data.appState.currentYear = currentYear;
+                
+                // Reset bills to unpaid
+                data.bills.forEach(bill => {
+                    // Only reset if it's a new month
+                    if (bill.lastPaidMonth !== currentMonth || bill.lastPaidYear !== currentYear) {
+                        bill.lastPaidMonth = null;
+                        bill.lastPaidYear = null;
+                    }
+                });
+                
+                saveAppData(data);
+            }
+        }
+        
+        // Show a specific screen
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show requested screen
+            document.getElementById(screenId).classList.add('active');
+            
+            // Update bottom nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-screen="${screenId.replace('-screen', '')}"]`).classList.add('active');
+            
+            // Update screen content if needed
+            if (screenId === 'home-screen') {
+                renderHomeScreen();
+            } else if (screenId === 'bills-screen') {
+                renderBillsScreen();
+            }
+        }
+        
+        // Render home screen
+        function renderHomeScreen() {
+            updateCurrentMonth();
+            const data = getAppData();
+            
+            // Calculate total balance
+            const total = data.jars.reduce((sum, jar) => sum + jar.amount, 0);
+            document.getElementById('total-balance').textContent = `You have ${total.toFixed(2)}`;
+            
+            // Update jar amounts
+            data.jars.forEach(jar => {
+                document.getElementById(`${jar.id}-amount`).textContent = jar.amount.toFixed(2);
+            });
+            
+            // Determine status message
+            const billsJar = data.jars.find(j => j.id === 'bills');
+            const upcomingBills = data.bills.filter(b => 
+                b.lastPaidMonth !== data.appState.currentMonth || 
+                b.lastPaidYear !== data.appState.currentYear
+            );
+            const totalBillsDue = upcomingBills.reduce((sum, bill) => sum + bill.amount, 0);
+            
+            const statusEl = document.getElementById('status-message');
+            if (billsJar.amount >= totalBillsDue) {
+                statusEl.textContent = "Bills look covered 👍";
+                statusEl.style.backgroundColor = 'var(--light-gray)';
+            } else {
+                statusEl.textContent = "Let’s keep an eye on things.";
+                statusEl.style.backgroundColor = 'var(--warning)';
+            }
+            
+            // Show nudge if needed (max once per week)
+            const now = new Date();
+            const lastNudge = data.appState.lastNudgeDate ? new Date(data.appState.lastNudgeDate) : null;
+            const savingsActivity = data.movements.filter(m => 
+                m.jarId === 'savings' && 
+                m.direction === 'out' && 
+                new Date(m.date).toDateString() === now.toDateString()
+            );
+            
+            const nudgeEl = document.getElementById('nudge');
+            if (savingsActivity.length > 0) {
+                // Check if we've shown a nudge in the last 7 days
+                if (!lastNudge || (now - lastNudge) / (1000 * 60 * 60 * 24) >= 7) {
+                    nudgeEl.classList.remove('hidden');
+                    data.appState.lastNudgeDate = now.toISOString();
+                    saveAppData(data);
+                } else {
+                    nudgeEl.classList.add('hidden');
+                }
+            } else {
+                nudgeEl.classList.add('hidden');
+            }
+        }
+        
+        // Add a money movement
+        function addMovement(amount, direction, jarId, description, note = '') {
+            const data = getAppData();
+            
+            // Update jar amount
+            const jar = data.jars.find(j => j.id === jarId);
+            if (jar) {
+                jar.amount += direction === 'in' ? amount : -amount;
+            }
+            
+            // Add movement record
+            const movement = {
+                id: Date.now().toString(),
+                amount: amount,
+                direction: direction,
+                jarId: jarId,
+                date: new Date().toISOString(),
+                description: description,
+                note: note
+            };
+            
+            data.movements.push(movement);
+            saveAppData(data);
+            
+            // Update home screen if we're on it
+            if (document.getElementById('home-screen').classList.contains('active')) {
+                renderHomeScreen();
+            }
+        }
+        
+        // Add a bill
+        function addBill(name, frequency, amount, dueDay) {
+            const data = getAppData();
+            
+            const bill = {
+                id: Date.now().toString(),
+                name: name,
+                frequency: frequency,
+                amount: amount,
+                dueDay: dueDay,
+                lastPaidMonth: null,
+                lastPaidYear: null
+            };
+            
+            data.bills.push(bill);
+            saveAppData(data);
+        }
+        
+        // Mark a bill as paid
+        function markBillAsPaid(billId) {
+            const data = getAppData();
+            const bill = data.bills.find(b => b.id === billId);
+            
+            if (!bill) return;
+            
+            // Record the payment as a money movement
+            addMovement(
+                bill.amount, 
+                'out', 
+                'bills', 
+                `Paid ${bill.name}`
+            );
+            
+            // Update bill status
+            bill.lastPaidMonth = data.appState.currentMonth;
+            bill.lastPaidYear = data.appState.currentYear;
+            
+            saveAppData(data);
+        }
+        
+        // Render bills screen
+        function renderBillsScreen() {
+            const data = getAppData();
+            const currentMonth = data.appState.currentMonth;
+            const currentYear = data.appState.currentYear;
+            
+            // Separate paid and upcoming bills
+            const paidBills = [];
+            const upcomingBills = [];
+            
+            data.bills.forEach(bill => {
+                if (bill.lastPaidMonth === currentMonth && bill.lastPaidYear === currentYear) {
+                    paidBills.push(bill);
+                } else {
+                    upcomingBills.push(bill);
+                }
+            });
+            
+            // Render paid bills
+            const paidList = document.getElementById('paid-bills-list');
+            paidList.innerHTML = '';
+            
+            if (paidBills.length === 0) {
+                paidList.innerHTML = '<p>No bills paid yet this month.</p>';
+            } else {
+                paidBills.forEach(bill => {
+                    const billEl = document.createElement('div');
+                    billEl.className = 'bill-card';
+                    billEl.innerHTML = `
+                        <div class="bill-info">
+                            <div class="bill-name">${bill.name}</div>
+                            <div class="bill-details">Paid ${bill.amount.toFixed(2)}</div>
+                        </div>
+                    `;
+                    paidList.appendChild(billEl);
+                });
+            }
+            
+            // Render upcoming bills
+            const upcomingList = document.getElementById('upcoming-bills-list');
+            upcomingList.innerHTML = '';
+            
+            if (upcomingBills.length === 0) {
+                upcomingList.innerHTML = '<p>No upcoming bills.</p>';
+            } else {
+                upcomingBills.forEach(bill => {
+                    const billEl = document.createElement('div');
+                    billEl.className = 'bill-card';
+                    billEl.innerHTML = `
+                        <div class="bill-info">
+                            <div class="bill-name">${bill.name}</div>
+                            <div class="bill-details">Due on ${bill.dueDay} • ${bill.amount.toFixed(2)}</div>
+                        </div>
+                        <div class="bill-actions">
+                            <button class="btn btn-secondary mark-paid-btn" data-bill-id="${bill.id}">Mark as paid</button>
+                        </div>
+                    `;
+                    upcomingList.appendChild(billEl);
+                });
+            }
+            
+            // Add event listeners to "Mark as paid" buttons
+            document.querySelectorAll('.mark-paid-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const billId = e.target.dataset.billId;
+                    markBillAsPaid(billId);
+                    renderBillsScreen();
+                    // Show confirmation
+                    alert("Money added 👍");
+                    showScreen('home-screen');
+                });
+            });
+        }
+        
+        // Render jar detail screen
+        function renderJarDetail(jarId) {
+            const data = getAppData();
+            const jar = data.jars.find(j => j.id === jarId);
+            
+            if (!jar) return;
+            
+            // Set jar name and balance
+            document.getElementById('jar-name').textContent = jar.name;
+            document.getElementById('jar-balance').textContent = `You have ${jar.amount.toFixed(2)}`;
+            
+            // Get recent activity for this jar
+            const jarMovements = data.movements
+                .filter(m => m.jarId === jarId)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10); // Only show last 10 activities
+            
+            // Render activity list
+            const activityList = document.getElementById('jar-activity');
+            activityList.innerHTML = '';
+            
+            if (jarMovements.length === 0) {
+                activityList.innerHTML = '<p>No activity yet.</p>';
+            } else {
+                jarMovements.forEach(movement => {
+                    const activityEl = document.createElement('div');
+                    activityEl.className = 'activity-item';
+                    
+                    const directionClass = movement.direction === 'in' ? 'activity-in' : 'activity-out';
+                    const amountText = movement.direction === 'in' ? 
+                        `+${movement.amount.toFixed(2)}` : 
+                        `-${movement.amount.toFixed(2)}`;
+                    
+                    activityEl.innerHTML = `
+                        <div class="activity-desc">${movement.description}</div>
+                        <div class="activity-amount ${directionClass}">${amountText}</div>
+                    `;
+                    activityList.appendChild(activityEl);
+                });
+            }
+            
+            // Set button actions
+            document.getElementById('jar-add-money').onclick = () => {
+                // Set the jar selector to this jar
+                document.getElementById('add-jar').value = jarId;
+                showScreen('add-money-screen');
+            };
+            
+            document.getElementById('jar-spend-money').onclick = () => {
+                // Set the jar selector to this jar
+                document.getElementById('spend-jar').value = jarId;
+                showScreen('spend-money-screen');
+            };
+            
+            showScreen('jar-detail-screen');
+        }
+        
+        // Initialize the app
+        function init() {
+            // Initialize app data
+            initApp();
+            
+            // Populate due day dropdown
+            const dueDaySelect = document.getElementById('bill-due-day');
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                dueDaySelect.appendChild(option);
+            }
+            
+            // Set up navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const screen = e.currentTarget.dataset.screen;
+                    showScreen(`${screen}-screen`);
+                });
+            });
+            
+            // Set up jar card clicks
+            document.querySelectorAll('.jar-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const jarId = e.currentTarget.dataset.jar;
+                    renderJarDetail(jarId);
+                });
+            });
+            
+            // Set up Add Money form
+            document.getElementById('add-money-btn').addEventListener('click', () => {
+                const amount = parseFloat(document.getElementById('add-amount').value);
+                const jarId = document.getElementById('add-jar').value;
+                const source = document.getElementById('add-source').value || 'Income';
+                
+                if (isNaN(amount) || amount <= 0) {
+                    alert("Please enter a valid amount");
+                    return;
+                }
+                
+                addMovement(amount, 'in', jarId, source);
+                alert("Money added 👍");
+                showScreen('home-screen');
+                
+                // Reset form
+                document.getElementById('add-amount').value = '';
+                document.getElementById('add-source').value = '';
+            });
+            
+            // Set up Spend Money form
+            document.getElementById('spend-money-btn').addEventListener('click', () => {
+                const amount = parseFloat(document.getElementById('spend-amount').value);
+                const category = document.getElementById('spend-category').value;
+                const jarId = document.getElementById('spend-jar').value;
+                
+                if (isNaN(amount) || amount <= 0) {
+                    alert("Please enter a valid amount");
+                    return;
+                }
+                
+                addMovement(amount, 'out', jarId, category);
+                alert("Money spent 👍");
+                showScreen('home-screen');
+                
+                // Reset form
+                document.getElementById('spend-amount').value = '';
+            });
+            
+            // Set up Add Bill button
+            document.getElementById('add-bill-btn').addEventListener('click', () => {
+                document.getElementById('bill-form-title').textContent = 'Add a bill';
+                document.getElementById('bill-name').value = '';
+                document.getElementById('bill-amount').value = '';
+                document.getElementById('bill-due-day').value = '1';
+                showScreen('bill-form-screen');
+            });
+            
+            // Set up Save Bill button
+            document.getElementById('save-bill-btn').addEventListener('click', () => {
+                const name = document.getElementById('bill-name').value;
+                const frequency = document.getElementById('bill-frequency').value;
+                const amount = parseFloat(document.getElementById('bill-amount').value);
+                const dueDay = parseInt(document.getElementById('bill-due-day').value);
+                
+                if (!name || isNaN(amount) || amount <= 0) {
+                    alert("Please fill in all fields with valid values");
+                    return;
+                }
+                
+                addBill(name, frequency, amount, dueDay);
+                alert("Bill added 👍");
+                showScreen('bills-screen');
+            });
+            
+            // Initial render
+            renderHomeScreen();
+        }
+        
+        // Start the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

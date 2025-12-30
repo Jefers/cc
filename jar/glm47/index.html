@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Money Jars</title>
+    <meta name="description" content="A simple, playful money app.">
+    <style>
+        /* 
+         * CSS VARIABLES & RESET 
+         * Soft, playful palette. No red, no black.
+         */
+        :root {
+            --bg-body: #FDFBF7; /* Warm off-white */
+            --bg-card: #FFFFFF;
+            --text-main: #4A4A4A; /* Soft dark grey, not black */
+            --text-muted: #9CA3AF;
+            
+            /* Jar Colors */
+            --color-bills: #D1FAE5; /* Soft Mint */
+            --color-everyday: #E0F2FE; /* Soft Sky */
+            --color-savings: #FEF3C7; /* Soft Yellow */
+            
+            /* UI Accents */
+            --accent-primary: #8B5CF6; /* Friendly Purple */
+            --accent-positive: #10B981; /* Gentle Green */
+            --accent-negative: #F59E0B; /* Warm Orange for spending (not red) */
+            
+            /* Spacing & Layout */
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --nav-height: 70px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevent body scroll, handle per screen */
+        }
+
+        /* 
+         * TYPOGRAPHY 
+         */
+        h1, h2, h3, h4 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .text-large {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .text-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* 
+         * LAYOUT COMPONENTS 
+         */
+        #app {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Screens */
+        .screen {
+            display: none; /* Hidden by default */
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-lg) var(--space-md) calc(var(--nav-height) + 20px) var(--space-md);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Area */
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .screen-title {
+            font-size: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: transform 0.1s ease;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        /* Jar Cards */
+        .jar-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-lg);
+            margin-bottom: var(--space-sm);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .jar-icon {
+            font-size: 2rem;
+            margin-right: var(--space-md);
+        }
+        
+        .jar-info {
+            flex: 1;
+        }
+
+        .jar-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .jar-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Specific Jar Colors */
+        .jar-bills { background-color: var(--color-bills); }
+        .jar-everyday { background-color: var(--color-everyday); }
+        .jar-savings { background-color: var(--color-savings); }
+
+        /* 
+         * FORMS & INPUTS 
+         */
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            border: 2px solid #E5E7EB;
+            border-radius: var(--radius-md);
+            background: #fff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+            appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            text-align: center;
+            transition: opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .btn-primary {
+            background-color: var(--text-main); /* Dark grey button */
+            color: #fff;
+        }
+        
+        .btn-secondary {
+            background-color: #E5E7EB;
+            color: var(--text-main);
+        }
+        
+        .btn-sm {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        /* 
+         * BOTTOM NAVIGATION 
+         */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--text-main);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        /* 
+         * SPECIFIC SCREEN ELEMENTS 
+         */
+        
+        /* Bills */
+        .bill-section-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .bill-item {
+            background: #fff;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #F3F4F6;
+        }
+
+        .bill-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bill-name {
+            font-weight: 600;
+        }
+
+        .bill-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .bill-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            background: #F3F4F6;
+        }
+        
+        .bill-status.paid {
+            background: var(--color-bills);
+            color: #065F46;
+        }
+
+        /* History List */
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-left h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .history-amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .amount-out { color: var(--accent-negative); }
+        .amount-in { color: var(--accent-positive); }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: calc(var(--nav-height) + 20px);
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background-color: var(--text-main);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 200;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Status Box */
+        .status-box {
+            text-align: center;
+            padding: var(--space-lg);
+            background: #fff;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .status-text {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* Modal Overlay for specific prompts */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: flex-end; /* Bottom sheet style */
+            z-index: 300;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        
+        .modal-overlay.open {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: #fff;
+            width: 100%;
+            border-top-left-radius: var(--radius-lg);
+            border-top-right-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transform: translateY(100%);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        
+        <!-- SCREEN: HOME -->
+        <div id="screen-home" class="screen active">
+            <header class="screen-header">
+                <span class="text-muted">This month</span>
+                <button id="btn-nudge" class="btn-icon" style="font-size: 1.2rem;">🔔</button>
+            </header>
+
+            <div class="status-box">
+                <div class="text-muted" style="margin-bottom: 8px;">You have</div>
+                <div id="home-total" class="text-amount">0</div>
+                <p id="home-status-msg" class="status-text" style="margin-top: 16px;">Everything seems okay.</p>
+            </div>
+
+            <section>
+                <div class="bill-section-title">Your Jars</div>
+                <div id="jars-list">
+                    <!-- Jars injected by JS -->
+                </div>
+            </section>
+        </div>
+
+        <!-- SCREEN: ADD MONEY -->
+        <div id="screen-add-in" class="screen">
+            <header class="screen-header">
+                <h2 class="screen-title">Money came in</h2>
+            </header>
+
+            <form id="form-add-in">
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="in-amount" placeholder="0" inputmode="decimal" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label>Where did it go?</label>
+                    <select id="in-jar" required>
+                        <!-- Options injected by JS -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Where did it come from? <span class="text-muted">(optional)</span></label>
+                    <input type="text" id="in-desc" placeholder="e.g. Salary, Gift">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add money</button>
+            </form>
+        </div>
+
+        <!-- SCREEN: SPEND MONEY -->
+        <div id="screen-add-out" class="screen">
+            <header class="screen-header">
+                <h2 class="screen-title">Money went out</h2>
+            </header>
+
+            <form id="form-add-out">
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="out-amount" placeholder="0" inputmode="decimal" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label>Which jar?</label>
+                    <select id="out-jar" required>
+                        <!-- Options injected by JS -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>What was it for?</label>
+                    <select id="out-category" required>
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Clothes">Clothes</option>
+                        <option value="Family">Family</option>
+                        <option value="Something else">Something else</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Done</button>
+            </form>
+        </div>
+
+        <!-- SCREEN: BILLS -->
+        <div id="screen-bills" class="screen">
+            <header class="screen-header">
+                <h2 class="screen-title">Bills this month</h2>
+                <button id="btn-add-bill" class="btn-icon">+</button>
+            </header>
+
+            <div id="bills-list">
+                <!-- Bills injected by JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN: JAR DETAIL -->
+        <div id="screen-jar-detail" class="screen">
+            <header class="screen-header">
+                <button class="btn-icon" onclick="app.router.go('screen-home')">←</button>
+                <h2 id="detail-title" class="screen-title">Jar Name</h2>
+                <div style="width: 24px;"></div> <!-- Spacer -->
+            </header>
+
+            <div class="status-box">
+                <div class="text-muted">You have</div>
+                <div id="detail-amount" class="text-amount">0</div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button id="detail-btn-add" class="btn btn-secondary" style="flex:1;">Add money</button>
+                <button id="detail-btn-spend" class="btn btn-secondary" style="flex:1;">Spend money</button>
+            </div>
+
+            <section>
+                <div class="bill-section-title">Recent activity</div>
+                <div id="detail-history" class="card">
+                    <!-- History items -->
+                </div>
+            </section>
+        </div>
+
+        <!-- SCREEN: ADD/EDIT BILL -->
+        <div id="screen-edit-bill" class="screen">
+            <header class="screen-header">
+                <button class="btn-icon" onclick="app.router.go('screen-bills')">←</button>
+                <h2 class="screen-title">Add a bill</h2>
+            </header>
+            
+            <form id="form-edit-bill">
+                <input type="hidden" id="bill-id">
+                <div class="form-group">
+                    <label>What is it?</label>
+                    <input type="text" id="bill-name" required placeholder="e.g. Rent, Electricity">
+                </div>
+
+                <div class="form-group">
+                    <label>How often?</label>
+                    <select id="bill-frequency">
+                        <option value="fixed">Every month</option>
+                        <option value="variable">Changes each month</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="bill-amount" placeholder="0" inputmode="decimal" required>
+                    <div class="text-muted" style="font-size:0.8rem; margin-top:4px;">For variable bills, this is an estimate.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Due day</label>
+                    <select id="bill-day" required>
+                        <!-- 1 to 31 generated by JS -->
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save bill</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-target="screen-home">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" data-target="screen-add-in">
+            <span class="nav-icon">➕</span>
+            <span>Add Money</span>
+        </a>
+        <a href="#" class="nav-item" data-target="screen-add-out">
+            <span class="nav-icon">➖</span>
+            <span>Spend Money</span>
+        </a>
+        <a href="#" class="nav-item" data-target="screen-bills">
+            <span class="nav-icon">📦</span>
+            <span>Bills</span>
+        </a>
+    </nav>
+
+    <!-- TOAST -->
+    <div id="toast">Message</div>
+
+    <!-- VARIABLE BILL PROMPT MODAL -->
+    <div id="modal-prompt" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="screen-title" style="margin-bottom: 16px;">How much was it?</h3>
+            <input type="number" id="prompt-amount" placeholder="0" inputmode="decimal" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="app.ui.closePrompt()">Cancel</button>
+                <button class="btn btn-primary" id="prompt-confirm">Mark as paid</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * MONEY JARS APP
+         * 
+         * Architecture:
+         * 1. Store: Handles localStorage and state data.
+         * 2. Logic: Calculates balances, handles bill status.
+         * 3. UI: Renders screens, handles DOM updates.
+         * 4. Router: Manages screen switching.
+         * 5. App: Main entry point.
+         */
+
+        const Utils = {
+            generateId: () => '_' + Math.random().toString(36).substr(2, 9),
+            
+            formatMoney: (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(amount);
+            },
+
+            getCurrentMonthKey: () => {
+                const d = new Date();
+                return `${d.getFullYear()}-${d.getMonth() + 1}`;
+            }
+        };
+
+        const Store = {
+            key: 'money_jars_app_v1',
+            data: {
+                jars: [],
+                movements: [],
+                bills: [],
+                settings: {
+                    setupComplete: false,
+                    lastNudgeDate: null
+                }
+            },
+
+            init() {
+                const saved = localStorage.getItem(this.key);
+                if (saved) {
+                    this.data = JSON.parse(saved);
+                } else {
+                    this.seedData();
+                }
+                // Validate Month Reset for bills could happen here
+            },
+
+            save() {
+                localStorage.setItem(this.key, JSON.stringify(this.data));
+            },
+
+            seedData() {
+                this.data.jars = [
+                    { id: 'bills', name: 'Bills', amount: 0, removable: false, color: 'jar-bills', icon: '🏠' },
+                    { id: 'everyday', name: 'Everyday', amount: 0, removable: false, color: 'jar-everyday', icon: '☕' },
+                    { id: 'savings', name: 'Savings', amount: 0, removable: true, color: 'jar-savings', icon: '🐷' }
+                ];
+                this.data.settings.setupComplete = true;
+                this.save();
+            },
+
+            addMovement(movement) {
+                this.data.movements.unshift(movement); // Add to top
+                // Update Jar Amount
+                const jar = this.data.jars.find(j => j.id === movement.jarId);
+                if (jar) {
+                    if (movement.direction === 'in') {
+                        jar.amount += parseFloat(movement.amount);
+                    } else {
+                        jar.amount -= parseFloat(movement.amount);
+                    }
+                }
+                this.save();
+            },
+
+            addBill(bill) {
+                this.data.bills.push(bill);
+                this.save();
+            },
+
+            updateBillPaidStatus(billId, amountPaid) {
+                const bill = this.data.bills.find(b => b.id === billId);
+                if (!bill) return;
+
+                // Mark as paid
+                bill.lastPaidMonth = Utils.getCurrentMonthKey();
+                
+                // Create "Money went out" for bills
+                // Always deducts from the "Bills" jar per logic: "Marking paid must... Deduct from Bills jar"
+                const billsJar = this.data.jars.find(j => j.id === 'bills');
+                if (billsJar) {
+                    this.addMovement({
+                        id: Utils.generateId(),
+                        amount: amountPaid,
+                        direction: 'out',
+                        jarId: 'bills',
+                        date: new Date().toISOString(),
+                        description: bill.name,
+                        note: 'Bill payment'
+                    });
+                }
+            }
+        };
+
+        const Logic = {
+            getTotalBalance() {
+                return Store.data.jars.reduce((sum, jar) => sum + jar.amount, 0);
+            },
+
+            getJarHistory(jarId) {
+                return Store.data.movements.filter(m => m.jarId === jarId);
+            },
+
+            getBillsStatus() {
+                const currentMonth = Utils.getCurrentMonthKey();
+                const billsJar = Store.data.jars.find(j => j.id === 'bills');
+                
+                // Total fixed bills not paid yet
+                const upcomingFixed = Store.data.bills
+                    .filter(b => b.frequency === 'fixed' && b.lastPaidMonth !== currentMonth)
+                    .reduce((sum, b) => sum + parseFloat(b.amount), 0);
+
+                const isCovered = billsJar.amount >= upcomingFixed;
+                return { isCovered, upcomingFixed, jarAmount: billsJar.amount };
+            },
+
+            checkNudge() {
+                const today = new Date().getTime();
+                const lastNudge = Store.data.settings.lastNudgeDate;
+                const oneWeek = 7 * 24 * 60 * 60 * 1000;
+
+                if (!lastNudge || (today - lastNudge > oneWeek)) {
+                    Store.data.settings.lastNudgeDate = today;
+                    Store.save();
+                    
+                    const history = Store.data.movements;
+                    // Check if savings was used recently
+                    const lastSavingsOut = history.find(m => m.jarId === 'savings' && m.direction === 'out');
+                    if (lastSavingsOut) {
+                        const dateDiff = today - new Date(lastSavingsOut.date).getTime();
+                        if (dateDiff < oneWeek * 2) return "You took some from savings today.";
+                    }
+                    
+                    return null; // No specific nudge condition met right now
+                }
+                return null;
+            }
+        };
+
+        const UI = {
+            showToast(msg) {
+                const el = document.getElementById('toast');
+                el.textContent = msg;
+                el.classList.add('show');
+                setTimeout(() => el.classList.remove('show'), 3000);
+            },
+
+            renderHome() {
+                const total = Logic.getTotalBalance();
+                document.getElementById('home-total').textContent = Utils.formatMoney(total);
+
+                const status = Logic.getBillsStatus();
+                const statusEl = document.getElementById('home-status-msg');
+                
+                if (status.isCovered) {
+                    statusEl.textContent = "Bills look covered 👍";
+                } else {
+                    statusEl.textContent = "Let’s keep an eye on things.";
+                }
+
+                // Check Nudges
+                const nudge = Logic.checkNudge();
+                if (nudge) {
+                    statusEl.textContent = nudge;
+                }
+
+                // Render Jars
+                const list = document.getElementById('jars-list');
+                list.innerHTML = '';
+                Store.data.jars.forEach(jar => {
+                    const div = document.createElement('div');
+                    div.className = `jar-card ${jar.color}`;
+                    div.onclick = () => {
+                        app.activeJarId = jar.id;
+                        app.router.go('screen-jar-detail');
+                    };
+                    div.innerHTML = `
+                        <div class="jar-icon">${jar.icon}</div>
+                        <div class="jar-info">
+                            <div class="jar-name">${jar.name}</div>
+                        </div>
+                        <div class="jar-amount">${Utils.formatMoney(jar.amount)}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            },
+
+            renderJarOptions(selectId) {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '';
+                Store.data.jars.forEach(jar => {
+                    const opt = document.createElement('option');
+                    opt.value = jar.id;
+                    opt.textContent = jar.name;
+                    select.appendChild(opt);
+                });
+            },
+
+            renderBills() {
+                const list = document.getElementById('bills-list');
+                list.innerHTML = '';
+                const currentMonth = Utils.getCurrentMonthKey();
+
+                // Sort: Unpaid first, then by day
+                const sortedBills = [...Store.data.bills].sort((a, b) => {
+                    const aPaid = a.lastPaidMonth === currentMonth;
+                    const bPaid = b.lastPaidMonth === currentMonth;
+                    if (aPaid === bPaid) return a.dueDay - b.dueDay;
+                    return aPaid ? 1 : -1;
+                });
+
+                // Section: Coming Up
+                const upcomingHeader = document.createElement('div');
+                upcomingHeader.className = 'bill-section-title';
+                upcomingHeader.textContent = 'Coming up';
+                list.appendChild(upcomingHeader);
+
+                let hasUpcoming = false;
+
+                sortedBills.forEach(bill => {
+                    const isPaid = bill.lastPaidMonth === currentMonth;
+                    
+                    if (isPaid) return; // Skip for first list
+                    hasUpcoming = true;
+
+                    const item = document.createElement('div');
+                    item.className = 'bill-item';
+                    item.innerHTML = `
+                        <div class="bill-info">
+                            <span class="bill-name">${bill.name}</span>
+                            <span class="bill-meta">Day ${bill.dueDay} • ${bill.frequency}</span>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="app.actions.payBill('${bill.id}')">
+                            Mark as paid
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+
+                if (!hasUpcoming) {
+                    list.innerHTML += `<div class="text-muted" style="padding:10px 0;">No bills coming up this month.</div>`;
+                }
+
+                // Section: Paid
+                const paidHeader = document.createElement('div');
+                paidHeader.className = 'bill-section-title';
+                paidHeader.textContent = 'Paid';
+                list.appendChild(paidHeader);
+
+                let hasPaid = false;
+                sortedBills.forEach(bill => {
+                    const isPaid = bill.lastPaidMonth === currentMonth;
+                    if (!isPaid) return;
+                    hasPaid = true;
+
+                    const item = document.createElement('div');
+                    item.className = 'bill-item';
+                    item.innerHTML = `
+                        <div class="bill-info">
+                            <span class="bill-name">${bill.name}</span>
+                            <span class="bill-meta">Day ${bill.dueDay}</span>
+                        </div>
+                        <span class="bill-status paid">Paid</span>
+                    `;
+                    list.appendChild(item);
+                });
+
+                if (!hasPaid) {
+                    list.innerHTML += `<div class="text-muted" style="padding:10px 0;">No bills paid yet.</div>`;
+                }
+            },
+
+            renderJarDetail() {
+                const jar = Store.data.jars.find(j => j.id === app.activeJarId);
+                if (!jar) return;
+
+                document.getElementById('detail-title').textContent = jar.name;
+                document.getElementById('detail-amount').textContent = Utils.formatMoney(jar.amount);
+                
+                // Bind buttons
+                document.getElementById('detail-btn-add').onclick = () => {
+                    // Pre-select jar in Add Money screen
+                    document.getElementById('in-jar').value = jar.id;
+                    app.router.go('screen-add-in');
+                };
+                document.getElementById('detail-btn-spend').onclick = () => {
+                    document.getElementById('out-jar').value = jar.id;
+                    app.router.go('screen-add-out');
+                };
+
+                // History
+                const historyList = document.getElementById('detail-history');
+                historyList.innerHTML = '';
+                const movements = Logic.getJarHistory(jar.id);
+
+                if (movements.length === 0) {
+                    historyList.innerHTML = '<div class="text-muted" style="padding:10px; text-align:center;">No activity yet</div>';
+                } else {
+                    movements.forEach(m => {
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+                        const dateStr = new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        const colorClass = m.direction === 'in' ? 'amount-in' : 'amount-out';
+                        const sign = m.direction === 'in' ? '+' : '-';
+                        
+                        div.innerHTML = `
+                            <div class="history-left">
+                                <h4>${m.description || m.note || 'Movement'}</h4>
+                                <span class="history-date">${dateStr}</span>
+                            </div>
+                            <div class="history-amount ${colorClass}">${sign}${Utils.formatMoney(m.amount)}</div>
+                        `;
+                        historyList.appendChild(div);
+                    });
+                }
+            },
+
+            setupFormEditBill() {
+                // Populate days 1-31
+                const select = document.getElementById('bill-day');
+                select.innerHTML = '';
+                for(let i=1; i<=31; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = i;
+                    select.appendChild(opt);
+                }
+                
+                // Clear form
+                document.getElementById('form-edit-bill').reset();
+            },
+            
+            openPrompt(confirmCallback) {
+                const modal = document.getElementById('modal-prompt');
+                const input = document.getElementById('prompt-amount');
+                modal.classList.add('open');
+                input.value = '';
+                input.focus();
+
+                const confirmBtn = document.getElementById('prompt-confirm');
+                
+                // Remove old listeners (cloning trick) to prevent stacking
+                const newBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+
+                newBtn.addEventListener('click', () => {
+                    const val = parseFloat(input.value);
+                    if (val && val > 0) {
+                        confirmCallback(val);
+                        this.closePrompt();
+                    } else {
+                        input.style.borderColor = 'red'; // Visual feedback only
+                        setTimeout(() => input.style.borderColor = '#E5E7EB', 1000);
+                    }
+                });
+            },
+
+            closePrompt() {
+                document.getElementById('modal-prompt').classList.remove('open');
+            }
+        };
+
+        const Router = {
+            screens: ['screen-home', 'screen-add-in', 'screen-add-out', 'screen-bills', 'screen-jar-detail', 'screen-edit-bill'],
+            
+            go(screenId) {
+                // Hide all
+                this.screens.forEach(id => {
+                    document.getElementById(id).classList.remove('active');
+                });
+                
+                // Show target
+                document.getElementById(screenId).classList.add('active');
+                
+                // Update Nav State
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    el.classList.remove('active');
+                    if (el.dataset.target === screenId) el.classList.add('active');
+                });
+
+                // Trigger renders
+                if (screenId === 'screen-home') UI.renderHome();
+                if (screenId === 'screen-bills') UI.renderBills();
+                if (screenId === 'screen-jar-detail') UI.renderJarDetail();
+                if (screenId === 'screen-add-in') UI.renderJarOptions('in-jar');
+                if (screenId === 'screen-add-out') UI.renderJarOptions('out-jar');
+                if (screenId === 'screen-edit-bill') UI.setupFormEditBill();
+
+                // Scroll top
+                document.getElementById(screenId).scrollTop = 0;
+            }
+        };
+
+        const Actions = {
+            addMoney(e) {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('in-amount').value);
+                const jarId = document.getElementById('in-jar').value;
+                const desc = document.getElementById('in-desc').value;
+
+                if (!amount || amount <= 0) return;
+
+                Store.addMovement({
+                    id: Utils.generateId(),
+                    amount: amount,
+                    direction: 'in',
+                    jarId: jarId,
+                    date: new Date().toISOString(),
+                    description: desc || 'Money came in',
+                    note: desc
+                });
+
+                UI.showToast("Money added 👍");
+                document.getElementById('form-add-in').reset();
+                app.router.go('screen-home');
+            },
+
+            spendMoney(e) {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('out-amount').value);
+                const jarId = document.getElementById('out-jar').value;
+                const cat = document.getElementById('out-category').value;
+
+                if (!amount || amount <= 0) return;
+
+                Store.addMovement({
+                    id: Utils.generateId(),
+                    amount: amount,
+                    direction: 'out',
+                    jarId: jarId,
+                    date: new Date().toISOString(),
+                    description: cat,
+                    note: 'Money went out'
+                });
+
+                UI.showToast("Done");
+                document.getElementById('form-add-out').reset();
+                app.router.go('screen-home');
+            },
+
+            saveBill(e) {
+                e.preventDefault();
+                const name = document.getElementById('bill-name').value;
+                const freq = document.getElementById('bill-frequency').value;
+                const amount = parseFloat(document.getElementById('bill-amount').value);
+                const day = parseInt(document.getElementById('bill-day').value);
+
+                if (!name || !amount || !day) return;
+
+                Store.addBill({
+                    id: Utils.generateId(),
+                    name,
+                    frequency: freq,
+                    amount,
+                    dueDay: day,
+                    lastPaidMonth: null
+                });
+
+                UI.showToast("Bill added");
+                app.router.go('screen-bills');
+            },
+
+            payBill(billId) {
+                const bill = Store.data.bills.find(b => b.id === billId);
+                if (!bill) return;
+
+                if (bill.frequency === 'fixed') {
+                    // Pay immediately with stored amount
+                    Store.updateBillPaidStatus(billId, bill.amount);
+                    UI.showToast("Bills look covered 👍");
+                    UI.renderBills();
+                } else {
+                    // Prompt for amount
+                    UI.openPrompt((val) => {
+                        Store.updateBillPaidStatus(billId, val);
+                        UI.showToast("Done");
+                        UI.renderBills();
+                    });
+                }
+            }
+        };
+
+        const app = {
+            data: Store,
+            ui: UI,
+            router: Router,
+            actions: Actions,
+            activeJarId: null,
+
+            init() {
+                Store.init();
+                
+                // Event Listeners
+                document.getElementById('form-add-in').addEventListener('submit', Actions.addMoney);
+                document.getElementById('form-add-out').addEventListener('submit', Actions.spendMoney);
+                document.getElementById('form-edit-bill').addEventListener('submit', Actions.saveBill);
+                document.getElementById('btn-add-bill').addEventListener('click', () => Router.go('screen-edit-bill'));
+
+                // Nav Listeners
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const target = item.dataset.target;
+                        if (target) Router.go(target);
+                    });
+                });
+
+                // Initial Render
+                UI.renderHome();
+            }
+        };
+
+        // Boot
+        window.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>
