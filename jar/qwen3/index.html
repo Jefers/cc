@@ -100,11 +100,25 @@
             transition: var(--transition);
             margin-top: var(--spacing-lg);
             box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active::after {
+            opacity: 1;
         }
 
         .btn-outline {
@@ -128,6 +142,7 @@
             margin-bottom: var(--spacing-sm);
             font-weight: 600;
             font-size: var(--font-size-md);
+            color: var(--dark);
         }
 
         input, select {
@@ -138,11 +153,25 @@
             font-size: var(--font-size-lg);
             background-color: white;
             transition: var(--transition);
+            color: var(--dark);
+            font-family: inherit;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        /* Remove default styles for number inputs */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         /* Home screen */
@@ -165,6 +194,8 @@
             background-color: var(--light-gray);
             display: inline-block;
             margin-top: var(--spacing-md);
+            font-weight: 500;
+            color: var(--dark);
         }
 
         .jars {
@@ -182,11 +213,24 @@
             box-shadow: var(--shadow);
             cursor: pointer;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
-        .jar-card:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        .jar-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .jar-card:active::after {
+            opacity: 1;
         }
 
         .jar-name {
@@ -214,6 +258,7 @@
             border-top: 1px solid var(--light-gray);
             max-width: 500px;
             margin: 0 auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .nav-item {
@@ -224,6 +269,24 @@
             border-radius: var(--border-radius);
             cursor: pointer;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 111, 165, 0.1);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .nav-item:active::after {
+            opacity: 1;
         }
 
         .nav-item.active {
@@ -256,6 +319,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bill-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.03);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .bill-card:active::after {
+            opacity: 1;
         }
 
         .bill-info {
@@ -275,6 +356,10 @@
         .bill-actions button {
             padding: var(--spacing-sm) var(--spacing-md);
             margin-left: var(--spacing-md);
+            width: auto;
+            margin-top: 0;
+            box-shadow: none;
+            font-size: var(--font-size-md);
         }
 
         /* Activity list */
@@ -320,6 +405,39 @@
             font-weight: 600;
         }
 
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            padding: var(--spacing-lg);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast {
+            background-color: white;
+            color: var(--dark);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-weight: 600;
+            max-width: 80%;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Utility classes */
         .text-center {
             text-align: center;
@@ -338,10 +456,19 @@
             .jars {
                 grid-template-columns: 1fr;
             }
+            
+            .balance {
+                font-size: 40px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container">
+        <div class="toast" id="toast">Money added 👍</div>
+    </div>
+
     <!-- Home Screen -->
     <div id="home-screen" class="screen active">
         <div class="container">
@@ -547,6 +674,22 @@
                 lastNudgeDate: null
             }
         };
+        
+        // Toast system
+        const toast = document.getElementById('toast');
+        
+        function showToast(message, duration = 3000) {
+            // Set message
+            toast.textContent = message;
+            
+            // Show toast
+            toast.classList.add('show');
+            
+            // Hide after duration
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
         
         // Initialize app data
         function initApp() {
@@ -827,8 +970,7 @@
                     const billId = e.target.dataset.billId;
                     markBillAsPaid(billId);
                     renderBillsScreen();
-                    // Show confirmation
-                    alert("Money added 👍");
+                    showToast("Money added 👍");
                     showScreen('home-screen');
                 });
             });
@@ -928,12 +1070,12 @@
                 const source = document.getElementById('add-source').value || 'Income';
                 
                 if (isNaN(amount) || amount <= 0) {
-                    alert("Please enter a valid amount");
+                    showToast("Please enter a valid amount");
                     return;
                 }
                 
                 addMovement(amount, 'in', jarId, source);
-                alert("Money added 👍");
+                showToast("Money added 👍");
                 showScreen('home-screen');
                 
                 // Reset form
@@ -948,12 +1090,12 @@
                 const jarId = document.getElementById('spend-jar').value;
                 
                 if (isNaN(amount) || amount <= 0) {
-                    alert("Please enter a valid amount");
+                    showToast("Please enter a valid amount");
                     return;
                 }
                 
                 addMovement(amount, 'out', jarId, category);
-                alert("Money spent 👍");
+                showToast("Money spent 👍");
                 showScreen('home-screen');
                 
                 // Reset form
@@ -977,12 +1119,12 @@
                 const dueDay = parseInt(document.getElementById('bill-due-day').value);
                 
                 if (!name || isNaN(amount) || amount <= 0) {
-                    alert("Please fill in all fields with valid values");
+                    showToast("Please fill in all fields with valid values");
                     return;
                 }
                 
                 addBill(name, frequency, amount, dueDay);
-                alert("Bill added 👍");
+                showToast("Bill added 👍");
                 showScreen('bills-screen');
             });
             

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jars</title>
+
+<style>
+:root {
+  --bg: #faf8f4;
+  --card: #ffffff;
+  --ink: #2f2f2f;
+  --muted: #8a8a8a;
+  --accent: #4f7cff;
+  --radius: 18px;
+  --shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+#app {
+  min-height: 100vh;
+  padding-bottom: 84px;
+}
+
+header {
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+main {
+  padding: 0 16px;
+}
+
+/* Home */
+.month {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.balance {
+  font-size: 42px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.jars {
+  display: grid;
+  gap: 14px;
+}
+
+.jar {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Jar Detail */
+.detail-balance {
+  font-size: 34px;
+  font-weight: 600;
+  text-align: center;
+  margin: 12px 0 24px;
+}
+
+.activity {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.activity-item {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Forms */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+input, select {
+  appearance: none;
+  border: none;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  font-size: 18px;
+  box-shadow: var(--shadow);
+}
+
+/* Buttons */
+button.primary {
+  margin-top: 12px;
+  padding: 18px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+}
+
+/* Bottom Nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: var(--card);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  width: 48px;
+  height: 48px;
+}
+
+.nav-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--ink);
+  fill: none;
+  stroke-width: 2;
+}
+
+.nav-btn.active svg {
+  stroke: var(--accent);
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card);
+  padding: 14px 20px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+  <header>
+    <h1 id="title">My jars</h1>
+  </header>
+
+  <main id="screen"></main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-screen="home">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V21H3z"/></svg>
+    </button>
+    <button class="nav-btn" data-screen="add">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <button class="nav-btn" data-screen="spend">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+    </button>
+    <button class="nav-btn" data-screen="bills">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/></svg>
+    </button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =====================
+   STATE
+===================== */
+const STORAGE = 'jars-bills-activity';
+
+const defaultState = {
+  jars: [
+    { id: 'everyday', name: 'Everyday', amount: 0 },
+    { id: 'bills', name: 'Bills', amount: 0 },
+    { id: 'savings', name: 'Savings', amount: 0 }
+  ],
+  bills: [],
+  movements: [],
+  currentJar: null
+};
+
+let state = JSON.parse(localStorage.getItem(STORAGE)) || defaultState;
+
+/* =====================
+   UTIL
+===================== */
+function save() {
+  localStorage.setItem(STORAGE, JSON.stringify(state));
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function jar(id) {
+  return state.jars.find(j => j.id === id);
+}
+
+function total() {
+  return state.jars.reduce((s, j) => s + j.amount, 0);
+}
+
+function addMovement(jarId, amount, direction, description) {
+  state.movements.unshift({
+    id: Date.now().toString(),
+    jar: jarId,
+    amount,
+    direction,
+    description,
+    date: new Date().toISOString()
+  });
+}
+
+/* =====================
+   RENDER
+===================== */
+const screen = document.getElementById('screen');
+const title = document.getElementById('title');
+
+function renderHome() {
+  title.textContent = 'My jars';
+  screen.innerHTML = `
+    <div class="month">☀️ This month</div>
+    <div class="balance">You have ${total()}</div>
+    <div class="jars">
+      ${state.jars.map(j => `
+        <div class="jar" data-id="${j.id}">
+          <div>${j.name}</div>
+          <div>${j.amount}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  screen.querySelectorAll('.jar').forEach(el => {
+    el.onclick = () => {
+      state.currentJar = el.dataset.id;
+      activate('jar');
+    };
+  });
+}
+
+function renderJarDetail() {
+  const j = jar(state.currentJar);
+  title.textContent = j.name;
+
+  const activity = state.movements.filter(m => m.jar === j.id);
+
+  screen.innerHTML = `
+    <div class="detail-balance">You have ${j.amount}</div>
+
+    <div class="activity">
+      ${activity.length
+        ? activity.map(m => `
+          <div class="activity-item">
+            <div>${m.description}</div>
+            <div>${m.direction === 'in' ? '+' : '-'}${m.amount}</div>
+          </div>
+        `).join('')
+        : `<div class="activity-item">No activity yet</div>`
+      }
+    </div>
+
+    <button class="primary" id="add">Add money</button>
+    <button class="primary" id="spend">Spend money</button>
+  `;
+
+  document.getElementById('add').onclick = () => activate('add', j.id);
+  document.getElementById('spend').onclick = () => activate('spend', j.id);
+}
+
+function renderAdd(preselect) {
+  title.textContent = 'Money came in';
+  screen.innerHTML = `
+    <div class="form">
+      <input id="amount" type="number" placeholder="Amount" />
+      <select id="jar">
+        ${state.jars.map(j =>
+          `<option value="${j.id}" ${j.id===preselect?'selected':''}>${j.name}</option>`
+        ).join('')}
+      </select>
+      <button class="primary">Add money</button>
+    </div>
+  `;
+
+  screen.querySelector('button').onclick = () => {
+    const amt = Number(screen.querySelector('#amount').value);
+    if (!amt) return toast('Nothing changed.');
+    const jarId = screen.querySelector('#jar').value;
+    jar(jarId).amount += amt;
+    addMovement(jarId, amt, 'in', 'Money came in');
+    save();
+    toast('Money added 👍');
+    activate('home');
+  };
+}
+
+function renderSpend(preselect) {
+  title.textContent = 'Money went out';
+  screen.innerHTML = `
+    <div class="form">
+      <input id="amount" type="number" placeholder="Amount" />
+      <input id="desc" placeholder="What was it for?" />
+      <select id="jar">
+        ${state.jars.map(j =>
+          `<option value="${j.id}" ${j.id===preselect?'selected':''}>${j.name}</option>`
+        ).join('')}
+      </select>
+      <button class="primary">Done</button>
+    </div>
+  `;
+
+  screen.querySelector('button').onclick = () => {
+    const amt = Number(screen.querySelector('#amount').value);
+    if (!amt) return toast('Nothing changed.');
+    const jarId = screen.querySelector('#jar').value;
+    jar(jarId).amount -= amt;
+    addMovement(
+      jarId,
+      amt,
+      'out',
+      screen.querySelector('#desc').value || 'Money went out'
+    );
+    save();
+    toast('Money saved');
+    activate('home');
+  };
+}
+
+function renderBills() {
+  title.textContent = 'Bills this month';
+
+  screen.innerHTML = `
+    <div class="jars">
+      ${state.bills.map(b => `
+        <div class="jar" data-id="${b.id}">
+          <div>${b.name}</div>
+          <div>${b.amount || ''}</div>
+        </div>
+      `).join('')}
+      <button class="primary" id="addBill">Add a bill</button>
+    </div>
+  `;
+
+  screen.querySelectorAll('.jar[data-id]').forEach(el => {
+    el.onclick = () => {
+      const bill = state.bills.find(b => b.id === el.dataset.id);
+      const amt = bill.amount || Number(prompt('Amount this time'));
+      if (!amt) return toast('Nothing changed.');
+      jar('bills').amount -= amt;
+      addMovement('bills', amt, 'out', `${bill.name} bill`);
+      bill.paid = true;
+      save();
+      toast('Bill marked as paid');
+      renderBills();
+    };
+  });
+
+  document.getElementById('addBill').onclick = () => {
+    const name = prompt('What is it?');
+    if (!name) return;
+    const amt = Number(prompt('Amount (leave empty if it changes)')) || null;
+    state.bills.push({ id: Date.now().toString(), name, amount: amt });
+    save();
+    renderBills();
+  };
+}
+
+/* =====================
+   NAV
+===================== */
+function activate(name, param) {
+  document.querySelectorAll('.nav-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.screen === name)
+  );
+
+  if (name === 'home') renderHome();
+  if (name === 'jar') renderJarDetail();
+  if (name === 'add') renderAdd(param);
+  if (name === 'spend') renderSpend(param);
+  if (name === 'bills') renderBills();
+}
+
+document.querySelectorAll('.nav-btn').forEach(b =>
+  b.onclick = () => activate(b.dataset.screen)
+);
+
+/* =====================
+   INIT
+===================== */
+activate('home');
+save();
+</script>
+</body>
+</html>

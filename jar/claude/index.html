@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Jars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #fef9f3;
+            --surface: #ffffff;
+            --text: #2c2c2c;
+            --text-light: #6b6b6b;
+            --accent: #f4a261;
+            --accent-dark: #e8845c;
+            --success: #2a9d8f;
+            --divider: #f0f0f0;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .home-header {
+            padding: 32px 20px 24px;
+            text-align: center;
+        }
+
+        .month-label {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .balance-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .status-message {
+            margin-top: 24px;
+            padding: 12px 16px;
+            background: rgba(42, 157, 143, 0.08);
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--success);
+            text-align: center;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .jars-grid {
+            padding: 24px 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .jar-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            border: 2px solid transparent;
+        }
+
+        .jar-card:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .jar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .jar-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .jar-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .jar-progress {
+            height: 6px;
+            background: var(--divider);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .jar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: left;
+        }
+
+        .screen-form {
+            padding: 24px 20px;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .amount-input {
+            width: 100%;
+            font-size: 44px;
+            font-weight: 700;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            padding: 16px 0;
+            border-bottom: 2px solid var(--divider);
+            transition: border-color 0.2s;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
+        }
+
+        .text-input,
+        .select-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--divider);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--surface);
+            color: var(--text);
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .text-input:focus,
+        .select-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .select-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232c2c2c' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .primary-button {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            box-shadow: var(--shadow);
+        }
+
+        .primary-button:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            color: var(--text);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--surface);
+            border-top: 1px solid var(--divider);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s ease-out;
+            color: var(--text-light);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 24px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: var(--text);
+            color: white;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            animation: toastSlideIn 0.3s ease-out;
+        }
+
+        .toast.exit {
+            animation: toastSlideOut 0.3s ease-out forwards;
+        }
+
+        .bills-section {
+            margin-bottom: 32px;
+        }
+
+        .bills-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 20px;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .bills-section:first-child .bills-section-title {
+            margin-top: 0;
+        }
+
+        .bill-item {
+            margin: 0 20px 8px;
+            padding: 16px;
+            background: var(--surface);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bill-item.paid {
+            border-left-color: var(--success);
+            opacity: 0.6;
+        }
+
+        .bill-item:active {
+            transform: scale(0.98);
+        }
+
+        .bill-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .bill-meta {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .add-bill-button {
+            margin: 24px 20px;
+        }
+
+        .jar-detail-header {
+            padding: 24px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .jar-detail-name {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .jar-detail-amount {
+            font-size: 44px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .jar-detail-actions {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px;
+        }
+
+        .jar-detail-actions button {
+            flex: 1;
+            padding: 12px;
+            background: var(--surface);
+            border: 2px solid var(--divider);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .jar-detail-actions button:active {
+            transform: scale(0.95);
+            border-color: var(--accent);
+        }
+
+        .activity-list {
+            padding: 24px 20px;
+        }
+
+        .activity-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--divider);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-left {
+            flex: 1;
+        }
+
+        .activity-label {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .activity-date {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .activity-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .activity-amount.positive {
+            color: var(--success);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(8px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes toastSlideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .amount-input {
+                font-size: 36px;
+            }
+
+            .balance-amount {
+                font-size: 40px;
+            }
+
+            .jar-detail-amount {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="content">
+            <!-- HOME SCREEN -->
+            <div class="screen home-screen active">
+                <div class="home-header">
+                    <div class="month-label">☀️ This month</div>
+                    <div class="balance-amount" id="homeBalance">0</div>
+                    <div class="balance-label">You have</div>
+                    <div class="status-message" id="statusMessage">Bills look covered 👍</div>
+                </div>
+                <div class="jars-grid" id="jarsGrid"></div>
+            </div>
+
+            <!-- ADD MONEY SCREEN -->
+            <div class="screen add-money-screen">
+                <button class="back-button" data-action="back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="screen-form">
+                    <div class="form-title">Money came in</div>
+                    <div class="form-group">
+                        <input type="number" class="amount-input" id="addAmount" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Where did it go?</label>
+                        <select class="select-input" id="addJar">
+                            <option value="">Select a jar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Where did it come from? (optional)</label>
+                        <input type="text" class="text-input" id="addSource" placeholder="Salary, gift, etc.">
+                    </div>
+                    <button class="primary-button" id="submitAdd">Add money</button>
+                </div>
+            </div>
+
+            <!-- SPEND MONEY SCREEN -->
+            <div class="screen spend-money-screen">
+                <button class="back-button" data-action="back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="screen-form">
+                    <div class="form-title">Money went out</div>
+                    <div class="form-group">
+                        <input type="number" class="amount-input" id="spendAmount" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">What was it for?</label>
+                        <input type="text" class="text-input" id="spendCategory" placeholder="Groceries, gas, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Which jar?</label>
+                        <select class="select-input" id="spendJar">
+                            <option value="">Select a jar</option>
+                        </select>
+                    </div>
+                    <button class="primary-button" id="submitSpend">Done</button>
+                </div>
+            </div>
+
+            <!-- BILLS SCREEN -->
+            <div class="screen bills-screen">
+                <div class="screen-form">
+                    <div class="form-title">Bills this month</div>
+                </div>
+                <div id="billsPaidSection" class="bills-section">
+                    <div class="bills-section-title">Paid</div>
+                    <div id="billsPaidList"></div>
+                </div>
+                <div id="billsUpcomingSection" class="bills-section">
+                    <div class="bills-section-title">Coming up</div>
+                    <div id="billsUpcomingList"></div>
+                </div>
+                <button class="primary-button add-bill-button" id="addBillButton">Add a bill</button>
+            </div>
+
+            <!-- ADD/EDIT BILL SCREEN -->
+            <div class="screen bill-form-screen">
+                <button class="back-button" data-action="back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="screen-form">
+                    <div class="form-title" id="billFormTitle">Add a bill</div>
+                    <div class="form-group">
+                        <label class="form-label">What is it?</label>
+                        <input type="text" class="text-input" id="billName" placeholder="Rent, electricity, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">How often?</label>
+                        <select class="select-input" id="billFrequency">
+                            <option value="fixed">Every month</option>
+                            <option value="variable">Changes each month</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="billAmountGroup">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="text-input" id="billAmount" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due day</label>
+                        <input type="number" class="text-input" id="billDueDay" placeholder="1-31" min="1" max="31">
+                    </div>
+                    <button class="primary-button" id="submitBill">Save bill</button>
+                </div>
+            </div>
+
+            <!-- JAR DETAIL SCREEN -->
+            <div class="screen jar-detail-screen">
+                <button class="back-button" data-action="back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="jar-detail-header">
+                    <div class="jar-detail-name" id="detailJarName">Jar</div>
+                    <div class="jar-detail-amount" id="detailJarAmount">0</div>
+                    <div class="jar-detail-actions">
+                        <button id="detailAddButton">Add money</button>
+                        <button id="detailSpendButton">Spend money</button>
+                    </div>
+                </div>
+                <div class="activity-list" id="activityList"></div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-screen="home-screen">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </button>
+            <button class="nav-item" data-screen="add-money-screen">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v8M8 12h8"/>
+                </svg>
+            </button>
+            <button class="nav-item" data-screen="spend-money-screen">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12h8"/>
+                </svg>
+            </button>
+            <button class="nav-item" data-screen="bills-screen">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                </svg>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        class MoneyApp {
+            constructor() {
+                this.currentMonth = new Date();
+                this.selectedJarId = null;
+                this.editingBillId = null;
+                this.init();
+            }
+
+            init() {
+                this.loadData();
+                this.checkMonthChange();
+                this.setupEventListeners();
+                this.render();
+            }
+
+            loadData() {
+                const saved = localStorage.getItem('moneyapp');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.jars = data.jars || this.getDefaultJars();
+                    this.movements = data.movements || [];
+                    this.bills = data.bills || [];
+                } else {
+                    this.jars = this.getDefaultJars();
+                    this.movements = [];
+                    this.bills = [];
+                }
+            }
+
+            saveData() {
+                localStorage.setItem('moneyapp', JSON.stringify({
+                    jars: this.jars,
+                    movements: this.movements,
+                    bills: this.bills,
+                    currentMonth: this.currentMonth.toISOString()
+                }));
+            }
+
+            getDefaultJars() {
+                return [
+                    { id: 'bills', name: 'Bills', amount: 0, removable: false },
+                    { id: 'everyday', name: 'Everyday', amount: 0, removable: false },
+                    { id: 'savings', name: 'Savings', amount: 0, removable: true }
+                ];
+            }
+
+            checkMonthChange() {
+                const saved = localStorage.getItem('moneyapp');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.currentMonth) {
+                        const savedDate = new Date(data.currentMonth);
+                        if (savedDate.getMonth() !== this.currentMonth.getMonth() ||
+                            savedDate.getFullYear() !== this.currentMonth.getFullYear()) {
+                            this.resetMonthlyBills();
+                        }
+                    }
+                }
+            }
+
+            resetMonthlyBills() {
+                this.bills = this.bills.map(b => ({
+                    ...b,
+                    paid: false
+                }));
+            }
+
+            addMoney(amount, jarId, source) {
+                const jar = this.jars.find(j => j.id === jarId);
+                if (!jar) return false;
+
+                const numAmount = parseFloat(amount);
+                const movement = {
+                    id: Date.now() + Math.random(),
+                    amount: numAmount,
+                    direction: 'in',
+                    jarId: jarId,
+                    date: new Date().toISOString(),
+                    description: source || ''
+                };
+
+                jar.amount = Math.round((jar.amount + numAmount) * 100) / 100;
+                this.movements.push(movement);
+                this.saveData();
+                return true;
+            }
+
+            spendMoney(amount, jarId, category) {
+                const jar = this.jars.find(j => j.id === jarId);
+                if (!jar) return false;
+
+                const numAmount = parseFloat(amount);
+                if (jar.amount < numAmount) return false;
+
+                const movement = {
+                    id: Date.now() + Math.random(),
+                    amount: numAmount,
+                    direction: 'out',
+                    jarId: jarId,
+                    date: new Date().toISOString(),
+                    description: category || ''
+                };
+
+                jar.amount = Math.round((jar.amount - numAmount) * 100) / 100;
+                this.movements.push(movement);
+                this.saveData();
+                return true;
+            }
+
+            getTotalBalance() {
+                return this.jars.reduce((sum, jar) => sum + jar.amount, 0);
+            }
+
+            getJarBalance(jarId) {
+                const jar = this.jars.find(j => j.id === jarId);
+                return jar ? jar.amount : 0;
+            }
+
+            getBillsAmount() {
+                return this.jars.find(j => j.id === 'bills')?.amount || 0;
+            }
+
+            getTotalUnpaidBills() {
+                return this.bills
+                    .filter(b => !b.paid)
+                    .reduce((sum, b) => sum + (b.frequency === 'fixed' ? b.amount : b.lastAmount), 0);
+            }
+
+            getJarActivity(jarId) {
+                return this.movements
+                    .filter(m => m.jarId === jarId)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 20);
+            }
+
+            addBill(name, frequency, amount, dueDay) {
+                const bill = {
+                    id: Date.now() + Math.random(),
+                    name: name,
+                    frequency: frequency,
+                    amount: frequency === 'fixed' ? parseFloat(amount) : 0,
+                    dueDay: parseInt(dueDay),
+                    paid: false,
+                    lastAmount: frequency === 'variable' ? parseFloat(amount) : 0
+                };
+                this.bills.push(bill);
+                this.saveData();
+                return bill;
+            }
+
+            editBill(billId, name, frequency, amount, dueDay) {
+                const bill = this.bills.find(b => b.id === billId);
+                if (!bill) return false;
+
+                bill.name = name;
+                bill.frequency = frequency;
+                bill.amount = frequency === 'fixed' ? parseFloat(amount) : 0;
+                bill.dueDay = parseInt(dueDay);
+                this.saveData();
+                return true;
+            }
+
+            markBillPaid(billId, amount) {
+                const bill = this.bills.find(b => b.id === billId);
+                if (!bill) return false;
+
+                bill.paid = true;
+                if (bill.frequency === 'variable') {
+                    bill.lastAmount = parseFloat(amount);
+                }
+
+                const billJar = this.jars.find(j => j.id === 'bills');
+                if (billJar) {
+                    const amountToPay = bill.frequency === 'fixed' ? bill.amount : amount;
+                    if (billJar.amount >= amountToPay) {
+                        this.spendMoney(amountToPay, 'bills', `Paid: ${bill.name}`);
+                    }
+                }
+
+                this.saveData();
+                return true;
+            }
+
+            setupEventListeners() {
+                // Screen navigation
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => this.switchScreen(btn.dataset.screen));
+                });
+
+                // Back buttons
+                document.querySelectorAll('.back-button').forEach(btn => {
+                    btn.addEventListener('click', () => this.switchScreen('home-screen'));
+                });
+
+                // Add money form
+                document.getElementById('submitAdd').addEventListener('click', () => {
+                    const amount = document.getElementById('addAmount').value;
+                    const jar = document.getElementById('addJar').value;
+                    const source = document.getElementById('addSource').value;
+
+                    if (!amount || !jar) {
+                        this.showToast('Please fill in all fields.');
+                        return;
+                    }
+
+                    if (this.addMoney(amount, jar, source)) {
+                        this.showToast('Money added 👍');
+                        document.getElementById('addAmount').value = '';
+                        document.getElementById('addJar').value = '';
+                        document.getElementById('addSource').value = '';
+                        this.switchScreen('home-screen');
+                        this.render();
+                    }
+                });
+
+                // Spend money form
+                document.getElementById('submitSpend').addEventListener('click', () => {
+                    const amount = document.getElementById('spendAmount').value;
+                    const jar = document.getElementById('spendJar').value;
+                    const category = document.getElementById('spendCategory').value;
+
+                    if (!amount || !jar) {
+                        this.showToast('Please fill in all fields.');
+                        return;
+                    }
+
+                    if (this.spendMoney(amount, jar, category)) {
+                        this.showToast('Money saved');
+                        document.getElementById('spendAmount').value = '';
+                        document.getElementById('spendJar').value = '';
+                        document.getElementById('spendCategory').value = '';
+                        this.switchScreen('home-screen');
+                        this.render();
+                    } else {
+                        this.showToast('Not enough in that jar.');
+                    }
+                });
+
+                // Bill frequency toggle
+                document.getElementById('billFrequency').addEventListener('change', (e) => {
+                    const amountGroup = document.getElementById('billAmountGroup');
+                    amountGroup.style.display = e.target.value === 'fixed' ? 'block' : 'none';
+                });
+
+                // Add/edit bill form
+                document.getElementById('submitBill').addEventListener('click', () => {
+                    const name = document.getElementById('billName').value;
+                    const frequency = document.getElementById('billFrequency').value;
+                    const amount = document.getElementById('billAmount').value;
+                    const dueDay = document.getElementById('billDueDay').value;
+
+                    if (!name || !dueDay || (frequency === 'fixed' && !amount)) {
+                        this.showToast('Please fill in all fields.');
+                        return;
+                    }
+
+                    if (this.editingBillId) {
+                        this.editBill(this.editingBillId, name, frequency, amount, dueDay);
+                    } else {
+                        this.addBill(name, frequency, amount, dueDay);
+                    }
+
+                    this.showToast('Bill saved');
+                    this.editingBillId = null;
+                    this.switchScreen('bills-screen');
+                    this.render();
+                });
+
+                // Add bill button
+                document.getElementById('addBillButton').addEventListener('click', () => {
+                    this.editingBillId = null;
+                    document.getElementById('billFormTitle').textContent = 'Add a bill';
+                    document.getElementById('billName').value = '';
+                    document.getElementById('billFrequency').value = 'fixed';
+                    document.getElementById('billAmount').value = '';
+                    document.getElementById('billDueDay').value = '';
+                    document.getElementById('billAmountGroup').style.display = 'block';
+                    this.switchScreen('bill-form-screen');
+                });
+
+                // Jar detail actions
+                document.getElementById('detailAddButton').addEventListener('click', () => {
+                    document.getElementById('addAmount').value = '';
+                    document.getElementById('addSource').value = '';
+                    document.getElementById('addJar').value = this.selectedJarId;
+                    this.switchScreen('add-money-screen');
+                });
+
+                document.getElementById('detailSpendButton').addEventListener('click', () => {
+                    document.getElementById('spendAmount').value = '';
+                    document.getElementById('spendCategory').value = '';
+                    document.getElementById('spendJar').value = this.selectedJarId;
+                    this.switchScreen('spend-money-screen');
+                });
+            }
+
+            switchScreen(screenName) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.querySelector('.' + screenName).classList.add('active');
+
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.screen === screenName);
+                });
+
+                if (screenName === 'home-screen') {
+                    this.render();
+                }
+            }
+
+            showToast(message) {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.add('exit');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2500);
+            }
+
+            formatNumber(num) {
+                return Math.round(num * 100) / 100;
+            }
+
+            formatDate(dateStr) {
+                const date = new Date(dateStr);
+                const today = new Date();
+                
+                if (date.toDateString() === today.toDateString()) {
+                    return 'Today';
+                }
+                
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (date.toDateString() === yesterday.toDateString()) {
+                    return 'Yesterday';
+                }
+
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+
+            renderHome() {
+                const balance = this.getTotalBalance();
+                document.getElementById('homeBalance').textContent = this.formatNumber(balance).toFixed(2);
+
+                const billsBalance = this.getBillsAmount();
+                const unpaidBills = this.getTotalUnpaidBills();
+                const billsCovered = billsBalance >= unpaidBills;
+                
+                document.getElementById('statusMessage').textContent = 
+                    billsCovered ? 'Bills look covered 👍' : "Let's keep an eye on things.";
+
+                const grid = document.getElementById('jarsGrid');
+                grid.innerHTML = '';
+
+                this.jars.forEach(jar => {
+                    const card = document.createElement('div');
+                    card.className = 'jar-card';
+                    card.addEventListener('click', () => this.viewJarDetail(jar.id));
+
+                    const header = document.createElement('div');
+                    header.className = 'jar-header';
+                    header.innerHTML = `
+                        <div class="jar-name">${jar.name}</div>
+                    `;
+
+                    const amount = document.createElement('div');
+                    amount.className = 'jar-amount';
+                    amount.textContent = this.formatNumber(jar.amount).toFixed(2);
+
+                    const progress = document.createElement('div');
+                    progress.className = 'jar-progress';
+                    const fill = document.createElement('div');
+                    fill.className = 'jar-fill';
+                    
+                    let fillPercent = 0;
+                    if (jar.id === 'bills') {
+                        const unpaid = this.getTotalUnpaidBills();
+                        if (unpaid > 0) {
+                            fillPercent = Math.min(100, (jar.amount / unpaid) * 100);
+                        }
+                    } else {
+                        fillPercent = 30;
+                    }
+                    
+                    fill.style.width = fillPercent + '%';
+                    progress.appendChild(fill);
+
+                    card.appendChild(header);
+                    card.appendChild(amount);
+                    card.appendChild(progress);
+                    grid.appendChild(card);
+                });
+            }
+
+            viewJarDetail(jarId) {
+                this.selectedJarId = jarId;
+                const jar = this.jars.find(j => j.id === jarId);
+                
+                document.getElementById('detailJarName').textContent = jar.name;
+                document.getElementById('detailJarAmount').textContent = this.formatNumber(jar.amount).toFixed(2);
+
+                const activity = this.getJarActivity(jarId);
+                const list = document.getElementById('activityList');
+                list.innerHTML = '';
+
+                if (activity.length === 0) {
+                    list.innerHTML = '<div style="text-align: center; padding: 32px 20px; color: var(--text-light);">No activity yet</div>';
+                } else {
+                    activity.forEach(mov => {
+                        const item = document.createElement('div');
+                        item.className = 'activity-item';
+
+                        const left = document.createElement('div');
+                        left.className = 'activity-left';
+                        left.innerHTML = `
+                            <div class="activity-label">${mov.description || (mov.direction === 'in' ? 'Money came in' : 'Money went out')}</div>
+                            <div class="activity-date">${this.formatDate(mov.date)}</div>
+                        `;
+
+                        const amountDiv = document.createElement('div');
+                        amountDiv.className = 'activity-amount' + (mov.direction === 'in' ? ' positive' : '');
+                        amountDiv.textContent = (mov.direction === 'in' ? '+' : '−') + this.formatNumber(mov.amount).toFixed(2);
+
+                        item.appendChild(left);
+                        item.appendChild(amountDiv);
+                        list.appendChild(item);
+                    });
+                }
+
+                this.switchScreen('jar-detail-screen');
+            }
+
+            renderBills() {
+                const paidList = document.getElementById('billsPaidList');
+                const upcomingList = document.getElementById('billsUpcomingList');
+
+                paidList.innerHTML = '';
+                upcomingList.innerHTML = '';
+
+                const paid = this.bills.filter(b => b.paid);
+                const upcoming = this.bills.filter(b => !b.paid);
+
+                if (paid.length === 0) {
+                    paidList.innerHTML = '<div style="padding: 0 20px; color: var(--text-light); font-size: 13px;">None paid yet</div>';
+                } else {
+                    paid.forEach(bill => {
+                        const item = document.createElement('div');
+                        item.className = 'bill-item paid';
+                        item.addEventListener('click', () => this.editBillForm(bill));
+                        item.innerHTML = `
+                            <div class="bill-name">${bill.name}</div>
+                            <div class="bill-meta">Due: ${bill.dueDay}${this.getDaySuffix(bill.dueDay)}</div>
+                        `;
+                        paidList.appendChild(item);
+                    });
+                }
+
+                if (upcoming.length === 0) {
+                    upcomingList.innerHTML = '<div style="padding: 0 20px; color: var(--text-light); font-size: 13px;">All set!</div>';
+                } else {
+                    upcoming.forEach(bill => {
+                        const item = document.createElement('div');
+                        item.className = 'bill-item';
+                        item.addEventListener('click', () => this.payBill(bill));
+                        
+                        const amount = bill.frequency === 'fixed' ? bill.amount : bill.lastAmount;
+                        item.innerHTML = `
+                            <div class="bill-name">${bill.name}</div>
+                            <div class="bill-meta">${this.formatNumber(amount).toFixed(2)} • Due: ${bill.dueDay}${this.getDaySuffix(bill.dueDay)}</div>
+                        `;
+                        upcomingList.appendChild(item);
+                    });
+                }
+            }
+
+            getDaySuffix(day) {
+                if (day > 3 && day < 21) return 'th';
+                switch (day % 10) {
+                    case 1: return 'st';
+                    case 2: return 'nd';
+                    case 3: return 'rd';
+                    default: return 'th';
+                }
+            }
+
+            payBill(bill) {
+                if (bill.frequency === 'fixed') {
+                    this.markBillPaid(bill.id, bill.amount);
+                    this.showToast('Bill marked as paid');
+                    this.renderBills();
+                } else {
+                    const amount = prompt(`How much for ${bill.name}?`);
+                    if (amount) {
+                        this.markBillPaid(bill.id, amount);
+                        this.showToast('Bill marked as paid');
+                        this.renderBills();
+                    }
+                }
+            }
+
+            editBillForm(bill) {
+                this.editingBillId = bill.id;
+                document.getElementById('billFormTitle').textContent = 'Edit bill';
+                document.getElementById('billName').value = bill.name;
+                document.getElementById('billFrequency').value = bill.frequency;
+                document.getElementById('billAmount').value = bill.frequency === 'fixed' ? bill.amount : '';
+                document.getElementById('billDueDay').value = bill.dueDay;
+                document.getElementById('billAmountGroup').style.display = bill.frequency === 'fixed' ? 'block' : 'none';
+                this.switchScreen('bill-form-screen');
+            }
+
+            populateJarSelects() {
+                const addJar = document.getElementById('addJar');
+                const spendJar = document.getElementById('spendJar');
+
+                [addJar, spendJar].forEach(select => {
+                    const current = select.value;
+                    select.innerHTML = '<option value="">Select a jar</option>';
+                    this.jars.forEach(jar => {
+                        const option = document.createElement('option');
+                        option.value = jar.id;
+                        option.textContent = jar.name;
+                        select.appendChild(option);
+                    });
+                    select.value = current;
+                });
+            }
+
+            render() {
+                this.renderHome();
+                this.renderBills();
+                this.populateJarSelects();
+            }
+        }
+
+        // Initialize app
+        const app = new MoneyApp();
+    </script>
+</body>
+</html>

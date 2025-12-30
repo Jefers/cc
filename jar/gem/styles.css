@@ -1,0 +1,186 @@
+:root {
+    --bg: #FDFCF8;
+    --card: #FFFFFF;
+    --text: #2D2D2D;
+    --text-soft: #757575;
+    --accent: #1A1A1A;
+    --border: #F0EDE4;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.04);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    margin: 0; padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.5;
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+/* Typography */
+h1 { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
+.large-num { font-size: 3.5rem; font-weight: 700; letter-spacing: -2px; }
+.status-msg { font-size: 0.95rem; color: var(--text-soft); margin-top: 12px; }
+
+/* Layout */
+#app { max-width: 500px; margin: 0 auto; height: 100vh; position: relative; display: flex; flex-direction: column; }
+main { flex: 1; padding: 24px 20px 100px 20px; overflow-y: auto; scroll-behavior: smooth; }
+
+/* Jars */
+.jar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: var(--shadow);
+}
+
+.jar-card:active { transform: scale(0.97); }
+.jar-info h3 { font-size: 1rem; color: var(--text-soft); font-weight: 500; }
+.jar-amount { font-size: 1.4rem; font-weight: 600; }
+
+/* Custom Inputs */
+.input-group { margin-bottom: 24px; }
+.input-label { display: block; font-size: 0.9rem; color: var(--text-soft); margin-bottom: 8px; padding-left: 4px; }
+
+input, select {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    appearance: none;
+    transition: border-color 0.2s;
+}
+
+input:focus { border-color: var(--accent); }
+
+.amount-input-large {
+    text-align: center;
+    font-size: 3.5rem;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    padding: 20px 0;
+}
+
+/* Buttons */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    border-radius: 40px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease-out;
+    text-align: center;
+}
+
+.btn:active { transform: scale(0.96); opacity: 0.9; }
+.btn-secondary { background: var(--border); color: var(--text); margin-top: 12px; }
+
+/* Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 24px;
+    left: 20px;
+    right: 20px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    z-index: 100;
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.nav-item svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: var(--text-soft);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.3s;
+}
+
+.nav-item.active svg { stroke: var(--text); }
+
+/* Toasts */
+#toast-container {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--accent);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    animation: toastIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes toastIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Bill Item */
+.bill-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.bill-item:last-child { border-bottom: none; }
+
+/* Particle/Sparkle */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 999;
+}
