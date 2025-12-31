@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File System Navigator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #3a7bd5, #00d2ff);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .dir-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dir-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .dir-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .dir-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+        }
+
+        .dir-btn:hover::before {
+            animation: shine 0.8s ease;
+        }
+
+        @keyframes shine {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .dir-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+        }
+
+        .instructions h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions h2 i {
+            color: #00d2ff;
+        }
+
+        .instructions ol {
+            padding-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 0.8rem;
+        }
+
+        .instructions code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-folder-tree"></i> File System Navigator</h1>
+            <p class="subtitle">Click on any button below to navigate to the index.html file in the corresponding subdirectory.</p>
+        </header>
+
+        <div class="menu-grid" id="directory-buttons">
+            <!-- Directory buttons will be generated here -->
+        </div>
+
+        <div class="instructions">
+            <h2><i class="fas fa-plus-circle"></i> How to Add New Directories</h2>
+            <ol>
+                <li>Create a new subdirectory in your file system (e.g., <code>new-folder</code>)</li>
+                <li>Add an <code>index.html</code> file inside that subdirectory</li>
+                <li>Open this file in your editor and find the <code>directories</code> array in the JavaScript section</li>
+                <li>Add your new directory name to the array, following the same format</li>
+                <li>Save the file and refresh this page - a new button will appear automatically!</li>
+            </ol>
+            <p><strong>Example:</strong> To add a directory named "analytics", add <code>"analytics"</code> to the array.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>File System Navigator &copy; 2023 | Easily access subdirectory index files</p>
+    </footer>
+
+    <script>
+        // List of directory names - ADD NEW DIRECTORIES HERE
+        const directories = ["cl", "dp", "gr", "gl", "gp", "gm", "qw"];
+        
+        // Icons to use for the buttons
+        const icons = [
+            "fa-folder", "fa-folder-open", "fa-folder-plus", 
+            "fa-folder-tree", "fa-archive", "fa-box", "fa-database",
+            "fa-code", "fa-file-code", "fa-project-diagram"
+        ];
+        
+        // Get the container for the buttons
+        const buttonsContainer = document.getElementById('directory-buttons');
+        
+        // Function to create a button for each directory
+        function createDirectoryButtons() {
+            // Clear any existing content
+            buttonsContainer.innerHTML = '';
+            
+            // Create a button for each directory
+            directories.forEach((dir, index) => {
+                // Create button element
+                const button = document.createElement('a');
+                button.className = 'dir-btn';
+                button.href = `./${dir}/index.html`;
+                
+                // Select an icon (cycling through the icons array if needed)
+                const iconIndex = index % icons.length;
+                
+                // Set button content
+                button.innerHTML = `
+                    <div class="dir-icon">
+                        <i class="fas ${icons[iconIndex]}"></i>
+                    </div>
+                    <div class="dir-name">${dir.toUpperCase()}</div>
+                `;
+                
+                // Add button to container
+                buttonsContainer.appendChild(button);
+            });
+        }
+        
+        // Initialize the buttons when the page loads
+        document.addEventListener('DOMContentLoaded', createDirectoryButtons);
+        
+        // Optional: Log navigation attempts for debugging
+        document.querySelectorAll('.dir-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                console.log(`Navigating to: ${this.href}`);
+            });
+        });
+    </script>
+</body>
+</html>
