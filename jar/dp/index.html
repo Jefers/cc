@@ -58,6 +58,72 @@
         </div>
     </div>
 
+        <!-- Edit Bill Modal -->
+    <div class="modal-overlay" id="editBillModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Fix bill</div>
+                <button class="modal-close" id="editBillModalClose">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <div class="text-muted">Bill</div>
+                    <div style="font-size: 18px; margin: var(--spacing-sm) 0;" id="editBillNameDisplay"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBillName">What is it?</label>
+                    <input type="text" 
+                           class="input-text" 
+                           id="editBillName" 
+                           placeholder="e.g., Rent, Electricity" 
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">How often?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="editFrequencyFixed" name="editFrequency" value="fixed" class="radio-input" checked>
+                            <label for="editFrequencyFixed" class="radio-label">Every month</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="editFrequencyVariable" name="editFrequency" value="variable" class="radio-input">
+                            <label for="editFrequencyVariable" class="radio-label">Changes each month</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBillAmount">Amount</label>
+                    <input type="number" 
+                           class="input-text" 
+                           id="editBillAmount" 
+                           placeholder="0" 
+                           min="0" 
+                           step="0.01" 
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBillDueDay">Due day</label>
+                    <input type="number" 
+                           class="input-text" 
+                           id="editBillDueDay" 
+                           placeholder="1-31" 
+                           min="1" 
+                           max="31" 
+                           required>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-remove" id="removeBillBtn">Remove bill</button>
+                    <button class="btn btn-primary" id="saveBillChangesBtn">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Home Screen -->
     <div class="screen active" id="homeScreen">
         <div class="container">

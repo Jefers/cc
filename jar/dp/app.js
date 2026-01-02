@@ -436,7 +436,101 @@ const DataModel = {
         }
         
         return null;
+    },
+        // Get a bill by ID
+    getBillById: function(id) {
+        return this.bills.find(bill => bill.id === id);
+    },
+
+    // Update a bill
+    updateBill: function(billId, newName, newFrequency, newAmount, newDueDay) {
+        const bill = this.getBillById(billId);
+        if (!bill) return false;
+        
+        bill.name = newName.trim();
+        bill.frequency = newFrequency;
+        bill.amount = parseFloat(newAmount);
+        bill.dueDay = parseInt(newDueDay);
+        
+        if (bill.frequency === 'variable' && bill.lastAmount === null) {
+            bill.lastAmount = parseFloat(newAmount);
+        }
+        
+        // Update bill name in payment history if it exists
+        const billHistory = this.billPaymentHistory.find(h => h.billId === billId);
+        if (billHistory) {
+            billHistory.billName = newName.trim();
+        }
+        
+        this.saveToStorage();
+        return true;
+    },
+
+    // Remove a bill
+    removeBill: function(billId) {
+        const billIndex = this.bills.findIndex(b => b.id === billId);
+        if (billIndex === -1) return false;
+        
+        // Remove bill from bills array
+        this.bills.splice(billIndex, 1);
+        
+        // Remove bill from payment history
+        const historyIndex = this.billPaymentHistory.findIndex(h => h.billId === billId);
+        if (historyIndex !== -1) {
+            this.billPaymentHistory.splice(historyIndex, 1);
+        }
+        
+        this.saveToStorage();
+        return true;
+    },
+
+    // Unmark a bill as paid (reverse payment)
+    unmarkBillAsPaid: function(billId) {
+        const bill = this.getBillById(billId);
+        if (!bill) return false;
+        
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        
+        // Check if bill is actually marked as paid this month
+        if (bill.lastPaidMonth !== currentMonth || bill.lastPaidYear !== currentYear) {
+            return false;
+        }
+        
+        // Reset bill payment status
+        bill.lastPaidMonth = null;
+        bill.lastPaidYear = null;
+        
+        // Find the payment in history
+        const billHistory = this.billPaymentHistory.find(h => h.billId === billId);
+        if (billHistory && billHistory.payments.length > 0) {
+            // Remove the most recent payment (current month)
+            billHistory.payments = billHistory.payments.filter(p => 
+                !(p.month === currentMonth && p.year === currentYear)
+            );
+        }
+        
+        // Add back to bills jar
+        const billsJar = this.getJarById('bills-jar');
+        if (billsJar) {
+            const paidAmount = bill.frequency === 'variable' ? bill.lastAmount || bill.amount : bill.amount;
+            billsJar.amount += paidAmount;
+            
+            // Create a reverse movement
+            this.addMovement(
+                paidAmount, 
+                'in', 
+                'bills-jar', 
+                `Return: ${bill.name}`, 
+                'Bill payment reversed'
+            );
+        }
+        
+        this.saveToStorage();
+        return true;
     }
+    
 };
 
 // =========================================================================
@@ -490,6 +584,18 @@ const editNoteInput = document.getElementById('editNote');
 const editNoteContainer = document.getElementById('editNoteContainer');
 const removeTransactionBtn = document.getElementById('removeTransactionBtn');
 const saveTransactionBtn = document.getElementById('saveTransactionBtn');
+
+// Bill edit modal elements
+const editBillModal = document.getElementById('editBillModal');
+const editBillModalClose = document.getElementById('editBillModalClose');
+const editBillNameDisplay = document.getElementById('editBillNameDisplay');
+const editBillNameInput = document.getElementById('editBillName');
+const editFrequencyFixed = document.getElementById('editFrequencyFixed');
+const editFrequencyVariable = document.getElementById('editFrequencyVariable');
+const editBillAmountInput = document.getElementById('editBillAmount');
+const editBillDueDayInput = document.getElementById('editBillDueDay');
+const removeBillBtn = document.getElementById('removeBillBtn');
+const saveBillChangesBtn = document.getElementById('saveBillChangesBtn');
 
 // Success message
 const successMessageEl = document.getElementById('successMessage');
@@ -606,6 +712,69 @@ function populateJarSelects() {
             select.appendChild(option);
         });
     });
+}
+
+// Show bill edit modal
+function showEditBillModal() {
+    editBillModal.classList.add('active');
+}
+
+// Hide bill edit modal
+function hideEditBillModal() {
+    editBillModal.classList.remove('active');
+}
+
+// Open bill editing modal
+function openEditBillModal(billId) {
+    const bill = DataModel.getBillById(billId);
+    if (!bill) return;
+    
+    AppState.currentBillId = billId;
+    
+    editBillNameDisplay.textContent = bill.name;
+    editBillNameInput.value = bill.name;
+    editBillAmountInput.value = formatNumber(bill.amount);
+    editBillDueDayInput.value = bill.dueDay;
+    
+    if (bill.frequency === 'fixed') {
+        editFrequencyFixed.checked = true;
+    } else {
+        editFrequencyVariable.checked = true;
+    }
+    
+    showEditBillModal();
+}
+
+// Open bill payment reversal modal
+function openReverseBillPaymentModal(billId) {
+    const bill = DataModel.getBillById(billId);
+    if (!bill) return;
+    
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    
+    // Check if bill is actually paid this month
+    if (bill.lastPaidMonth !== currentMonth || bill.lastPaidYear !== currentYear) {
+        showSuccessMessage('This bill is not marked as paid this month');
+        return;
+    }
+    
+    const paidAmount = bill.frequency === 'variable' ? bill.lastAmount || bill.amount : bill.amount;
+    
+    if (confirm(`Unmark ${bill.name} as paid and return ${formatNumber(paidAmount)} to Bills jar?`)) {
+        const success = DataModel.unmarkBillAsPaid(billId);
+        
+        if (success) {
+            showSuccessMessage('Bill payment reversed');
+            renderBillsScreen();
+            if (AppState.currentScreen === 'billHistoryScreen') {
+                renderBillHistoryScreen();
+            }
+        } else {
+            showSuccessMessage('Could not reverse payment');
+        }
+    }
 }
 
 // =========================================================================
@@ -739,13 +908,19 @@ function renderBillHistoryScreen() {
     let historyHTML = '';
     
     billHistory.forEach(bill => {
+        const currentBill = DataModel.getBillById(bill.billId);
+        if (!currentBill) return;
+        
         historyHTML += `
-            <div class="history-item">
+            <div class="history-item bill-history-item" data-bill-id="${bill.billId}">
                 <div class="history-header">
                     <div>
                         <div class="bill-name">${bill.billName}</div>
                         <div class="bill-details">Due day ${bill.dueDay}</div>
                     </div>
+                    <button class="btn-small btn-outline edit-bill-btn" data-bill-id="${bill.billId}">
+                        <i class="fas fa-pen"></i>
+                    </button>
                 </div>
                 <div class="history-months">
         `;
@@ -771,6 +946,39 @@ function renderBillHistoryScreen() {
     });
     
     billHistoryContainer.innerHTML = historyHTML;
+    
+    // Add click handlers to history items
+    document.querySelectorAll('.bill-history-item[data-bill-id]').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking the edit button
+            if (!e.target.closest('.edit-bill-btn')) {
+                const billId = this.getAttribute('data-bill-id');
+                const currentBill = DataModel.getBillById(billId);
+                
+                if (currentBill) {
+                    // Check if bill is paid this month
+                    const currentDate = new Date();
+                    const currentMonth = currentDate.getMonth();
+                    const currentYear = currentDate.getFullYear();
+                    
+                    if (currentBill.lastPaidMonth === currentMonth && currentBill.lastPaidYear === currentYear) {
+                        openReverseBillPaymentModal(billId);
+                    } else {
+                        openEditBillModal(billId);
+                    }
+                }
+            }
+        });
+    });
+    
+    // Add click handlers to edit buttons
+    document.querySelectorAll('.edit-bill-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const billId = this.getAttribute('data-bill-id');
+            openEditBillModal(billId);
+        });
+    });
 }
 
 // =========================================================================
@@ -1000,7 +1208,9 @@ function renderBillsScreen() {
                 <div class="bill-amount">${formatNumber(bill.amount)}</div>
             `;
             
-            billItem.addEventListener('click', () => {
+            // For upcoming bills, click to mark as paid
+            billItem.addEventListener('click', (e) => {
+                e.stopPropagation();
                 AppState.currentBillId = bill.id;
                 
                 if (bill.frequency === 'variable') {
@@ -1017,6 +1227,19 @@ function renderBillsScreen() {
                 }
             });
             
+            // Add edit button for upcoming bills
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn-small btn-outline';
+            editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+            editBtn.style.marginTop = '8px';
+            editBtn.style.width = 'auto';
+            editBtn.style.padding = '4px 12px';
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditBillModal(bill.id);
+            });
+            
+            billItem.appendChild(editBtn);
             upcomingBillsEl.appendChild(billItem);
         });
     }
@@ -1029,6 +1252,7 @@ function renderBillsScreen() {
         paid.forEach(bill => {
             const billItem = document.createElement('div');
             billItem.className = 'card bill-item bill-paid';
+            billItem.setAttribute('data-bill-id', bill.id);
             
             billItem.innerHTML = `
                 <div class="bill-info">
@@ -1038,6 +1262,25 @@ function renderBillsScreen() {
                 <div class="bill-amount">${formatNumber(bill.amount)}</div>
             `;
             
+            // For paid bills, click to reverse payment
+            billItem.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openReverseBillPaymentModal(bill.id);
+            });
+            
+            // Add edit button for paid bills
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn-small btn-outline';
+            editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+            editBtn.style.marginTop = '8px';
+            editBtn.style.width = 'auto';
+            editBtn.style.padding = '4px 12px';
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditBillModal(bill.id);
+            });
+            
+            billItem.appendChild(editBtn);
             paidBillsEl.appendChild(billItem);
         });
     }
@@ -1262,6 +1505,70 @@ modalClose.addEventListener('click', hideModal);
 editTransactionModal.addEventListener('click', function(e) {
     if (e.target === editTransactionModal) {
         hideModal();
+    }
+});
+
+// Handle save bill changes
+saveBillChangesBtn.addEventListener('click', function() {
+    const billId = AppState.currentBillId;
+    const newName = editBillNameInput.value.trim();
+    const newFrequency = document.querySelector('input[name="editFrequency"]:checked').value;
+    const newAmount = editBillAmountInput.value;
+    const newDueDay = editBillDueDayInput.value;
+    
+    if (!billId || !newName || !newAmount || parseFloat(newAmount) <= 0 || !newDueDay || newDueDay < 1 || newDueDay > 31) {
+        showSuccessMessage('Please fill all fields correctly');
+        return;
+    }
+    
+    const success = DataModel.updateBill(billId, newName, newFrequency, newAmount, newDueDay);
+    
+    if (success) {
+        showSuccessMessage('Bill updated 👍');
+        hideEditBillModal();
+        
+        // Refresh the current screen
+        if (AppState.currentScreen === 'billsScreen') {
+            renderBillsScreen();
+        } else if (AppState.currentScreen === 'billHistoryScreen') {
+            renderBillHistoryScreen();
+        }
+    } else {
+        showSuccessMessage('Could not update bill');
+    }
+});
+
+// Handle remove bill
+removeBillBtn.addEventListener('click', function() {
+    const billId = AppState.currentBillId;
+    
+    if (!billId) return;
+    
+    const bill = DataModel.getBillById(billId);
+    if (bill && confirm(`Remove ${bill.name} bill completely? This cannot be undone.`)) {
+        const success = DataModel.removeBill(billId);
+        
+        if (success) {
+            showSuccessMessage('Bill removed');
+            hideEditBillModal();
+            
+            // Refresh the current screen
+            if (AppState.currentScreen === 'billsScreen') {
+                renderBillsScreen();
+            } else if (AppState.currentScreen === 'billHistoryScreen') {
+                renderBillHistoryScreen();
+            }
+        } else {
+            showSuccessMessage('Could not remove bill');
+        }
+    }
+});
+
+// Close bill modal handlers
+editBillModalClose.addEventListener('click', hideEditBillModal);
+editBillModal.addEventListener('click', function(e) {
+    if (e.target === editBillModal) {
+        hideEditBillModal();
     }
 });
 

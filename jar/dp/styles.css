@@ -9,6 +9,7 @@
 :root {
     --primary: #5B8CFF;
     --primary-light: #E8F0FF;
+    --primary-transparent: rgba(91, 140, 255, 0);
     --secondary: #FF9F5B;
     --secondary-light: #FFF1E8;
     --success: #5BCF7F;
@@ -22,6 +23,7 @@
     --border: #E6E9F0;
     --radius: 20px;
     --radius-sm: 12px;
+    --spacing-xxs: 2px;
     --spacing-xs: 8px;
     --spacing-sm: 16px;
     --spacing-md: 24px;
@@ -294,7 +296,7 @@ h3 {
 .btn-outline {
     background-color: transparent;
     color: var(--primary);
-    border: 2px solid var(--primary);
+    border: 2px solid var(--primary-transparent);
 }
 
 .btn-outline:hover, .btn-outline:active {
@@ -392,7 +394,7 @@ h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-sm) 0;
+    padding: var(--spacing-sm);
     border-bottom: 1px solid var(--border);
 }
 
@@ -700,4 +702,25 @@ h3 {
         box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
         min-height: 100vh;
     }
+}
+
+/* Bill Edit Modal Specific */
+.bill-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bill-item:hover {
+    background-color: var(--primary-light);
+    border-radius: var(--radius-sm);
+}
+
+.bill-history-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bill-history-item:hover {
+    background-color: var(--primary-light);
+    border-radius: var(--radius-sm);
 }
