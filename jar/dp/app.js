@@ -600,6 +600,9 @@ const saveBillChangesBtn = document.getElementById('saveBillChangesBtn');
 // Success message
 const successMessageEl = document.getElementById('successMessage');
 
+// Reset app elements
+const resetAppBtn = document.getElementById('resetAppBtn');
+
 // =========================================================================
 // UTILITY FUNCTIONS
 // =========================================================================
@@ -775,6 +778,77 @@ function openReverseBillPaymentModal(billId) {
             showSuccessMessage('Could not reverse payment');
         }
     }
+}
+
+// Reset the app data
+function resetAppData() {
+    // Create a confirmation modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal" style="max-width: 350px;">
+            <div class="modal-header">
+                <div class="modal-title">Start fresh?</div>
+                <button class="modal-close" id="closeResetModal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="reset-warning">
+                    <p>This will delete all your data:</p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>All money movements</li>
+                        <li>All bills</li>
+                        <li>All bill history</li>
+                        <li>Jar balances (reset to zero)</li>
+                    </ul>
+                    <p style="margin-top: 12px; font-weight: 600;">This cannot be undone.</p>
+                </div>
+                <div class="reset-buttons">
+                    <button class="btn reset-cancel-btn" id="cancelReset">No, keep my data</button>
+                    <button class="btn reset-confirm-btn" id="confirmReset">Yes, start fresh</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.classList.add('active');
+    
+    // Event handlers
+    document.getElementById('closeResetModal').onclick = () => {
+        document.body.removeChild(modal);
+    };
+    
+    document.getElementById('cancelReset').onclick = () => {
+        document.body.removeChild(modal);
+    };
+    
+    document.getElementById('confirmReset').onclick = () => {
+        // Clear all localStorage data
+        localStorage.removeItem('moneyJars_initialized');
+        localStorage.removeItem('moneyJars_jars');
+        localStorage.removeItem('moneyJars_movements');
+        localStorage.removeItem('moneyJars_bills');
+        localStorage.removeItem('moneyJars_billPaymentHistory');
+        localStorage.removeItem('moneyJars_appState');
+        
+        // Remove modal
+        document.body.removeChild(modal);
+        
+        // Show success message
+        showSuccessMessage('Starting fresh 👍');
+        
+        // Reload the page to reinitialize
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    };
+    
+    // Close on outside click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
 }
 
 // =========================================================================
@@ -1570,6 +1644,12 @@ editBillModal.addEventListener('click', function(e) {
     if (e.target === editBillModal) {
         hideEditBillModal();
     }
+});
+
+// Handle reset app button
+resetAppBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    resetAppData();
 });
 
 // =========================================================================

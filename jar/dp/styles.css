@@ -724,3 +724,36 @@ h3 {
     background-color: var(--primary-light);
     border-radius: var(--radius-sm);
 }
+
+/* Reset Button Styling */
+.reset-warning {
+    background-color: #FFF8E8;
+    border: 1px solid #FFC107;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.reset-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.reset-confirm-btn {
+    background-color: #FF5B5B;
+    color: white;
+}
+
+.reset-confirm-btn:hover {
+    background-color: #FF4747;
+}
+
+.reset-cancel-btn {
+    background-color: var(--text-lighter);
+    color: white;
+}
+
+.reset-cancel-btn:hover {
+    background-color: var(--text-light);
+}
