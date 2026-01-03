@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Power Simulator V3</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --panel-bg: #1e1e24;
+            --card-bg: #2a2a32;
+            --text-main: #e1e1e6;
+            --text-muted: #a8a8b3;
+            --accent-color: #04d361;
+            --accent-glow: rgba(4, 211, 97, 0.4);
+            --danger-color: #ff3b3b;
+            --warning-color: #ffba00;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --border-radius: 8px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header & Controls --- */
+        header {
+            background-color: var(--panel-bg);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        h1 { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .controls { display: flex; gap: 10px; align-items: center; }
+        
+        button {
+            background: var(--card-bg);
+            border: 1px solid #444;
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        button:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        button.primary { background: var(--accent-color); color: #000; border: none; font-weight: 600; }
+        button.primary:hover { background: #03b653; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        input[type="file"] { display: none; }
+
+        /* --- Dashboard (Meters) --- */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(4,211,97,0.05) 0%, transparent 100%);
+            border-bottom: 1px solid #333;
+        }
+
+        .meter-card {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .meter-card h3 { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .meter-value { font-size: 2.5rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+        .meter-unit { font-size: 1rem; color: var(--text-muted); margin-left: 5px; }
+        
+        .main-meter .meter-value { color: var(--accent-color); text-shadow: 0 0 10px var(--accent-glow); }
+
+        .progress-bar {
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* --- Main Simulation Area --- */
+        main {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .sim-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background: var(--panel-bg);
+            padding: 1rem;
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .time-display {
+            font-family: monospace;
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            background: #000;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            border: 1px solid #333;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .speed-label {
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+            margin-right: 5px;
+        }
+
+        .speed-btn {
+            min-width: 65px; /* Increased to prevent text cutoff */
+            height: 32px;
+            border-radius: 16px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            border: 1px solid #555;
+            background: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .speed-btn:hover { border-color: var(--accent-color); }
+        .speed-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: bold; }
+
+        /* --- Devices Grid --- */
+        .house-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .room-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.3s;
+        }
+
+        .room-card.tripped {
+            border: 1px solid var(--danger-color);
+            box-shadow: 0 0 15px rgba(255, 59, 59, 0.2) inset;
+            animation: blink-red 1s infinite;
+        }
+
+        @keyframes blink-red {
+            0% { background-color: var(--card-bg); }
+            50% { background-color: rgba(255, 59, 59, 0.1); }
+            100% { background-color: var(--card-bg); }
+        }
+
+        .room-header {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .room-header h4 { font-weight: 600; }
+
+        .room-meter {
+            padding: 0.8rem 1rem;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .room-amps { font-weight: bold; color: var(--warning-color); }
+        .room-limit { color: var(--text-muted); }
+
+        .device-list {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .device-item:hover { background: rgba(255,255,255,0.05); }
+
+        .device-info { display: flex; flex-direction: column; }
+        .device-name { font-size: 0.95rem; font-weight: 500; }
+        .device-watts { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        input:disabled + .slider { background-color: #333; cursor: not-allowed; opacity: 0.5; }
+
+        /* Toast / Messages */
+        #message-area {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+        .toast {
+            background: var(--panel-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        }
+        .toast.error { border-left-color: var(--danger-color); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PowerSim <span style="font-size:0.8em; color:var(--text-muted)">V3</span></h1>
+        <div class="controls">
+            <button onclick="document.getElementById('fileInput').click()">Import JSON</button>
+            <button onclick="loadExampleData()">Load Example Data</button>
+            <button onclick="clearData()" style="color: var(--danger-color); border-color: var(--danger-color)">Clear Data</button>
+            <input type="file" id="fileInput" accept=".json" onchange="handleFileSelect(event)">
+        </div>
+    </header>
+
+    <div id="dashboard" class="dashboard hidden">
+        <div class="meter-card main-meter">
+            <h3>Total Energy Consumed</h3>
+            <div class="meter-value" id="disp-kwh">0.00000</div>
+            <div class="meter-unit">kWh</div>
+            <div class="progress-bar"><div class="progress-fill" id="bar-kwh" style="width: 0%"></div></div>
+        </div>
+
+        <div class="meter-card">
+            <h3>Total Cost</h3>
+            <div class="meter-value" style="color: var(--warning-color)" id="disp-cost">0.00</div>
+            <div class="meter-unit" id="disp-currency">Currency</div>
+        </div>
+
+        <div class="meter-card">
+            <h3>House Load</h3>
+            <div class="meter-value" id="disp-watts">0</div>
+            <div class="meter-unit">Watts (Global)</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top:5px;">
+                Breakers located at room level
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div id="sim-controls-area" class="sim-controls hidden">
+            <button id="btn-play-pause" class="primary" onclick="toggleSimulation()">Start Simulation</button>
+            
+            <div class="time-display" id="sim-clock">Day 0, 00:00:00</div>
+            
+            <div class="speed-control">
+                <span class="speed-label">SPEED:</span>
+                <button class="speed-btn" onclick="setSpeed(1)">1x</button>
+                <button class="speed-btn" onclick="setSpeed(60)">60x</button>
+                <button class="speed-btn" onclick="setSpeed(600)">600x</button>
+                <button class="speed-btn" onclick="setSpeed(3600)">3600x</button>
+            </div>
+            
+            <button onclick="resetSimulation()" style="border-color: var(--danger-color); color: var(--danger-color)">Reset</button>
+        </div>
+
+        <div id="house-grid" class="house-grid">
+            <!-- Initial Message -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted);">
+                <p>Please import a JSON file or click "Load Example Data" to begin.</p>
+                <p style="font-size: 0.8em; margin-top: 1rem; opacity: 0.7">Data will persist after refresh.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="message-area"></div>
+
+    <script>
+        const STORAGE_KEY = 'powerSimState_v3';
+
+        // --- State Management ---
+        const defaultState = {
+            config: {
+                voltage: 220,
+                maxAmps: 10, 
+                costPerKwh: 0.4,
+                currency: '$'
+            },
+            rooms: [], // { id, name, maxAmps, tripped, devices: [] }
+            sim: {
+                running: false,
+                speedMultiplier: 60,
+                totalSimulatedTimeMs: 0,
+                totalEnergyJoules: 0
+            }
+        };
+
+        // Deep copy for default
+        let state = JSON.parse(JSON.stringify(defaultState));
+
+        // --- DOM Elements ---
+        const els = {
+            dashboard: document.getElementById('dashboard'),
+            houseGrid: document.getElementById('house-grid'),
+            simControls: document.getElementById('sim-controls-area'),
+            btnPlayPause: document.getElementById('btn-play-pause'),
+            dispKwh: document.getElementById('disp-kwh'),
+            dispCost: document.getElementById('disp-cost'),
+            dispCurrency: document.getElementById('disp-currency'),
+            dispWatts: document.getElementById('disp-watts'),
+            simClock: document.getElementById('sim-clock'),
+            barKwh: document.getElementById('bar-kwh'),
+            fileInput: document.getElementById('fileInput')
+        };
+
+        // --- Core Logic ---
+
+        function init() {
+            // Try load from storage
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Merge saved state
+                    state = { ...defaultState, ...parsed };
+                    // Force pause on load
+                    state.sim.running = false; 
+                    restoreUI();
+                    showToast("Session restored", "success");
+                } catch (e) {
+                    console.error("Save file corrupted", e);
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            } else {
+                // Init clean
+                resetUI();
+            }
+            
+            // Start the loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        function saveState() {
+            try {
+                // Don't save running state to prevent auto-run on refresh
+                const toSave = JSON.parse(JSON.stringify(state));
+                toSave.sim.running = false; 
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+            } catch (e) {
+                console.warn("Could not save to local storage", e);
+            }
+        }
+
+        function clearData() {
+            if(confirm("Are you sure you want to clear all saved data?")) {
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch(e){}
+                location.reload();
+            }
+        }
+
+        function restoreUI() {
+            if (state.rooms.length > 0) {
+                els.dashboard.classList.remove('hidden');
+                els.simControls.classList.remove('hidden');
+                els.dispCurrency.textContent = `Cost (@ ${state.config.costPerKwh}/kWh)`;
+                renderHouse();
+                updateUI();
+                updatePlayButton();
+            } else {
+                resetUI();
+            }
+        }
+        
+        function resetUI() {
+            els.dashboard.classList.add('hidden');
+            els.simControls.classList.add('hidden');
+            els.houseGrid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted);">
+                    <p>Please import a JSON file or click "Load Example Data" to begin.</p>
+                </div>
+            `;
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    processJsonData(json);
+                    showToast("Data imported successfully!", "success");
+                    saveState();
+                } catch (err) {
+                    console.error(err);
+                    showToast("Invalid JSON file", "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function loadExampleData() {
+            const example = {
+              "app": "Power Planner",
+              "version": "V1.0",
+              "timestamp": "2026-01-03T18:00:54.415Z",
+              "data": {
+                "estimator_data": {
+                  "settings": { "voltage": 220, "maxAmps": 10, "costPerKwh": 0.4 },
+                  "sockets": [
+                    { "id": "1767432771555", "name": "Office", "devices": [ { "name": "Computer", "watts": 150, "hours": 8 }, { "name": "Lamps", "watts": 100, "hours": 8 }, { "name": "Fan", "watts": 1500, "hours": 8 } ] },
+                    { "id": "1767433054155", "name": "Kitchen", "devices": [ { "name": "Fridge", "watts": 120, "hours": 24 }, { "name": "Kettle", "watts": 1000, "hours": 0.5 } ] },
+                    { "id": "1767444255485", "name": "Living room", "devices": [ { "name": "charger", "watts": 20, "hours": 5 }, { "name": "q", "watts": 150, "hours": 2 }, { "name": "r", "watts": 300, "hours": 2 }, { "name": "t", "watts": 700, "hours": 4 } ] },
+                    { "id": "1767461842993", "name": "Living room 2", "devices": [ { "name": "Power Fan", "watts": 1500, "hours": 24 } ] },
+                    { "id": "1767462195545", "name": "Master Bedroom", "devices": [ { "name": "Bedside lamp", "watts": 50, "hours": 8 }, { "name": "Charger", "watts": 20, "hours": 10 }, { "name": "Hair Dryer", "watts": 1500, "hours": 0.16 } ] }
+                  ],
+                  "hardwired": [
+                    { "name": "Air conditioner", "watts": 2000, "hours": 8 },
+                    { "name": "Bathroom Light", "watts": 30, "hours": 3 },
+                    { "name": "Kitchen Lights", "watts": 100, "hours": 4 },
+                    { "name": "Living room Lights", "watts": 120, "hours": 6 },
+                    { "name": "Bedroom Lights", "watts": 100, "hours": 6 }
+                  ]
+                }
+              }
+            };
+            processJsonData(example);
+            showToast("Example data loaded", "success");
+            saveState();
+        }
+
+        function processJsonData(json) {
+            // Reset State
+            state.sim = {
+                running: false,
+                speedMultiplier: 60,
+                totalSimulatedTimeMs: 0,
+                totalEnergyJoules: 0
+            };
+            state.rooms = [];
+
+            // Parse Config
+            const settings = json.data.estimator_data.settings;
+            state.config.voltage = settings.voltage || 220;
+            state.config.maxAmps = settings.maxAmps || 10;
+            state.config.costPerKwh = settings.costPerKwh || 0.4;
+
+            // Parse Sockets (Rooms)
+            const sockets = json.data.estimator_data.sockets;
+            if (sockets) {
+                sockets.forEach(socket => {
+                    const devices = socket.devices.map(d => ({
+                        id: `dev-${socket.id}-${d.name}`,
+                        name: d.name,
+                        watts: d.watts,
+                        isOn: false
+                    }));
+                    
+                    state.rooms.push({
+                        id: socket.id,
+                        name: socket.name,
+                        maxAmps: state.config.maxAmps,
+                        tripped: false,
+                        devices: devices,
+                        type: 'socket'
+                    });
+                });
+            }
+
+            // Parse Hardwired
+            const hardwired = json.data.estimator_data.hardwired;
+            if (hardwired && hardwired.length > 0) {
+                const devices = hardwired.map(d => ({
+                    id: `hw-${d.name}`,
+                    name: d.name,
+                    watts: d.watts,
+                    isOn: false
+                }));
+
+                state.rooms.push({
+                    id: 'hw-main',
+                    name: 'Central / Hardwired',
+                    maxAmps: state.config.maxAmps, 
+                    tripped: false,
+                    devices: devices,
+                    type: 'hardwired'
+                });
+            }
+
+            // Update UI
+            els.dashboard.classList.remove('hidden');
+            els.simControls.classList.remove('hidden');
+            els.dispCurrency.textContent = `Cost (@ ${state.config.costPerKwh}/kWh)`;
+            
+            renderHouse();
+            updateUI();
+            updatePlayButton();
+        }
+
+        function renderHouse() {
+            els.houseGrid.innerHTML = '';
+            
+            state.rooms.forEach(room => {
+                const card = document.createElement('div');
+                card.className = `room-card ${room.tripped ? 'tripped' : ''}`;
+                card.id = `room-${room.id}`;
+
+                const header = document.createElement('div');
+                header.className = 'room-header';
+                header.innerHTML = `
+                    <h4>${room.name}</h4>
+                    ${room.tripped ? '<span style="color:var(--danger-color); font-weight:bold; font-size:0.8em;">TRIPPED</span>' : ''}
+                `;
+
+                // Room Meter
+                const meter = document.createElement('div');
+                meter.className = 'room-meter';
+                meter.id = `meter-${room.id}`;
+                meter.innerHTML = `
+                    <span>Load: <span class="room-amps">0.0</span> / <span class="room-limit">${room.maxAmps}</span> Amps</span>
+                    <div class="progress-bar" style="width: 100px; height: 4px; margin-top:0;">
+                        <div class="progress-fill" style="width: 0%; background-color: var(--warning-color)"></div>
+                    </div>
+                `;
+
+                const list = document.createElement('div');
+                list.className = 'device-list';
+
+                room.devices.forEach(dev => {
+                    const item = document.createElement('div');
+                    item.className = 'device-item';
+                    item.innerHTML = `
+                        <div class="device-info">
+                            <span class="device-name">${dev.name}</span>
+                            <span class="device-watts">${dev.watts}W</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" class="device-toggle" 
+                                   data-room="${room.id}" 
+                                   data-device="${dev.id}" 
+                                   ${room.tripped ? 'disabled' : ''} 
+                                   ${dev.isOn ? 'checked' : ''}>
+                            <span class="slider"></span>
+                        </label>
+                    `;
+                    list.appendChild(item);
+                });
+
+                card.appendChild(header);
+                card.appendChild(meter);
+                card.appendChild(list);
+                els.houseGrid.appendChild(card);
+            });
+
+            // Attach Listeners robustly
+            document.querySelectorAll('.device-toggle').forEach(box => {
+                box.addEventListener('change', (e) => {
+                    const roomId = e.target.dataset.room;
+                    const devId = e.target.dataset.device;
+                    const isChecked = e.target.checked;
+                    handleToggle(roomId, devId, isChecked);
+                });
+            });
+        }
+
+        function handleToggle(roomId, devId, isChecked) {
+            const room = state.rooms.find(r => r.id === roomId);
+            if (!room) return;
+
+            if (room.tripped) {
+                showToast(`Breaker tripped in ${room.name}! Cannot turn on.`, "error");
+                // Force UI update to reflect the uncheck
+                renderHouse();
+                return;
+            }
+
+            const dev = room.devices.find(d => d.id === devId);
+            if (dev) {
+                dev.isOn = isChecked;
+                saveState();
+                updateUI(); // Immediate visual feedback
+                
+                // Check overload immediately on toggle
+                const roomWatts = room.devices.reduce((sum, d) => sum + (d.isOn ? d.watts : 0), 0);
+                const roomAmps = roomWatts / state.config.voltage;
+                if (roomAmps > room.maxAmps) {
+                    tripBreaker(room);
+                }
+            }
+        }
+
+        function getGlobalLoad() {
+            let totalWatts = 0;
+            state.rooms.forEach(room => {
+                if (!room.tripped) {
+                    totalWatts += room.devices.reduce((sum, d) => sum + (d.isOn ? d.watts : 0), 0);
+                }
+            });
+            return totalWatts;
+        }
+
+        function toggleSimulation() {
+            if (state.rooms.length === 0) return;
+            
+            state.sim.running = !state.sim.running;
+            updatePlayButton();
+            saveState();
+        }
+
+        function updatePlayButton() {
+            if (state.sim.running) {
+                els.btnPlayPause.textContent = "Pause Simulation";
+            } else {
+                els.btnPlayPause.textContent = "Start Simulation";
+            }
+        }
+
+        function setSpeed(multiplier) {
+            state.sim.speedMultiplier = multiplier;
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                const val = parseInt(btn.textContent);
+                btn.classList.toggle('active', val === multiplier);
+            });
+            saveState();
+        }
+
+        function resetSimulation() {
+            // Reset Simulation State
+            state.sim.totalSimulatedTimeMs = 0;
+            state.sim.totalEnergyJoules = 0;
+            state.sim.running = false;
+
+            // Reset Devices/Breakers
+            state.rooms.forEach(r => {
+                r.tripped = false;
+                r.devices.forEach(d => d.isOn = false);
+            });
+            
+            updatePlayButton();
+            renderHouse();
+            updateUI();
+            saveState(); // Save the clean state
+            showToast("Simulation Reset", "success");
+        }
+
+        function tripBreaker(room) {
+            room.tripped = true;
+            room.devices.forEach(d => d.isOn = false);
+            
+            showToast(`TRIPPED! ${room.name} overloaded.`, "error");
+            
+            // Redraw immediately to show tripped state and disable switches
+            renderHouse();
+            updateUI();
+            saveState();
+        }
+
+        let lastTimestamp = 0;
+
+        function gameLoop(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const dtReal = timestamp - lastTimestamp;
+            lastTimestamp = timestamp;
+
+            if (state.sim.running) {
+                const dtSim = dtReal * state.sim.speedMultiplier;
+                state.sim.totalSimulatedTimeMs += dtSim;
+
+                // Logic per Room
+                state.rooms.forEach(room => {
+                    if (room.tripped) return; 
+
+                    const roomWatts = room.devices.reduce((sum, d) => sum + (d.isOn ? d.watts : 0), 0);
+                    const roomAmps = roomWatts / state.config.voltage;
+
+                    // Check Breaker Limit (Dynamic)
+                    if (roomAmps > room.maxAmps) {
+                        tripBreaker(room);
+                    } else {
+                        // Add Energy
+                        const joules = roomWatts * (dtSim / 1000);
+                        state.sim.totalEnergyJoules += joules;
+                    }
+                });
+
+                updateUI();
+            } else {
+                // Even if paused, update clocks/meters to handle any manual toggles
+                // But we only need to do this if something changed.
+                // For simplicity, we call it every frame but it's lightweight.
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateUI() {
+            const globalWatts = getGlobalLoad();
+            updateMeters(globalWatts, state.sim.totalEnergyJoules);
+            updateClock(state.sim.totalSimulatedTimeMs);
+            updateRoomMeters();
+        }
+
+        function updateRoomMeters() {
+            state.rooms.forEach(room => {
+                const meterEl = document.getElementById(`meter-${room.id}`);
+                if (!meterEl) return;
+
+                let watts = 0;
+                if (!room.tripped) {
+                    watts = room.devices.reduce((sum, d) => sum + (d.isOn ? d.watts : 0), 0);
+                }
+                const amps = watts / state.config.voltage;
+                
+                const ampsText = meterEl.querySelector('.room-amps');
+                ampsText.textContent = amps.toFixed(1);
+                
+                const bar = meterEl.querySelector('.progress-fill');
+                const percent = Math.min((amps / room.maxAmps) * 100, 100);
+                bar.style.width = `${percent}%`;
+                
+                if (room.tripped) {
+                    ampsText.style.color = 'var(--danger-color)';
+                    bar.style.backgroundColor = 'var(--danger-color)';
+                } else if (amps > room.maxAmps * 0.8) {
+                    ampsText.style.color = 'var(--warning-color)';
+                    bar.style.backgroundColor = 'var(--warning-color)';
+                } else {
+                    ampsText.style.color = 'var(--warning-color)';
+                    bar.style.backgroundColor = 'var(--accent-color)';
+                }
+            });
+        }
+
+        function updateMeters(currentWatts, totalJoules) {
+            const kwh = totalJoules / 3600000;
+            const cost = kwh * state.config.costPerKwh;
+
+            els.dispKwh.textContent = kwh.toFixed(5);
+            els.dispCost.textContent = cost.toFixed(2);
+            els.dispWatts.textContent = Math.round(currentWatts);
+
+            const visualScale = 10; 
+            const kwhVisualPercent = (kwh % visualScale) * (100 / visualScale);
+            els.barKwh.style.width = `${kwhVisualPercent}%`;
+        }
+
+        function updateClock(totalMs) {
+            const days = Math.floor(totalMs / 86400000);
+            const msInDay = totalMs % 86400000;
+            
+            const date = new Date(msInDay);
+            const hours = date.getUTCHours();
+            const minutes = date.getUTCMinutes();
+            const seconds = date.getUTCSeconds();
+
+            const pad = (n) => n.toString().padStart(2, '0');
+            els.simClock.textContent = `Day ${days}, ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = msg;
+            const area = document.getElementById('message-area');
+            area.appendChild(toast);
+            
+            // Remove toasts older than 3s logic
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Start ---
+        // Wait for DOM to be ready just in case
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
