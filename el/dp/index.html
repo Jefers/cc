@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<header class="app-header">
+    <div class="header-image-container">
+        <img src="PowerPlanner.png" alt="Power Planner" class="header-image">
+    </div>
+</header>
+    <style>
+        /* --- CSS Variables & Reset --- */
+        :root {
+            --primary: #5B8CFF;
+            --primary-light: #E8F0FF;
+            --secondary: #FF9F5B;
+            --secondary-light: #FFF1E8;
+            --success: #5BCF7F;
+            --success-light: #E8F8ED;
+            --text: #333333;
+            --text-light: #666666;
+            --text-lighter: #999999;
+            --background: #F9FAFF;
+            --card: #FFFFFF;
+            --border: #E6E9F0;
+            --shadow: rgba(91, 140, 255, 0.08);
+            
+            /* --- Wattage Color Spectrum --- */
+            --watt-ice: #7FC9FF;      /* < 100W */
+            --watt-green: #5BCF7F;     /* 100-250W */
+            --watt-orange: #FF9F5B;    /* 250-500W */
+            --watt-purple: #9B5BFF;    /* 500-1000W */
+            --watt-red: #FF5B5B;       /* > 1000W */
+            
+            /* --- Amperage Color Spectrum --- */
+            --amp-safe: #5BCF7F;       /* < 50% of max */
+            --amp-low: #7FC9FF;        /* 50-75% of max */
+            --amp-medium: #FF9F5B;     /* 75-90% of max */
+            --amp-high: #FF5B5B;       /* 90-100% of max */
+            --amp-danger: #FF2B2B;     /* > 100% of max (overloaded) */
+            
+            /* --- Banner Colors (tweak these values) --- */
+            --banner-warning: #FFF1E8;     /* Orange tint for warnings */
+            --banner-danger: #FFE8E8;      /* Red tint for danger */
+            --banner-critical: #FFD8D8;    /* Bright red for critical */
+            
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+
+        /* --- App Header with Image --- */
+        .app-header {
+            padding: 0;
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-image-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0; /* Remove padding to use full width */
+            height: 160px; /* Fixed height to control banner size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* This will crop the image to fit the container */
+            display: block;
+        }
+
+        /* Optional: If you want to see the whole image without cropping */
+        .header-image.contain {
+            object-fit: contain; /* Shows entire image, may create empty space */
+        }
+
+        /* For smaller screens */
+        @media (max-width: 480px) {
+            .header-image-container {
+                height: 120px; /* Smaller on mobile */
+            }
+        }
+
+        /* --- Critical Alert Styles --- */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes flash {
+            0%, 100% { background-color: var(--banner-critical); }
+            50% { background-color: #FFB8B8; }
+        }
+
+        .critical-alert {
+            animation: flash 1s infinite;
+            border: 2px solid var(--watt-red) !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .critical-alert::before {
+            content: "🔥";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            animation: pulse 0.5s infinite;
+        }
+
+        /* --- Alert Banner --- */
+        .alert-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px;
+            text-align: center;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+        }
+
+        .alert-banner.warning {
+            background-color: var(--banner-warning);
+            color: var(--text);
+            border-bottom: 2px solid var(--watt-orange);
+        }
+
+        .alert-banner.danger {
+            background-color: var(--banner-danger);
+            color: var(--text);
+            border-bottom: 2px solid var(--watt-red);
+        }
+
+        .alert-banner.critical {
+            background-color: var(--banner-critical);
+            color: #B30000;
+            border-bottom: 2px solid #FF0000;
+            animation: flash 1s infinite;
+        }
+
+        /* --- Typography --- */
+        .big-number {
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        
+        h1 { font-size: 28px; font-weight: 600; text-align: center; padding: 24px 16px; }
+        h2 { font-size: 24px; font-weight: 600; margin-bottom: 16px; }
+        h3 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+        
+        .container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .summary-total {
+            background: var(--primary-light);
+            color: var(--text);
+            padding: 32px 24px;
+            border-radius: var(--radius);
+            text-align: center;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: var(--card);
+            color: var(--text);
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value { 
+            font-size: 32px; 
+            font-weight: bold; 
+            display: block; 
+        }
+        .stat-label { 
+            font-size: 14px; 
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* --- Forms & Inputs --- */
+        .form-group { margin-bottom: 20px; }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            background: var(--card);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:active {
+            opacity: 0.9;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm { 
+            padding: 8px 16px; 
+            font-size: 14px; 
+            width: auto; 
+            display: inline-block; 
+        }
+        
+        .btn-mute-delete {
+            background-color: var(--background);
+            color: var(--text-lighter);
+            border: 1px solid var(--border);
+        }
+
+        /* --- Lists --- */
+        .item-list { list-style: none; }
+        
+        .item-list li {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-list li:last-child { border-bottom: none; }
+        
+        .item-details { 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1;
+        }
+        
+        .item-subtext { 
+            font-size: 14px; 
+            color: var(--text-lighter);
+            margin-top: 4px;
+        }
+
+        /* --- Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px;
+        }
+
+        .nav-item.active { color: var(--primary); }
+        
+        .nav-icon { 
+            font-size: 20px; 
+            margin-bottom: 4px; 
+            display: block; 
+        }
+
+        /* --- Views --- */
+        .view-section { display: none; }
+        
+        .view-section.active { 
+            display: block; 
+            animation: fadeIn 0.3s ease; 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 400;
+            display: none;
+        }
+
+        .modal-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 24px;
+            z-index: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        /* --- Wattage Color Indicators --- */
+        .watt-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .watt-ice { background-color: var(--watt-ice); }
+        .watt-green { background-color: var(--watt-green); }
+        .watt-orange { background-color: var(--watt-orange); }
+        .watt-purple { background-color: var(--watt-purple); }
+        .watt-red { background-color: var(--watt-red); }
+
+        /* --- Amperage Color Indicators --- */
+        .amp-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .amp-safe { background-color: var(--amp-safe); }
+        .amp-low { background-color: var(--amp-low); }
+        .amp-medium { background-color: var(--amp-medium); }
+        .amp-high { background-color: var(--amp-high); }
+        .amp-danger { background-color: var(--amp-danger); }
+
+        /* --- Status Messages --- */
+        .status-area {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin: 16px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status-warning {
+            background-color: var(--banner-warning);
+            color: var(--text);
+        }
+
+        .status-danger {
+            background-color: var(--banner-danger);
+            color: var(--text);
+        }
+
+        .status-critical {
+            background-color: var(--banner-critical);
+            color: #B30000;
+            animation: pulse 1s infinite;
+            font-weight: 600;
+        }
+
+        /* --- Empty States --- */
+        .empty-state { 
+            text-align: center; 
+            padding: 48px 24px; 
+            color: var(--text-lighter); 
+        }
+
+        /* --- Helpers --- */
+        .hidden { display: none !important; }
+        
+        .text-center { text-align: center; }
+
+        /* --- Header with alert space --- */
+        .header {
+            padding: 24px 16px;
+            text-align: center;
+            background-color: var(--card);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Alert Banner for serious overloads -->
+<div id="global-alert-banner" class="alert-banner">
+    <span id="alert-message"></span>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<main class="container">
+
+    <!-- VIEW 1: DASHBOARD -->
+    <section id="view-dashboard" class="view-section active">
+        
+        <div class="summary-total">
+            <div class="stat-label">Est. Monthly Cost</div>
+            <div class="big-number" id="disp-monthly-cost">0.00</div>
+            <div class="stat-label" style="margin-top: 8px;">Based on your usage estimates</div>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-box">
+                <span class="stat-value" id="disp-total-watts">0</span>
+                <span class="stat-label">Total Watts</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="disp-daily-kwh">0.00</span>
+                <span class="stat-label">Daily kWh</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>System Status</h2>
+            <p>Voltage: <strong id="disp-voltage">Not Set</strong></p>
+            <p>Socket Safety Limit: <strong id="disp-max-amps">Not Set</strong>A</p>
+            <p>Cost per kWh: <strong id="disp-cost">Not Set</strong></p>
+            <div id="status-warning-area"></div>
+        </div>
+
+        <button class="btn btn-outline" onclick="app.navigateTo('view-settings')">Update Settings</button>
+    </section>
+
+
+    <!-- VIEW 2: SOCKETS -->
+    <section id="view-sockets" class="view-section">
+        <h2>Sockets & Outlets</h2>
+        <div id="sockets-list">
+            <!-- Populated by JS -->
+        </div>
+        <button class="btn" onclick="app.showAddSocketModal()">+ Add New Socket</button>
+    </section>
+
+
+    <!-- VIEW 3: HARDWIRED / FIXED -->
+    <section id="view-hardwired" class="view-section">
+        <h2>Hardwired / Fixed Items</h2>
+        <p style="font-size: 14px; color: var(--text-light); margin-bottom: 16px;">
+            Items like Air Conditioners, Water Heaters, or Built-in Lights.
+        </p>
+        <div id="hardwired-list">
+            <!-- Populated by JS -->
+        </div>
+        <button class="btn" onclick="app.showAddDeviceModal(null, 'hardwired')">+ Add Fixed Item</button>
+    </section>
+
+
+    <!-- VIEW 4: SETTINGS -->
+    <section id="view-settings" class="view-section">
+        <h2>Household Settings</h2>
+        <div class="card">
+            <form id="settings-form">
+                <div class="form-group">
+                    <label for="setting-voltage">Standard Voltage (V)</label>
+                    <input type="number" id="setting-voltage" required placeholder="e.g. 120 or 230">
+                    <small style="color: var(--text-light); display: block; margin-top: 4px;">Check your country standard.</small>
+                </div>
+                <div class="form-group">
+                    <label for="setting-max-amps">Max Amps per Socket (Safety Limit)</label>
+                    <input type="number" id="setting-max-amps" required placeholder="e.g. 15 or 13">
+                    <small style="color: var(--text-light); display: block; margin-top: 4px;">Typical breakers are 15A (US) or 13A (UK).</small>
+                </div>
+                <div class="form-group">
+                    <label for="setting-cost">Cost per kWh</label>
+                    <input type="number" id="setting-cost" step="0.01" required placeholder="e.g. 0.25">
+                </div>
+                <button type="submit" class="btn">Save Settings</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3>Data Management</h3>
+            <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-light);">Clear all data and reset to defaults.</p>
+            <button class="btn btn-mute-delete btn-sm" onclick="app.resetData()">Reset All Data</button>
+        </div>
+    </section>
+
+</main>
+
+<!-- MODAL: ADD SOCKET -->
+<div id="modal-add-socket" class="modal-card">
+    <h3>Add New Socket</h3>
+    <form id="form-add-socket">
+        <div class="form-group">
+            <label for="new-socket-name">Socket Name/Location</label>
+            <input type="text" id="new-socket-name" placeholder="e.g. Living Room West Wall" required>
+        </div>
+        <div style="display:flex; gap:12px; margin-top: 24px;">
+            <button type="button" class="btn btn-mute-delete" style="flex:1;" onclick="app.closeModals()">Cancel</button>
+            <button type="submit" class="btn" style="flex:1;">Create</button>
+        </div>
+    </form>
+</div>
+
+<!-- MODAL: ADD DEVICE (Generic for Socket or Hardwired) -->
+<div id="modal-add-device" class="modal-card">
+    <h3 id="device-modal-title">Add Device</h3>
+    <form id="form-add-device">
+        <input type="hidden" id="device-target-id">
+        <input type="hidden" id="device-type"> <!-- 'socket' or 'hardwired' -->
+        
+        <div class="form-group">
+            <label for="new-device-name">Device Name</label>
+            <input type="text" id="new-device-name" placeholder="e.g. TV, Fridge, Heater" required>
+        </div>
+        <div class="form-group">
+            <label for="new-device-watts">Wattage (W)</label>
+            <input type="number" id="new-device-watts" placeholder="e.g. 150" required min="1">
+        </div>
+        <div class="form-group">
+            <label for="new-device-hours">Avg Hours Use Per Day</label>
+            <input type="number" id="new-device-hours" placeholder="e.g. 0.5 (30 mins)" required min="0" max="24" step="0.01">
+        </div>
+        
+        <div style="display:flex; gap:12px; margin-top: 24px;">
+            <button type="button" class="btn btn-mute-delete" style="flex:1;" onclick="app.closeModals()">Cancel</button>
+            <button type="submit" class="btn" style="flex:1;">Add</button>
+        </div>
+    </form>
+</div>
+
+<!-- OVERLAY for Modals -->
+<div id="modal-overlay" class="modal-overlay"></div>
+
+<nav class="bottom-nav">
+    <a href="#" class="nav-item active" onclick="app.navigateTo('view-dashboard'); return false;">
+        <span class="nav-icon">📊</span>
+        Dashboard
+    </a>
+    <a href="#" class="nav-item" onclick="app.navigateTo('view-sockets'); return false;">
+        <span class="nav-icon">🔌</span>
+        Sockets
+    </a>
+    <a href="#" class="nav-item" onclick="app.navigateTo('view-hardwired'); return false;">
+        <span class="nav-icon">💡</span>
+        Fixed
+    </a>
+    <a href="#" class="nav-item" onclick="app.navigateTo('view-settings'); return false;">
+        <span class="nav-icon">⚙️</span>
+        Settings
+    </a>
+</nav>
+
+<script>
+/**
+ * Household Electric Estimator Logic
+ * Philosophy: Simple, Explicit, Configurable.
+ * Pattern: Module pattern for encapsulation.
+ */
+
+const app = (function() {
+    
+    // --- State Management ---
+    const defaultState = {
+        settings: {
+            voltage: 120,      // Default to US 120, user must change
+            maxAmps: 15,      // Default 15A
+            costPerKwh: 0.15  // Default 15 cents
+        },
+        sockets: [], // Array of { id, name, devices: [] }
+        hardwired: [] // Array of { id, name, watts, hours }
+    };
+
+    let state = JSON.parse(JSON.stringify(defaultState));
+    
+    // Track critical alerts globally
+    let hasCriticalAlert = false;
+    let globalAlertMessage = '';
+
+    // --- DOM Elements Cache ---
+    const els = {
+        views: document.querySelectorAll('.view-section'),
+        navItems: document.querySelectorAll('.nav-item'),
+        
+        // Dashboard
+        dispMonthlyCost: document.getElementById('disp-monthly-cost'),
+        dispTotalWatts: document.getElementById('disp-total-watts'),
+        dispDailyKwh: document.getElementById('disp-daily-kwh'),
+        dispVoltage: document.getElementById('disp-voltage'),
+        dispMaxAmps: document.getElementById('disp-max-amps'),
+        dispCost: document.getElementById('disp-cost'),
+        
+        // Lists
+        socketsList: document.getElementById('sockets-list'),
+        hardwiredList: document.getElementById('hardwired-list'),
+        
+        // Forms
+        settingsForm: document.getElementById('settings-form'),
+        inpVoltage: document.getElementById('setting-voltage'),
+        inpMaxAmps: document.getElementById('setting-max-amps'),
+        inpCost: document.getElementById('setting-cost'),
+        
+        // Modals
+        modalSocket: document.getElementById('modal-add-socket'),
+        modalDevice: document.getElementById('modal-add-device'),
+        overlay: document.getElementById('modal-overlay'),
+        formSocket: document.getElementById('form-add-socket'),
+        formDevice: document.getElementById('form-add-device'),
+        
+        // Device Form Inputs
+        deviceTargetId: document.getElementById('device-target-id'),
+        deviceType: document.getElementById('device-type'),
+        deviceTitle: document.getElementById('device-modal-title'),
+        inpDevName: document.getElementById('new-device-name'),
+        inpDevWatts: document.getElementById('new-device-watts'),
+        inpDevHours: document.getElementById('new-device-hours'),
+        
+        // Alert Banner
+        alertBanner: document.getElementById('global-alert-banner'),
+        alertMessage: document.getElementById('alert-message')
+    };
+
+    // --- Utility Functions ---
+    function getWattageColor(watts) {
+        if (watts < 100) return 'watt-ice';
+        if (watts <= 250) return 'watt-green';
+        if (watts <= 500) return 'watt-orange';
+        if (watts <= 1000) return 'watt-purple';
+        return 'watt-red';
+    }
+    
+    function getAmperageColor(amps, maxAmps) {
+        const percentage = (amps / maxAmps) * 100;
+        if (amps <= 0) return 'amp-safe';
+        if (percentage <= 50) return 'amp-safe';
+        if (percentage <= 75) return 'amp-low';
+        if (percentage <= 90) return 'amp-medium';
+        if (percentage <= 100) return 'amp-high';
+        return 'amp-danger';
+    }
+    
+    function getAmperageLevel(amps, maxAmps) {
+        const percentage = (amps / maxAmps) * 100;
+        if (percentage <= 50) return 'safe';
+        if (percentage <= 75) return 'low';
+        if (percentage <= 90) return 'medium';
+        if (percentage <= 100) return 'high';
+        return 'danger';
+    }
+    
+    function showGlobalAlert(message, level) {
+        if (!message) {
+            els.alertBanner.style.display = 'none';
+            hasCriticalAlert = false;
+            return;
+        }
+        
+        els.alertBanner.className = `alert-banner ${level}`;
+        els.alertMessage.textContent = message;
+        els.alertBanner.style.display = 'block';
+        
+        if (level === 'critical') {
+            hasCriticalAlert = true;
+            globalAlertMessage = message;
+            
+            // Also show a toast for immediate attention
+            showToast(message, 'error', 5000);
+        }
+    }
+
+    // --- Initialization ---
+    function init() {
+        loadData();
+        setupEventListeners();
+        refreshUI();
+    }
+
+    function loadData() {
+        const stored = localStorage.getItem('estimator_data');
+        if (stored) {
+            try {
+                state = JSON.parse(stored);
+                // Ensure structure integrity if schema changed
+                if(!state.sockets) state.sockets = [];
+                if(!state.hardwired) state.hardwired = [];
+            } catch (e) {
+                console.error("Data load error", e);
+            }
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('estimator_data', JSON.stringify(state));
+        refreshUI();
+    }
+
+    // --- Logic & Calculations ---
+    function calculateTotalWatts() {
+        let total = 0;
+        // Sum sockets
+        state.sockets.forEach(socket => {
+            socket.devices.forEach(dev => total += Number(dev.watts));
+        });
+        // Sum hardwired
+        state.hardwired.forEach(item => total += Number(item.watts));
+        return total;
+    }
+
+    function calculateDailyKwh() {
+        let totalWattHours = 0;
+        
+        // Sockets
+        state.sockets.forEach(socket => {
+            socket.devices.forEach(dev => {
+                totalWattHours += (Number(dev.watts) * Number(dev.hours));
+            });
+        });
+        
+        // Hardwired
+        state.hardwired.forEach(item => {
+            totalWattHours += (Number(item.watts) * Number(item.hours));
+        });
+        
+        return totalWattHours / 1000; // Convert to kWh
+    }
+
+    function calculateMonthlyCost() {
+        const dailyKwh = calculateDailyKwh();
+        return dailyKwh * 30 * state.settings.costPerKwh;
+    }
+
+    // --- UI Updates ---
+    function refreshUI() {
+        updateDashboard();
+        renderSockets();
+        renderHardwired();
+        updateSettingsForm();
+    }
+
+    function updateDashboard() {
+        const totalWatts = calculateTotalWatts();
+        const dailyKwh = calculateDailyKwh();
+        const monthlyCost = calculateMonthlyCost();
+
+        els.dispTotalWatts.textContent = totalWatts.toLocaleString();
+        els.dispDailyKwh.textContent = dailyKwh.toFixed(2);
+        els.dispMonthlyCost.textContent = monthlyCost.toFixed(2);
+        
+        els.dispVoltage.textContent = state.settings.voltage + 'V';
+        els.dispMaxAmps.textContent = state.settings.maxAmps;
+        els.dispCost.textContent = state.settings.costPerKwh;
+
+        // Check if settings are defaults
+        const statusArea = document.getElementById('status-warning-area');
+        if(state.settings.voltage === 120 && !localStorage.getItem('estimator_configured')) {
+             statusArea.innerHTML = `<div class="status-area status-warning">Please verify voltage in Settings for accurate calculations.</div>`;
+        } else {
+             statusArea.innerHTML = '';
+        }
+        
+        // Check for critical overloads globally
+        checkGlobalAlerts();
+    }
+
+    function checkGlobalAlerts() {
+        let criticalSockets = [];
+        let warningSockets = [];
+        
+        state.sockets.forEach(socket => {
+            const socketWatts = socket.devices.reduce((sum, dev) => sum + Number(dev.watts), 0);
+            const socketAmps = socketWatts / state.settings.voltage;
+            const percentage = (socketAmps / state.settings.maxAmps) * 100;
+            
+            if (percentage > 100) {
+                criticalSockets.push({
+                    name: socket.name,
+                    amps: socketAmps.toFixed(1),
+                    maxAmps: state.settings.maxAmps
+                });
+            } else if (percentage > 90) {
+                warningSockets.push({
+                    name: socket.name,
+                    amps: socketAmps.toFixed(1),
+                    maxAmps: state.settings.maxAmps
+                });
+            }
+        });
+        
+        if (criticalSockets.length > 0) {
+            const socketNames = criticalSockets.map(s => s.name).join(', ');
+            showGlobalAlert(
+                `🔥 CRITICAL: ${socketNames} ${criticalSockets.length > 1 ? 'are' : 'is'} overloaded! Immediate action required to prevent fire hazard.`,
+                'critical'
+            );
+        } else if (warningSockets.length > 0) {
+            const socketNames = warningSockets.map(s => s.name).join(', ');
+            showGlobalAlert(
+                `⚠️ Warning: ${socketNames} ${warningSockets.length > 1 ? 'are' : 'is'} near maximum capacity.`,
+                'warning'
+            );
+        } else {
+            showGlobalAlert(null);
+        }
+    }
+
+    function updateSettingsForm() {
+        els.inpVoltage.value = state.settings.voltage;
+        els.inpMaxAmps.value = state.settings.maxAmps;
+        els.inpCost.value = state.settings.costPerKwh;
+    }
+
+    function renderSockets() {
+        els.socketsList.innerHTML = '';
+        
+        if (state.sockets.length === 0) {
+            els.socketsList.innerHTML = `<div class="empty-state">No sockets added yet.<br>Add one to start calculating load.</div>`;
+            return;
+        }
+
+        state.sockets.forEach(socket => {
+            // Calculate socket load
+            const socketWatts = socket.devices.reduce((sum, dev) => sum + Number(dev.watts), 0);
+            const socketAmps = socketWatts / state.settings.voltage;
+            const isOverloaded = socketAmps > state.settings.maxAmps;
+            const amperageLevel = getAmperageLevel(socketAmps, state.settings.maxAmps);
+            const isCritical = socketAmps > state.settings.maxAmps * 1.2; // 20% over is critical
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            if (isCritical) {
+                card.classList.add('critical-alert');
+            } else if (isOverloaded) {
+                card.style.borderLeft = '5px solid var(--watt-red)';
+            } else if (amperageLevel === 'high') {
+                card.style.borderLeft = '5px solid var(--watt-orange)';
+            } else if (amperageLevel === 'medium') {
+                card.style.borderLeft = '5px solid var(--watt-orange)';
+                card.style.borderLeftWidth = '3px';
+            }
+            
+            // Advisory Note
+            let advisoryHtml = '';
+            if (isCritical) {
+                advisoryHtml = `
+                    <div class="status-area status-critical" style="margin-bottom: 16px;">
+                        🔥 CRITICAL OVERLOAD! 🔥<br>
+                        <strong style="font-size: 16px;">FIRE RISK: Reduce load immediately!</strong><br>
+                        This socket is ${(socketAmps / state.settings.maxAmps * 100).toFixed(0)}% over safe limit
+                    </div>
+                `;
+            } else if (isOverloaded) {
+                advisoryHtml = `
+                    <div class="status-area status-danger" style="margin-bottom: 16px;">
+                        ⚠️ WARNING: Overloaded!<br>
+                        Reduce load immediately to prevent danger.
+                    </div>
+                `;
+            } else if (amperageLevel === 'high') {
+                advisoryHtml = `
+                    <div class="status-area status-warning" style="margin-bottom: 16px;">
+                        High load detected<br>
+                        Consider redistributing devices
+                    </div>
+                `;
+            }
+            
+            // Device List
+            let devicesHtml = '';
+            if(socket.devices.length > 0) {
+                devicesHtml = '<ul class="item-list">' + socket.devices.map((dev, idx) => {
+                    // Calculate individual item cost
+                    const itemCost = (Number(dev.watts) * Number(dev.hours) * 30 * state.settings.costPerKwh) / 1000;
+                    const wattColor = getWattageColor(dev.watts);
+                    
+                    return `
+                    <li>
+                        <div class="item-details">
+                            <strong>
+                                <span class="watt-indicator ${wattColor}"></span>
+                                ${dev.name}
+                            </strong>
+                            <span class="item-subtext">${dev.watts}W | ${dev.hours}h/day | Est. Mo. Cost: ${itemCost.toFixed(2)}</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-mute-delete" onclick="app.deleteDevice('${socket.id}', ${idx}, 'socket')" title="Delete">Remove</button>
+                        </div>
+                    </li>
+                    `;
+                }).join('') + '</ul>';
+            } else {
+                devicesHtml = `<div class="empty-state" style="padding:16px; text-align:center; font-size:14px;">No devices on this socket.</div>`;
+            }
+
+            const ampColor = getAmperageColor(socketAmps, state.settings.maxAmps);
+            
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="margin:0; font-size:20px;">${socket.name}</h3>
+                    <button class="btn btn-sm btn-mute-delete" onclick="app.deleteSocket('${socket.id}')" title="Delete Socket">Remove</button>
+                </div>
+                ${advisoryHtml}
+                <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-weight:bold; align-items:center;">
+                    <div>
+                        <span style="font-size: 18px;">Load: ${socketWatts}W</span>
+                        <span class="watt-indicator ${getWattageColor(socketWatts)}" style="margin-left: 8px;"></span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="color: var(--${ampColor}); font-size: 18px;">
+                            <span class="amp-indicator ${ampColor}"></span>
+                            ${socketAmps.toFixed(2)}A / ${state.settings.maxAmps}A
+                        </span><br>
+                        <small style="color: var(--text-light); font-weight: normal;">
+                            ${(socketAmps / state.settings.maxAmps * 100).toFixed(0)}% of capacity
+                        </small>
+                    </div>
+                </div>
+                ${devicesHtml}
+                <button class="btn btn-outline btn-sm" style="width:100%; margin-top:16px;" 
+                    onclick="app.showAddDeviceModal('${socket.id}', 'socket')">+ Add Device</button>
+            `;
+            els.socketsList.appendChild(card);
+        });
+    }
+
+    function renderHardwired() {
+        els.hardwiredList.innerHTML = '';
+        
+        if (state.hardwired.length === 0) {
+            els.hardwiredList.innerHTML = `<div class="empty-state">No fixed items added.</div>`;
+            return;
+        }
+
+        const list = document.createElement('ul');
+        list.className = 'item-list';
+        
+        state.hardwired.forEach((item, idx) => {
+            // Calculate individual item cost
+            const itemCost = (Number(item.watts) * Number(item.hours) * 30 * state.settings.costPerKwh) / 1000;
+            const wattColor = getWattageColor(item.watts);
+            
+            list.innerHTML += `
+                <li>
+                    <div class="item-details">
+                        <strong>
+                            <span class="watt-indicator ${wattColor}"></span>
+                            ${item.name}
+                        </strong>
+                        <span class="item-subtext">${item.watts}W | ${item.hours}h/day | Est. Mo. Cost: ${itemCost.toFixed(2)}</span>
+                    </div>
+                    <button class="btn btn-sm btn-mute-delete" onclick="app.deleteDevice(null, ${idx}, 'hardwired')" title="Delete">Remove</button>
+                </li>
+            `;
+        });
+        
+        els.hardwiredList.appendChild(list);
+    }
+
+    // --- Navigation ---
+    function navigateTo(viewId) {
+        // Hide all views
+        els.views.forEach(el => el.classList.remove('active'));
+        els.navItems.forEach(el => el.classList.remove('active'));
+        
+        // Show target
+        document.getElementById(viewId).classList.add('active');
+        
+        // Highlight Nav
+        let navIndex = 0;
+        if(viewId === 'view-sockets') navIndex = 1;
+        if(viewId === 'view-hardwired') navIndex = 2;
+        if(viewId === 'view-settings') navIndex = 3;
+        
+        els.navItems[navIndex].classList.add('active');
+        
+        // Refresh specific view if needed
+        if(viewId === 'view-dashboard') updateDashboard();
+        window.scrollTo(0,0);
+    }
+
+    // --- Modal Handling ---
+    function showAddSocketModal() {
+        els.overlay.style.display = 'block';
+        els.modalSocket.style.display = 'block';
+        els.formSocket.reset();
+    }
+
+    function showAddDeviceModal(targetId, type) {
+        els.overlay.style.display = 'block';
+        els.modalDevice.style.display = 'block';
+        els.deviceTargetId.value = targetId;
+        els.deviceType.value = type;
+        
+        if(type === 'hardwired') {
+            els.deviceTitle.textContent = "Add Hardwired Item";
+        } else {
+            els.deviceTitle.textContent = "Add Device to Socket";
+        }
+        
+        els.formDevice.reset();
+    }
+
+    function closeModals() {
+        els.overlay.style.display = 'none';
+        els.modalSocket.style.display = 'none';
+        els.modalDevice.style.display = 'none';
+    }
+
+    // --- Event Listeners ---
+    function setupEventListeners() {
+        // Overlay click closes modals
+        els.overlay.addEventListener('click', closeModals);
+
+        // Settings Form
+        els.settingsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const v = parseFloat(els.inpVoltage.value);
+            const a = parseFloat(els.inpMaxAmps.value);
+            const c = parseFloat(els.inpCost.value);
+
+            if(v > 0 && a > 0 && c >= 0) {
+                state.settings.voltage = v;
+                state.settings.maxAmps = a;
+                state.settings.costPerKwh = c;
+                localStorage.setItem('estimator_configured', 'true');
+                saveData();
+                showToast('Settings saved', 'success');
+                navigateTo('view-dashboard');
+            } else {
+                showToast('Please enter valid numbers.', 'error');
+            }
+        });
+
+        // Add Socket Form
+        els.formSocket.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('new-socket-name').value;
+            if(name) {
+                const newId = Date.now().toString();
+                state.sockets.push({
+                    id: newId,
+                    name: name,
+                    devices: []
+                });
+                saveData();
+                closeModals();
+                showToast('Socket created', 'success');
+            }
+        });
+
+        // Add Device Form
+        els.formDevice.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = els.inpDevName.value;
+            const watts = Number(els.inpDevWatts.value);
+            const hours = Number(els.inpDevHours.value);
+            const targetId = els.deviceTargetId.value;
+            const type = els.deviceType.value;
+
+            if(name && watts > 0) {
+                const newDevice = { name, watts, hours };
+                
+                if (type === 'socket') {
+                    const socket = state.sockets.find(s => s.id === targetId);
+                    if(socket) {
+                        socket.devices.push(newDevice);
+                    }
+                } else {
+                    state.hardwired.push(newDevice);
+                }
+                
+                saveData();
+                closeModals();
+                showToast('Device added', 'success');
+            }
+        });
+    }
+
+    // --- Actions exposed to global scope ---
+    function deleteSocket(id) {
+        if(confirm('Remove this socket?')) {
+            state.sockets = state.sockets.filter(s => s.id !== id);
+            saveData();
+            showToast('Socket removed', 'success');
+        }
+    }
+
+    function deleteDevice(socketId, deviceIndex, type) {
+        if(confirm('Remove this item?')) {
+            if(type === 'socket') {
+                const socket = state.sockets.find(s => s.id === socketId);
+                if(socket) {
+                    socket.devices.splice(deviceIndex, 1);
+                    saveData();
+                }
+            } else {
+                state.hardwired.splice(deviceIndex, 1);
+                saveData();
+            }
+        }
+    }
+
+    function resetData() {
+        if(confirm('Clear all sockets and devices?')) {
+            localStorage.removeItem('estimator_data');
+            localStorage.removeItem('estimator_configured');
+            state = JSON.parse(JSON.stringify(defaultState));
+            showGlobalAlert(null);
+            refreshUI();
+            showToast('All data cleared', 'success');
+        }
+    }
+
+    // --- Utilities ---
+    function showToast(message, type = 'success', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        // Toast styling
+        toast.style.cssText = `
+            background: ${type === 'success' ? 'var(--success)' : 'var(--watt-red)'};
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 500;
+        `;
+        
+        container.appendChild(toast);
+        
+        // Trigger reflow
+        void toast.offsetWidth; 
+        toast.style.opacity = '1';
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, duration);
+    }
+
+    // Public API
+    return {
+        init,
+        navigateTo,
+        showAddSocketModal,
+        showAddDeviceModal,
+        closeModals,
+        deleteSocket,
+        deleteDevice,
+        resetData
+    };
+
+})();
+
+// Start the app
+document.addEventListener('DOMContentLoaded', app.init);
+
+</script>
+
+</body>
+</html>

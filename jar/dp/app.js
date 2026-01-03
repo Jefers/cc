@@ -546,7 +546,8 @@ const screens = {
     addBill: document.getElementById('addBillScreen'),
     billHistory: document.getElementById('billHistoryScreen'),
     jarDetail: document.getElementById('jarDetailScreen'),
-    allActivity: document.getElementById('allActivityScreen')
+    allActivity: document.getElementById('allActivityScreen'),
+    settings: document.getElementById('settingsScreen') // Add this
 };
 
 // Home screen elements
@@ -677,6 +678,8 @@ function showScreen(screenId) {
         renderBillHistoryScreen();
     } else if (screenId === 'allActivityScreen') {
         renderAllActivityScreen();
+    } else if (screenId === 'settingsScreen') {
+        renderSettingsScreen(); // Add this
     }
 }
 
@@ -849,6 +852,95 @@ function resetAppData() {
             document.body.removeChild(modal);
         }
     });
+}
+
+// Check if there's data to backup
+function hasDataToBackup() {
+    const movements = JSON.parse(localStorage.getItem('moneyJars_movements') || '[]');
+    const bills = JSON.parse(localStorage.getItem('moneyJars_bills') || '[]');
+    
+    // Consider we have data if there are movements OR bills
+    return movements.length > 0 || bills.length > 0;
+}
+
+// Create backup data
+function createBackupData() {
+    return {
+        version: '1.0',
+        timestamp: new Date().toISOString(),
+        jars: JSON.parse(localStorage.getItem('moneyJars_jars') || '[]'),
+        movements: JSON.parse(localStorage.getItem('moneyJars_movements') || '[]'),
+        bills: JSON.parse(localStorage.getItem('moneyJars_bills') || '[]'),
+        billPaymentHistory: JSON.parse(localStorage.getItem('moneyJars_billPaymentHistory') || '[]'),
+        appState: JSON.parse(localStorage.getItem('moneyJars_appState') || '{}')
+    };
+}
+
+// Backup to file
+function backupToFile() {
+    const data = createBackupData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `moneyjars_backup_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showSuccessMessage('Saved to file 👍');
+}
+
+// Restore from file
+function restoreFromFile(file) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const backupData = JSON.parse(e.target.result);
+            
+            // Check version
+            if (!backupData.version || backupData.version !== '1.0') {
+                showSuccessMessage('File is from a different version');
+                return;
+            }
+            
+            // Show confirmation
+            if (confirm('This will replace all your current data. Continue?')) {
+                // Save backup data to localStorage
+                localStorage.setItem('moneyJars_jars', JSON.stringify(backupData.jars || []));
+                localStorage.setItem('moneyJars_movements', JSON.stringify(backupData.movements || []));
+                localStorage.setItem('moneyJars_bills', JSON.stringify(backupData.bills || []));
+                localStorage.setItem('moneyJars_billPaymentHistory', JSON.stringify(backupData.billPaymentHistory || []));
+                localStorage.setItem('moneyJars_appState', JSON.stringify(backupData.appState || {}));
+                localStorage.setItem('moneyJars_initialized', 'true');
+                
+                // Reload the app
+                showSuccessMessage('Data loaded 👍');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        } catch (error) {
+            showSuccessMessage('Invalid backup file');
+        }
+    };
+    
+    reader.readAsText(file);
+}
+
+// Render settings screen
+function renderSettingsScreen() {
+    const backupSection = document.getElementById('backupSection');
+    
+    // Show/hide backup section based on data
+    if (hasDataToBackup()) {
+        backupSection.style.display = 'block';
+    } else {
+        backupSection.style.display = 'none';
+    }
 }
 
 // =========================================================================
@@ -1650,6 +1742,43 @@ editBillModal.addEventListener('click', function(e) {
 resetAppBtn.addEventListener('click', function(e) {
     e.preventDefault();
     resetAppData();
+});
+
+// DOM references
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsScreen = document.getElementById('settingsScreen');
+const backupBtn = document.getElementById('backupBtn');
+const restoreBtn = document.getElementById('restoreBtn');
+const restoreFileInput = document.getElementById('restoreFile');
+const backToHomeFromSettingsBtn = document.getElementById('backToHomeFromSettingsBtn');
+
+// Settings navigation
+settingsBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showScreen('settingsScreen');
+});
+
+backToHomeFromSettingsBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showScreen('homeScreen');
+});
+
+// Backup button
+backupBtn.addEventListener('click', function() {
+    backupToFile();
+});
+
+// Restore button
+restoreBtn.addEventListener('click', function() {
+    restoreFileInput.click();
+});
+
+restoreFileInput.addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+        restoreFromFile(e.target.files[0]);
+        // Clear the input so same file can be selected again
+        e.target.value = '';
+    }
 });
 
 // =========================================================================

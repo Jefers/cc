@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIS Wizard - Project Intent Specification</title>
+    <style>
+        :root {
+            /* Color Palette - Clean & Professional */
+            --primary: #2563eb; /* Royal Blue */
+            --primary-dark: #1e40af;
+            --secondary: #64748b; /* Slate */
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        header {
+            background: var(--surface);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            margin: 0 1rem;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .step-counter {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* --- Main Content Area --- */
+        main {
+            flex: 1;
+            padding: 1.5rem 1rem;
+            max-width: 600px; /* Tablet/Desktop constraint */
+            width: 100%;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+
+        .wizard-slide {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.4s ease;
+        }
+
+        .wizard-slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        /* --- Forms & Inputs --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: var(--surface);
+            color: var(--text-main);
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        /* Checkbox Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .toggle-container input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.8rem;
+            accent-color: var(--warning);
+        }
+
+        .toggle-label {
+            margin: 0;
+            font-weight: normal;
+            flex: 1;
+        }
+
+        /* Capability Builder (Dynamic List) */
+        .capability-item {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* --- Footer / Navigation --- */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 1rem;
+            position: sticky;
+            bottom: 0;
+            display: flex;
+            gap: 1rem;
+            box-shadow: 0 -4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.9rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Output Modal/Screen --- */
+        .output-area {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+            height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        /* --- Section 6: Capabilities specific style --- */
+        .sub-group {
+            margin-left: 1rem;
+            border-left: 2px solid var(--border);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PIS Wizard</h1>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="step-counter" id="stepCounter">1/14</div>
+    </header>
+
+    <main id="wizardContainer">
+        <!-- Slides will be injected here by JS for cleaner code management, 
+             but we will hardcode the structure for clarity in this response -->
+        
+        <!-- 1. Project Header -->
+        <section class="wizard-slide active" data-step="1">
+            <h2>1. Project Header</h2>
+            <p class="section-desc">Basic identification details.</p>
+            <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" id="p_name" placeholder="e.g. Apollo App">
+            </div>
+            <div class="form-group">
+                <label>Version</label>
+                <input type="text" id="p_version" placeholder="0.1.0">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="p_status">
+                    <option value="Exploration">Exploration</option>
+                    <option value="Draft" selected>Draft</option>
+                    <option value="Stable">Stable</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Last Updated</label>
+                <input type="text" id="p_date" placeholder="Today">
+            </div>
+        </section>
+
+        <!-- 2. Overview -->
+        <section class="wizard-slide" data-step="2">
+            <h2>2. One-Paragraph Overview</h2>
+            <p class="section-desc">Describe the system in plain language. What problem does it solve? Who is it for?</p>
+            <div class="form-group">
+                <label>Overview</label>
+                <textarea id="s2_overview" placeholder="This system is a..."></textarea>
+            </div>
+        </section>
+
+        <!-- 3. System Intent -->
+        <section class="wizard-slide" data-step="3">
+            <h2>3. System Intent</h2>
+            <p class="section-desc">Define goals and explicitly exclude what is out of scope.</p>
+            
+            <div class="form-group">
+                <label>Primary Goals</label>
+                <textarea id="s3_goals" placeholder="- The system must...&#10;- The system should..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Non-Goals (Out of Scope)</label>
+                <textarea id="s3_nongoals" placeholder="- The system will NOT...&#10;- This project does not attempt to..."></textarea>
+            </div>
+        </section>
+
+        <!-- 4. Design Posture -->
+        <section class="wizard-slide" data-step="4">
+            <h2>4. Design Posture & Philosophy</h2>
+            <p class="section-desc">Guiding principles for the project.</p>
+            
+            <div class="form-group">
+                <label>Design Principles</label>
+                <textarea id="s4_principles" placeholder="- Simple over clever&#10;- Explicit over magical"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Desired Feel</label>
+                <textarea id="s4_feel" placeholder="Conservative | Experimental&#10;Opinionated | Configurable"></textarea>
+            </div>
+        </section>
+
+        <!-- 5. Users & Actors -->
+        <section class="wizard-slide" data-step="5">
+            <h2>5. Users & Actors</h2>
+            <p class="section-desc">Who interacts with the system?</p>
+            
+            <div class="form-group">
+                <label>Primary Users</label>
+                <input type="text" id="s5_primary" placeholder="e.g. Data Scientists">
+            </div>
+            <div class="form-group">
+                <label>Secondary Users</label>
+                <input type="text" id="s5_secondary" placeholder="e.g. Admins">
+            </div>
+            <div class="form-group">
+                <label>System Actors</label>
+                <input type="text" id="s5_actors" placeholder="e.g. Stripe API, Cron Jobs">
+            </div>
+            <div class="form-group">
+                <label>Anonymous Usage Allowed?</label>
+                <select id="s5_anon">
+                    <option value="Unknown">Unknown</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- 6. Functional Capabilities -->
+        <section class="wizard-slide" data-step="6">
+            <h2>6. Functional Capabilities</h2>
+            <p class="section-desc">What can the system do? Group by area.</p>
+            <div id="capability-container">
+                <!-- Dynamic items added here -->
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="addCapability()">+ Add Capability Area</button>
+        </section>
+
+        <!-- 7. Interaction Contracts -->
+        <section class="wizard-slide" data-step="7">
+            <h2>7. Interaction Contracts</h2>
+            <p class="section-desc">Inputs, outputs, and error handling.</p>
+            <div class="form-group">
+                <label>Inputs (Sources & Data)</label>
+                <textarea id="s7_inputs" placeholder="- What data enters?&#10;- Sources..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Outputs (Format & Consumers)</label>
+                <textarea id="s7_outputs" placeholder="- What does it produce?&#10;- Who consumes it?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Error Handling</label>
+                <textarea id="s7_errors" placeholder="Fail fast or fail gracefully?"></textarea>
+            </div>
+        </section>
+
+        <!-- 8. Technical Direction -->
+        <section class="wizard-slide" data-step="8">
+            <h2>8. Technical Direction</h2>
+            <p class="section-desc">Guidance, not mandates.</p>
+            <div class="form-group">
+                <label>Suggested Stack</label>
+                <textarea id="s8_stack" placeholder="Frontend: ...&#10;Backend: ..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Constraints & Preferences</label>
+                <textarea id="s8_constraints" placeholder="Must run on...&#10;Integrate with..."></textarea>
+            </div>
+        </section>
+
+        <!-- 9. Data & State -->
+        <section class="wizard-slide" data-step="9">
+            <h2>9. Data & State</h2>
+            <p class="section-desc">Conceptual data model.</p>
+            <div class="form-group">
+                <label>Key Data Concepts</label>
+                <textarea id="s9_concepts" placeholder="- Entities...&#10;- Lifecycles..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Persistence</label>
+                <select id="s9_persist">
+                    <option value="Ephemeral">Ephemeral</option>
+                    <option value="Persistent">Persistent</option>
+                    <option value="Mixed">Mixed</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- 10. Security -->
+        <section class="wizard-slide" data-step="10">
+            <h2>10. Security & Privacy</h2>
+            <div class="toggle-container">
+                <input type="checkbox" id="s10_unknown_toggle" onchange="toggleSection('s10_content')">
+                <label class="toggle-label">Mark entire section as Unknown / N/A</label>
+            </div>
+            <div id="s10_content">
+                <div class="form-group">
+                    <label>Expectations</label>
+                    <textarea id="s10_text" placeholder="Compliance constraints, privacy concerns..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. Unknowns -->
+        <section class="wizard-slide" data-step="11">
+            <h2>11. Unknowns & Assumptions</h2>
+            <div class="form-group">
+                <label>Known Unknowns</label>
+                <textarea id="s11_known" placeholder="- We have not decided..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Assumptions</label>
+                <textarea id="s11_assumed" placeholder="- We assume..."></textarea>
+            </div>
+        </section>
+
+        <!-- 12. Risks -->
+        <section class="wizard-slide" data-step="12">
+            <h2>12. Risks & Tradeoffs</h2>
+            <div class="form-group">
+                <label>Known Risks</label>
+                <textarea id="s12_risks" placeholder="Potential bottlenecks, technical risks..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Deliberate Tradeoffs</label>
+                <textarea id="s12_trades" placeholder="What are we sacrificing?"></textarea>
+            </div>
+        </section>
+
+        <!-- 13. Evolution -->
+        <section class="wizard-slide" data-step="13">
+            <h2>13. Evolution</h2>
+            <div class="form-group">
+                <label>Future Changes</label>
+                <textarea id="s13_future" placeholder="- Likely additions..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Stability Requirements</label>
+                <textarea id="s13_stability" placeholder="APIs vs Data models stability..."></textarea>
+            </div>
+        </section>
+
+        <!-- 14. Collaboration Instructions -->
+        <section class="wizard-slide" data-step="14">
+            <h2>14. LLM Instructions</h2>
+            <p class="section-desc">Critical: How should the AI behave?</p>
+            <div class="form-group">
+                <label>Instructions</label>
+                <textarea id="s14_instructions">- Do not invent requirements not stated here
+- Flag ambiguities instead of guessing
+- Propose alternatives when constraints conflict
+- Explain tradeoffs in plain language</textarea>
+            </div>
+        </section>
+
+        <!-- Final Output Screen -->
+        <section class="wizard-slide" data-step="15">
+            <h2>✅ Specification Ready</h2>
+            <p class="section-desc">Review your generated Markdown below. Copy and paste this into your LLM prompt.</p>
+            
+            <div class="output-area" id="mdOutput"></div>
+            
+            <button class="btn btn-primary" onclick="copyToClipboard()">Copy to Clipboard</button>
+            <button class="btn btn-secondary" onclick="goToStep(parseInt(currentStep) - 1)" style="margin-top: 10px;">Edit</button>
+        </section>
+
+    </main>
+
+    <footer>
+        <button class="btn btn-secondary hidden" id="prevBtn" onclick="prevStep()">Back</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next</button>
+    </footer>
+
+    <div class="copy-feedback" id="copyFeedback">Copied!</div>
+
+    <script>
+        // --- State Management ---
+        let currentStep = 1;
+        const totalSteps = 15;
+        const capabilityContainer = document.getElementById('capability-container');
+        let capabilityCount = 0;
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('p_date');
+            if(dateInput && !dateInput.value) dateInput.value = today;
+
+            // Add initial capability slot
+            addCapability();
+
+            updateUI();
+        });
+
+        // --- Navigation Logic ---
+        function updateUI() {
+            // Update Header
+            const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('stepCounter').textContent = `${Math.min(currentStep, 14)}/14`;
+
+            // Handle Slides
+            document.querySelectorAll('.wizard-slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            const activeSlide = document.querySelector(`.wizard-slide[data-step="${currentStep}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+
+            // Handle Buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (currentStep === 1) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+
+            if (currentStep === totalSteps) {
+                // On final step, generate markdown
+                generateMarkdown();
+                nextBtn.classList.add('hidden'); // Hide next button on final screen
+            } else {
+                nextBtn.classList.remove('hidden');
+                nextBtn.textContent = currentStep === 14 ? 'Finish' : 'Next';
+            }
+
+            // Scroll to top
+            window.scrollTo(0,0);
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateUI();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        function goToStep(step) {
+            if(step >= 1 && step <= totalSteps) {
+                currentStep = step;
+                updateUI();
+            }
+        }
+
+        // --- Feature Logic: Unknown Toggle ---
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const toggle = document.getElementById('s10_unknown_toggle');
+            if (toggle.checked) {
+                section.style.opacity = '0.5';
+                section.style.pointerEvents = 'none';
+            } else {
+                section.style.opacity = '1';
+                section.style.pointerEvents = 'auto';
+            }
+        }
+
+        // --- Feature Logic: Capabilities Builder ---
+        function addCapability() {
+            capabilityCount++;
+            const id = capabilityCount;
+            
+            const div = document.createElement('div');
+            div.className = 'capability-item';
+            div.id = `cap_${id}`;
+            div.innerHTML = `
+                <button class="remove-btn" onclick="removeCapability(${id})">&times;</button>
+                <div class="form-group" style="margin-bottom:0.5rem">
+                    <label>Capability Name</label>
+                    <input type="text" class="cap-name" placeholder="Area Name">
+                </div>
+                <div class="sub-group">
+                    <label style="font-size:0.85rem; font-weight:600">Description</label>
+                    <textarea class="cap-desc" style="min-height:60px; font-size:0.9rem" placeholder="What is this?"></textarea>
+                    
+                    <label style="font-size:0.85rem; font-weight:600">Key Behaviors</label>
+                    <textarea class="cap-behaviors" style="min-height:60px; font-size:0.9rem" placeholder="- Behavior A&#10;- Behavior B"></textarea>
+                    
+                    <label style="font-size:0.85rem; font-weight:600">Rules/Constraints</label>
+                    <textarea class="cap-rules" style="min-height:60px; font-size:0.9rem" placeholder="Important rules..."></textarea>
+                </div>
+            `;
+            capabilityContainer.appendChild(div);
+        }
+
+        function removeCapability(id) {
+            const el = document.getElementById(`cap_${id}`);
+            if(el) el.remove();
+        }
+
+        // --- Markdown Generation ---
+        function getVal(id) {
+            const el = document.getElementById(id);
+            return el ? el.value : '';
+        }
+
+        function generateMarkdown() {
+            let md = "";
+
+            // Helper to add section
+            const addSection = (title, content, prefix = "") => {
+                if (content && content.trim() !== "") {
+                    md += `## ${title}\n${prefix}${content.trim()}\n\n`;
+                }
+            };
+
+            // 1. Header
+            md += `# 📐 Project Intent Specification (PIS) — LLM Collaboration Template\n\n`;
+            md += `**Project Name:** ${getVal('p_name')}\n`;
+            md += `**Version:** ${getVal('p_version')}\n`;
+            md += `**Status:** ${getVal('p_status')}\n`;
+            md += `**Last Updated:** ${getVal('p_date')}\n\n`;
+            md += `---\n\n`;
+
+            // 2. Overview
+            addSection("2. One-Paragraph Overview (Human Description)", getVal('s2_overview'));
+
+            // 3. Intent
+            md += `## 3. System Intent\n`;
+            if(getVal('s3_goals')) md += `### 3.1 Primary Goals\n${getVal('s3_goals')}\n\n`;
+            if(getVal('s3_nongoals')) md += `### 3.2 Non-Goals\n${getVal('s3_nongoals')}\n\n`;
+
+            // 4. Design
+            md += `## 4. Design Posture & Philosophy\n`;
+            if(getVal('s4_principles')) md += `### 4.1 Design Principles\n${getVal('s4_principles')}\n\n`;
+            if(getVal('s4_feel')) md += `### 4.2 Desired “Feel”\n${getVal('s4_feel')}\n\n`;
+
+            // 5. Users
+            md += `## 5. Users & Actors\n`;
+            md += `- **Primary:** ${getVal('s5_primary')}\n`;
+            md += `- **Secondary:** ${getVal('s5_secondary')}\n`;
+            md += `- **Actors:** ${getVal('s5_actors')}\n`;
+            md += `- **Anonymous:** ${getVal('s5_anon')}\n\n`;
+
+            // 6. Capabilities (Dynamic)
+            const caps = document.querySelectorAll('.capability-item');
+            if (caps.length > 0) {
+                md += `## 6. Functional Capabilities\n`;
+                caps.forEach((cap, index) => {
+                    const name = cap.querySelector('.cap-name').value;
+                    const desc = cap.querySelector('.cap-desc').value;
+                    const behaviors = cap.querySelector('.cap-behaviors').value;
+                    const rules = cap.querySelector('.cap-rules').value;
+
+                    if (name || desc) {
+                        md += `### Capability Area ${index + 1}: ${name || '(Unnamed)'}\n`;
+                        if(desc) md += `**Description:** ${desc}\n\n`;
+                        if(behaviors) md += `**Key Behaviors:**\n${behaviors}\n\n`;
+                        if(rules) md += `**Rules/Constraints:**\n${rules}\n\n`;
+                    }
+                });
+            }
+
+            // 7. Contracts
+            md += `## 7. Interaction Contracts\n`;
+            if(getVal('s7_inputs')) md += `### 7.1 Inputs\n${getVal('s7_inputs')}\n\n`;
+            if(getVal('s7_outputs')) md += `### 7.2 Outputs\n${getVal('s7_outputs')}\n\n`;
+            if(getVal('s7_errors')) md += `### 7.3 Error Handling\n${getVal('s7_errors')}\n\n`;
+
+            // 8. Tech
+            md += `## 8. Technical Direction\n`;
+            if(getVal('s8_stack')) md += `### 8.1 Suggested Stack\n${getVal('s8_stack')}\n\n`;
+            if(getVal('s8_constraints')) md += `### 8.2 Constraints\n${getVal('s8_constraints')}\n\n`;
+
+            // 9. Data
+            md += `## 9. Data & State\n`;
+            if(getVal('s9_concepts')) md += `${getVal('s9_concepts')}\n\n`;
+            md += `**Persistence:** ${getVal('s9_persist')}\n\n`;
+
+            // 10. Security
+            const isSecurityUnknown = document.getElementById('s10_unknown_toggle').checked;
+            md += `## 10. Security, Privacy & Compliance\n`;
+            if(isSecurityUnknown) {
+                md += `*Status marked as Unknown/N/A by user.*\n\n`;
+            } else {
+                if(getVal('s10_text')) md += `${getVal('s10_text')}\n\n`;
+            }
+
+            // 11. Unknowns
+            md += `## 11. Unknowns, Open Questions & Assumptions\n`;
+            if(getVal('s11_known')) md += `### 11.1 Known Unknowns\n${getVal('s11_known')}\n\n`;
+            if(getVal('s11_assumed')) md += `### 11.2 Assumptions\n${getVal('s11_assumed')}\n\n`;
+
+            // 12. Risks
+            md += `## 12. Risks & Tradeoffs\n`;
+            if(getVal('s12_risks')) md += `**Known Risks:**\n${getVal('s12_risks')}\n\n`;
+            if(getVal('s12_trades')) md += `**Deliberate Tradeoffs:**\n${getVal('s12_trades')}\n\n`;
+
+            // 13. Evolution
+            md += `## 13. Evolution & Flexibility\n`;
+            if(getVal('s13_future')) md += `**Expected Changes:**\n${getVal('s13_future')}\n\n`;
+            if(getVal('s13_stability')) md += `**Stability:**\n${getVal('s13_stability')}\n\n`;
+
+            // 14. Collab
+            md += `## 14. Collaboration Instructions for the LLM\n`;
+            md += `${getVal('s14_instructions')}\n\n`;
+
+            md += `✅ End of Project Intent Specification`;
+
+            document.getElementById('mdOutput').textContent = md;
+        }
+
+        // --- Copy Utility ---
+        function copyToClipboard() {
+            const text = document.getElementById('mdOutput').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const fb = document.getElementById('copyFeedback');
+                fb.classList.add('show');
+                setTimeout(() => {
+                    fb.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy', err);
+                alert('Failed to copy text. Please select and copy manually.');
+            });
+        }
+    </script>
+</body>
+</html>

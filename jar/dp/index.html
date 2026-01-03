@@ -129,9 +129,13 @@
         <div class="container">
             <div class="app-header">
                 <h1>Money Jars</h1>
-                <div class="month-display" id="currentMonth">This month</div>
+                <div class="header-actions">
+                    <div class="month-display" id="currentMonth">This month</div>
+                    <button class="btn-link" id="settingsBtn" style="margin-left: var(--spacing-sm);">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
             </div>
-
             <div class="card text-center">
                 <div class="text-muted">You have</div>
                 <div class="large-number" id="totalBalance">0</div>
@@ -380,6 +384,59 @@
             <button class="btn btn-outline mt-lg" id="backToHomeFromActivityBtn">Back to home</button>
         </div>
     </div>
+
+    <!-- Settings Screen -->
+<div class="screen" id="settingsScreen">
+    <div class="container">
+        <div class="app-header">
+            <h1>Settings</h1>
+        </div>
+
+        <div class="card">
+            <h3>Data management</h3>
+            
+            <!-- Backup Section (shows when there's data) -->
+            <div id="backupSection" style="display: none;">
+                <div class="form-group">
+                    <p class="text-muted">Save your data to a file</p>
+                    <button class="btn btn-outline" id="backupBtn">
+                        <i class="fas fa-download"></i> Save to file
+                    </button>
+                </div>
+                
+                <div class="text-very-muted mt-sm" style="font-size: 12px;">
+                    You can send this file to someone else with the same app version
+                </div>
+            </div>
+            
+            <!-- Restore Section (always visible but only works when file selected) -->
+            <div class="form-group mt-lg">
+                <p class="text-muted">Load data from a file</p>
+                <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                <button class="btn btn-outline" id="restoreBtn">
+                    <i class="fas fa-upload"></i> Load from file
+                </button>
+            </div>
+            
+            <div class="text-very-muted mt-sm" style="font-size: 12px;">
+                This will replace all your current data
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>App info</h3>
+            <div class="text-muted">
+                <p>Money Jars v1.0</p>
+                <p class="text-very-muted" style="font-size: 14px;">
+                    All data stays on your device
+                </p>
+            </div>
+        </div>
+
+        <button class="btn btn-outline mt-lg" id="backToHomeFromSettingsBtn">Back to home</button>
+    </div>
+</div>
+    
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
