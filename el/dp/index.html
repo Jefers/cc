@@ -287,6 +287,14 @@
             color: var(--text-lighter);
             border: 1px solid var(--border);
         }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-warning {
+            background-color: var(--secondary);
+        }
 
         /* --- Lists --- */
         .item-list { list-style: none; }
@@ -466,6 +474,55 @@
             border-bottom: 1px solid var(--border);
             margin-bottom: 16px;
         }
+        
+        /* --- Settings Header --- */
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .settings-back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--primary);
+            padding: 8px;
+        }
+        
+        /* --- Backup/Restore Styles --- */
+        .backup-section {
+            margin-bottom: 24px;
+        }
+        
+        .backup-info {
+            background-color: var(--primary-light);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .backup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .icon-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
     </style>
 </head>
@@ -477,6 +534,9 @@
 </div>
 
 <div id="toast-container" class="toast-container"></div>
+
+<!-- Hidden file input for restore -->
+<input type="file" id="restore-file-input" class="file-input" accept=".json">
 
 <main class="container">
 
@@ -508,6 +568,16 @@
             <div id="status-warning-area"></div>
         </div>
 
+        <div class="card">
+            <h2>Data Management</h2>
+            <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-light);">
+                Backup your data or restore from a previous backup.
+            </p>
+            <button class="btn btn-outline" onclick="app.navigateTo('view-data-management')">
+                <span class="icon-text">⚙️ Manage Data</span>
+            </button>
+        </div>
+        
         <button class="btn btn-outline" onclick="app.navigateTo('view-settings')">Update Settings</button>
     </section>
 
@@ -562,6 +632,44 @@
             <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-light);">Clear all data and reset to defaults.</p>
             <button class="btn btn-mute-delete btn-sm" onclick="app.resetData()">Reset All Data</button>
         </div>
+    </section>
+    
+    <!-- NEW VIEW: DATA MANAGEMENT -->
+    <section id="view-data-management" class="view-section">
+        <div class="card">
+            <h2>Backup & Restore</h2>
+            
+            <div class="backup-info">
+                <p>Backup your data to a file for safekeeping, or restore from a previous backup.</p>
+                <p style="margin-top: 8px; font-size: 12px;">
+                    <strong>Note:</strong> Restoring will replace all your current data.
+                </p>
+            </div>
+            
+            <div class="backup-section">
+                <h3>Backup Data</h3>
+                <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-light);">
+                    Save your current data to a file on your device.
+                </p>
+                <div id="backup-button-container" class="backup-buttons">
+                    <!-- Backup button will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="backup-section">
+                <h3>Restore Data</h3>
+                <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-light);">
+                    Load data from a previously saved backup file.
+                </p>
+                <div class="backup-buttons">
+                    <button class="btn btn-warning" onclick="app.triggerRestore()">
+                        <span class="icon-text">📁 Load from file</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-outline" onclick="app.navigateTo('view-dashboard')">Back to Dashboard</button>
     </section>
 
 </main>
@@ -696,8 +804,163 @@ const app = (function() {
         
         // Alert Banner
         alertBanner: document.getElementById('global-alert-banner'),
-        alertMessage: document.getElementById('alert-message')
+        alertMessage: document.getElementById('alert-message'),
+        
+        // Backup/Restore
+        restoreFileInput: document.getElementById('restore-file-input'),
+        backupButtonContainer: document.getElementById('backup-button-container')
     };
+
+    // --- Backup & Restore Functions ---
+    
+    function hasDataToBackup() {
+        // Check if we have any sockets or hardwired items
+        const hasSockets = state.sockets.length > 0;
+        const hasHardwired = state.hardwired.length > 0;
+        const hasSettings = state.settings.voltage !== 120 || 
+                           state.settings.maxAmps !== 15 || 
+                           state.settings.costPerKwh !== 0.15;
+        
+        return hasSockets || hasHardwired || hasSettings;
+    }
+    
+    function createBackupData() {
+        const currentData = JSON.parse(localStorage.getItem('estimator_data'));
+        const estimatorConfigured = localStorage.getItem('estimator_configured');
+        
+        return {
+            app: "Power Planner",
+            version: "V1.0",
+            timestamp: new Date().toISOString(),
+            data: {
+                estimator_data: currentData,
+                estimator_configured: estimatorConfigured
+            }
+        };
+    }
+    
+    function backupToFile() {
+        if (!hasDataToBackup()) {
+            showToast('No data to backup', 'error');
+            return;
+        }
+        
+        try {
+            const backupData = createBackupData();
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            // Create filename with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const filename = `powerplanner_backup_${dateStr}.json`;
+            
+            // Create download link
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast('Backup saved successfully', 'success');
+        } catch (error) {
+            console.error('Backup error:', error);
+            showToast('Failed to create backup', 'error');
+        }
+    }
+    
+    function restoreFromFile(file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const backupData = JSON.parse(e.target.result);
+                
+                // Validate backup file
+                if (!backupData.app || backupData.app !== "Power Planner") {
+                    showToast('Invalid backup file: Not a Power Planner backup', 'error');
+                    return;
+                }
+                
+                if (!backupData.version || backupData.version !== "V1.0") {
+                    showToast('Invalid backup version: Please use V1.0 backups', 'error');
+                    return;
+                }
+                
+                if (!backupData.data || !backupData.data.estimator_data) {
+                    showToast('Invalid backup file: Missing data', 'error');
+                    return;
+                }
+                
+                // Ask for confirmation
+                if (confirm('This will replace all your current data. Continue?')) {
+                    // Clear existing data
+                    localStorage.clear();
+                    
+                    // Restore data
+                    if (backupData.data.estimator_data) {
+                        localStorage.setItem('estimator_data', JSON.stringify(backupData.data.estimator_data));
+                    }
+                    
+                    if (backupData.data.estimator_configured) {
+                        localStorage.setItem('estimator_configured', backupData.data.estimator_configured);
+                    }
+                    
+                    // Reload the app
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Restore error:', error);
+                showToast('Failed to restore backup: Invalid file format', 'error');
+            }
+        };
+        
+        reader.onerror = function() {
+            showToast('Failed to read backup file', 'error');
+        };
+        
+        reader.readAsText(file);
+    }
+    
+    function triggerRestore() {
+        els.restoreFileInput.click();
+    }
+    
+    function updateBackupButton() {
+        if (!els.backupButtonContainer) return;
+        
+        els.backupButtonContainer.innerHTML = '';
+        
+        if (hasDataToBackup()) {
+            const backupBtn = document.createElement('button');
+            backupBtn.className = 'btn btn-success';
+            backupBtn.onclick = backupToFile;
+            backupBtn.innerHTML = '<span class="icon-text">💾 Save to file</span>';
+            els.backupButtonContainer.appendChild(backupBtn);
+        } else {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'backup-info';
+            emptyMsg.innerHTML = '<p style="text-align: center; color: var(--text-lighter);">No data to backup yet. Add some sockets or devices first.</p>';
+            els.backupButtonContainer.appendChild(emptyMsg);
+        }
+    }
+    
+    function initBackupRestore() {
+        // Set up file input change handler
+        els.restoreFileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                restoreFromFile(e.target.files[0]);
+                // Reset file input so same file can be selected again
+                e.target.value = '';
+            }
+        });
+        
+        // Initial backup button update
+        updateBackupButton();
+    }
 
     // --- Utility Functions ---
     function getWattageColor(watts) {
@@ -752,6 +1015,7 @@ const app = (function() {
         loadData();
         setupEventListeners();
         refreshUI();
+        initBackupRestore();
     }
 
     function loadData() {
@@ -771,6 +1035,7 @@ const app = (function() {
     function saveData() {
         localStorage.setItem('estimator_data', JSON.stringify(state));
         refreshUI();
+        updateBackupButton(); // Update backup button when data changes
     }
 
     // --- Logic & Calculations ---
@@ -814,6 +1079,7 @@ const app = (function() {
         renderSockets();
         renderHardwired();
         updateSettingsForm();
+        updateBackupButton();
     }
 
     function updateDashboard() {
@@ -1053,6 +1319,8 @@ const app = (function() {
         
         // Refresh specific view if needed
         if(viewId === 'view-dashboard') updateDashboard();
+        if(viewId === 'view-data-management') updateBackupButton();
+        
         window.scrollTo(0,0);
     }
 
@@ -1233,7 +1501,10 @@ const app = (function() {
         closeModals,
         deleteSocket,
         deleteDevice,
-        resetData
+        resetData,
+        backupToFile,
+        triggerRestore,
+        hasDataToBackup
     };
 
 })();
