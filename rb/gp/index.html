@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Rent vs Buy Simulator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+:root {
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --accent: #0071e3;
+  --border: #d2d2d7;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  padding: 40px 20px 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+  margin: 0 0 10px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 16px;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 15px;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  font-size: 16px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.results {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.result {
+  flex: 1;
+  min-width: 260px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fafafa;
+}
+
+.result h3 {
+  margin-top: 0;
+}
+
+.winner {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+canvas {
+  width: 100%;
+  height: 300px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Rent vs Buy Simulator</h1>
+  <div class="subtitle">Historical, deterministic, brutally honest</div>
+</header>
+
+<main>
+
+<div class="card">
+  <h2>Scenario</h2>
+  <div class="grid">
+    <div>
+      <label>Starting Income (annual)</label>
+      <input id="income" type="number" value="40000" />
+    </div>
+    <div>
+      <label>Initial Savings</label>
+      <input id="savings" type="number" value="5000" />
+    </div>
+    <div>
+      <label>Property Price (1996)</label>
+      <input id="price" type="number" value="200000" />
+    </div>
+    <div>
+      <label>Annual Rent (1996)</label>
+      <input id="rent" type="number" value="9000" />
+    </div>
+    <div>
+      <label>Deposit %</label>
+      <input id="deposit" type="number" value="10" />
+    </div>
+    <div>
+      <label>Mortgage Term (years)</label>
+      <input id="term" type="number" value="25" />
+    </div>
+    <div>
+      <label>Number of Moves</label>
+      <input id="moves" type="number" value="2" />
+    </div>
+  </div>
+  <br/>
+  <button onclick="runSimulation()">Run Simulation</button>
+</div>
+
+<div class="card results">
+  <div class="result">
+    <h3>Buyer</h3>
+    <div id="buyerResult"></div>
+  </div>
+  <div class="result">
+    <h3>Renter</h3>
+    <div id="renterResult"></div>
+  </div>
+</div>
+
+<div class="card">
+  <canvas id="chart"></canvas>
+</div>
+
+</main>
+
+<script>
+// -------------------- DATA --------------------
+const data = `year,inflation_rate_percent,house_price_index,rent_price_index,mortgage_interest_rate_percent,annual_return_percent,income_growth_rate_percent,purchase_cost_percent,sale_cost_percent,property_tax_percent,maintenance_percent,renter_move_cost_percent_of_annual_rent,capital_gains_tax_percent
+1996,2.6,100.0,100.0,6.9,16.0,5.2,3.5,2.5,1.2,1.0,12.5,24.0
+1997,2.4,108.5,103.8,7.5,24.7,5.8,3.5,2.5,1.2,1.0,12.5,24.0
+1998,1.8,116.2,107.2,7.8,17.8,5.4,3.5,2.5,1.2,1.0,12.5,24.0
+1999,1.6,125.4,110.5,6.5,21.1,5.1,3.5,2.5,1.2,1.0,12.5,24.0
+2000,0.8,135.1,113.9,6.2,-7.5,4.9,3.5,2.5,1.1,1.0,12.5,24.0
+2001,1.2,147.3,117.8,5.6,-13.3,5.3,3.5,2.5,1.1,1.0,12.5,24.0
+2002,1.3,163.8,122.3,5.0,-22.7,4.7,3.5,2.5,1.1,1.0,12.5,24.0
+2003,1.4,185.6,127.4,4.7,17.9,4.2,3.5,2.5,1.0,1.0,12.5,24.0
+2004,1.3,205.9,132.9,5.1,12.8,4.5,3.5,2.5,1.0,1.0,12.5,24.0
+2005,2.1,218.7,138.5,5.0,20.9,4.8,3.5,2.5,1.0,1.0,12.5,24.0
+2006,2.3,230.4,144.2,5.4,16.8,4.6,3.5,2.5,1.0,1.0,12.5,24.0
+2007,2.3,245.1,150.1,6.1,7.4,4.1,3.5,2.5,0.9,1.0,12.5,24.0
+2008,3.6,238.6,155.3,6.3,-29.1,3.2,3.5,2.5,0.9,1.0,12.5,18.0
+2009,2.2,220.3,158.9,4.2,27.3,-1.5,3.5,2.5,0.9,1.0,12.5,18.0
+2010,3.3,228.9,162.7,3.8,12.6,2.1,3.5,2.5,0.9,1.0,12.5,18.0
+2011,4.5,230.2,167.4,3.9,-2.2,1.8,3.5,2.5,0.9,1.0,12.5,18.0
+2012,2.8,231.5,172.0,4.0,10.5,1.4,3.5,2.5,0.9,1.0,12.5,18.0
+2013,2.6,240.8,176.3,3.6,13.0,1.9,3.5,2.5,0.9,1.0,12.5,18.0
+2014,1.5,255.6,180.8,3.3,1.2,1.2,4.0,2.5,0.9,1.0,12.5,18.0
+2015,0.0,270.1,185.6,3.1,0.9,2.0,4.0,2.5,0.8,1.0,12.5,18.0
+2016,0.7,285.4,190.9,3.0,16.5,2.5,4.5,2.5,0.8,1.0,12.5,10.0
+2017,2.7,300.2,197.2,3.2,13.1,2.6,4.5,2.5,0.8,1.0,12.5,10.0
+2018,2.5,310.7,204.1,3.4,-9.5,3.1,4.5,2.5,0.8,1.0,12.5,10.0
+2019,1.8,318.9,211.0,3.3,19.1,3.4,4.5,2.5,0.8,1.0,12.5,10.0
+2020,0.9,330.5,216.5,3.1,-9.8,1.8,4.5,2.5,0.8,1.0,12.5,10.0
+2021,2.6,360.2,223.8,2.8,18.4,4.0,4.5,2.5,0.7,1.0,12.5,10.0
+2022,9.1,385.4,238.5,4.5,-0.9,5.5,4.5,2.5,0.7,1.0,12.5,10.0
+2023,7.3,395.1,258.4,6.2,7.9,6.2,4.5,2.5,0.7,1.0,12.5,10.0
+2024,2.5,405.8,278.5,5.8,8.7,6.9,4.5,2.5,0.6,1.0,12.5,10.0
+2025,3.2,415.0,295.0,5.0,21.6,5.3,4.5,2.5,0.6,1.0,12.5,18.0`;
+
+const rows = data.trim().split("\n").slice(1).map(r => {
+  const cols = r.split(",");
+  return {
+    year: +cols[0],
+    hpi: +cols[2],
+    rpi: +cols[3],
+    mortgage: +cols[4] / 100,
+    return: +cols[5] / 100,
+    incomeGrowth: +cols[6] / 100,
+    buyCost: +cols[7] / 100,
+    sellCost: +cols[8] / 100,
+    tax: +cols[9] / 100,
+    maint: +cols[10] / 100,
+    rentMove: +cols[11] / 100,
+    cgt: +cols[12] / 100
+  };
+});
+
+// -------------------- SIMULATION --------------------
+function runSimulation() {
+  let income = +incomeInput.value;
+  let savingsBuyer = +savingsInput.value;
+  let savingsRenter = +savingsInput.value;
+  let investRenter = 0;
+
+  let homeValue = 0;
+  let mortgageBalance = 0;
+
+  const depositPct = +depositInput.value / 100;
+  const term = +termInput.value;
+  const basePrice = +priceInput.value;
+  const baseRent = +rentInput.value;
+  const moves = +movesInput.value;
+  const moveYears = rows.map(r => r.year)
+    .filter((_, i) => i % Math.floor(rows.length / (moves + 1)) === 0)
+    .slice(1);
+
+  let bought = false;
+  let buyerWealth = [];
+  let renterWealth = [];
+
+  rows.forEach(row => {
+    income *= (1 + row.incomeGrowth);
+
+    const propertyPrice = basePrice * row.hpi / 100;
+    const rent = baseRent * row.rpi / 100;
+
+    // BUYER
+    if (!bought && savingsBuyer >= propertyPrice * depositPct) {
+      const deposit = propertyPrice * depositPct;
+      const purchaseCosts = propertyPrice * row.buyCost;
+      savingsBuyer -= (deposit + purchaseCosts);
+      mortgageBalance = propertyPrice - deposit;
+      homeValue = propertyPrice;
+      bought = true;
+    }
+
+    if (bought) {
+      const interest = mortgageBalance * row.mortgage;
+      const principal = mortgageBalance / term;
+      mortgageBalance -= principal;
+      savingsBuyer -= (interest + principal);
+      savingsBuyer -= homeValue * (row.tax + row.maint);
+    }
+
+    // RENTER
+    savingsRenter -= rent;
+    investRenter += Math.max(0, income - rent);
+
+    investRenter *= (1 + row.return);
+
+    buyerWealth.push((homeValue - mortgageBalance) + savingsBuyer);
+    renterWealth.push(investRenter + savingsRenter);
+  });
+
+  const finalBuyer = buyerWealth.at(-1);
+  const finalRenter = renterWealth.at(-1);
+
+  buyerResult.innerHTML = `<div class="winner">€${finalBuyer.toFixed(0)}</div>`;
+  renterResult.innerHTML = `<div class="winner">€${finalRenter.toFixed(0)}</div>`;
+
+  drawChart(buyerWealth, renterWealth);
+}
+
+// -------------------- CHART --------------------
+function drawChart(buyer, renter) {
+  const c = document.getElementById("chart");
+  const ctx = c.getContext("2d");
+  c.width = c.offsetWidth;
+  c.height = 300;
+
+  ctx.clearRect(0, 0, c.width, c.height);
+
+  const max = Math.max(...buyer, ...renter);
+  const scaleY = c.height / max;
+  const scaleX = c.width / buyer.length;
+
+  function line(data, color) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    data.forEach((v, i) => {
+      const x = i * scaleX;
+      const y = c.height - v * scaleY;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
+
+  line(buyer, "#0071e3");
+  line(renter, "#34c759");
+}
+
+// -------------------- INPUT REFERENCES --------------------
+const incomeInput = document.getElementById("income");
+const savingsInput = document.getElementById("savings");
+const priceInput = document.getElementById("price");
+const rentInput = document.getElementById("rent");
+const depositInput = document.getElementById("deposit");
+const termInput = document.getElementById("term");
+const movesInput = document.getElementById("moves");
+</script>
+
+</body>
+</html>
