@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Simple Video Clipper</title>
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f4f4f4;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+
+  .app {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  video {
+    width: 100%;
+    max-height: 420px;
+    background: black;
+    margin-top: 10px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .info {
+    margin-top: 10px;
+    font-size: 0.85rem;
+  }
+
+  .status {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #333;
+  }
+
+  .progress {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #0066cc;
+    white-space: pre-wrap;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Video Clipper</h1>
+
+<div class="app">
+  <input type="file" id="fileInput" accept="video/mp4,video/quicktime" />
+
+  <video id="video" controls></video>
+
+  <div class="controls">
+    <button id="setStart">Set Start</button>
+    <button id="setEnd">Set End</button>
+    <button id="cutBtn" disabled>Cut</button>
+  </div>
+
+  <div class="info">
+    Start: <span id="startLabel">—</span> |
+    End: <span id="endLabel">—</span>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<!-- FFmpeg WASM -->
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/ffmpeg.min.js"></script>
+
+<script>
+  const video = document.getElementById('video');
+  const fileInput = document.getElementById('fileInput');
+  const setStartBtn = document.getElementById('setStart');
+  const setEndBtn = document.getElementById('setEnd');
+  const cutBtn = document.getElementById('cutBtn');
+  const startLabel = document.getElementById('startLabel');
+  const endLabel = document.getElementById('endLabel');
+  const statusEl = document.getElementById('status');
+  const progressEl = document.getElementById('progress');
+
+  let startTime = null;
+  let endTime = null;
+  let videoFile = null;
+
+  const ffmpeg = new window.FFmpeg();
+
+  async function loadFFmpeg() {
+    if (ffmpeg.loaded) return;
+
+    statusEl.textContent = 'Loading FFmpeg (first time may take ~10s)...';
+
+    await ffmpeg.load({
+      coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.10/dist/ffmpeg-core.js',
+      wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.10/dist/ffmpeg-core.wasm'
+    });
+
+    ffmpeg.on('log', ({ message }) => {
+      progressEl.textContent = message;
+    });
+  }
+
+  fileInput.addEventListener('change', () => {
+    videoFile = fileInput.files[0];
+    if (!videoFile) return;
+
+    video.src = URL.createObjectURL(videoFile);
+    startTime = null;
+    endTime = null;
+    updateUI();
+  });
+
+  setStartBtn.addEventListener('click', () => {
+    startTime = video.currentTime;
+    updateUI();
+  });
+
+  setEndBtn.addEventListener('click', () => {
+    endTime = video.currentTime;
+    updateUI();
+  });
+
+  cutBtn.addEventListener('click', async () => {
+    if (startTime === null || endTime === null || startTime >= endTime) {
+      alert('Please set a valid start and end time.');
+      return;
+    }
+
+    progressEl.textContent = '';
+    await loadFFmpeg();
+
+    const inputName = 'input.mp4';
+    const outputName = 'output.mp4';
+
+    statusEl.textContent = 'Preparing video...';
+    await ffmpeg.writeFile(
+      inputName,
+      new Uint8Array(await videoFile.arrayBuffer())
+    );
+
+    statusEl.textContent = 'Cutting video...';
+
+    await ffmpeg.exec([
+      '-ss', String(startTime),
+      '-to', String(endTime),
+      '-i', inputName,
+      '-movflags', 'faststart',
+      '-pix_fmt', 'yuv420p',
+      outputName
+    ]);
+
+    statusEl.textContent = 'Finalizing...';
+
+    const data = await ffmpeg.readFile(outputName);
+    const blob = new Blob([data.buffer], { type: 'video/mp4' });
+
+    const now = new Date();
+    const timestamp = now.toISOString()
+      .replace(/T/, ' at ')
+      .replace(/:/g, '.')
+      .replace(/\..+/, '');
+
+    const filename = `clip-${timestamp}.mp4`;
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+
+    statusEl.textContent = 'Clip downloaded.';
+  });
+
+  function updateUI() {
+    startLabel.textContent = startTime !== null ? formatTime(startTime) : '—';
+    endLabel.textContent = endTime !== null ? formatTime(endTime) : '—';
+    cutBtn.disabled = !(startTime !== null && endTime !== null && startTime < endTime);
+  }
+
+  function formatTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    const ms = Math.floor((seconds % 1) * 1000);
+    return `${pad(h)}:${pad(m)}:${pad(s)}.${ms}`;
+  }
+
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+</script>
+
+</body>
+</html>

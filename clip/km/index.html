@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Clipper</title>
+    <style>
+        /* Modern, clean UI with macOS-inspired design */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 14px 28px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .file-label:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        video {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            background: #000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .time-display {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .marker-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s;
+        }
+
+        .marker-section:hover {
+            border-color: #667eea;
+        }
+
+        .marker-section h3 {
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .time-value {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 18px;
+            color: #667eea;
+            margin: 8px 0 12px;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-right: 8px;
+            margin-bottom: 5px;
+        }
+
+        .set-btn {
+            background: #48bb78;
+            color: white;
+        }
+
+        .set-btn:hover {
+            background: #38a169;
+            transform: translateY(-1px);
+        }
+
+        .clear-btn {
+            background: #f56565;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #e53e3e;
+            transform: translateY(-1px);
+        }
+
+        .clip-range {
+            grid-column: 1 / -1;
+            background: #e6fffa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #38b2ac;
+        }
+
+        .clip-range h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+
+        #cutBtn {
+            width: 100%;
+            padding: 18px;
+            background: #667eea;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #cutBtn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+        }
+
+        #cutBtn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #status {
+            margin-top: 25px;
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .info {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        #progress {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            animation: fadeIn 0.3s;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 36px;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-top: 12px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Video Clipper</h1>
+        
+        <div class="upload-section">
+            <label for="fileInput" class="file-label">
+                Choose Video File (.mov, .mp4)
+            </label>
+            <input type="file" id="fileInput" accept=".mov,.mp4">
+            <div id="fileName" style="margin-top: 12px; color: #666; font-weight: 500;"></div>
+        </div>
+
+        <video id="videoPlayer" controls></video>
+
+        <div class="time-display">
+            Current Time: <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+        </div>
+
+        <div class="controls">
+            <div class="marker-section">
+                <h3>⏹️ Start Time</h3>
+                <div class="time-value" id="startTime">Not Set</div>
+                <button class="set-btn" id="setStartBtn">Set Start</button>
+                <button class="clear-btn" id="clearStartBtn">Clear</button>
+            </div>
+
+            <div class="marker-section">
+                <h3>⏹️ End Time</h3>
+                <div class="time-value" id="endTime">Not Set</div>
+                <button class="set-btn" id="setEndBtn">Set End</button>
+                <button class="clear-btn" id="clearEndBtn">Clear</button>
+            </div>
+
+            <div class="clip-range">
+                <h3>📂️ Clip Range</h3>
+                <div class="time-value" id="clipRange">Select start and end times</div>
+            </div>
+        </div>
+
+        <button id="cutBtn" disabled>
+            Cut Video
+            <span id="loadingSpinner" class="hidden"></span>
+        </button>
+
+        <div id="progress" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong>Processing:</strong>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div id="progressMessage" style="margin-top: 12px; font-size: 14px; color: #666;"></div>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <!-- Load ffmpeg.wasm from CDN -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/ffmpeg.min.js"></script>
+    <script>
+        // Video Clipper Application
+        // Self-contained video clipping tool using ffmpeg.wasm
+        // Works entirely in browser with no server required
+        
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const startTimeEl = document.getElementById('startTime');
+        const endTimeEl = document.getElementById('endTime');
+        const setStartBtn = document.getElementById('setStartBtn');
+        const setEndBtn = document.getElementById('setEndBtn');
+        const clearStartBtn = document.getElementById('clearStartBtn');
+        const clearEndBtn = document.getElementById('clearEndBtn');
+        const clipRangeEl = document.getElementById('clipRange');
+        const cutBtn = document.getElementById('cutBtn');
+        const statusEl = document.getElementById('status');
+        const progressEl = document.getElementById('progress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const progressMessage = document.getElementById('progressMessage');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const fileNameEl = document.getElementById('fileName');
+
+        // Application State
+        let videoFile = null;
+        let startTime = null;
+        let endTime = null;
+        let ffmpeg = null;
+
+        // Initialize ffmpeg.wasm on page load
+        async function initializeFFmpeg() {
+            try {
+                // Create FFmpeg instance with progress tracking
+                const { createFFmpeg } = FFmpeg;
+                ffmpeg = createFFmpeg({
+                    log: false, // Disable console logs
+                    progress: (p) => {
+                        // Update progress bar during processing
+                        if (p.ratio) {
+                            const percent = Math.round(p.ratio * 100);
+                            updateProgress(percent, 'Processing video...');
+                        }
+                    }
+                });
+
+                showStatus('Loading ffmpeg.wasm...', 'info');
+
+                // Load the ffmpeg.wasm core
+                await ffmpeg.load();
+                
+                showStatus('✅ Ready! Upload a video to begin.', 'success');
+                console.log('FFmpeg loaded successfully');
+            } catch (error) {
+                console.error('Failed to load ffmpeg.wasm:', error);
+                showStatus('❌ Error: Failed to load ffmpeg.wasm. Please check internet connection.', 'error');
+            }
+        }
+
+        // Initialize immediately
+        initializeFFmpeg();
+
+        // Helper Functions
+
+        /**
+         * Formats seconds into user-friendly time string
+         * @param {number} seconds - Time in seconds
+         * @returns {string} Formatted time (e.g., "1:23" or "01:23:45")
+         */
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        /**
+         * Formats seconds for ffmpeg command-line arguments
+         * @param {number} totalSeconds - Time in seconds
+         * @returns {string} FFmpeg time format (HH:MM:SS.ms)
+         */
+        function formatTimeFFmpeg(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+            const ms = Math.round((totalSeconds % 1) * 100);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+        }
+
+        /**
+         * Shows status message to user
+         * @param {string} message - Message to display
+         * @param {string} type - Message type: 'info', 'success', 'error'
+         */
+        function showStatus(message, type = 'info') {
+            statusEl.textContent = message;
+            statusEl.className = type;
+            statusEl.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            statusEl.classList.add('hidden');
+        }
+
+        function updateProgress(percent, message = '') {
+            progressFill.style.width = percent + '%';
+            progressFill.textContent = percent + '%';
+            progressText.textContent = percent + '%';
+            if (message) {
+                progressMessage.textContent = message;
+            }
+        }
+
+        function showProgress() {
+            progressEl.classList.remove('hidden');
+        }
+
+        function hideProgress() {
+            progressEl.classList.add('hidden');
+            updateProgress(0);
+        }
+
+        function toggleCutButtonLoading(isLoading) {
+            if (isLoading) {
+                cutBtn.disabled = true;
+                loadingSpinner.classList.remove('hidden');
+                cutBtn.innerHTML = 'Processing<span class="loading"></span>';
+            } else {
+                loadingSpinner.classList.add('hidden');
+                cutBtn.textContent = 'Cut Video';
+                validateClipRange();
+            }
+        }
+
+        function validateClipRange() {
+            const isValid = videoFile !== null && 
+                           startTime !== null && 
+                           endTime !== null && 
+                           startTime < endTime;
+            
+            cutBtn.disabled = !isValid;
+            
+            if (startTime !== null && endTime !== null) {
+                if (startTime >= endTime) {
+                    showStatus('❌ Error: Start time must be before end time', 'error');
+                    cutBtn.disabled = true;
+                } else {
+                    hideStatus();
+                }
+            }
+        }
+
+        function updateClipRangeDisplay() {
+            if (startTime !== null && endTime !== null) {
+                clipRangeEl.textContent = `${formatTime(startTime)} - ${formatTime(endTime)} (${formatTime(endTime - startTime)})`;
+            } else if (startTime !== null) {
+                clipRangeEl.textContent = `Start: ${formatTime(startTime)} - End: Not Set`;
+            } else if (endTime !== null) {
+                clipRangeEl.textContent = `Start: Not Set - End: ${formatTime(endTime)}`;
+            } else {
+                clipRangeEl.textContent = 'Select start and end times';
+            }
+        }
+
+        // Event Listeners
+
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            const validTypes = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
+            const fileExtension = file.name.toLowerCase().split('.').pop();
+            
+            if (!validTypes.includes(file.type) && !['mp4', 'mov'].includes(fileExtension)) {
+                showStatus('❌ Error: Please select a valid .mp4 or .mov file', 'error');
+                fileInput.value = '';
+                return;
+            }
+
+            videoFile = file;
+            fileNameEl.textContent = `Selected: ${file.name}`;
+            
+            // Create object URL for video playback
+            const videoURL = URL.createObjectURL(file);
+            videoPlayer.src = videoURL;
+
+            // Reset clip markers
+            startTime = null;
+            endTime = null;
+            startTimeEl.textContent = 'Not Set';
+            endTimeEl.textContent = 'Not Set';
+            updateClipRangeDisplay();
+
+            showStatus('✅ Video loaded. Use the player to navigate and set clip markers.', 'success');
+        });
+
+        // Update current time display while video plays
+        videoPlayer.addEventListener('timeupdate', () => {
+            currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+        });
+
+        // Update duration display once video metadata loads
+        videoPlayer.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(videoPlayer.duration);
+        });
+
+        // Set start time marker
+        setStartBtn.addEventListener('click', () => {
+            if (!videoPlayer.src) {
+                showStatus('❌ Error: Please upload a video first', 'error');
+                return;
+            }
+            
+            startTime = videoPlayer.currentTime;
+            startTimeEl.textContent = formatTime(startTime);
+            updateClipRangeDisplay();
+            validateClipRange();
+            showStatus('✅ Start time set successfully', 'success');
+        });
+
+        // Set end time marker
+        setEndBtn.addEventListener('click', () => {
+            if (!videoPlayer.src) {
+                showStatus('❌ Error: Please upload a video first', 'error');
+                return;
+            }
+            
+            endTime = videoPlayer.currentTime;
+            endTimeEl.textContent = formatTime(endTime);
+            updateClipRangeDisplay();
+            validateClipRange();
+            showStatus('✅ End time set successfully', 'success');
+        });
+
+        // Clear start time marker
+        clearStartBtn.addEventListener('click', () => {
+            startTime = null;
+            startTimeEl.textContent = 'Not Set';
+            updateClipRangeDisplay();
+            validateClipRange();
+            hideStatus();
+        });
+
+        // Clear end time marker
+        clearEndBtn.addEventListener('click', () => {
+            endTime = null;
+            endTimeEl.textContent = 'Not Set';
+            updateClipRangeDisplay();
+            validateClipRange();
+            hideStatus();
+        });
+
+        // Process video cut when button is clicked
+        cutBtn.addEventListener('click', async () => {
+            if (!videoFile || startTime === null || endTime === null || startTime >= endTime) {
+                showStatus('❌ Error: Please set a valid clip range', 'error');
+                return;
+            }
+
+            try {
+                toggleCutButtonLoading(true);
+                showProgress();
+                showStatus('🎬 Processing video... This may take a while for large files. Keep this window open.', 'info');
+
+                // Get file extension
+                const fileExtension = videoFile.name.toLowerCase().split('.').pop();
+                
+                // Generate timestamped output filename
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '.').replace('T', ' at ');
+                const outputName = `clip-${timestamp}.mp4`;
+
+                // Read file data
+                updateProgress(0, 'Reading video file...');
+                const videoData = await videoFile.arrayBuffer();
+                
+                // Write input file to ffmpeg filesystem
+                ffmpeg.FS('writeFile', `input.${fileExtension}`, new Uint8Array(videoData));
+
+                // Prepare ffmpeg arguments
+                const start = formatTimeFFmpeg(startTime);
+                const duration = formatTimeFFmpeg(endTime - startTime);
+                
+                updateProgress(10, 'Extracting video clip...');
+                
+                // Execute ffmpeg command to cut and re-encode video
+                // -ss: seek to start time
+                // -i: input file
+                // -t: duration of clip
+                // -c:v libx264: re-encode video with H.264 codec
+                // -c:a aac: re-encode audio with AAC codec
+                // -preset medium: balanced speed/quality
+                // -crf 23: constant rate factor (quality level)
+                // -movflags +faststart: optimize for web playback
+                await ffmpeg.run(
+                    '-ss', start,
+                    '-i', `input.${fileExtension}`,
+                    '-t', duration,
+                    '-c:v', 'libx264',
+                    '-c:a', 'aac',
+                    '-preset', 'medium',
+                    '-crf', '23',
+                    '-movflags', '+faststart',
+                    'output.mp4'
+                );
+
+                updateProgress(90, 'Preparing download...');
+                
+                // Read processed file from ffmpeg filesystem
+                const outputData = ffmpeg.FS('readFile', 'output.mp4');
+                
+                // Trigger download
+                const blob = new Blob([outputData.buffer], { type: 'video/mp4' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = outputName;
+                a.click();
+                
+                // Cleanup
+                URL.revokeObjectURL(url);
+                ffmpeg.FS('unlink', `input.${fileExtension}`);
+                ffmpeg.FS('unlink', 'output.mp4');
+
+                updateProgress(100, 'Complete!');
+                showStatus(`✅ Success! Clip downloaded as ${outputName}`, 'success');
+                
+            } catch (error) {
+                console.error('Error processing video:', error);
+                showStatus(`❌ Error: ${error.message}. Please try again with a smaller clip or different video.`, 'error');
+            } finally {
+                toggleCutButtonLoading(false);
+                // Keep progress visible briefly to show completion
+                setTimeout(hideProgress, 2000);
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', (e) => {
+            // Revoke any object URLs to free memory
+            if (videoPlayer.src) {
+                URL.revokeObjectURL(videoPlayer.src);
+            }
+            
+            // Clean up ffmpeg filesystem if initialized
+            if (ffmpeg && videoFile) {
+                try {
+                    const fileExtension = videoFile.name.toLowerCase().split('.').pop();
+                    ffmpeg.FS('unlink', `input.${fileExtension}`);
+                    ffmpeg.FS('unlink', 'output.mp4');
+                } catch (e) {
+                    // Ignore cleanup errors
+                }
+            }
+        });
+    </script>
+</body>
+</html>
