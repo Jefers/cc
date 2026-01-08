@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Strategy Masterclass & Intake</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #ff007a;
+            --dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            margin-bottom: 120px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 6px solid var(--primary);
+            transition: 0.3s;
+        }
+
+        .section:hover { background: rgba(255, 255, 255, 0.06); }
+
+        h2 { font-size: 1.4rem; margin-top: 0; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; }
+
+        .label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        label { font-size: 0.95rem; font-weight: 700; color: #94a3b8; }
+
+        .info-btn {
+            background: var(--primary);
+            color: var(--dark);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 15px var(--primary);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .info-btn:hover { transform: rotate(360deg) scale(1.3); background: white; }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            padding: 16px;
+            margin-bottom: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,210,255,0.2); }
+
+        /* Overlay & Modal */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 32px;
+            max-width: 550px;
+            width: 100%;
+            border: 1px solid rgba(0,210,255,0.3);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 0 100px rgba(0,0,0,0.8);
+        }
+
+        .modal h3 { color: var(--primary); font-size: 1.8rem; margin-top: 0; display: flex; align-items: center; gap: 15px; }
+        .modal p { font-size: 1.05rem; line-height: 1.7; color: #cbd5e1; margin-bottom: 20px; }
+        
+        .masterclass-block {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .masterclass-block h4 { color: var(--primary); margin: 0 0 10px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+
+        .example-list { list-style: none; padding: 0; }
+        .example-list li { margin-bottom: 12px; padding-left: 20px; position: relative; color: #f1f5f9; }
+        .example-list li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
+
+        .close-modal {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .btn-group {
+            position: fixed;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: 700px;
+            display: flex; gap: 20px;
+            background: #0f172a; padding: 25px;
+            box-sizing: border-box;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+
+        .save-btn { background: #334155; color: white; flex: 1; height: 60px; border-radius: 15px; border: none; font-weight:700; cursor:pointer;}
+        .export-btn { background: var(--primary); color: var(--dark); flex: 2; height: 60px; border-radius: 15px; border:none; font-weight:900; cursor:pointer;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="text-align: center; margin-bottom: 40px;">
+        <h1 style="color:var(--primary); margin:0; font-size: 2rem; letter-spacing: 4px;">PROJECT ARCHITECT</h1>
+        <p style="opacity:0.6; font-size:1rem; margin-top:10px;">Transformation Brand Discovery Tool</p>
+    </header>
+
+    <form id="siteForm">
+        <div class="section">
+            <h2>⚡ The Brand Soul</h2>
+            <div class="label-row">
+                <label>The Brand Name & Tone</label>
+                <button type="button" class="info-btn" onclick="openModal('brandInfo')">i</button>
+            </div>
+            <input type="text" id="brandName" data-key="brandName" placeholder="e.g. Forge Performance">
+        </div>
+
+        <div class="section">
+            <h2>🎯 The Magnetic Hook</h2>
+            <div class="label-row">
+                <label>The Hero Headline (H1)</label>
+                <button type="button" class="info-btn" onclick="openModal('h1Info')">i</button>
+            </div>
+            <textarea id="heroH1" data-key="heroH1" placeholder="What is the #1 result you provide?"></textarea>
+
+            <div class="label-row" style="margin-top:15px;">
+                <label>The Trust Sub-Headline</label>
+                <button type="button" class="info-btn" onclick="openModal('subInfo')">i</button>
+            </div>
+            <textarea id="heroSub" data-key="heroSub" placeholder="How do you do it, and who is it for?"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>🏗️ The Infrastructure</h2>
+            <div class="label-row">
+                <label>Your Coaching Methodology</label>
+                <button type="button" class="info-btn" onclick="openModal('pillarInfo')">i</button>
+            </div>
+            <textarea id="pillars" data-key="pillars" style="height:180px" placeholder="Define your 3-6 core pillars here..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>📖 The Authority Narrative</h2>
+            <div class="label-row">
+                <label>Your Story / The "Why"</label>
+                <button type="button" class="info-btn" onclick="openModal('bioInfo')">i</button>
+            </div>
+            <textarea id="bio" data-key="bio" style="height:180px" placeholder="From struggle to success..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="save-btn" onclick="saveToLocal()">SAVE SESSION</button>
+            <button type="button" class="export-btn" onclick="exportMarkdown()">FINALIZE & EXPORT BLUEPRINT</button>
+        </div>
+    </form>
+</div>
+
+<div id="infoOverlay" class="overlay">
+    <div class="modal">
+        <h3 id="modalTitle">Information</h3>
+        <p id="modalBody"></p>
+        <div id="masterclassContent"></div>
+        <button class="close-modal" onclick="closeModal()">CONTINUE BUILDING</button>
+    </div>
+</div>
+
+<script>
+    const prompts = {
+        brandInfo: {
+            title: "Identity & Tone",
+            body: "Your brand name is the emotional 'entry point' for your client. We need to decide if you are a 'Command' brand (high intensity, results-focused) or a 'Support' brand (community-led, lifestyle-focused).",
+            masterclass: `
+                <div class="masterclass-block">
+                    <h4>The Strategy</h4>
+                    <p>Think about your ideal client. Are they a corporate executive who wants efficiency? Use sharp, professional language. Are they a beginner who is intimidated? Use warm, empowering language.</p>
+                </div>
+                <div class="masterclass-block">
+                    <h4>Inspirational Examples</h4>
+                    <ul class="example-list">
+                        <li><strong>The Specialist:</strong> 'The Fat Loss Architect'</li>
+                        <li><strong>The Performance:</strong> 'Apex Programming'</li>
+                        <li><strong>The Person:</strong> 'John Doe: Science-Based Strength'</li>
+                    </ul>
+                </div>
+            `
+        },
+        h1Info: {
+            title: "The Headline Masterclass",
+            body: "The headline is the most important piece of text on your site. You have 3 seconds to prove you can solve their problem. If you try to speak to everyone, you will speak to no one.",
+            masterclass: `
+                <div class="masterclass-block">
+                    <h4>The Formula</h4>
+                    <p>Action Verb + Desired Outcome + Timeframe (Optional) - Pain Point.</p>
+                </div>
+                <div class="masterclass-block">
+                    <h4>Examples of Elite Headlines</h4>
+                    <ul class="example-list">
+                        <li>'Build a Resilient Physique Without Giving Up Your Social Life.'</li>
+                        <li>'The Exact Roadmap to Your Strongest Self.'</li>
+                        <li>'Science-Backed Coaching for Men Who Are Done With Guesswork.'</li>
+                    </ul>
+                </div>
+            `
+        },
+        subInfo: {
+            title: "Building Immediate Trust",
+            body: "Now that you've hooked them, you must prove your method is credible. The sub-headline is where we describe your 'Unique Mechanism'.",
+            masterclass: `
+                <div class="masterclass-block">
+                    <h4>The Checklist</h4>
+                    <p>Your sub-headline should answer: 1. Who is this for? 2. How is it different? 3. Why will it work where others failed?</p>
+                </div>
+                <div class="masterclass-block">
+                    <h4>Drafting your Sub-text</h4>
+                    <ul class="example-list">
+                        <li>'A personalized nutrition and training system designed to fit the schedule of a busy professional.'</li>
+                        <li>'No restrictive diets. No soul-crushing cardio. Just data-driven programming that actually sticks.'</li>
+                    </ul>
+                </div>
+            `
+        },
+        pillarInfo: {
+            title: "Designing your Pillars",
+            body: "Top-tier coaching isn't just 'workouts'. It's a system. We need to break your service into 3 to 6 distinct pillars that make your results inevitable.",
+            masterclass: `
+                <div class="masterclass-block">
+                    <h4>The 'Jess Style' Structure</h4>
+                    <p>For each pillar, give it a high-value name and a one-sentence benefit. Don't say 'Nutrition'; say 'The Metabolic Blueprint'.</p>
+                </div>
+                <div class="masterclass-block">
+                    <h4>Pillar Examples</h4>
+                    <ul class="example-list">
+                        <li><strong>Intelligent Programming:</strong> Structure and clarity for every session.</li>
+                        <li><strong>Nutritional Freedom:</strong> Fueling your goals without guilt or restriction.</li>
+                        <li><strong>Elite Accountability:</strong> A partner in your progress, every step of the way.</li>
+                    </ul>
+                </div>
+            `
+        },
+        bioInfo: {
+            title: "The Power of Your Story",
+            body: "People don't buy coaching; they buy a guide who has already reached the destination they desire. Your 'About' section should be a bridge between where you were and where they want to be.",
+            masterclass: `
+                <div class="masterclass-block">
+                    <h4>The Narrative Arc</h4>
+                    <p>1. The Struggle: 'I was stuck, frustrated, and lacked a plan.' <br>2. The Discovery: 'I realized that [X] was the missing link.'<br>3. The Mission: 'Now, I dedicate my life to helping you avoid my mistakes.'</p>
+                </div>
+                <div class="masterclass-block">
+                    <h4>Writing Prompt</h4>
+                    <p>Think about the moment you almost gave up. What changed? That moment is what connects you to your future client.</p>
+                </div>
+            `
+        }
+    };
+
+    function openModal(key) {
+        document.getElementById('modalTitle').innerText = prompts[key].title;
+        document.getElementById('modalBody').innerText = prompts[key].body;
+        document.getElementById('masterclassContent').innerHTML = prompts[key].masterclass;
+        document.getElementById('infoOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoOverlay').style.display = 'none';
+    }
+
+    function saveToLocal() {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            localStorage.setItem(input.getAttribute('data-key'), input.value);
+        });
+        alert("Session saved. You can safely close this and return later.");
+    }
+
+    function exportMarkdown() {
+        const brand = document.getElementById('brandName').value || "Project";
+        let mdContent = `# BRAND STRATEGY BLUEPRINT: ${brand}\n\n`;
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const labelNode = input.previousElementSibling.querySelector('label');
+            const title = labelNode ? labelNode.innerText : "Section";
+            mdContent += `## ${title}\n${input.value}\n\n---\n\n`;
+        });
+        const blob = new Blob([mdContent], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${brand.toLowerCase().replace(/\s+/g, '-')}-masterplan.md`;
+        a.click();
+    }
+
+    window.onload = () => {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const savedValue = localStorage.getItem(input.getAttribute('data-key'));
+            if (savedValue) input.value = savedValue;
+        });
+    };
+</script>
+
+</body>
+</html>

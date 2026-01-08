@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Discovery Form - Website Content</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        header { background: #2c3e50; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #3498db; padding-bottom: 10px; color: #2c3e50; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], input[type="color"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 80px; }
+        .help-text { font-size: 0.85em; color: #666; font-style: italic; margin-bottom: 5px; }
+        .row { display: flex; gap: 20px; }
+        .row div { flex: 1; }
+        button { background: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; width: 100%; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Website Strategy & Content Intake</h1>
+    <p>Project: High-Performance Coaching Website</p>
+</header>
+
+<form>
+    <section>
+        <h2>1. Visual Identity (The "New Look")</h2>
+        <div class="row">
+            <div class="form-group">
+                <label>Primary Brand Color</label>
+                <input type="color" value="#1a1a1a">
+            </div>
+            <div class="form-group">
+                <label>Accent Color (Buttons/CTAs)</label>
+                <input type="color" value="#3498db">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Logo Upload / Link</label>
+            <input type="text" placeholder="URL to logo or description of logo style">
+        </div>
+    </section>
+
+    <section>
+        <h2>2. Hero Section (The Hook)</h2>
+        <p class="help-text">This is the first thing users see. It must be bold and clear.</p>
+        <div class="form-group">
+            <label>Main Headline (H1)</label>
+            <input type="text" placeholder="e.g., Build the Physique and Discipline You’ve Always Wanted">
+        </div>
+        <div class="form-group">
+            <label>Sub-headline</label>
+            <textarea placeholder="e.g., Science-based coaching for men who want to level up their strength and mindset."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Primary CTA Button Text</label>
+            <input type="text" placeholder="e.g., Apply for Coaching">
+        </div>
+        <div class="form-group">
+            <label>Lead Magnet Name (The 'Freebie')</label>
+            <input type="text" placeholder="e.g., The 30-Day Lean Muscle Guide">
+        </div>
+    </section>
+
+    <section>
+        <h2>3. What You Help Them Achieve (The Benefits)</h2>
+        <p class="help-text">Describe 3 key pillars of your coaching.</p>
+        <div class="form-group">
+            <label>Pillar 1: Title & Short Description</label>
+            <input type="text" placeholder="e.g., Precision Nutrition">
+            <textarea placeholder="No-nonsense meal plans designed for your specific goals."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Pillar 2: Title & Short Description</label>
+            <input type="text" placeholder="e.g., Strength Programming">
+            <textarea placeholder="Data-driven workouts focused on progressive overload."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Pillar 3: Title & Short Description</label>
+            <input type="text" placeholder="e.g., Mindset & Accountability"></input>
+            <textarea placeholder="Weekly check-ins to ensure you never fall off track."></textarea>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. Meet the Coach (The Connection)</h2>
+        <div class="form-group">
+            <label>Your Story / Background</label>
+            <textarea style="height: 150px;" placeholder="Describe your journey, your 'why', and your credentials."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Profile Image Description</label>
+            <input type="text" placeholder="e.g., Professional shot in the gym, looking at camera, high contrast.">
+        </div>
+    </section>
+
+    <section>
+        <h2>5. Client Proof (The Evidence)</h2>
+        <div class="form-group">
+            <label>Key Testimonial 1</label>
+            <textarea placeholder="The strongest quote from your best client."></textarea>
+            <input type="text" placeholder="Client Name & Title (e.g. Mark, Business Owner)">
+        </div>
+        <div class="form-group">
+            <label>Before/After Gallery</label>
+            <select>
+                <option>Grid of 4 Images</option>
+                <option>Sliding Carousel</option>
+                <option>Side-by-Side Comparison</option>
+            </select>
+        </div>
+    </section>
+
+    <section>
+        <h2>6. Links & Socials</h2>
+        <div class="row">
+            <div class="form-group"><label>Instagram</label><input type="text"></div>
+            <div class="form-group"><label>LinkedIn</label><input type="text"></div>
+        </div>
+        <div class="form-group">
+            <label>Booking/Application Link</label>
+            <input type="text" placeholder="Calendly or Typeform URL">
+        </div>
+    </section>
+
+    <button type="button" onclick="alert('Form Data Captured - Ready for Project Kickoff!')">Finalize Content Collection</button>
+</form>
+
+</body>
+</html>

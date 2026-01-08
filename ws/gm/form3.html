@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Architect - Pro Version</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #ff007a;
+            --dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0f172a;
+            color: var(--text);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 80px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        h2 { font-size: 1.2rem; margin-top: 0; color: var(--primary); }
+
+        /* Label and Info Icon Styling */
+        .label-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        label { font-size: 0.85rem; opacity: 0.8; font-weight: bold; }
+
+        .info-btn {
+            background: var(--primary);
+            color: var(--dark);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        /* Overlay Styling */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 25px;
+            border-radius: 24px;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid var(--primary);
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal h3 { color: var(--primary); margin-top: 0; }
+        .modal p { font-size: 0.95rem; line-height: 1.5; opacity: 0.9; }
+
+        .close-modal {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-group {
+            position: fixed;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: 600px;
+            display: flex; gap: 10px;
+            background: #0f172a; padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .save-btn { background: var(--secondary); color: white; flex: 1; height: 50px; border-radius: 10px; border:none; font-weight:bold; }
+        .export-btn { background: var(--accent); color: white; flex: 1; height: 50px; border-radius: 10px; border:none; font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color:var(--primary); margin:0;">Content Architect</h1>
+        <p style="opacity:0.6; font-size:0.8rem;">Professional Coaching Intake</p>
+    </header>
+
+    <form id="siteForm">
+        <div class="section">
+            <h2>🎨 Visual Identity</h2>
+            <div class="label-row">
+                <label>Business Name</label>
+                <button type="button" class="info-btn" onclick="openModal('brandInfo')">i</button>
+            </div>
+            <input type="text" id="brandName" data-key="brandName">
+            
+            <div class="label-row">
+                <label>Color Palette</label>
+                <button type="button" class="info-btn" onclick="openModal('colorInfo')">i</button>
+            </div>
+            <input type="text" id="colors" data-key="colors">
+        </div>
+
+        <div class="section">
+            <h2>🚀 The Hero Hook</h2>
+            <div class="label-row">
+                <label>Main Headline (H1)</label>
+                <button type="button" class="info-btn" onclick="openModal('h1Info')">i</button>
+            </div>
+            <textarea id="heroH1" data-key="heroH1"></textarea>
+            
+            <div class="label-row">
+                <label>Sub-Headline</label>
+                <button type="button" class="info-btn" onclick="openModal('subInfo')">i</button>
+            </div>
+            <textarea id="heroSub" data-key="heroSub"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Service Pillars</h2>
+            <div class="label-row">
+                <label>The Key Pillars (3-6 items)</label>
+                <button type="button" class="info-btn" onclick="openModal('pillarInfo')">i</button>
+            </div>
+            <textarea id="pillars" data-key="pillars" style="height:150px" placeholder="Pillar 1: Name & Description..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>📖 The Coach's Story</h2>
+            <div class="label-row">
+                <label>The Transformation Narrative</label>
+                <button type="button" class="info-btn" onclick="openModal('bioInfo')">i</button>
+            </div>
+            <textarea id="bio" data-key="bio" style="height:120px"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>📸 Media Requirements</h2>
+            <div class="label-row">
+                <label>Photo Direction & List</label>
+                <button type="button" class="info-btn" onclick="openModal('photoInfo')">i</button>
+            </div>
+            <textarea id="photoList" data-key="photoList" placeholder="Describe the style and list required shots..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="save-btn" onclick="saveToLocal()">Save Progress</button>
+            <button type="button" class="export-btn" onclick="exportMarkdown()">Export .MD</button>
+        </div>
+    </form>
+</div>
+
+<div id="infoOverlay" class="overlay">
+    <div class="modal">
+        <h3 id="modalTitle">Information</h3>
+        <p id="modalBody"></p>
+        <button class="close-modal" onclick="closeModal()">Got it</button>
+    </div>
+</div>
+
+<script>
+    const prompts = {
+        brandInfo: {
+            title: "Business Name",
+            text: "This shouldn't just be a name; it's the first step in authority. We are looking for something that sounds established and professional. If the client is the brand, use their name plus a descriptor like 'Performance' or 'Coaching'."
+        },
+        colorInfo: {
+            title: "Color Strategy",
+            text: "Colors dictate the 'energy' of the site. High-performance brands often use high-contrast palettes. Think about the psychological impact: Navy/Slate for trust, Red/Electric Blue for energy, or Black/Gold for premium exclusivity."
+        },
+        h1Info: {
+            title: "The Power Headline",
+            text: "The H1 must answer 'What do I get?' immediately. Avoid being vague. Instead of 'Online Coaching', use 'Build a Resilient Physique and Unshakeable Discipline'. It should focus on the ultimate transformation the client desires."
+        },
+        subInfo: {
+            title: "The Sub-Headline",
+            text: "This section removes the friction. Mention exactly how the process works and who it's for. It should make the viewer feel like this was designed specifically for their lifestyle and goals."
+        },
+        pillarInfo: {
+            title: "The 3-6 Service Pillars",
+            text: "We want to break down coaching into digestible blocks. Typical pillars include: Bespoke Programming, Macro-based Nutrition, Weekly Accountability, and Mindset Tools. Each needs a title and a 'Value Statement' explaining the benefit."
+        },
+        bioInfo: {
+            title: "The About Narrative",
+            text: "This isn't a CV. It's a connection tool. We want the 'Hero's Journey': The struggle they faced, the method they discovered, and why they are now obsessed with helping others achieve the same results. Make it relatable but authoritative."
+        },
+        photoInfo: {
+            title: "Photography Direction",
+            text: "To match a high-end style, photos must be consistent. We need: 1. A Hero 'Power Shot' (eye contact, confident), 2. Action shots (in the gym), 3. Lifestyle shots (outside the gym), and 4. Detail shots (equipment/food). Consistency in lighting is key."
+        }
+    };
+
+    function openModal(key) {
+        document.getElementById('modalTitle').innerText = prompts[key].title;
+        document.getElementById('modalBody').innerText = prompts[key].text;
+        document.getElementById('infoOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoOverlay').style.display = 'none';
+    }
+
+    // Local Storage & Export Logic (Same as previous, enhanced for new fields)
+    window.onload = () => {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const savedValue = localStorage.getItem(input.getAttribute('data-key'));
+            if (savedValue) input.value = savedValue;
+        });
+    };
+
+    function saveToLocal() {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            localStorage.setItem(input.getAttribute('data-key'), input.value);
+        });
+        alert("Data saved locally!");
+    }
+
+    function exportMarkdown() {
+        const brand = document.getElementById('brandName').value || "Project";
+        let mdContent = `# Website Strategy: ${brand}\n\n`;
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const title = prompts[input.id + 'Info'] ? prompts[input.id + 'Info'].title : "Field";
+            mdContent += `## ${title}\n${input.value}\n\n---\n\n`;
+        });
+        const blob = new Blob([mdContent], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${brand.toLowerCase()}-strategy.md`;
+        a.click();
+    }
+</script>
+
+</body>
+</html>

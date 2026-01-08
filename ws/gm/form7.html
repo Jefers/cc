@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Content Capture Tool</title>
+    <style>
+        :root {
+            --accent: #3b82f6; /* Professional Male Coaching Blue */
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            padding-bottom: 100px;
+        }
+
+        .section {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        h2 { color: var(--accent); font-size: 1.2rem; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+
+        .field-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        
+        label { font-weight: 600; font-size: 0.9rem; color: #94a3b8; }
+
+        .info-btn {
+            background: var(--accent);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            border: 1px solid var(--accent);
+        }
+
+        .modal h3 { color: var(--accent); margin-top: 0; }
+        .modal p { line-height: 1.6; font-size: 1rem; color: #cbd5e1; }
+
+        .btn-group {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: #0f172a;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            border-top: 1px solid #334155;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .save-btn { background: #334155; color: white; }
+        .export-btn { background: var(--accent); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="text-align: center; margin-bottom: 30px;">
+        <h1>Client Content Intake</h1>
+        <p>Project: Fitness Coaching Website</p>
+    </header>
+
+    <form id="contentForm">
+        <div class="section">
+            <h2>1. Hero Section (Above the Fold)</h2>
+            <div class="field-row">
+                <label>Main Catchy Headline</label>
+                <button type="button" class="info-btn" onclick="openModal('h1')">i</button>
+            </div>
+            <input type="text" id="h1" data-key="h1" placeholder="e.g. Build Muscle & Mindset">
+
+            <div class="field-row">
+                <label>The Sub-Text (Introduction)</label>
+                <button type="button" class="info-btn" onclick="openModal('subtext')">i</button>
+            </div>
+            <textarea id="sub" data-key="sub" placeholder="A brief sentence on what you do..."></textarea>
+            
+            <div class="field-row">
+                <label>Call to Action Button Text</label>
+                <button type="button" class="info-btn" onclick="openModal('cta')">i</button>
+            </div>
+            <input type="text" id="btn" data-key="btn" placeholder="e.g. Apply to Join">
+        </div>
+
+        <div class="section">
+            <h2>2. The "What You Get" Grid</h2>
+            <p style="font-size: 0.8rem; opacity: 0.6;">(Collect 3 to 6 service features)</p>
+            <div class="field-row">
+                <label>Service Pillars Content</label>
+                <button type="button" class="info-btn" onclick="openModal('pillars')">i</button>
+            </div>
+            <textarea id="pillardata" data-key="pillardata" style="height: 150px;" placeholder="Pillar 1 Title: Description..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>3. Meet the Coach (About)</h2>
+            <div class="field-row">
+                <label>Your Personal Story</label>
+                <button type="button" class="info-btn" onclick="openModal('about')">i</button>
+            </div>
+            <textarea id="abouttext" data-key="abouttext" style="height: 150px;"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>4. Client Praise (Testimonials)</h2>
+            <div class="field-row">
+                <label>Success Stories</label>
+                <button type="button" class="info-btn" onclick="openModal('social')">i</button>
+            </div>
+            <textarea id="testimonials" data-key="testimonials" style="height: 150px;" placeholder="Paste client quotes here..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>5. Imagery Log</h2>
+            <div class="field-row">
+                <label>Required Photos Descriptions</label>
+                <button type="button" class="info-btn" onclick="openModal('photos')">i</button>
+            </div>
+            <textarea id="images" data-key="images" placeholder="Hero shot, Training shots, Lifestyle shots..."></textarea>
+        </div>
+    </form>
+
+    <div class="btn-group">
+        <button class="btn save-btn" onclick="saveData()">Save Progress</button>
+        <button class="btn export-btn" onclick="exportMD()">Export .MD</button>
+    </div>
+</div>
+
+<div id="infoOverlay" class="overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3 id="mTitle">Help</h3>
+        <p id="mBody"></p>
+        <button class="btn export-btn" style="max-width: 100%;" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    const prompts = {
+        h1: { title: "Hero Headline", text: "This is the first big text on the site. Don't be vague. Instead of 'Online Fitness Coach', go for the result. E.g., 'Level Up Your Physique and Your Discipline'. Speak directly to the man who wants to change." },
+        subtext: { title: "Sub-Headline", text: "Explain exactly how you do it. E.g., 'Science-based training and no-BS nutrition for busy men who need a sustainable plan.' This builds trust immediately." },
+        cta: { title: "Call to Action", text: "What do you want them to do? 'Join the Team', 'Apply for Coaching', or 'Get My Free Guide'. Make it active and inviting." },
+        pillars: { title: "The Service Grid", text: "Think of 4-6 areas you cover. Nutrition, Training, Accountability, Mindset. For each one, we need a strong title and a 2-sentence description of why it matters to the client." },
+        about: { title: "About You", text: "We need the 'Hero's Journey'. Where did you start? What was your struggle? Why are you the right person to lead them? This section makes you human and relatable." },
+        social: { title: "Social Proof", text: "Gather 3-5 high-quality quotes from clients. Look for quotes that mention specific results—weight lost, confidence gained, or energy levels increased." },
+        photos: { title: "Imagery Shot List", text: "To match the structure, we need: 1. A bold 'Hero' portrait, 2. Action shots of you training, 3. Lifestyle shots (casual clothes), and 4. Client transformation photos." }
+    };
+
+    function openModal(key) {
+        document.getElementById('mTitle').innerText = prompts[key].title;
+        document.getElementById('mBody').innerText = prompts[key].text;
+        document.getElementById('infoOverlay').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('infoOverlay').style.display = 'none'; }
+
+    function saveData() {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            localStorage.setItem(input.getAttribute('data-key'), input.value);
+        });
+        alert("Content saved to local storage!");
+    }
+
+    function exportMD() {
+        let md = "# Website Content Blueprint\n\n";
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const label = input.parentElement.querySelector('label').innerText;
+            md += `## ${label}\n${input.value}\n\n`;
+        });
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "site-content.md";
+        a.click();
+    }
+
+    window.onload = () => {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            input.value = localStorage.getItem(input.getAttribute('data-key')) || "";
+        });
+    };
+</script>
+
+</body>
+</html>

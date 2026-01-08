@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Architect Console | Brand Strategy</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #ff007a;
+            --dark: #020617;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #0f172a, #020617);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,1);
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 120px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0, 210, 255, 0.1);
+            position: relative;
+        }
+
+        h2 { font-size: 1.5rem; color: var(--primary); letter-spacing: 3px; margin-bottom: 25px; text-transform: uppercase; }
+
+        .label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        label { font-size: 1rem; font-weight: 600; color: #94a3b8; letter-spacing: 0.5px; }
+
+        .info-btn {
+            background: var(--primary);
+            color: var(--dark);
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.4);
+            transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .info-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--primary); background: #fff; }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            color: white;
+            padding: 20px;
+            font-size: 16px;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        /* Overlay System */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(15px);
+            z-index: 5000;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+
+        .modal {
+            background: #1e293b;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 35px;
+            border: 1px solid rgba(0,210,255,0.3);
+            box-shadow: 0 0 100px rgba(0,210,255,0.1);
+        }
+
+        .modal h3 { font-size: 2rem; color: var(--primary); margin-top: 0; }
+        .modal p { color: #cbd5e1; font-size: 1.1rem; line-height: 1.8; }
+        
+        .wisdom-quote {
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            background: rgba(255, 0, 122, 0.05);
+            margin: 25px 0;
+            font-style: italic;
+            color: #ff99cc;
+            font-weight: 500;
+        }
+
+        .framework-box {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 25px 0;
+        }
+
+        .framework-box h4 { margin-top: 0; color: var(--primary); text-transform: uppercase; font-size: 0.9rem; }
+
+        .btn-group {
+            position: fixed;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: 800px;
+            display: flex; gap: 20px;
+            background: #020617; padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .export-btn { background: var(--primary); color: var(--dark); flex: 3; height: 65px; border-radius: 20px; border:none; font-weight:900; font-size: 1.1rem; cursor:pointer;}
+        .close-btn { background: var(--accent); color: white; width: 100%; padding: 20px; border-radius: 15px; border:none; font-weight:800; margin-top: 20px; cursor:pointer;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="text-align: center; margin-bottom: 50px;">
+        <h1 style="color:var(--primary); font-size: 2.5rem; letter-spacing: 5px; margin:0;">THE ARCHITECT</h1>
+        <p style="opacity:0.5; font-size: 1.1rem; margin-top: 10px;">Strategic Weaponry for Brand Dominance</p>
+    </header>
+
+    <form id="siteForm">
+        <div class="section">
+            <h2>01. Market Positioning</h2>
+            <div class="label-row">
+                <label>Brand Archetype & Philosophy</label>
+                <button type="button" class="info-btn" onclick="openModal('brandInfo')">i</button>
+            </div>
+            <textarea id="brandName" data-key="brandName" placeholder="Identify your brand's core soul..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>02. The Primary Hook</h2>
+            <div class="label-row">
+                <label>The Flagship Headline (H1)</label>
+                <button type="button" class="info-btn" onclick="openModal('h1Info')">i</button>
+            </div>
+            <textarea id="heroH1" data-key="heroH1" placeholder="State your ultimate outcome..."></textarea>
+            
+            <div class="label-row" style="margin-top:20px;">
+                <label>The Mechanism of Transformation</label>
+                <button type="button" class="info-btn" onclick="openModal('subInfo')">i</button>
+            </div>
+            <textarea id="heroSub" data-key="heroSub" placeholder="How do you bridge the gap?"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>03. Intellectual Property</h2>
+            <div class="label-row">
+                <label>Proprietary Service Pillars</label>
+                <button type="button" class="info-btn" onclick="openModal('pillarInfo')">i</button>
+            </div>
+            <textarea id="pillars" data-key="pillars" style="height:250px" placeholder="Name and define your 4 pillars of success..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>04. Authority & Connection</h2>
+            <div class="label-row">
+                <label>The Founder's Narrative</label>
+                <button type="button" class="info-btn" onclick="openModal('bioInfo')">i</button>
+            </div>
+            <textarea id="bio" data-key="bio" style="height:200px" placeholder="From obstacle to opportunity..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="export-btn" onclick="exportMarkdown()">FINALIZE & DOWNLOAD BLUEPRINT</button>
+        </div>
+    </form>
+</div>
+
+<div id="infoOverlay" class="overlay">
+    <div class="modal">
+        <h3 id="modalTitle">Strategy</h3>
+        <p id="modalBody"></p>
+        <div id="modalWisdom" class="wisdom-quote"></div>
+        <div id="modalFramework" class="framework-box"></div>
+        <button class="close-btn" onclick="closeModal()">RETURN TO BUILDER</button>
+    </div>
+</div>
+
+<script>
+    const prompts = {
+        brandInfo: {
+            title: "Archetype & Intent",
+            body: "Your brand is not your logo. It is the emotional residual left in the mind of the viewer after they leave your site. Are you the 'Commander' who demands excellence? Or the 'Sage' who provides deep wisdom? If you try to speak to everyone, you will speak to no one.",
+            wisdom: "Complexity is the enemy of execution. We are looking for a singular 'vibe' that makes your ideal client feel like they have finally found home.",
+            framework: "<h4>The Prompt</h4>Describe your brand in three high-value adjectives. Are you 'Aggressive, Precise, Elite' or 'Compassionate, Holistic, Scientific'? This choice dictates every photo we take and every word we write."
+        },
+        h1Info: {
+            title: "The Zero-Second Hook",
+            body: "The internet is a sea of noise. Your Headline is a harpoon. It must promise a transformation so visceral that the prospect feels it in their chest. Do not sell 'coaching'. Sell the version of them that coaching creates.",
+            wisdom: "People do not buy products; they buy better versions of themselves.",
+            framework: "<h4>The Master Formula</h4>[Immediate Benefit] + [Unique Timeline] + [Pain Removal]. <br><br>Example: 'Build an Executive Physique in 4 Hours a Week Without Sacrificing Family Dinner.'"
+        },
+        subInfo: {
+            title: "The Mechanism of Trust",
+            body: "After the hook comes the 'How'. Most prospects are cynical; they have been burned before. Your sub-headline must introduce your 'Proprietary Mechanism'—the reason why THIS time is different.",
+            wisdom: "Trust is built when the solution is more logical than the problem.",
+            framework: "<h4>Strategic Directives</h4>Mention your target audience by name. Use 'The [Your Method Name]' to make your service feel like a unique invention rather than a commodity."
+        },
+        pillarInfo: {
+            title: "Intellectual Property Architecture",
+            body: "Commodities compete on price; brands compete on value. By naming your pillars, you move from 'another trainer' to 'The Architect of a System'. We need 4 pillars that cover the spectrum of the transformation.",
+            wisdom: "Ownership of terminology is ownership of the market.",
+            framework: "<h4>The 4-Pillar Blueprint</h4>1. Physical (The Programming)<br>2. Fuel (The Nutrition Strategy)<br>3. Mindset (The Psychological Armor)<br>4. Systems (The Accountability Loop)"
+        },
+        bioInfo: {
+            title: "Authority Narrative",
+            body: "Your story is the only thing your competitors cannot steal. We need the 'Relatable Expert' arc. You must show you have walked the path, faced the dragons, and returned with the map. This is where we build the 'Like, Follow, Trust' factor.",
+            wisdom: "Vulnerability is the highest form of authority when it leads to a solution.",
+            framework: "<h4>The Narrative Arc</h4>Where were you at your lowest? What was the epiphany that changed everything? How have you codified that change into the system you now offer?"
+        }
+    };
+
+    function openModal(key) {
+        document.getElementById('modalTitle').innerText = prompts[key].title;
+        document.getElementById('modalBody').innerText = prompts[key].body;
+        document.getElementById('modalWisdom').innerText = prompts[key].wisdom;
+        document.getElementById('modalFramework').innerHTML = prompts[key].framework;
+        document.getElementById('infoOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoOverlay').style.display = 'none';
+    }
+
+    function exportMarkdown() {
+        const brand = document.getElementById('brandName').value || "Strategic-Blueprint";
+        let mdContent = `# BRAND STRATEGY ARCHIVE: ${brand}\n\n`;
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const title = input.previousElementSibling.querySelector('label').innerText;
+            mdContent += `## ${title}\n${input.value}\n\n---\n\n`;
+        });
+        const blob = new Blob([mdContent], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${brand.toLowerCase().replace(/\s+/g, '-')}-master-plan.md`;
+        a.click();
+    }
+
+    // Local Storage Persistance
+    window.onload = () => {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const savedValue = localStorage.getItem(input.getAttribute('data-key'));
+            if (savedValue) input.value = savedValue;
+        });
+    };
+    
+    document.querySelectorAll('[data-key]').forEach(input => {
+        input.addEventListener('input', () => {
+            localStorage.setItem(input.getAttribute('data-key'), input.value);
+        });
+    });
+</script>
+
+</body>
+</html>

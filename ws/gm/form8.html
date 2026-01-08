@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Architect | Content Intake</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #f43f5e;
+            --dark: #020617;
+            --slate: #1e293b;
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at bottom left, #0f172a, #020617);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 120px;
+        }
+
+        header { text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 2.2rem; letter-spacing: 5px; color: var(--primary); margin: 0; }
+        .subtitle { opacity: 0.5; font-size: 0.9rem; text-transform: uppercase; margin-top: 10px; }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 35px;
+            border-left: 5px solid var(--primary);
+            transition: 0.3s ease;
+        }
+
+        .section:hover { background: rgba(255, 255, 255, 0.05); }
+
+        .label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        label { font-size: 1rem; font-weight: 700; color: #94a3b8; }
+
+        .info-btn {
+            background: var(--primary);
+            color: var(--dark);
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.3);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            padding: 18px;
+            font-size: 16px;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        /* Overlay & Modal */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.97);
+            backdrop-filter: blur(15px);
+            z-index: 5000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal {
+            background: #1e293b;
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(0,210,255,0.2);
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 0 80px rgba(0,0,0,0.5);
+        }
+
+        .modal h3 { font-size: 1.8rem; color: var(--primary); margin-top: 0; }
+        .modal p { color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; }
+
+        .wisdom-box {
+            border-left: 3px solid var(--accent);
+            padding: 20px;
+            background: rgba(244, 63, 94, 0.05);
+            margin: 25px 0;
+            color: #fda4af;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .framework-list { list-style: none; padding: 0; }
+        .framework-list li { margin-bottom: 12px; padding-left: 25px; position: relative; color: #f1f5f9; }
+        .framework-list li::before { content: "⚡"; position: absolute; left: 0; color: var(--primary); }
+
+        .btn-group {
+            position: fixed;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: 750px;
+            display: flex; gap: 20px;
+            background: #020617; padding: 25px;
+            box-sizing: border-box;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .save-btn { background: #334155; color: white; flex: 1; height: 60px; border-radius: 15px; border: none; font-weight:700; cursor:pointer;}
+        .export-btn { background: var(--primary); color: var(--dark); flex: 2; height: 60px; border-radius: 15px; border:none; font-weight:900; font-size: 1rem; cursor:pointer;}
+        .close-btn { background: var(--primary); color: var(--dark); padding: 15px; border-radius: 12px; border:none; font-weight:800; width: 100%; margin-top: 20px; cursor:pointer;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>CONTENT ARCHITECT</h1>
+        <p class="subtitle">Blueprint for the Elite Male Fitness Brand</p>
+    </header>
+
+    <form id="architectForm">
+        <div class="section">
+            <h2>01. The Primal Hook</h2>
+            <div class="label-row">
+                <label>The Flagship Headline (H1)</label>
+                <button type="button" class="info-btn" onclick="openModal('h1')">i</button>
+            </div>
+            <textarea id="h1" data-key="h1" placeholder="State the transformation..."></textarea>
+            
+            <div class="label-row" style="margin-top:20px;">
+                <label>The Trust Sub-Headline</label>
+                <button type="button" class="info-btn" onclick="openModal('sub')">i</button>
+            </div>
+            <textarea id="sub" data-key="sub" placeholder="Define the method and the audience..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>02. The Proprietary Method</h2>
+            <div class="label-row">
+                <label>Service Pillars (The Grid Content)</label>
+                <button type="button" class="info-btn" onclick="openModal('pillars')">i</button>
+            </div>
+            <textarea id="pillars" data-key="pillars" style="height: 200px;" placeholder="Pillar 1 Title: Description..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>03. The Authority Narrative</h2>
+            <div class="label-row">
+                <label>Your Story (The Meet the Coach Section)</label>
+                <button type="button" class="info-btn" onclick="openModal('about')">i</button>
+            </div>
+            <textarea id="about" data-key="about" style="height: 200px;" placeholder="From struggle to mastery..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>04. The Proof of Concept</h2>
+            <div class="label-row">
+                <label>Client Success Stories</label>
+                <button type="button" class="info-btn" onclick="openModal('social')">i</button>
+            </div>
+            <textarea id="social" data-key="social" style="height: 150px;" placeholder="Paste impactful client results here..."></textarea>
+        </div>
+
+        <div class="section">
+            <h2>05. Visual Direction</h2>
+            <div class="label-row">
+                <label>Imagery Shot List & Vibe</label>
+                <button type="button" class="info-btn" onclick="openModal('visuals')">i</button>
+            </div>
+            <textarea id="visuals" data-key="visuals" placeholder="Describe the atmosphere of your photos..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="save-btn" onclick="saveData()">SAVE SESSION</button>
+            <button type="button" class="export-btn" onclick="exportMD()">EXPORT BLUEPRINT (.MD)</button>
+        </div>
+    </form>
+</div>
+
+<div id="infoOverlay" class="overlay">
+    <div class="modal">
+        <h3 id="mTitle">Strategy</h3>
+        <p id="mBody"></p>
+        <div id="mWisdom" class="wisdom-box"></div>
+        <ul id="mList" class="framework-list"></ul>
+        <button class="close-btn" onclick="closeModal()">RETURN TO DESIGN</button>
+    </div>
+</div>
+
+<script>
+    const prompts = {
+        h1: {
+            title: "The Magnetic Hook",
+            text: "This is the 'Above the Fold' anchor. Its only job is to stop the scroll. We are not selling personal training; we are selling the version of the client that exists after 6 months with you.",
+            wisdom: "If you try to speak to everyone, you will speak to no one. Your headline should be a filter that attracts your ideal client and repels the 'tire-kickers'.",
+            list: ["Focus on the #1 Desire (Strength, Confidence, Power).", "Use active, dominant verbs.", "Include a hidden promise of a new lifestyle."]
+        },
+        sub: {
+            title: "The Trust Mechanism",
+            text: "The sub-headline bridges the gap between your big promise and the reader's skepticism. It defines your unique mechanism—the reason why your approach will work where others failed.",
+            wisdom: "Complexity is the enemy of execution. Make your solution sound logical, repeatable, and inevitable.",
+            list: ["Identify the target: 'For the busy professional...', 'For the ex-athlete...'", "Name your method: 'The Hybrid Growth System', 'The Metabolic Protocol'.", "Eliminate a common pain: '...without the restrictive dieting.'"]
+        },
+        pillars: {
+            title: "Intellectual Property Architecture",
+            text: "This grid transforms your service from a commodity into a proprietary system. We need 4 to 6 pillars that represent your holistic approach. Don't use generic words like 'Diet'.",
+            wisdom: "He who defines the terminology, defines the value. Elevate your language to elevate your price.",
+            list: ["Pillar 1: Training Logic (The Blueprint)", "Pillar 2: Nutritional Autonomy (The Fueling)", "Pillar 3: Psychological Armor (The Mindset)", "Pillar 4: Data-Driven Success (The Tracking)"]
+        },
+        about: {
+            title: "The Authority Narrative",
+            text: "The 'About' section is a bridge. You are the guide, and the client is the hero. You must prove you have walked the path they are on and that you have returned with a map.",
+            wisdom: "Vulnerability is the highest form of authority. If they don't believe you've struggled, they won't believe you can help them through theirs.",
+            list: ["The Struggle: The point of frustration you once faced.", "The Epiphany: The moment the system was discovered.", "The Mission: Why you are now obsessed with their success."]
+        },
+        social: {
+            title: "The Evidence Room",
+            text: "Social proof is the 'Risk Removal' section. Men specifically look for metrics and relatable victories. We aren't just looking for weight loss; we are looking for life transformations.",
+            wisdom: "A claim is just a boast until a third party validates it. Let your clients do the selling.",
+            list: ["Focus on 'Metric' wins (Lost 20lbs, Bench pressed 100kg).", "Focus on 'Lifestyle' wins (More energy for kids, better focus at work).", "Use 'The Quote'—the specific emotional sentence that hits hard."]
+        },
+        visuals: {
+            title: "Visual Dominance",
+            text: "Your imagery dictates your 'Market Value'. To build a site similar to our reference but for a male brand, we need high-contrast, professional photography. Consistency in lighting is what creates the 'Premium' feel.",
+            wisdom: "Your visuals are the 'clothes' your brand wears. If you look amateur, they will expect amateur prices.",
+            list: ["The Power Hero: Eye contact, dominant posture, professional lighting.", "Action Intensity: Mid-workout shots showing focus and sweat.", "Lifestyle Authority: You in a non-gym setting (coffee, outdoors) to show balance."]
+        }
+    };
+
+    function openModal(key) {
+        const p = prompts[key];
+        document.getElementById('mTitle').innerText = p.title;
+        document.getElementById('mBody').innerText = p.text;
+        document.getElementById('mWisdom').innerText = p.wisdom;
+        const list = document.getElementById('mList');
+        list.innerHTML = '';
+        p.list.forEach(item => {
+            const li = document.createElement('li');
+            li.innerText = item;
+            list.appendChild(li);
+        });
+        document.getElementById('infoOverlay').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('infoOverlay').style.display = 'none'; }
+
+    function saveData() {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            localStorage.setItem(input.getAttribute('data-key'), input.value);
+        });
+        alert("Strategic Blueprint Secured.");
+    }
+
+    function exportMD() {
+        const brand = document.getElementById('h1').value.split(' ')[0] || "Client";
+        let md = `# BRAND BLUEPRINT: ${brand}\n\n`;
+        document.querySelectorAll('[data-key]').forEach(input => {
+            const label = input.parentElement.querySelector('label').innerText;
+            md += `## ${label}\n${input.value}\n\n---\n\n`;
+        });
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${brand.toLowerCase()}-content.md`;
+        a.click();
+    }
+
+    window.onload = () => {
+        document.querySelectorAll('[data-key]').forEach(input => {
+            input.value = localStorage.getItem(input.getAttribute('data-key')) || "";
+        });
+    };
+</script>
+
+</body>
+</html>
