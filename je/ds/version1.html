@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jhack's Emporium - Rice & Egg Business Simulator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ph-red: #CE1127;
+            --ph-blue: #0038A8;
+            --ph-yellow: #FCD116;
+            --ph-white: #FFFFFF;
+            --ph-dark: #3A2618;
+            --ph-light: #F5E9D9;
+            --ph-green: #228B22;
+            --ph-brown: #8B4513;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--ph-light) 0%, #e8dcc3 100%);
+            color: var(--ph-dark);
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Header with Filipino theme */
+        header {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--ph-red), var(--ph-blue));
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "★";
+            position: absolute;
+            color: var(--ph-yellow);
+            font-size: 60px;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            opacity: 0.8;
+        }
+        
+        h1 {
+            color: var(--ph-white);
+            font-size: 2rem;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tagline {
+            color: var(--ph-yellow);
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+            font-style: italic;
+        }
+        
+        /* Main Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        @media (min-width: 640px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .card {
+            background-color: var(--ph-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: var(--ph-blue);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--ph-light);
+            padding-bottom: 8px;
+        }
+        
+        .card h2 i {
+            color: var(--ph-red);
+        }
+        
+        .value-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--ph-brown);
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .profit-positive {
+            color: var(--ph-green);
+        }
+        
+        .profit-negative {
+            color: var(--ph-red);
+        }
+        
+        .month-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background-color: var(--ph-white);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .month-indicator h3 {
+            color: var(--ph-blue);
+        }
+        
+        .month-name {
+            font-weight: 600;
+            color: var(--ph-red);
+            font-size: 1.2rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--ph-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #00267a;
+        }
+        
+        .btn-success {
+            background-color: var(--ph-green);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #1a751a;
+        }
+        
+        .btn-warning {
+            background-color: var(--ph-yellow);
+            color: var(--ph-dark);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e6b800;
+        }
+        
+        .btn-danger {
+            background-color: var(--ph-red);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #a80e1f;
+        }
+        
+        /* Product Cards */
+        .product-section {
+            margin-bottom: 25px;
+        }
+        
+        .product-card {
+            background-color: var(--ph-white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--ph-blue);
+            font-size: 1.2rem;
+        }
+        
+        .rice-icon {
+            color: var(--ph-brown);
+        }
+        
+        .egg-icon {
+            color: var(--ph-yellow);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--ph-dark);
+        }
+        
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .input-with-unit input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .unit {
+            padding: 0 15px;
+            background-color: var(--ph-light);
+            font-weight: 600;
+            color: var(--ph-dark);
+        }
+        
+        .product-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--ph-blue);
+        }
+        
+        /* Transaction History */
+        .history-section {
+            margin-top: 25px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--ph-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .history-table th {
+            background-color: var(--ph-blue);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .history-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .history-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .month-profit {
+            font-weight: 600;
+        }
+        
+        /* Income Goal */
+        .goal-section {
+            background-color: var(--ph-white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .goal-progress {
+            height: 20px;
+            background-color: var(--ph-light);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .goal-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--ph-yellow), var(--ph-green));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .goal-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: var(--ph-dark);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--ph-dark);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            color: var(--ph-blue);
+            font-size: 1.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .month-indicator {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .history-table {
+                font-size: 0.85rem;
+            }
+            
+            .history-table th, 
+            .history-table td {
+                padding: 10px 8px;
+            }
+        }
+        
+        /* Animation for month transition */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Jhack's Emporium</h1>
+            <p class="tagline">Rice & Egg Business Simulator</p>
+        </header>
+        
+        <div class="month-indicator fade-in">
+            <div>
+                <h3>Current Month: <span class="month-name" id="current-month">January</span></h3>
+                <p>Month <span id="month-number">1</span> of 12</p>
+            </div>
+            <div class="controls">
+                <button class="btn btn-warning" id="reset-month-btn">
+                    <i class="fas fa-undo"></i> Reset Month
+                </button>
+                <button class="btn btn-success" id="next-month-btn">
+                    <i class="fas fa-forward"></i> Next Month
+                </button>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2><i class="fas fa-wallet"></i> Cash on Hand</h2>
+                <div class="value-display" id="cash-display">₱10,000</div>
+                <p>Starting capital for your business</p>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Monthly Profit</h2>
+                <div class="value-display profit-positive" id="month-profit-display">₱0</div>
+                <p>Your profit this month</p>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-coins"></i> Total Profit</h2>
+                <div class="value-display profit-positive" id="total-profit-display">₱0</div>
+                <p>Total profit from all months</p>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-calendar-alt"></i> Year Progress</h2>
+                <div class="value-display" id="year-progress">8%</div>
+                <p>Completed <span id="completed-months">1</span> of 12 months</p>
+            </div>
+        </div>
+        
+        <div class="product-section">
+            <h2><i class="fas fa-store"></i> Manage Your Products</h2>
+            
+            <div class="product-card">
+                <div class="product-header">
+                    <i class="fas fa-wheat-alt rice-icon"></i>
+                    <h3>Rice</h3>
+                </div>
+                
+                <div class="input-group">
+                    <label>Buy Price (per kg)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="rice-buy-price" value="45" min="30" max="80" step="0.5">
+                        <div class="unit">₱/kg</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Sell Price (per kg)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="rice-sell-price" value="55" min="40" max="100" step="0.5">
+                        <div class="unit">₱/kg</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Quantity to Buy (kg)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="rice-buy-qty" value="100" min="0" max="1000" step="1">
+                        <div class="unit">kg</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Quantity to Sell (kg)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="rice-sell-qty" value="80" min="0" max="1000" step="1">
+                        <div class="unit">kg</div>
+                    </div>
+                </div>
+                
+                <div class="product-stats">
+                    <div class="stat">
+                        <div class="stat-label">Rice Inventory</div>
+                        <div class="stat-value" id="rice-inventory">100 kg</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Rice Profit</div>
+                        <div class="stat-value profit-positive" id="rice-profit">₱0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-header">
+                    <i class="fas fa-egg egg-icon"></i>
+                    <h3>Eggs</h3>
+                </div>
+                
+                <div class="input-group">
+                    <label>Buy Price (per piece)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="egg-buy-price" value="7" min="5" max="15" step="0.1">
+                        <div class="unit">₱/piece</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Sell Price (per piece)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="egg-sell-price" value="8.5" min="6" max="20" step="0.1">
+                        <div class="unit">₱/piece</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Quantity to Buy (pieces)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="egg-buy-qty" value="200" min="0" max="5000" step="10">
+                        <div class="unit">pieces</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Quantity to Sell (pieces)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="egg-sell-qty" value="150" min="0" max="5000" step="10">
+                        <div class="unit">pieces</div>
+                    </div>
+                </div>
+                
+                <div class="product-stats">
+                    <div class="stat">
+                        <div class="stat-label">Egg Inventory</div>
+                        <div class="stat-value" id="egg-inventory">200 pieces</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Egg Profit</div>
+                        <div class="stat-value profit-positive" id="egg-profit">₱0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls" style="justify-content: center; margin-top: 20px;">
+                <button class="btn btn-primary" id="calculate-btn">
+                    <i class="fas fa-calculator"></i> Calculate This Month
+                </button>
+                <button class="btn btn-warning" id="reset-business-btn">
+                    <i class="fas fa-redo"></i> Reset Business
+                </button>
+            </div>
+        </div>
+        
+        <div class="goal-section">
+            <h2><i class="fas fa-bullseye"></i> Monthly Living Income Goal</h2>
+            <div class="input-group">
+                <label>Set your target monthly income to live on:</label>
+                <div class="input-with-unit">
+                    <input type="number" id="income-goal" value="15000" min="5000" max="50000" step="1000">
+                    <div class="unit">₱</div>
+                </div>
+            </div>
+            
+            <div class="goal-progress">
+                <div class="goal-bar" id="goal-bar" style="width: 0%"></div>
+            </div>
+            <div class="goal-text" id="goal-text">0% of your monthly income goal</div>
+        </div>
+        
+        <div class="history-section">
+            <h2><i class="fas fa-history"></i> Monthly Transaction History</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Rice Profit</th>
+                        <th>Egg Profit</th>
+                        <th>Total Profit</th>
+                        <th>Cumulative</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <!-- History rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p>Jhack's Emporium - Rice & Egg Business Simulator | Designed for Filipino Entrepreneurs</p>
+            <p>All calculations are in Philippine Pesos (₱). No taxes or spoilage included in this simulation.</p>
+        </footer>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Month Completed Successfully!</h3>
+                <button class="close-modal" id="close-success-modal">&times;</button>
+            </div>
+            <div style="padding: 20px 0;">
+                <div class="value-display profit-positive" id="modal-profit">₱0</div>
+                <p style="text-align: center; margin-bottom: 20px;">Your profit for this month</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--ph-brown);">Rice Profit</div>
+                        <div id="modal-rice-profit" style="font-size: 1.2rem; font-weight: 700;">₱0</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--ph-brown);">Egg Profit</div>
+                        <div id="modal-egg-profit" style="font-size: 1.2rem; font-weight: 700;">₱0</div>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; font-style: italic;">Click "Next Month" to continue your business journey!</p>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" id="close-modal-btn">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Business state object
+        const state = {
+            cash: 10000,
+            month: 1,
+            totalProfit: 0,
+            riceInventory: 0,
+            eggInventory: 0,
+            incomeGoal: 15000,
+            history: []
+        };
+
+        // Month names for display
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        // DOM elements
+        const cashDisplay = document.getElementById('cash-display');
+        const monthProfitDisplay = document.getElementById('month-profit-display');
+        const totalProfitDisplay = document.getElementById('total-profit-display');
+        const yearProgress = document.getElementById('year-progress');
+        const completedMonths = document.getElementById('completed-months');
+        const currentMonth = document.getElementById('current-month');
+        const monthNumber = document.getElementById('month-number');
+        
+        // Product elements
+        const riceBuyPrice = document.getElementById('rice-buy-price');
+        const riceSellPrice = document.getElementById('rice-sell-price');
+        const riceBuyQty = document.getElementById('rice-buy-qty');
+        const riceSellQty = document.getElementById('rice-sell-qty');
+        const riceInventory = document.getElementById('rice-inventory');
+        const riceProfit = document.getElementById('rice-profit');
+        
+        const eggBuyPrice = document.getElementById('egg-buy-price');
+        const eggSellPrice = document.getElementById('egg-sell-price');
+        const eggBuyQty = document.getElementById('egg-buy-qty');
+        const eggSellQty = document.getElementById('egg-sell-qty');
+        const eggInventory = document.getElementById('egg-inventory');
+        const eggProfit = document.getElementById('egg-profit');
+        
+        // Goal elements
+        const incomeGoalInput = document.getElementById('income-goal');
+        const goalBar = document.getElementById('goal-bar');
+        const goalText = document.getElementById('goal-text');
+        
+        // History table
+        const historyBody = document.getElementById('history-body');
+        
+        // Buttons
+        const calculateBtn = document.getElementById('calculate-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+        const resetMonthBtn = document.getElementById('reset-month-btn');
+        const resetBusinessBtn = document.getElementById('reset-business-btn');
+        
+        // Modal elements
+        const successModal = document.getElementById('success-modal');
+        const closeSuccessModal = document.getElementById('close-success-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const modalProfit = document.getElementById('modal-profit');
+        const modalRiceProfit = document.getElementById('modal-rice-profit');
+        const modalEggProfit = document.getElementById('modal-egg-profit');
+
+        // Initialize the application
+        function init() {
+            loadState();
+            updateDisplay();
+            updateHistoryTable();
+            
+            // Event listeners
+            calculateBtn.addEventListener('click', calculateMonth);
+            nextMonthBtn.addEventListener('click', advanceToNextMonth);
+            resetMonthBtn.addEventListener('click', resetCurrentMonth);
+            resetBusinessBtn.addEventListener('click', resetBusiness);
+            
+            // Modal event listeners
+            closeSuccessModal.addEventListener('click', () => {
+                successModal.style.display = 'none';
+            });
+            
+            closeModalBtn.addEventListener('click', () => {
+                successModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === successModal) {
+                    successModal.style.display = 'none';
+                }
+            });
+            
+            // Update goal when input changes
+            incomeGoalInput.addEventListener('change', updateGoal);
+            
+            // Update calculations when any input changes
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('change', updateCalculations);
+            });
+            
+            // Initial calculations
+            updateCalculations();
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            const savedState = localStorage.getItem('jhackEmporium');
+            if (savedState) {
+                const parsed = JSON.parse(savedState);
+                Object.assign(state, parsed);
+                
+                // Update inputs with saved values
+                riceBuyPrice.value = parsed.riceBuyPrice || 45;
+                riceSellPrice.value = parsed.riceSellPrice || 55;
+                eggBuyPrice.value = parsed.eggBuyPrice || 7;
+                eggSellPrice.value = parsed.eggSellPrice || 8.5;
+                incomeGoalInput.value = parsed.incomeGoal || 15000;
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            // Save input values to state for persistence
+            state.riceBuyPrice = parseFloat(riceBuyPrice.value);
+            state.riceSellPrice = parseFloat(riceSellPrice.value);
+            state.eggBuyPrice = parseFloat(eggBuyPrice.value);
+            state.eggSellPrice = parseFloat(eggSellPrice.value);
+            state.incomeGoal = parseFloat(incomeGoalInput.value);
+            
+            localStorage.setItem('jhackEmporium', JSON.stringify(state));
+        }
+
+        // Update all displays
+        function updateDisplay() {
+            // Update cash and profit displays
+            cashDisplay.textContent = formatCurrency(state.cash);
+            totalProfitDisplay.textContent = formatCurrency(state.totalProfit);
+            
+            // Update profit color
+            totalProfitDisplay.className = `value-display ${state.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            
+            // Update month displays
+            currentMonth.textContent = monthNames[state.month - 1];
+            monthNumber.textContent = state.month;
+            
+            // Update year progress
+            const progressPercent = Math.round((state.month - 1) / 12 * 100);
+            yearProgress.textContent = `${progressPercent}%`;
+            completedMonths.textContent = state.month - 1;
+            
+            // Update inventory displays
+            riceInventory.textContent = `${state.riceInventory.toFixed(1)} kg`;
+            eggInventory.textContent = `${state.eggInventory.toFixed(0)} pieces`;
+            
+            // Update goal progress
+            updateGoal();
+        }
+
+        // Update calculations without saving
+        function updateCalculations() {
+            // Get current input values
+            const riceBuy = parseFloat(riceBuyPrice.value) || 0;
+            const riceSell = parseFloat(riceSellPrice.value) || 0;
+            const riceBuyQtyVal = parseFloat(riceBuyQty.value) || 0;
+            const riceSellQtyVal = parseFloat(riceSellQty.value) || 0;
+            
+            const eggBuy = parseFloat(eggBuyPrice.value) || 0;
+            const eggSell = parseFloat(eggSellPrice.value) || 0;
+            const eggBuyQtyVal = parseFloat(eggBuyQty.value) || 0;
+            const eggSellQtyVal = parseFloat(eggSellQty.value) || 0;
+            
+            // Calculate costs and revenues
+            const riceCost = riceBuy * riceBuyQtyVal;
+            const riceRevenue = riceSell * riceSellQtyVal;
+            const riceProfitVal = riceRevenue - riceCost;
+            
+            const eggCost = eggBuy * eggBuyQtyVal;
+            const eggRevenue = eggSell * eggSellQtyVal;
+            const eggProfitVal = eggRevenue - eggCost;
+            
+            const totalProfitVal = riceProfitVal + eggProfitVal;
+            
+            // Update profit displays
+            riceProfit.textContent = formatCurrency(riceProfitVal);
+            riceProfit.className = `stat-value ${riceProfitVal >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            
+            eggProfit.textContent = formatCurrency(eggProfitVal);
+            eggProfit.className = `stat-value ${eggProfitVal >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            
+            monthProfitDisplay.textContent = formatCurrency(totalProfitVal);
+            monthProfitDisplay.className = `value-display ${totalProfitVal >= 0 ? 'profit-positive' : 'profit-negative'}`;
+        }
+
+        // Calculate and process the current month
+        function calculateMonth() {
+            // Get current input values
+            const riceBuy = parseFloat(riceBuyPrice.value) || 0;
+            const riceSell = parseFloat(riceSellPrice.value) || 0;
+            const riceBuyQtyVal = parseFloat(riceBuyQty.value) || 0;
+            const riceSellQtyVal = parseFloat(riceSellQty.value) || 0;
+            
+            const eggBuy = parseFloat(eggBuyPrice.value) || 0;
+            const eggSell = parseFloat(eggSellPrice.value) || 0;
+            const eggBuyQtyVal = parseFloat(eggBuyQty.value) || 0;
+            const eggSellQtyVal = parseFloat(eggSellQty.value) || 0;
+            
+            // Calculate costs and revenues
+            const riceCost = riceBuy * riceBuyQtyVal;
+            const riceRevenue = riceSell * riceSellQtyVal;
+            const riceProfitVal = riceRevenue - riceCost;
+            
+            const eggCost = eggBuy * eggBuyQtyVal;
+            const eggRevenue = eggSell * eggSellQtyVal;
+            const eggProfitVal = eggRevenue - eggCost;
+            
+            const totalProfitVal = riceProfitVal + eggProfitVal;
+            
+            // Check if we have enough cash to buy
+            const totalCost = riceCost + eggCost;
+            if (totalCost > state.cash) {
+                alert(`You don't have enough cash to make these purchases!\n\nYou need ${formatCurrency(totalCost)} but only have ${formatCurrency(state.cash)}.`);
+                return;
+            }
+            
+            // Check if we have enough inventory to sell
+            if (riceSellQtyVal > state.riceInventory + riceBuyQtyVal) {
+                alert(`You don't have enough rice inventory to sell!\n\nYou're trying to sell ${riceSellQtyVal}kg but will only have ${state.riceInventory + riceBuyQtyVal}kg after buying.`);
+                return;
+            }
+            
+            if (eggSellQtyVal > state.eggInventory + eggBuyQtyVal) {
+                alert(`You don't have enough egg inventory to sell!\n\nYou're trying to sell ${eggSellQtyVal} pieces but will only have ${state.eggInventory + eggBuyQtyVal} pieces after buying.`);
+                return;
+            }
+            
+            // Update business state
+            state.cash -= totalCost; // Pay for purchases
+            state.cash += riceRevenue + eggRevenue; // Get revenue from sales
+            
+            // Update inventory
+            state.riceInventory = state.riceInventory + riceBuyQtyVal - riceSellQtyVal;
+            state.eggInventory = state.eggInventory + eggBuyQtyVal - eggSellQtyVal;
+            
+            // Update profits
+            state.totalProfit += totalProfitVal;
+            
+            // Add to history
+            state.history.push({
+                month: state.month,
+                monthName: monthNames[state.month - 1],
+                riceProfit: riceProfitVal,
+                eggProfit: eggProfitVal,
+                totalProfit: totalProfitVal,
+                cumulativeProfit: state.totalProfit,
+                riceBuyPrice: riceBuy,
+                riceSellPrice: riceSell,
+                eggBuyPrice: eggBuy,
+                eggSellPrice: eggSell
+            });
+            
+            // Save state
+            saveState();
+            
+            // Update displays
+            updateDisplay();
+            updateHistoryTable();
+            
+            // Show success modal with profit details
+            modalProfit.textContent = formatCurrency(totalProfitVal);
+            modalRiceProfit.textContent = formatCurrency(riceProfitVal);
+            modalEggProfit.textContent = formatCurrency(eggProfitVal);
+            successModal.style.display = 'flex';
+            
+            // Add animation to month indicator
+            document.querySelector('.month-indicator').classList.remove('fade-in');
+            setTimeout(() => {
+                document.querySelector('.month-indicator').classList.add('fade-in');
+            }, 10);
+        }
+
+        // Advance to the next month
+        function advanceToNextMonth() {
+            if (state.month >= 12) {
+                alert("Congratulations! You've completed a full year of business!\n\nClick 'Reset Business' to start a new year.");
+                return;
+            }
+            
+            state.month++;
+            
+            // Reset input values for new month
+            // Small random price fluctuations (realism)
+            const currentRiceBuy = parseFloat(riceBuyPrice.value) || 45;
+            const currentRiceSell = parseFloat(riceSellPrice.value) || 55;
+            const currentEggBuy = parseFloat(eggBuyPrice.value) || 7;
+            const currentEggSell = parseFloat(eggSellPrice.value) || 8.5;
+            
+            // Random price changes between -5% to +5%
+            riceBuyPrice.value = (currentRiceBuy * (0.95 + Math.random() * 0.1)).toFixed(1);
+            riceSellPrice.value = (currentRiceSell * (0.95 + Math.random() * 0.1)).toFixed(1);
+            eggBuyPrice.value = (currentEggBuy * (0.95 + Math.random() * 0.1)).toFixed(1);
+            eggSellPrice.value = (currentEggSell * (0.95 + Math.random() * 0.1)).toFixed(1);
+            
+            // Reset quantities
+            riceBuyQty.value = 0;
+            riceSellQty.value = 0;
+            eggBuyQty.value = 0;
+            eggSellQty.value = 0;
+            
+            // Reset month profit display
+            monthProfitDisplay.textContent = formatCurrency(0);
+            monthProfitDisplay.className = "value-display profit-positive";
+            
+            // Update displays
+            updateDisplay();
+            updateCalculations();
+            saveState();
+        }
+
+        // Reset current month inputs
+        function resetCurrentMonth() {
+            riceBuyQty.value = 0;
+            riceSellQty.value = 0;
+            eggBuyQty.value = 0;
+            eggSellQty.value = 0;
+            
+            updateCalculations();
+        }
+
+        // Reset entire business
+        function resetBusiness() {
+            if (confirm("Are you sure you want to reset your entire business? All data will be lost.")) {
+                // Reset state
+                state.cash = 10000;
+                state.month = 1;
+                state.totalProfit = 0;
+                state.riceInventory = 0;
+                state.eggInventory = 0;
+                state.history = [];
+                
+                // Reset inputs to defaults
+                riceBuyPrice.value = 45;
+                riceSellPrice.value = 55;
+                riceBuyQty.value = 0;
+                riceSellQty.value = 0;
+                
+                eggBuyPrice.value = 7;
+                eggSellPrice.value = 8.5;
+                eggBuyQty.value = 0;
+                eggSellQty.value = 0;
+                
+                incomeGoalInput.value = 15000;
+                
+                // Clear localStorage
+                localStorage.removeItem('jhackEmporium');
+                
+                // Update displays
+                updateDisplay();
+                updateCalculations();
+                updateHistoryTable();
+                
+                alert("Business reset! You're starting fresh with ₱10,000 capital.");
+            }
+        }
+
+        // Update the income goal progress
+        function updateGoal() {
+            const goal = parseFloat(incomeGoalInput.value) || 15000;
+            
+            // Find this month's profit if available
+            let thisMonthProfit = 0;
+            if (state.history.length > 0) {
+                const lastMonth = state.history[state.history.length - 1];
+                if (lastMonth.month === state.month - 1) {
+                    thisMonthProfit = lastMonth.totalProfit;
+                }
+            }
+            
+            const progressPercent = Math.min(100, Math.round((thisMonthProfit / goal) * 100));
+            goalBar.style.width = `${progressPercent}%`;
+            
+            if (thisMonthProfit >= goal) {
+                goalText.textContent = `🎉 Congratulations! You reached your goal with ${formatCurrency(thisMonthProfit)} profit!`;
+                goalText.style.color = "var(--ph-green)";
+            } else {
+                goalText.textContent = `${progressPercent}% of your monthly income goal (${formatCurrency(thisMonthProfit)} of ${formatCurrency(goal)})`;
+                goalText.style.color = "var(--ph-dark)";
+            }
+            
+            // Save the updated goal
+            if (state.incomeGoal !== goal) {
+                state.incomeGoal = goal;
+                saveState();
+            }
+        }
+
+        // Update the history table
+        function updateHistoryTable() {
+            // Clear table
+            historyBody.innerHTML = '';
+            
+            // Add rows for each month in history
+            state.history.forEach(monthData => {
+                const row = document.createElement('tr');
+                
+                const monthCell = document.createElement('td');
+                monthCell.textContent = monthData.monthName;
+                
+                const riceProfitCell = document.createElement('td');
+                riceProfitCell.textContent = formatCurrency(monthData.riceProfit);
+                riceProfitCell.className = monthData.riceProfit >= 0 ? 'profit-positive' : 'profit-negative';
+                
+                const eggProfitCell = document.createElement('td');
+                eggProfitCell.textContent = formatCurrency(monthData.eggProfit);
+                eggProfitCell.className = monthData.eggProfit >= 0 ? 'profit-positive' : 'profit-negative';
+                
+                const totalProfitCell = document.createElement('td');
+                totalProfitCell.textContent = formatCurrency(monthData.totalProfit);
+                totalProfitCell.className = `month-profit ${monthData.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                
+                const cumulativeCell = document.createElement('td');
+                cumulativeCell.textContent = formatCurrency(monthData.cumulativeProfit);
+                cumulativeCell.className = monthData.cumulativeProfit >= 0 ? 'profit-positive' : 'profit-negative';
+                
+                row.appendChild(monthCell);
+                row.appendChild(riceProfitCell);
+                row.appendChild(eggProfitCell);
+                row.appendChild(totalProfitCell);
+                row.appendChild(cumulativeCell);
+                
+                historyBody.appendChild(row);
+            });
+            
+            // If no history, show a message
+            if (state.history.length === 0) {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = 5;
+                cell.textContent = "No transactions yet. Calculate your first month to see history here.";
+                cell.style.textAlign = "center";
+                cell.style.padding = "20px";
+                cell.style.color = "#666";
+                row.appendChild(cell);
+                historyBody.appendChild(row);
+            }
+        }
+
+        // Format currency with Philippine Peso symbol
+        function formatCurrency(amount) {
+            return `₱${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+        }
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
