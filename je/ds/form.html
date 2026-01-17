@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Simulation Questionnaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 15px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        .currency {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .unit {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #4CAF50;
+            display: none;
+        }
+        
+        .result-box h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .result-text {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 2px solid #eee;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .copy-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #1976D2;
+        }
+        
+        .instructions {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            color: #555;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾🥚 Business Simulation Questionnaire</h1>
+            <p class="subtitle">Fill out this form to assess if your rice & egg business plan is realistic</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Use:</h3>
+            <ul>
+                <li>Fill in your estimated numbers below</li>
+                <li>Click "Generate Results"</li>
+                <li>Copy the formatted results and send them back</li>
+                <li>I'll simulate your business to see if your goals are achievable!</li>
+            </ul>
+        </div>
+        
+        <form id="businessForm">
+            <div class="section-title">💰 Financial Setup</div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="capital">1. Startup Capital</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="capital" min="1000" max="1000000" step="1000" required 
+                               placeholder="e.g. 10000">
+                        <span class="currency">₱</span>
+                    </div>
+                    <small>Initial money to start your business</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal">2. Monthly Income Goal</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="goal" min="5000" max="200000" step="1000" required 
+                               placeholder="e.g. 15000">
+                        <span class="currency">₱</span>
+                    </div>
+                    <small>How much you need to make each month to live on</small>
+                </div>
+            </div>
+            
+            <div class="section-title">🌾 Rice Business</div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="riceBuy">3. Rice Buy Price (per kg)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="riceBuy" min="30" max="100" step="0.5" required 
+                               placeholder="e.g. 45">
+                        <span class="currency">₱</span>
+                    </div>
+                    <small>What you pay suppliers per kilogram</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="riceSell">4. Rice Sell Price (per kg)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="riceSell" min="40" max="120" step="0.5" required 
+                               placeholder="e.g. 55">
+                        <span class="currency">₱</span>
+                    </div>
+                    <small>What you charge customers per kilogram</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="riceSales">5. Expected Monthly Rice Sales</label>
+                <div class="input-wrapper">
+                    <input type="number" id="riceSales" min="0" max="10000" step="10" required 
+                           placeholder="e.g. 100">
+                    <span class="unit">kg/month</span>
+                </div>
+                <small>How many kilograms you think you can sell in one month</small>
+            </div>
+            
+            <div class="section-title">🥚 Egg Business</div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="eggBuy">6. Egg Buy Price (per piece)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="eggBuy" min="5" max="15" step="0.1" required 
+                               placeholder="e.g. 7">
+                        <span class="currency">₱</span>
+                    </div>
+                    <small>What you pay suppliers per piece</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eggSell">7. Egg Sell Price (per piece)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="eggSell" min="6" max="20" step="0.1" required 
+                               placeholder="e.g. 8.5">
+                        <span class="currency">₱</span>
+                    </div>
+                    <small>What you charge customers per piece</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="eggSales">8. Expected Monthly Egg Sales</label>
+                <div class="input-wrapper">
+                    <input type="number" id="eggSales" min="0" max="50000" step="50" required 
+                           placeholder="e.g. 200">
+                    <span class="unit">pieces/month</span>
+                </div>
+                <small>How many pieces you think you can sell in one month</small>
+            </div>
+            
+            <button type="button" class="btn" onclick="generateResults()">
+                📊 Generate Results
+            </button>
+        </form>
+        
+        <div class="result-box" id="resultBox">
+            <h3>📋 Copy & Send This Response:</h3>
+            <p>Copy the text below and send it back to me. I'll plug these numbers into the simulation!</p>
+            
+            <div class="result-text" id="resultText"></div>
+            
+            <button class="copy-btn" onclick="copyToClipboard()">
+                📋 Copy to Clipboard
+            </button>
+            
+            <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                <strong>Next Step:</strong> I'll simulate your business for 12 months to see if your income goal is achievable with these numbers.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function generateResults() {
+            // Get all input values
+            const capital = document.getElementById('capital').value;
+            const goal = document.getElementById('goal').value;
+            const riceBuy = document.getElementById('riceBuy').value;
+            const riceSell = document.getElementById('riceSell').value;
+            const riceSales = document.getElementById('riceSales').value;
+            const eggBuy = document.getElementById('eggBuy').value;
+            const eggSell = document.getElementById('eggSell').value;
+            const eggSales = document.getElementById('eggSales').value;
+            
+            // Calculate some basic metrics
+            const riceProfitPerKg = (riceSell - riceBuy).toFixed(2);
+            const eggProfitPerPiece = (eggSell - eggBuy).toFixed(2);
+            const totalRiceProfit = (riceSales * riceProfitPerKg).toFixed(2);
+            const totalEggProfit = (eggSales * eggProfitPerPiece).toFixed(2);
+            const totalMonthlyProfit = (parseFloat(totalRiceProfit) + parseFloat(totalEggProfit)).toFixed(2);
+            const profitVsGoal = ((totalMonthlyProfit / goal) * 100).toFixed(1);
+            
+            // Create formatted result
+            const result = `🌟 BUSINESS SIMULATION QUESTIONNAIRE RESULTS 🌟
+
+💰 FINANCIAL SETUP:
+• Startup Capital: ₱${parseInt(capital).toLocaleString()}
+• Monthly Income Goal: ₱${parseInt(goal).toLocaleString()}
+
+🌾 RICE BUSINESS:
+• Buy Price: ₱${parseFloat(riceBuy).toFixed(2)}/kg
+• Sell Price: ₱${parseFloat(riceSell).toFixed(2)}/kg
+• Profit per kg: ₱${riceProfitPerKg}
+• Expected Monthly Sales: ${parseInt(riceSales).toLocaleString()} kg
+• Monthly Rice Profit: ₱${parseFloat(totalRiceProfit).toLocaleString()}
+
+🥚 EGG BUSINESS:
+• Buy Price: ₱${parseFloat(eggBuy).toFixed(2)}/piece
+• Sell Price: ₱${parseFloat(eggSell).toFixed(2)}/piece
+• Profit per piece: ₱${eggProfitPerPiece}
+• Expected Monthly Sales: ${parseInt(eggSales).toLocaleString()} pieces
+• Monthly Egg Profit: ₱${parseFloat(totalEggProfit).toLocaleString()}
+
+📊 SUMMARY:
+• Total Monthly Profit: ₱${parseFloat(totalMonthlyProfit).toLocaleString()}
+• Profit vs Goal: ${profitVsGoal}% of your ₱${parseInt(goal).toLocaleString()} target
+• Required to reach goal: ₱${(goal - totalMonthlyProfit > 0 ? (goal - totalMonthlyProfit).toFixed(2) : 0)}
+
+📝 ADDITIONAL INFO:
+• Rice margin: ${((riceSell - riceBuy) / riceBuy * 100).toFixed(1)}%
+• Egg margin: ${((eggSell - eggBuy) / eggBuy * 100).toFixed(1)}%
+• Capital turnover: ${((totalMonthlyProfit / capital) * 100).toFixed(1)}% monthly
+
+🎯 REALITY CHECK:
+${parseFloat(totalMonthlyProfit) >= parseFloat(goal) ? 
+  "✅ Your plan appears to reach your income goal!" : 
+  "⚠️ Your plan falls short of your income goal. Consider adjusting prices or sales volume."}
+
+--- END OF REPORT ---`;
+
+            // Display results
+            document.getElementById('resultText').textContent = result;
+            document.getElementById('resultBox').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyToClipboard() {
+            const resultText = document.getElementById('resultText');
+            const textArea = document.createElement('textarea');
+            textArea.value = resultText.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Show feedback
+            const btn = document.querySelector('.copy-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+        
+        // Auto-fill with sample data for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample data for demonstration
+            document.getElementById('capital').value = 10000;
+            document.getElementById('goal').value = 15000;
+            document.getElementById('riceBuy').value = 45;
+            document.getElementById('riceSell').value = 55;
+            document.getElementById('riceSales').value = 100;
+            document.getElementById('eggBuy').value = 7;
+            document.getElementById('eggSell').value = 8.5;
+            document.getElementById('eggSales').value = 200;
+        });
+    </script>
+</body>
+</html>
