@@ -61,7 +61,7 @@
         header {
             text-align: center;
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             background: linear-gradient(95deg, 
                 var(--ph-red) 0%, 
                 var(--ph-red) 40%, 
@@ -145,7 +145,7 @@
             background-color: var(--ph-white);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             display: none;
         }
@@ -167,57 +167,38 @@
             }
         }
         
-        /* Month Indicator - Simplified */
+        /* Month Indicator */
         .month-indicator {
             background-color: var(--ph-white);
             border-radius: 12px;
-            padding: 12px 15px;
-            margin-bottom: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border-left: 4px solid var(--ph-red);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-        
-        .month-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            text-align: center;
         }
         
         .month-name {
+            font-weight: 700;
             color: var(--ph-red);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
         }
         
-        .cycle-counter {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .month-number {
             color: var(--ph-blue);
-            font-size: 0.95rem;
-        }
-        
-        .cycle-badge {
-            background: linear-gradient(135deg, var(--ph-info) 0%, #138496 100%);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 10px;
             font-weight: 600;
-            font-size: 0.85rem;
         }
         
         /* Collapsible Product Sections */
         .product-section {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .product-header {
             background: linear-gradient(135deg, var(--ph-blue) 0%, #00267a 100%);
             color: white;
-            padding: 12px 15px;
+            padding: 15px;
             border-radius: 10px 10px 0 0;
             display: flex;
             justify-content: space-between;
@@ -245,7 +226,7 @@
         .product-content {
             background-color: var(--ph-white);
             border-radius: 0 0 10px 10px;
-            padding: 15px;
+            padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             display: none;
         }
@@ -258,8 +239,8 @@
         .input-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
         
         @media (max-width: 640px) {
@@ -303,7 +284,7 @@
             font-weight: 500;
             outline: none;
             background: transparent;
-            width: 80px;
+            width: 80px; /* Fixed width for 7 digits */
         }
         
         .unit {
@@ -319,83 +300,69 @@
         .cost-preview {
             background-color: #f8f9fa;
             border-radius: 6px;
-            padding: 6px 8px;
-            margin-top: 4px;
-            font-size: 0.8rem;
+            padding: 8px 10px;
+            margin-top: 5px;
+            font-size: 0.85rem;
             font-weight: 500;
         }
         
-        /* Purchase Summary - Four Quadrants */
+        /* Purchase Summary */
         .purchase-summary {
             background-color: var(--ph-white);
             border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
+            padding: 20px;
+            margin: 20px 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border-top: 3px solid var(--ph-green);
         }
         
         .purchase-summary h3 {
             color: var(--ph-blue);
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
+            gap: 10px;
         }
         
-        .summary-quadrants {
+        .summary-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 15px;
         }
         
-        .quadrant {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
+        @media (max-width: 640px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .summary-item {
             text-align: center;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s ease;
         }
         
-        .quadrant:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .quadrant-label {
-            font-size: 0.8rem;
+        .summary-label {
+            font-size: 0.85rem;
             color: #666;
-            margin-bottom: 6px;
-            font-weight: 600;
+            margin-bottom: 5px;
         }
         
-        .quadrant-value {
-            font-size: 1.2rem;
+        .summary-value {
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--ph-blue);
-        }
-        
-        .profit-positive {
-            color: var(--ph-success);
-        }
-        
-        .profit-negative {
-            color: var(--ph-red);
         }
         
         /* Action Buttons */
         .action-buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 15px 0;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 20px 0;
         }
         
         @media (min-width: 640px) {
             .action-buttons {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: repeat(3, 1fr);
             }
         }
         
@@ -463,47 +430,25 @@
         /* Month Controls */
         .month-controls {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin: 15px 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
         }
         
         /* Goal Section */
         .goal-section {
             background-color: var(--ph-white);
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .goal-header h3 {
-            color: var(--ph-blue);
-            font-size: 1.1rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .goal-display {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--ph-brown);
-        }
-        
         .goal-progress {
-            height: 18px;
+            height: 20px;
             background-color: #f1f3f4;
-            border-radius: 9px;
-            margin: 12px 0;
+            border-radius: 10px;
+            margin: 15px 0;
             overflow: hidden;
             position: relative;
         }
@@ -511,7 +456,7 @@
         .goal-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--ph-yellow), var(--ph-success));
-            border-radius: 9px;
+            border-radius: 10px;
             transition: width 0.5s ease;
         }
         
@@ -522,7 +467,7 @@
             transform: translate(-50%, -50%);
             font-weight: 600;
             color: var(--ph-dark);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             z-index: 2;
         }
         
@@ -530,8 +475,8 @@
         .stats-dashboard {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
         @media (min-width: 640px) {
@@ -543,7 +488,7 @@
         .stat-card {
             background-color: var(--ph-white);
             border-radius: 10px;
-            padding: 12px;
+            padding: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
             text-align: center;
             transition: transform 0.3s ease;
@@ -555,8 +500,8 @@
         
         .stat-card h4 {
             color: var(--ph-blue);
-            font-size: 0.85rem;
-            margin-bottom: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -564,30 +509,22 @@
         }
         
         .stat-value {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--ph-brown);
         }
         
+        .profit-positive {
+            color: var(--ph-success);
+        }
+        
+        .profit-negative {
+            color: var(--ph-red);
+        }
+        
         /* History Section */
         .history-section {
-            margin-top: 20px;
-        }
-        
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .history-header h3 {
-            color: var(--ph-blue);
-            font-size: 1.1rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-top: 25px;
         }
         
         .history-table {
@@ -603,13 +540,13 @@
         .history-table th {
             background: linear-gradient(135deg, var(--ph-blue) 0%, #00267a 100%);
             color: white;
-            padding: 10px 12px;
+            padding: 12px 15px;
             text-align: left;
             font-weight: 600;
         }
         
         .history-table td {
-            padding: 8px 12px;
+            padding: 10px 15px;
             border-bottom: 1px solid #f0f0f0;
         }
         
@@ -617,54 +554,21 @@
             border-bottom: none;
         }
         
-        /* Collapsible Data Section */
+        /* Export/Import Section */
         .data-section {
             background-color: var(--ph-white);
             border-radius: 12px;
-            padding: 0;
-            margin-top: 20px;
+            padding: 20px;
+            margin-top: 25px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border-top: 3px solid var(--ph-info);
-            overflow: hidden;
-        }
-        
-        .data-header {
-            background: linear-gradient(135deg, var(--ph-info) 0%, #138496 100%);
-            color: white;
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .data-header:hover {
-            background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
-        }
-        
-        .data-header h3 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            margin: 0;
-        }
-        
-        .data-content {
-            padding: 15px;
-            display: none;
-        }
-        
-        .data-content.expanded {
-            display: block;
         }
         
         .data-buttons {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
         }
         
         @media (max-width: 640px) {
@@ -676,7 +580,7 @@
         .data-btn {
             background: linear-gradient(135deg, var(--ph-info) 0%, #138496 100%);
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
             border-radius: 8px;
             font-weight: 600;
@@ -686,7 +590,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-size: 0.9rem;
         }
         
         .data-btn:hover {
@@ -724,8 +627,8 @@
             align-items: center;
             gap: 12px;
             animation: toastSlideIn 0.5s ease forwards, 
-                       toastStay 8s 0.5s ease forwards,
-                       toastSlideOut 0.5s ease 8.5s forwards;
+                       toastStay 10s 0.5s ease forwards,
+                       toastSlideOut 0.5s ease 10.5s forwards;
             border-left: 4px solid var(--ph-blue);
             transform: translateX(120%);
         }
@@ -764,54 +667,45 @@
             width: 90%;
             max-width: 400px;
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
         .modal-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-top: 20px;
         }
         
         /* Footer */
         footer {
             text-align: center;
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 25px;
+            padding: 20px;
             color: var(--ph-dark);
             font-size: 0.85rem;
             opacity: 0.8;
         }
         
-        /* Quick Actions */
-        .quick-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .quick-btn {
-            flex: 1;
-            background: linear-gradient(135deg, var(--ph-info) 0%, #138496 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        /* Cycle Counter */
+        .cycle-counter {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
         }
         
-        .quick-btn:hover {
-            background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
-            transform: translateY(-2px);
+        .cycle-badge {
+            background: linear-gradient(135deg, var(--ph-info) 0%, #138496 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -823,7 +717,7 @@
     <div class="modal" id="confirm-modal">
         <div class="modal-content">
             <h3 style="color: var(--ph-blue); margin-bottom: 10px;">Proceed to Next Month?</h3>
-            <p style="margin-bottom: 15px; color: #666;">Are you sure you want to advance to the next month? You can still do more sales cycles this month.</p>
+            <p style="margin-bottom: 20px; color: #666;">Are you sure you want to advance to the next month? You can still do more sales cycles this month.</p>
             <div class="modal-buttons">
                 <button class="btn btn-warning" id="cancel-next-month">Continue This Month</button>
                 <button class="btn btn-success" id="confirm-next-month">Next Month</button>
@@ -887,7 +781,7 @@
                 </div>
             </div>
             
-            <div style="display: flex; gap: 12px; margin-top: 15px;">
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
                 <button class="btn btn-primary" id="apply-setup-btn" style="flex: 1;">
                     <i class="fas fa-check-circle"></i> Apply Settings
                 </button>
@@ -896,19 +790,18 @@
                 </button>
             </div>
             
-            <p style="margin-top: 10px; color: #666; font-size: 0.85rem; text-align: center;">
+            <p style="margin-top: 15px; color: #666; font-size: 0.85rem; text-align: center;">
                 <i class="fas fa-info-circle"></i> Apply settings first, then reset business to start fresh
             </p>
         </div>
         
-        <!-- Month Indicator - Simplified -->
+        <!-- Month Indicator -->
         <div class="month-indicator">
-            <div class="month-info">
-                <div class="month-name" id="current-month">March</div>
-                <div class="cycle-counter">
-                    <span>Sales Cycles:</span>
-                    <span class="cycle-badge" id="cycle-count">0</span>
-                </div>
+            <div class="month-name" id="current-month">January</div>
+            <div class="month-number">Month <span id="month-number">1</span> of 12</div>
+            <div class="cycle-counter">
+                <span>Sales Cycles:</span>
+                <span class="cycle-badge" id="cycle-count">0</span>
             </div>
         </div>
         
@@ -953,16 +846,6 @@
                         </div>
                         <div class="cost-preview" id="rice-sell-revenue">Revenue: ₱0</div>
                     </div>
-                </div>
-                
-                <!-- Quick Actions for Rice -->
-                <div class="quick-actions">
-                    <button class="quick-btn" id="rice-buy-all" title="Use all cash to buy rice">
-                        <i class="fas fa-shopping-cart"></i> Buy Max
-                    </button>
-                    <button class="quick-btn" id="rice-sell-all" title="Sell all rice inventory">
-                        <i class="fas fa-money-bill-wave"></i> Sell All
-                    </button>
                 </div>
             </div>
         </div>
@@ -1009,44 +892,37 @@
                         <div class="cost-preview" id="egg-sell-revenue">Revenue: ₱0</div>
                     </div>
                 </div>
-                
-                <!-- Quick Actions for Eggs -->
-                <div class="quick-actions">
-                    <button class="quick-btn" id="egg-buy-all" title="Use all cash to buy eggs">
-                        <i class="fas fa-shopping-cart"></i> Buy Max
-                    </button>
-                    <button class="quick-btn" id="egg-sell-all" title="Sell all egg inventory">
-                        <i class="fas fa-money-bill-wave"></i> Sell All
-                    </button>
-                </div>
             </div>
         </div>
         
-        <!-- Purchase Summary - Four Quadrants -->
+        <!-- Purchase Summary -->
         <div class="purchase-summary">
             <h3><i class="fas fa-calculator"></i> Purchase Summary</h3>
-            <div class="summary-quadrants">
-                <div class="quadrant">
-                    <div class="quadrant-label">Total Cost</div>
-                    <div class="quadrant-value" id="total-purchase-cost">₱0</div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Total Cost</div>
+                    <div class="summary-value" id="total-purchase-cost">₱0</div>
                 </div>
-                <div class="quadrant">
-                    <div class="quadrant-label">Cash After</div>
-                    <div class="quadrant-value" id="cash-after-purchase">₱10,000</div>
+                <div class="summary-item">
+                    <div class="summary-label">Cash After Purchase</div>
+                    <div class="summary-value" id="cash-after-purchase">₱10,000</div>
                 </div>
-                <div class="quadrant">
-                    <div class="quadrant-label">Cycle Profit</div>
-                    <div class="quadrant-value profit-positive" id="cycle-profit-display">₱0</div>
+                <div class="summary-item">
+                    <div class="summary-label">Cycle Profit</div>
+                    <div class="summary-value profit-positive" id="cycle-profit-display">₱0</div>
                 </div>
-                <div class="quadrant">
-                    <div class="quadrant-label">Inventory Value</div>
-                    <div class="quadrant-value" id="inventory-value">₱0</div>
+                <div class="summary-item">
+                    <div class="summary-label">Inventory Value</div>
+                    <div class="summary-value" id="inventory-value">₱0</div>
                 </div>
             </div>
         </div>
         
-        <!-- Action Buttons - Simplified -->
+        <!-- Action Buttons -->
         <div class="action-buttons">
+            <button class="btn btn-warning" id="reset-month-btn">
+                <i class="fas fa-undo"></i> Reset Cycle
+            </button>
             <button class="btn btn-primary" id="calculate-cycle-btn">
                 <i class="fas fa-calculator"></i> Calculate Cycle
             </button>
@@ -1060,13 +936,19 @@
             <button class="btn btn-warning" id="undo-cycle-btn" disabled>
                 <i class="fas fa-undo-alt"></i> Undo Last Cycle
             </button>
+            <button class="btn btn-info" id="quick-sell-btn">
+                <i class="fas fa-bolt"></i> Quick Sell
+            </button>
         </div>
         
         <!-- Goal Section -->
         <div class="goal-section">
-            <div class="goal-header">
-                <h3><i class="fas fa-bullseye"></i> Monthly Income Goal</h3>
-                <div class="goal-display" id="goal-display">₱15,000</div>
+            <h3 style="color: var(--ph-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-bullseye"></i> Monthly Living Income Goal
+            </h3>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--ph-brown);" id="goal-display">₱15,000</div>
+                <div style="font-size: 0.9rem; color: #666;">Target profit to maintain lifestyle</div>
             </div>
             
             <div class="goal-progress">
@@ -1074,8 +956,8 @@
                 <div class="goal-text" id="goal-text">0% of goal</div>
             </div>
             
-            <div style="text-align: center; margin-top: 10px; font-weight: 600; color: var(--ph-dark);" id="goal-status">
-                Current month profit: ₱0 of ₱15,000
+            <div style="text-align: center; margin-top: 15px; font-weight: 600; color: var(--ph-dark);" id="goal-status">
+                Current month profit: ₱0 of ₱15,000 goal
             </div>
         </div>
         
@@ -1094,16 +976,16 @@
                 <div class="stat-value profit-positive" id="total-profit-display">₱0</div>
             </div>
             <div class="stat-card">
-                <h4><i class="fas fa-calendar-alt"></i> Year</h4>
-                <div class="stat-value" id="year-progress">March</div>
+                <h4><i class="fas fa-calendar-alt"></i> Year Progress</h4>
+                <div class="stat-value" id="year-progress">8%</div>
             </div>
         </div>
         
         <!-- History Section -->
         <div class="history-section">
-            <div class="history-header">
-                <h3><i class="fas fa-history"></i> Monthly History</h3>
-            </div>
+            <h3 style="color: var(--ph-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-history"></i> Monthly History
+            </h3>
             <div style="overflow-x: auto;">
                 <table class="history-table">
                     <thead>
@@ -1111,14 +993,15 @@
                             <th>Month</th>
                             <th>Rice</th>
                             <th>Eggs</th>
+                            <th>Profit</th>
                             <th>Total</th>
-                            <th>Cumulative</th>
                             <th>Goal</th>
                         </tr>
                     </thead>
                     <tbody id="history-body">
+                        <!-- History rows will be inserted here -->
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 15px; color: #666; font-style: italic;">
+                            <td colspan="6" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
                                 No monthly history yet. Complete cycles to see history here.
                             </td>
                         </tr>
@@ -1127,36 +1010,33 @@
             </div>
         </div>
         
-        <!-- Collapsible Data Section -->
+        <!-- Export/Import Section -->
         <div class="data-section">
-            <div class="data-header" id="data-header">
-                <h3><i class="fas fa-database"></i> Data Management</h3>
-                <i class="fas fa-chevron-down" id="data-chevron"></i>
-            </div>
-            <div class="data-content" id="data-content">
-                <p style="color: #666; margin-bottom: 10px; font-size: 0.85rem;">
-                    Export your business data to save or share it, or import previously saved data.
-                </p>
-                <div class="data-buttons">
-                    <button class="data-btn" id="export-json-btn">
-                        <i class="fas fa-file-export"></i> Export JSON
-                    </button>
-                    <button class="data-btn secondary" id="export-csv-btn">
-                        <i class="fas fa-file-csv"></i> Export CSV
-                    </button>
-                    <button class="data-btn" id="export-md-btn">
-                        <i class="fas fa-file-alt"></i> Export Markdown
-                    </button>
-                    <button class="data-btn secondary" id="import-btn">
-                        <i class="fas fa-file-import"></i> Import Data
-                    </button>
-                </div>
+            <h3 style="color: var(--ph-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-database"></i> Data Management
+            </h3>
+            <p style="color: #666; margin-bottom: 15px; font-size: 0.9rem;">
+                Export your business data to save or share it, or import previously saved data.
+            </p>
+            <div class="data-buttons">
+                <button class="data-btn" id="export-json-btn">
+                    <i class="fas fa-file-export"></i> Export as JSON
+                </button>
+                <button class="data-btn secondary" id="export-csv-btn">
+                    <i class="fas fa-file-csv"></i> Export as CSV
+                </button>
+                <button class="data-btn" id="export-md-btn">
+                    <i class="fas fa-file-alt"></i> Export as Markdown
+                </button>
+                <button class="data-btn secondary" id="import-btn">
+                    <i class="fas fa-file-import"></i> Import Data
+                </button>
             </div>
         </div>
         
         <footer>
-            <p><span id="business-name-footer">Jhack's Emporium</span> - Rice & Egg Business Simulator</p>
-            <p>All calculations are in Philippine Pesos (₱).</p>
+            <p><span id="business-name-footer">Jhack's Emporium</span> - Rice & Egg Business Simulator | Designed for Filipino Entrepreneurs</p>
+            <p>All calculations are in Philippine Pesos (₱). No taxes or spoilage included.</p>
         </footer>
     </div>
 
@@ -1188,10 +1068,10 @@
                 
                 container.appendChild(toast);
                 
-                // Auto-remove after total animation time (9 seconds)
+                // Auto-remove after total animation time (11 seconds)
                 const removeTimeout = setTimeout(() => {
                     if (toast.parentNode) container.removeChild(toast);
-                }, 9000);
+                }, 11000);
                 
                 // Close button
                 toast.querySelector('.toast-close').addEventListener('click', () => {
@@ -1205,7 +1085,7 @@
         const state = {
             startupCapital: 10000,
             cash: 10000,
-            month: 3, // Starting at March for example
+            month: 1,
             totalProfit: 0,
             riceInventory: 0,
             eggInventory: 0,
@@ -1215,7 +1095,7 @@
             currentMonthCycles: 0,
             currentMonthProfit: 0,
             showSetup: false,
-            pastCycles: []
+            pastCycles: [] // For undo functionality
         };
 
         // Month names for display
@@ -1231,6 +1111,7 @@
         const totalProfitDisplay = document.getElementById('total-profit-display');
         const yearProgress = document.getElementById('year-progress');
         const currentMonth = document.getElementById('current-month');
+        const monthNumber = document.getElementById('month-number');
         const cycleCount = document.getElementById('cycle-count');
         
         // Setup elements
@@ -1254,8 +1135,6 @@
         const riceSellQty = document.getElementById('rice-sell-qty');
         const riceBuyCost = document.getElementById('rice-buy-cost');
         const riceSellRevenue = document.getElementById('rice-sell-revenue');
-        const riceBuyAllBtn = document.getElementById('rice-buy-all');
-        const riceSellAllBtn = document.getElementById('rice-sell-all');
         
         const eggHeader = document.getElementById('egg-header');
         const eggContent = document.getElementById('egg-content');
@@ -1266,8 +1145,6 @@
         const eggSellQty = document.getElementById('egg-sell-qty');
         const eggBuyCost = document.getElementById('egg-buy-cost');
         const eggSellRevenue = document.getElementById('egg-sell-revenue');
-        const eggBuyAllBtn = document.getElementById('egg-buy-all');
-        const eggSellAllBtn = document.getElementById('egg-sell-all');
         
         // Purchase summary
         const totalPurchaseCost = document.getElementById('total-purchase-cost');
@@ -1286,12 +1163,11 @@
         // Buttons
         const calculateCycleBtn = document.getElementById('calculate-cycle-btn');
         const nextMonthBtn = document.getElementById('next-month-btn');
+        const resetMonthBtn = document.getElementById('reset-month-btn');
         const undoCycleBtn = document.getElementById('undo-cycle-btn');
+        const quickSellBtn = document.getElementById('quick-sell-btn');
         
-        // Data section elements
-        const dataHeader = document.getElementById('data-header');
-        const dataContent = document.getElementById('data-content');
-        const dataChevron = document.getElementById('data-chevron');
+        // Export/Import buttons
         const exportJsonBtn = document.getElementById('export-json-btn');
         const exportCsvBtn = document.getElementById('export-csv-btn');
         const exportMdBtn = document.getElementById('export-md-btn');
@@ -1321,7 +1197,6 @@
             // Event listeners for collapsible sections
             riceHeader.addEventListener('click', () => toggleSection('rice'));
             eggHeader.addEventListener('click', () => toggleSection('egg'));
-            dataHeader.addEventListener('click', () => toggleSection('data'));
             
             // Event listeners for setup
             settingsCog.addEventListener('click', toggleSetupSection);
@@ -1339,16 +1214,12 @@
                 input.addEventListener('change', updatePurchaseCalculations);
             });
             
-            // Quick action buttons
-            riceBuyAllBtn.addEventListener('click', () => buyMax('rice'));
-            riceSellAllBtn.addEventListener('click', () => sellAll('rice'));
-            eggBuyAllBtn.addEventListener('click', () => buyMax('eggs'));
-            eggSellAllBtn.addEventListener('click', () => sellAll('eggs'));
-            
             // Event listeners for buttons
             calculateCycleBtn.addEventListener('click', calculateCycle);
             nextMonthBtn.addEventListener('click', showNextMonthConfirmation);
+            resetMonthBtn.addEventListener('click', resetCurrentMonth);
             undoCycleBtn.addEventListener('click', undoLastCycle);
+            quickSellBtn.addEventListener('click', quickSell);
             
             // Modal event listeners
             cancelNextMonthBtn.addEventListener('click', () => confirmModal.style.display = 'none');
@@ -1480,10 +1351,12 @@
             // Validate range
             if (value < min) {
                 input.value = min;
+                Toast.show('Validation', `Minimum value is ${min}`, 'warning', 3000);
             }
             
             if (value > max) {
                 input.value = max;
+                Toast.show('Validation', `Maximum value is ${max}`, 'warning', 3000);
             }
             
             // Update calculations
@@ -1501,10 +1374,14 @@
             
             // Update month displays
             currentMonth.textContent = monthNames[state.month - 1];
-            yearProgress.textContent = monthNames[state.month - 1];
+            monthNumber.textContent = state.month;
             
             // Update cycle count
             cycleCount.textContent = state.currentMonthCycles;
+            
+            // Update year progress
+            const progressPercent = Math.round((state.month - 1) / 12 * 100);
+            yearProgress.textContent = `${progressPercent}%`;
             
             // Update goal display
             goalDisplay.textContent = formatCurrency(state.incomeGoal);
@@ -1553,7 +1430,7 @@
             
             // Update cycle profit display
             cycleProfitDisplay.textContent = formatCurrency(totalProfitVal);
-            cycleProfitDisplay.className = `quadrant-value ${totalProfitVal >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            cycleProfitDisplay.className = `summary-value ${totalProfitVal >= 0 ? 'profit-positive' : 'profit-negative'}`;
             cycleProfitStat.textContent = formatCurrency(totalProfitVal);
             cycleProfitStat.className = `stat-value ${totalProfitVal >= 0 ? 'profit-positive' : 'profit-negative'}`;
             
@@ -1601,10 +1478,10 @@
         function updateGoalStatus(monthProfit = 0) {
             const progressPercent = Math.min(100, Math.round((monthProfit / state.incomeGoal) * 100));
             
-            goalStatus.textContent = `Current month profit: ${formatCurrency(monthProfit)} of ${formatCurrency(state.incomeGoal)}`;
+            goalStatus.textContent = `Current month profit: ${formatCurrency(monthProfit)} of ${formatCurrency(state.incomeGoal)} goal`;
             
             if (monthProfit >= state.incomeGoal) {
-                goalStatus.innerHTML = `🎉 Goal Achieved! ${formatCurrency(monthProfit)}`;
+                goalStatus.innerHTML = `🎉 Goal Achieved! ${formatCurrency(monthProfit)} profit exceeds ${formatCurrency(state.incomeGoal)} goal`;
                 goalStatus.style.color = "var(--ph-success)";
             } else {
                 goalStatus.style.color = "var(--ph-dark)";
@@ -1618,48 +1495,11 @@
             
             if (state.currentMonthProfit >= state.incomeGoal) {
                 goalBar.style.background = "linear-gradient(90deg, var(--ph-success), var(--ph-blue))";
-                goalText.innerHTML = `🎉 ${formatCurrency(state.currentMonthProfit)}`;
+                goalText.innerHTML = `🎉 Goal Achieved! ${formatCurrency(state.currentMonthProfit)} profit`;
             } else {
                 goalBar.style.background = "linear-gradient(90deg, var(--ph-yellow), var(--ph-success))";
-                goalText.textContent = `${progressPercent}%`;
+                goalText.textContent = `${progressPercent}% of goal`;
             }
-        }
-
-        // Quick action: Buy max with available cash
-        function buyMax(product) {
-            const priceInput = document.getElementById(`${product}-buy-price`);
-            const qtyInput = document.getElementById(`${product}-buy-qty`);
-            const price = parseFloat(priceInput.value) || 0;
-            
-            if (price <= 0) {
-                Toast.show('Invalid Price', 'Please set a valid buy price first', 'warning');
-                return;
-            }
-            
-            const maxQty = Math.floor(state.cash / price);
-            if (maxQty <= 0) {
-                Toast.show('Insufficient Funds', `You need at least ₱${price} to buy one`, 'warning');
-                return;
-            }
-            
-            qtyInput.value = maxQty;
-            updatePurchaseCalculations();
-            Toast.show('Max Purchase', `Set to buy ${maxQty} ${product === 'rice' ? 'kg' : 'ea.'}`, 'info');
-        }
-
-        // Quick action: Sell all inventory
-        function sellAll(product) {
-            const qtyInput = document.getElementById(`${product}-sell-qty`);
-            const inventory = product === 'rice' ? state.riceInventory : state.eggInventory;
-            
-            if (inventory <= 0) {
-                Toast.show('No Inventory', `You have no ${product} inventory to sell`, 'warning');
-                return;
-            }
-            
-            qtyInput.value = inventory;
-            updatePurchaseCalculations();
-            Toast.show('Sell All', `Set to sell all ${inventory} ${product === 'rice' ? 'kg' : 'ea.'}`, 'info');
         }
 
         // Calculate and process the current cycle
@@ -1701,7 +1541,7 @@
                 Toast.show('Insufficient Funds', 
                     `You need ${formatCurrency(totalCost)} but only have ${formatCurrency(state.cash)}`, 
                     'error');
-                state.pastCycles.pop();
+                state.pastCycles.pop(); // Remove the saved state
                 return;
             }
             
@@ -1710,7 +1550,7 @@
                 Toast.show('Insufficient Rice Inventory', 
                     `Trying to sell ${riceSellQtyVal}kg but only have ${state.riceInventory + riceBuyQtyVal}kg`, 
                     'error');
-                state.pastCycles.pop();
+                state.pastCycles.pop(); // Remove the saved state
                 return;
             }
             
@@ -1718,20 +1558,20 @@
                 Toast.show('Insufficient Egg Inventory', 
                     `Trying to sell ${eggSellQtyVal}ea. but only have ${state.eggInventory + eggBuyQtyVal}ea.`, 
                     'error');
-                state.pastCycles.pop();
+                state.pastCycles.pop(); // Remove the saved state
                 return;
             }
             
             // Validate that we're actually buying or selling something
             if (riceBuyQtyVal + riceSellQtyVal + eggBuyQtyVal + eggSellQtyVal === 0) {
                 Toast.show('No Transactions', 'Please enter quantities to buy or sell', 'warning');
-                state.pastCycles.pop();
+                state.pastCycles.pop(); // Remove the saved state
                 return;
             }
             
             // Update business state
-            state.cash -= totalCost;
-            state.cash += riceRevenue + eggRevenue;
+            state.cash -= totalCost; // Pay for purchases
+            state.cash += riceRevenue + eggRevenue; // Get revenue from sales
             
             // Update inventory
             state.riceInventory = state.riceInventory + riceBuyQtyVal - riceSellQtyVal;
@@ -1759,8 +1599,11 @@
             
             // Show success toast
             Toast.show('Cycle Completed', 
-                `Cycle profit: ${formatCurrency(totalProfitVal)}`, 
+                `Cycle profit: ${formatCurrency(totalProfitVal)} | Month profit: ${formatCurrency(state.currentMonthProfit)}`, 
                 'success');
+            
+            // Animate the cycle counter
+            animateCounter();
         }
 
         // Undo last cycle
@@ -1782,6 +1625,25 @@
             Toast.show('Cycle Undone', 'Last sales cycle has been reversed', 'info');
         }
 
+        // Quick sell - sell all inventory at current prices
+        function quickSell() {
+            const riceSell = parseFloat(riceSellPrice.value) || 0;
+            const eggSell = parseFloat(eggSellPrice.value) || 0;
+            
+            if (state.riceInventory === 0 && state.eggInventory === 0) {
+                Toast.show('No Inventory', 'You have no inventory to sell', 'warning');
+                return;
+            }
+            
+            // Auto-fill sell quantities
+            riceSellQty.value = state.riceInventory;
+            eggSellQty.value = state.eggInventory;
+            
+            updatePurchaseCalculations();
+            
+            Toast.show('Quick Sell', 'All inventory quantities filled for selling', 'info');
+        }
+
         // Show next month confirmation
         function showNextMonthConfirmation() {
             confirmModal.style.display = 'flex';
@@ -1798,14 +1660,15 @@
                 const averageProfit = totalProfit / Math.max(1, state.history.length);
                 
                 Toast.show('Year Completed!', 
-                    `Months Goal Achieved: ${goalAchievedCount}/12`, 
-                    'success', 8000);
+                    `Months Goal Achieved: ${goalAchievedCount}/12 | Total Profit: ${formatCurrency(totalProfit)}`, 
+                    'success', 10000);
                 
                 setTimeout(() => {
                     alert(`🎉 Congratulations! You've completed a full year of business!\n\n` +
                           `Months Goal Achieved: ${goalAchievedCount} of 12\n` +
                           `Total Profit: ${formatCurrency(totalProfit)}\n` +
-                          `Average Monthly Profit: ${formatCurrency(averageProfit)}`);
+                          `Average Monthly Profit: ${formatCurrency(averageProfit)}\n\n` +
+                          `Click 'Reset Business' to start a new year with your learnings!`);
                 }, 500);
                 
                 return;
@@ -1851,13 +1714,29 @@
             
             // Show month transition toast
             Toast.show('New Month Started', 
-                `Welcome to ${monthNames[state.month - 1]}`, 
+                `Welcome to ${monthNames[state.month - 1]}! Prices have been updated.`, 
                 'info');
+        }
+
+        // Reset current month inputs
+        function resetCurrentMonth() {
+            if (state.currentMonthCycles === 0) {
+                // If no cycles yet, just reset quantities
+                riceBuyQty.value = 0;
+                riceSellQty.value = 0;
+                eggBuyQty.value = 0;
+                eggSellQty.value = 0;
+                
+                updatePurchaseCalculations();
+                Toast.show('Cycle Reset', 'Purchase quantities reset to zero', 'info');
+            } else {
+                Toast.show('Cannot Reset', 'Cannot reset month after completing cycles', 'warning');
+            }
         }
 
         // Reset entire business
         function resetBusiness() {
-            if (confirm("Are you sure you want to reset your entire business?\n\nAll transactions and history will be lost.")) {
+            if (confirm("Are you sure you want to reset your entire business?\n\nAll transactions and history will be lost, but your business setup will be preserved.")) {
                 // Reset state but keep setup
                 const startupCapital = state.startupCapital;
                 const incomeGoal = state.incomeGoal;
@@ -1902,6 +1781,15 @@
             }
         }
 
+        // Animate the cycle counter
+        function animateCounter() {
+            const counter = document.getElementById('cycle-count');
+            counter.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                counter.style.transform = 'scale(1)';
+            }, 300);
+        }
+
         // Update the history table
         function updateHistoryTable() {
             // Clear table
@@ -1911,7 +1799,7 @@
             if (state.history.length === 0) {
                 historyBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 15px; color: #666; font-style: italic;">
+                        <td colspan="6" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
                             No monthly history yet. Complete cycles to see history here.
                         </td>
                     </tr>
@@ -2009,7 +1897,7 @@
             let md = `# Business Simulation Report\n`;
             md += `**Business Name:** ${state.businessName}\n`;
             md += `**Export Date:** ${new Date().toLocaleDateString()}\n`;
-            md += `**Current Month:** ${monthNames[state.month - 1]}\n`;
+            md += `**Current Month:** ${monthNames[state.month - 1]} (${state.month}/12)\n`;
             md += `**Total Profit:** ${formatCurrency(state.totalProfit)}\n\n`;
             
             md += `## Current Status\n`;
@@ -2020,11 +1908,11 @@
             
             if (state.history.length > 0) {
                 md += `## Monthly History\n\n`;
-                md += `| Month | Rice | Eggs | Total | Cumulative | Goal |\n`;
-                md += `|-------|------|------|-------|------------|------|\n`;
+                md += `| Month | Rice Profit | Egg Profit | Total Profit | Cumulative | Goal Met | Cycles |\n`;
+                md += `|-------|-------------|------------|--------------|------------|----------|--------|\n`;
                 
                 state.history.forEach(month => {
-                    md += `| ${month.monthName} | ${formatCurrency(month.riceProfit)} | ${formatCurrency(month.eggProfit)} | ${formatCurrency(month.totalProfit)} | ${formatCurrency(month.cumulativeProfit)} | ${month.goalAchieved ? '✓' : '✗'} |\n`;
+                    md += `| ${month.monthName} | ${formatCurrency(month.riceProfit)} | ${formatCurrency(month.eggProfit)} | ${formatCurrency(month.totalProfit)} | ${formatCurrency(month.cumulativeProfit)} | ${month.goalAchieved ? '✓' : '✗'} | ${month.cycles} |\n`;
                 });
             }
             
@@ -2042,12 +1930,14 @@
             }
             
             try {
+                // Try JSON first
                 if (data.startsWith('{')) {
                     const parsed = JSON.parse(data);
                     
+                    // Validate required fields
                     if (parsed.cash !== undefined && parsed.month !== undefined) {
                         Object.assign(state, parsed);
-                        loadState();
+                        loadState(); // Reload inputs
                         updateDisplay();
                         updateHistoryTable();
                         updatePurchaseCalculations();
@@ -2060,6 +1950,7 @@
                     }
                 }
                 
+                // If not JSON, show error
                 Toast.show('Import Error', 'Invalid data format. Please use exported JSON data.', 'error');
             } catch (error) {
                 Toast.show('Import Error', 'Failed to parse data. Please check the format.', 'error');
@@ -2080,7 +1971,13 @@
         // Format currency with Philippine Peso symbol
         function formatCurrency(amount) {
             const num = parseFloat(amount) || 0;
-            return `₱${Math.abs(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+            if (num >= 1000000) {
+                return `₱${(num / 1000000).toFixed(2)}M`;
+            } else if (num >= 1000) {
+                return `₱${(num / 1000).toFixed(1)}K`;
+            } else {
+                return `₱${Math.abs(num).toFixed(2)}`;
+            }
         }
 
         // Initialize the app when the page loads
