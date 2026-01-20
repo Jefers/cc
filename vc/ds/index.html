@@ -207,11 +207,18 @@
             font-weight: 500;
         }
 
-        /* Score counter in top right */
-        .score-counter {
+        /* Settings and Score counters */
+        .header-controls {
             position: absolute;
             right: 0;
             top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .score-counter {
             font-size: 20px;
             font-weight: 700;
             background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
@@ -223,6 +230,31 @@
             backdrop-filter: blur(10px);
             background-color: rgba(99, 102, 241, 0.1);
             border: 1px solid var(--current-border-color);
+        }
+
+        .settings-btn {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--current-secondary-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius-button);
+            backdrop-filter: blur(10px);
+            background-color: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--current-border-color);
+            transition: var(--transition);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px) rotate(30deg);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
         }
 
         /* Main Content */
@@ -246,7 +278,7 @@
             z-index: 2;
             border: 1px solid var(--current-border-color);
             backdrop-filter: blur(10px);
-            min-height: 280px;
+            min-height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -262,9 +294,21 @@
         .word-display {
             font-size: 48px;
             font-weight: 700;
-            margin: 20px 0;
+            margin: 10px 0;
             color: var(--current-primary-text);
             min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .phonetic-display {
+            font-size: 24px;
+            color: var(--current-secondary-text);
+            margin: 10px 0;
+            font-style: italic;
+            min-height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -277,7 +321,7 @@
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 20px 0;
+            margin: 10px 0;
             min-height: 60px;
             display: flex;
             align-items: center;
@@ -328,6 +372,17 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
+        .btn-flip {
+            background: linear-gradient(135deg, var(--glow-color-4), var(--accent-color));
+            color: white;
+        }
+
+        .btn-flip:hover,
+        .btn-flip:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+        }
+
         .btn-correct {
             background: linear-gradient(135deg, #10b981, #06b6d4);
             color: white;
@@ -354,32 +409,12 @@
             margin-top: 16px;
         }
 
-        .btn-icon {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            color: var(--current-secondary-text);
-            transition: var(--transition);
-            border-radius: var(--border-radius-button);
-            backdrop-filter: blur(10px);
-            background-color: rgba(99, 102, 241, 0.1);
-            border: 1px solid var(--current-border-color);
-        }
-
-        .btn-icon:hover {
-            color: var(--accent-color);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
-        }
-
-        /* Footer */
-        .footer {
-            padding: 24px 0;
-            text-align: center;
+        .footer-buttons {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            max-width: 320px;
             margin-top: 24px;
-            border-top: 1px solid var(--current-border-color);
         }
 
         /* Setup Screen */
@@ -503,6 +538,31 @@
             transition: width 0.3s ease;
         }
 
+        /* Vocabulary info */
+        .vocab-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: var(--current-secondary-bg);
+            border-radius: var(--border-radius-button);
+            border: 1px solid var(--current-border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .vocab-count {
+            font-size: 14px;
+            color: var(--current-secondary-text);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
         /* Responsive */
         @media (min-width: 768px) {
             body {
@@ -511,6 +571,10 @@
             
             .word-display {
                 font-size: 56px;
+            }
+            
+            .phonetic-display {
+                font-size: 28px;
             }
             
             .translation {
@@ -536,12 +600,32 @@
                 font-size: 40px;
             }
             
+            .phonetic-display {
+                font-size: 20px;
+            }
+            
             .translation {
                 font-size: 36px;
             }
             
-            .assessment-buttons {
+            .assessment-buttons,
+            .footer-buttons {
                 flex-direction: column;
+            }
+            
+            .header-controls {
+                top: 10px;
+            }
+            
+            .score-counter {
+                font-size: 16px;
+                padding: 6px 12px;
+            }
+            
+            .settings-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
             }
         }
 
@@ -553,7 +637,8 @@
             }
             
             .btn:hover,
-            .card:hover {
+            .card:hover,
+            .settings-btn:hover {
                 transform: none;
             }
             
@@ -588,6 +673,11 @@
                 <h1 class="app-title">Vocabulator</h1>
                 <p class="tagline">Small words. Big fluency.</p>
             </div>
+            <div class="header-controls">
+                <button id="settingsBtn" class="settings-btn" aria-label="Settings">
+                    ⚙️
+                </button>
+            </div>
         </header>
         
         <div class="main">
@@ -604,9 +694,9 @@
         </div>
         
         <footer class="footer">
-            <button id="settingsBtn" class="btn-icon" aria-label="Settings">
-                ⚙️ Import Words
-            </button>
+            <p style="color: var(--current-secondary-text); font-size: 14px;">
+                Load a CSV with your vocabulary to begin
+            </p>
         </footer>
     </div>
 
@@ -616,16 +706,29 @@
             <div class="logo">📘</div>
             <div>
                 <h1 class="app-title">Vocabulator</h1>
-                <div id="languageSubtitle" class="subtitle">English → Filipino</div>
+                <div id="languageSubtitle" class="subtitle">English → Thai</div>
             </div>
-            <div id="scoreDisplay" class="score-counter">0 / 0</div>
+            <div class="header-controls">
+                <div id="scoreDisplay" class="score-counter">0 / 0</div>
+            </div>
         </header>
         
         <div class="main">
+            <div class="vocab-info">
+                <div class="vocab-count">
+                    <span id="currentSetName">Default Set</span> • 
+                    <span id="wordCount">0 words</span>
+                </div>
+                <button id="changeSetBtn" class="btn btn-small btn-secondary">
+                    Change Set
+                </button>
+            </div>
+            
             <div class="card-glow-wrapper">
                 <div class="card">
                     <div id="sourceWord" class="word-display">Hello</div>
-                    <div id="targetWord" class="translation hidden">Kamusta</div>
+                    <div id="phoneticDisplay" class="phonetic-display"></div>
+                    <div id="targetWord" class="translation hidden">สวัสดี</div>
                 </div>
             </div>
             
@@ -642,16 +745,19 @@
                 </button>
             </div>
             
+            <div class="footer-buttons">
+                <button id="flipDirectionBtn" class="btn btn-flip" style="flex: 1;">
+                    🔄 Flip Direction
+                </button>
+                <button id="resetBtn" class="btn btn-secondary" style="flex: 1;">
+                    Reset Session
+                </button>
+            </div>
+            
             <div class="progress-bar" style="max-width: 280px;">
                 <div id="progressFill" class="progress-fill" style="width: 0%"></div>
             </div>
         </div>
-        
-        <footer class="footer">
-            <button id="resetBtn" class="btn btn-secondary" style="max-width: 200px;">
-                Reset Session
-            </button>
-        </footer>
     </div>
 
     <!-- Screen C: Setup / Import -->
@@ -665,14 +771,17 @@
             <div class="card">
                 <div class="setup-instructions">
                     <h3>Import Vocabulary CSV</h3>
-                    <p>Upload a CSV file with the following format:</p>
-                    <code>index,English,Filipino</code>
+                    <p>Upload a CSV file with any of these formats:</p>
+                    <code>index,English,Thai</code>
+                    <code>index,English,Thai,Phonetic</code>
+                    <code>index,SourceLanguage,TargetLanguage</code>
                     <p>The first two columns after index are used as source → target language.</p>
-                    <p>Example:</p>
+                    <p>If there's a 4th column, it's used as phonetic/pronunciation guide.</p>
+                    <p>Example with phonetic:</p>
                     <code>
-                        1,Hello,Kamusta<br>
-                        2,Thank you,Salamat<br>
-                        3,Goodbye,Paalam
+                        1,Hello,สวัสดี,sa-wat-dee<br>
+                        2,Thank you,ขอบคุณ,khop-khun<br>
+                        3,Goodbye,ลาก่อน,laa-gon
                     </code>
                 </div>
                 
@@ -680,13 +789,23 @@
                 
                 <div id="setupFeedback" class="feedback hidden"></div>
                 
-                <button id="importBtn" class="btn btn-primary" style="width: 100%;">
-                    Import Vocabulary
-                </button>
+                <div style="display: flex; gap: 12px; width: 100%;">
+                    <button id="importBtn" class="btn btn-primary" style="flex: 2;">
+                        Import Vocabulary
+                    </button>
+                    <button id="clearDataBtn" class="btn btn-secondary" style="flex: 1;">
+                        Clear Data
+                    </button>
+                </div>
                 
                 <button id="backToHomeBtn" class="btn btn-secondary" style="width: 100%; margin-top: 16px;">
                     ← Back to Home
                 </button>
+                
+                <div id="currentDataInfo" class="feedback" style="margin-top: 24px; background: var(--current-tertiary-bg);">
+                    <strong>Current Data:</strong><br>
+                    <span id="dataInfoText">No vocabulary loaded</span>
+                </div>
             </div>
         </div>
     </div>
@@ -703,13 +822,16 @@
             currentScreen: 'home',
             vocabulary: [],
             sourceLanguage: 'English',
-            targetLanguage: 'Filipino',
+            targetLanguage: 'Thai',
+            phoneticColumn: false,
+            reversed: false, // Whether we're showing target→source
             currentWordIndex: -1,
             score: {
                 correct: 0,
                 total: 0
             },
-            lastWordIndex: -1 // To prevent immediate repeats
+            lastWordIndex: -1, // To prevent immediate repeats
+            currentSetName: 'Default Set'
         };
 
         // DOM Elements
@@ -726,6 +848,7 @@
         // Practice screen elements
         const languageSubtitle = document.getElementById('languageSubtitle');
         const sourceWordElement = document.getElementById('sourceWord');
+        const phoneticElement = document.getElementById('phoneticDisplay');
         const targetWordElement = document.getElementById('targetWord');
         const revealBtn = document.getElementById('revealBtn');
         const assessmentButtons = document.getElementById('assessmentButtons');
@@ -734,12 +857,19 @@
         const scoreDisplay = document.getElementById('scoreDisplay');
         const resetBtn = document.getElementById('resetBtn');
         const progressFill = document.getElementById('progressFill');
+        const flipDirectionBtn = document.getElementById('flipDirectionBtn');
+        const changeSetBtn = document.getElementById('changeSetBtn');
+        const currentSetName = document.getElementById('currentSetName');
+        const wordCount = document.getElementById('wordCount');
 
         // Setup screen elements
         const csvFileInput = document.getElementById('csvFileInput');
         const importBtn = document.getElementById('importBtn');
+        const clearDataBtn = document.getElementById('clearDataBtn');
         const backToHomeBtn = document.getElementById('backToHomeBtn');
         const setupFeedback = document.getElementById('setupFeedback');
+        const dataInfoText = document.getElementById('dataInfoText');
+        const currentDataInfo = document.getElementById('currentDataInfo');
 
         // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
@@ -748,6 +878,7 @@
         function initApp() {
             loadVocabularyFromStorage();
             updateLanguageSubtitle();
+            updateDataInfo();
             setupEventListeners();
             setupThemeToggle();
             
@@ -755,6 +886,7 @@
             if (AppState.vocabulary.length > 0) {
                 AppState.score.total = AppState.vocabulary.length;
                 updateScoreDisplay();
+                updateWordCount();
             }
         }
 
@@ -784,6 +916,9 @@
                     AppState.vocabulary = data.vocabulary || [];
                     AppState.sourceLanguage = data.sourceLanguage || 'English';
                     AppState.targetLanguage = data.targetLanguage || 'Filipino';
+                    AppState.phoneticColumn = data.phoneticColumn || false;
+                    AppState.currentSetName = data.currentSetName || 'Imported Set';
+                    AppState.reversed = data.reversed || false;
                     
                     if (AppState.vocabulary.length > 0) {
                         AppState.score.total = AppState.vocabulary.length;
@@ -800,9 +935,47 @@
             const data = {
                 vocabulary: AppState.vocabulary,
                 sourceLanguage: AppState.sourceLanguage,
-                targetLanguage: AppState.targetLanguage
+                targetLanguage: AppState.targetLanguage,
+                phoneticColumn: AppState.phoneticColumn,
+                currentSetName: AppState.currentSetName,
+                reversed: AppState.reversed
             };
             localStorage.setItem('vocabulator_vocabulary', JSON.stringify(data));
+        }
+
+        // Clear all data
+        function clearAllData() {
+            AppState.vocabulary = [];
+            AppState.sourceLanguage = 'English';
+            AppState.targetLanguage = 'Thai';
+            AppState.phoneticColumn = false;
+            AppState.currentSetName = 'Default Set';
+            AppState.score.correct = 0;
+            AppState.score.total = 0;
+            AppState.reversed = false;
+            
+            localStorage.removeItem('vocabulator_vocabulary');
+            updateDataInfo();
+            updateLanguageSubtitle();
+            updateScoreDisplay();
+            updateWordCount();
+            
+            showFeedback('All data cleared', 'success');
+        }
+
+        // Update data info display
+        function updateDataInfo() {
+            if (AppState.vocabulary.length > 0) {
+                const direction = AppState.reversed ? 
+                    `${AppState.targetLanguage} → ${AppState.sourceLanguage}` :
+                    `${AppState.sourceLanguage} → ${AppState.targetLanguage}`;
+                dataInfoText.textContent = 
+                    `${AppState.currentSetName}: ${AppState.vocabulary.length} words (${direction})`;
+                currentDataInfo.classList.remove('hidden');
+            } else {
+                dataInfoText.textContent = 'No vocabulary loaded';
+                currentDataInfo.classList.remove('hidden');
+            }
         }
 
         // Switch between screens
@@ -820,15 +993,27 @@
             if (screenName === 'practice') {
                 resetPracticeState();
                 showNextWord();
+                updateWordCount();
             } else if (screenName === 'setup') {
                 csvFileInput.value = '';
                 setupFeedback.classList.add('hidden');
+                updateDataInfo();
             }
         }
 
         // Update language subtitle
         function updateLanguageSubtitle() {
-            languageSubtitle.textContent = `${AppState.sourceLanguage} → ${AppState.targetLanguage}`;
+            if (AppState.reversed) {
+                languageSubtitle.textContent = `${AppState.targetLanguage} → ${AppState.sourceLanguage}`;
+            } else {
+                languageSubtitle.textContent = `${AppState.sourceLanguage} → ${AppState.targetLanguage}`;
+            }
+        }
+
+        // Update word count display
+        function updateWordCount() {
+            currentSetName.textContent = AppState.currentSetName;
+            wordCount.textContent = `${AppState.vocabulary.length} words`;
         }
 
         // Get a random word that's not the same as the last one
@@ -848,6 +1033,7 @@
         function showNextWord() {
             if (AppState.vocabulary.length === 0) {
                 sourceWordElement.textContent = 'No vocabulary loaded';
+                phoneticElement.textContent = '';
                 revealBtn.disabled = true;
                 return;
             }
@@ -859,11 +1045,21 @@
             AppState.lastWordIndex = newIndex;
             
             const currentWord = AppState.vocabulary[newIndex];
-            sourceWordElement.textContent = currentWord.source;
-            targetWordElement.textContent = currentWord.target;
+            
+            // Show either source→target or target→source based on reversed state
+            if (AppState.reversed) {
+                sourceWordElement.textContent = currentWord.target;
+                phoneticElement.textContent = currentWord.phonetic || '';
+                targetWordElement.textContent = currentWord.source;
+            } else {
+                sourceWordElement.textContent = currentWord.source;
+                phoneticElement.textContent = currentWord.phonetic || '';
+                targetWordElement.textContent = currentWord.target;
+            }
             
             // Hide translation and show reveal button
             targetWordElement.classList.add('hidden');
+            phoneticElement.classList.remove('hidden');
             assessmentButtons.classList.add('hidden');
             revealBtn.classList.remove('hidden');
             
@@ -882,8 +1078,24 @@
         // Reveal translation
         function revealTranslation() {
             targetWordElement.classList.remove('hidden');
+            if (!AppState.phoneticColumn || AppState.reversed) {
+                phoneticElement.classList.add('hidden');
+            }
             revealBtn.classList.add('hidden');
             assessmentButtons.classList.remove('hidden');
+        }
+
+        // Flip direction (source↔target)
+        function flipDirection() {
+            AppState.reversed = !AppState.reversed;
+            AppState.score.correct = 0;
+            AppState.lastWordIndex = -1;
+            
+            saveVocabularyToStorage();
+            updateLanguageSubtitle();
+            updateScoreDisplay();
+            updateProgress();
+            showNextWord();
         }
 
         // Handle correct answer
@@ -915,7 +1127,7 @@
             scoreDisplay.textContent = `${AppState.score.correct} / ${AppState.score.total}`;
         }
 
-        // Parse CSV file
+        // Parse CSV file (supports 3 or 4 columns)
         function parseCSV(text) {
             const lines = text.trim().split('\n');
             if (lines.length < 2) {
@@ -931,16 +1143,24 @@
             // Extract language names from headers
             const sourceLanguage = headers[1];
             const targetLanguage = headers[2];
+            const hasPhonetic = headers.length >= 4;
             
             // Parse data rows
             const vocabulary = [];
             for (let i = 1; i < lines.length; i++) {
                 const cells = lines[i].split(',').map(cell => cell.trim());
                 if (cells.length >= 3) {
-                    vocabulary.push({
+                    const word = {
                         source: cells[1],
                         target: cells[2]
-                    });
+                    };
+                    
+                    // Add phonetic if available
+                    if (hasPhonetic && cells.length >= 4) {
+                        word.phonetic = cells[3];
+                    }
+                    
+                    vocabulary.push(word);
                 }
             }
             
@@ -948,10 +1168,16 @@
                 throw new Error('No valid vocabulary rows found');
             }
             
+            // Generate a set name from filename or use default
+            const fileName = csvFileInput.files[0]?.name || 'vocabulary';
+            const setName = fileName.replace('.csv', '').replace(/_/g, ' ');
+            
             return {
                 vocabulary,
                 sourceLanguage,
-                targetLanguage
+                targetLanguage,
+                hasPhonetic,
+                setName
             };
         }
 
@@ -972,6 +1198,9 @@
                     AppState.vocabulary = result.vocabulary;
                     AppState.sourceLanguage = result.sourceLanguage;
                     AppState.targetLanguage = result.targetLanguage;
+                    AppState.phoneticColumn = result.hasPhonetic;
+                    AppState.currentSetName = result.setName;
+                    AppState.reversed = false;
                     AppState.score.total = result.vocabulary.length;
                     AppState.score.correct = 0;
                     
@@ -982,9 +1211,12 @@
                     updateLanguageSubtitle();
                     updateScoreDisplay();
                     updateProgress();
+                    updateDataInfo();
+                    updateWordCount();
                     
                     // Show success message
-                    showFeedback(`Successfully loaded ${result.vocabulary.length} words!`, 'success');
+                    const phoneticText = result.hasPhonetic ? ' (with phonetic)' : '';
+                    showFeedback(`Successfully loaded ${result.vocabulary.length} words${phoneticText}!`, 'success');
                     
                     // Switch to practice mode after a delay
                     setTimeout(() => {
@@ -1033,9 +1265,19 @@
                 resetPracticeState();
                 showNextWord();
             });
+            
+            flipDirectionBtn.addEventListener('click', flipDirection);
+            changeSetBtn.addEventListener('click', () => {
+                showScreen('setup');
+            });
 
             // Setup screen
             importBtn.addEventListener('click', handleCSVImport);
+            clearDataBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all vocabulary data?')) {
+                    clearAllData();
+                }
+            });
             backToHomeBtn.addEventListener('click', () => {
                 showScreen('home');
             });

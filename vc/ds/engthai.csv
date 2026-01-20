@@ -1,0 +1,151 @@
+index,English,Thai,Phonetic
+1,I,ฉัน,chan
+2,You,คุณ,khun
+3,He,เขา,khao
+4,She,เธอ,thoe
+5,We,เรา,rao
+6,They,พวกเขา,phuak khao
+7,This,นี่,nee
+8,That,นั่น,nan
+9,What,อะไร,arai
+10,Who,ใคร,khrai
+11,Where,ที่ไหน,tee nai
+12,When,เมื่อไหร่,muea rai
+13,Why,ทำไม,tham mai
+14,How,อย่างไร,yaang rai
+15,Yes,ใช่,chai
+16,No,ไม่,mai
+17,Please,กรุณา,karuna
+18,Thank you,ขอบคุณ,khop khun
+19,Sorry,ขอโทษ,kho thot
+20,Hello,สวัสดี,sawasdee
+21,Goodbye,ลาก่อน,la gorn
+22,Good,ดี,dee
+23,Bad,แย่,yae
+24,Big,ใหญ่,yai
+25,Small,เล็ก,lek
+26,Hot,ร้อน,ron
+27,Cold,เย็น,yen
+28,New,ใหม่,mai
+29,Old,เก่า,gao
+30,Easy,ง่าย,ngai
+31,Hard,ยาก,yak
+32,Day,วัน,wan
+33,Night,คืน,khuen
+34,Today,วันนี้,wan nee
+35,Tomorrow,พรุ่งนี้,phrung nee
+36,Yesterday,เมื่อวาน,muea waan
+37,Time,เวลา,wayla
+38,People,คน,khon
+39,Man,ผู้ชาย,phoo chai
+40,Woman,ผู้หญิง,phoo ying
+41,Child,เด็ก,dek
+42,Friend,เพื่อน,phuean
+43,Family,ครอบครัว,khrop khrua
+44,Food,อาหาร,ahan
+45,Water,น้ำ,nam
+46,House,บ้าน,ban
+47,Car,รถ,rot
+48,Money,เงิน,ngoen
+49,Work,งาน,ngan
+50,School,โรงเรียน,rong rian
+51,Love,รัก,rak
+52,Like,ชอบ,shop
+53,Want,ต้องการ,tong kan
+54,Need,จำเป็น,jam pen
+55,Go,ไป,pai
+56,Come,มา,ma
+57,See,เห็น,hen
+58,Know,รู้,roo
+59,Think,คิด,khit
+60,Speak,พูด,phut
+61,Listen,ฟัง,fang
+62,Look,ดู,doo
+63,Give,ให้,hai
+64,Take,เอา,ao
+65,Make,ทำ,tham
+66,Use,ใช้,chai
+67,Find,หา,ha
+68,Help,ช่วย,chuay
+69,Feel,รู้สึก,roo seuk
+70,Live,อยู่,yu
+71,Die,ตาย,tai
+72,Happy,มีความสุข,mee khwam suk
+73,Sad,เศร้า,sao
+74,Angry,โกรธ,grot
+75,Tired,เหนื่อย,nueai
+76,Hungry,หิว,hiu
+77,Thirsty,กระหาย,gra hai
+78,Beautiful,สวย,suay
+79,Ugly,น่าเกลียด,na gliat
+80,Fast,เร็ว,reo
+81,Slow,ช้า,cha
+82,Near,ใกล้,glai
+83,Far,ไกล,glai
+84,Here,ที่นี่,tee nee
+85,There,ที่นั่น,tee nan
+86,Again,อีกครั้ง,eek khrang
+87,Always,เสมอ,samoe
+88,Never,ไม่เคย,mai khoei
+89,Sometimes,บางครั้ง,bang khrang
+90,Now,ตอนนี้,ton nee
+91,Later,ทีหลัง,tee lang
+92,Before,ก่อน,gorn
+93,After,หลัง,lang
+94,Because,เพราะ,phro
+95,And,และ,lae
+96,Or,หรือ,rue
+97,But,แต่,tae
+98,Very,มาก,mak
+99,More,มากกว่า,mak gwa
+100,Enough,พอ,phor
+101,Open,เปิด,poet
+102,Close,ปิด,pit
+103,Start,เริ่ม,roem
+104,Stop,หยุด,yut
+105,Buy,ซื้อ,seu
+106,Sell,ขาย,khai
+107,Pay,จ่าย,jai
+108,Ask,ถาม,tham
+109,Answer,ตอบ,top
+110,Wait,รอ,ror
+111,Walk,เดิน,dern
+112,Run,วิ่ง,wing
+113,Sit,นั่ง,nang
+114,Stand,ยืน,yuen
+115,Sleep,นอน,norn
+116,Wake up,ตื่น,tuun
+117,Drink,ดื่ม,duem
+118,Eat,กิน,gin
+119,Think about,คิดถึง,khit thueng
+120,Understand,เข้าใจ,khao jai
+121,Remember,จำ,jam
+122,Forget,ลืม,luem
+123,Learn,เรียน,rian
+124,Teach,สอน,sorn
+125,Travel,เดินทาง,dern thang
+126,Work hard,ทำงานหนัก,tham ngan nak
+127,Free,ว่าง,wang
+128,Busy,ยุ่ง,yung
+129,Early,เช้า,chao
+130,Late,สาย,sai
+131,Cheap,ถูก,thuk
+132,Expensive,แพง,phaeng
+133,Same,เหมือนกัน,muean kan
+134,Different,แตกต่าง,taek tang
+135,Important,สำคัญ,samkhan
+136,Dangerous,อันตราย,an ta rai
+137,Safe,ปลอดภัย,plot phai
+138,Strong,แข็งแรง,khaeng raeng
+139,Weak,อ่อนแอ,on ae
+140,Right,ถูกต้อง,thuk tong
+141,Wrong,ผิด,phit
+142,Possible,เป็นไปได้,pen pai dai
+143,Impossible,เป็นไปไม่ได้,pen pai mai dai
+144,Quickly,อย่างรวดเร็ว,yaang ruat reo
+145,Slowly,อย่างช้าๆ,yaang cha cha
+146,Morning,เช้า,chao
+147,Afternoon,บ่าย,bai
+148,Evening,เย็น,yen
+149,Night time,กลางคืน,glang khuen
+150,Every day,ทุกวัน,thuk wan
