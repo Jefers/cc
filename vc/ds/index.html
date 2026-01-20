@@ -315,6 +315,26 @@
             width: 100%;
         }
 
+        .thai-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .thai-word {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--current-primary-text);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
         .translation {
             font-size: 42px;
             background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
@@ -373,14 +393,18 @@
         }
 
         .btn-flip {
-            background: linear-gradient(135deg, var(--glow-color-4), var(--accent-color));
-            color: white;
+            background: var(--current-tertiary-bg);
+            color: var(--current-secondary-text);
+            border: 1px solid var(--current-border-color);
+            padding: 12px 20px;
+            font-size: 16px;
         }
 
         .btn-flip:hover,
         .btn-flip:focus {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            color: var(--accent-color);
         }
 
         .btn-correct {
@@ -409,12 +433,15 @@
             margin-top: 16px;
         }
 
-        .footer-buttons {
-            display: flex;
-            gap: 16px;
+        .footer-actions {
             width: 100%;
-            max-width: 320px;
-            margin-top: 24px;
+            max-width: 480px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--current-border-color);
+            display: flex;
+            justify-content: center;
+            gap: 16px;
         }
 
         /* Setup Screen */
@@ -538,38 +565,14 @@
             transition: width 0.3s ease;
         }
 
-        /* Vocabulary info */
-        .vocab-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 480px;
-            margin-bottom: 16px;
-            padding: 12px 16px;
-            background: var(--current-secondary-bg);
-            border-radius: var(--border-radius-button);
-            border: 1px solid var(--current-border-color);
-            backdrop-filter: blur(10px);
-        }
-
-        .vocab-count {
-            font-size: 14px;
-            color: var(--current-secondary-text);
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-
         /* Responsive */
         @media (min-width: 768px) {
             body {
                 padding: 24px;
             }
             
-            .word-display {
+            .word-display,
+            .thai-word {
                 font-size: 56px;
             }
             
@@ -596,7 +599,8 @@
                 font-size: 36px;
             }
             
-            .word-display {
+            .word-display,
+            .thai-word {
                 font-size: 40px;
             }
             
@@ -608,9 +612,13 @@
                 font-size: 36px;
             }
             
-            .assessment-buttons,
-            .footer-buttons {
+            .assessment-buttons {
                 flex-direction: column;
+            }
+            
+            .footer-actions {
+                flex-direction: column;
+                align-items: center;
             }
             
             .header-controls {
@@ -710,25 +718,32 @@
             </div>
             <div class="header-controls">
                 <div id="scoreDisplay" class="score-counter">0 / 0</div>
+                <button id="practiceSettingsBtn" class="settings-btn" aria-label="Settings">
+                    ⚙️
+                </button>
             </div>
         </header>
         
         <div class="main">
-            <div class="vocab-info">
-                <div class="vocab-count">
-                    <span id="currentSetName">Default Set</span> • 
-                    <span id="wordCount">0 words</span>
-                </div>
-                <button id="changeSetBtn" class="btn btn-small btn-secondary">
-                    Change Set
-                </button>
-            </div>
-            
             <div class="card-glow-wrapper">
                 <div class="card">
-                    <div id="sourceWord" class="word-display">Hello</div>
-                    <div id="phoneticDisplay" class="phonetic-display"></div>
-                    <div id="targetWord" class="translation hidden">สวัสดี</div>
+                    <!-- English → Thai mode -->
+                    <div id="englishMode" class="hidden">
+                        <div id="englishWord" class="word-display">Hello</div>
+                        <div id="thaiGroup" class="thai-group">
+                            <div id="thaiWord" class="thai-word hidden">สวัสดี</div>
+                            <div id="thaiPhonetic" class="phonetic-display hidden">sa-wat-dee</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Thai → English mode -->
+                    <div id="thaiMode" class="hidden">
+                        <div id="thaiWordReveal" class="thai-group">
+                            <div id="thaiWordDisplay" class="thai-word">สวัสดี</div>
+                            <div id="thaiPhoneticDisplay" class="phonetic-display">sa-wat-dee</div>
+                        </div>
+                        <div id="englishTranslation" class="translation hidden">Hello</div>
+                    </div>
                 </div>
             </div>
             
@@ -745,17 +760,17 @@
                 </button>
             </div>
             
-            <div class="footer-buttons">
-                <button id="flipDirectionBtn" class="btn btn-flip" style="flex: 1;">
-                    🔄 Flip Direction
-                </button>
-                <button id="resetBtn" class="btn btn-secondary" style="flex: 1;">
-                    Reset Session
-                </button>
-            </div>
-            
             <div class="progress-bar" style="max-width: 280px;">
                 <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+            
+            <div class="footer-actions">
+                <button id="flipDirectionBtn" class="btn btn-flip">
+                    🔄 Flip
+                </button>
+                <button id="resetBtn" class="btn btn-flip">
+                    ↩️ Reset
+                </button>
             </div>
         </div>
     </div>
@@ -765,6 +780,11 @@
         <header class="header">
             <div class="logo">📘</div>
             <h1 class="app-title">Setup</h1>
+            <div class="header-controls">
+                <button id="setupBackBtn" class="settings-btn" aria-label="Back">
+                    ←
+                </button>
+            </div>
         </header>
         
         <div class="main">
@@ -847,9 +867,14 @@
 
         // Practice screen elements
         const languageSubtitle = document.getElementById('languageSubtitle');
-        const sourceWordElement = document.getElementById('sourceWord');
-        const phoneticElement = document.getElementById('phoneticDisplay');
-        const targetWordElement = document.getElementById('targetWord');
+        const englishMode = document.getElementById('englishMode');
+        const thaiMode = document.getElementById('thaiMode');
+        const englishWord = document.getElementById('englishWord');
+        const thaiWord = document.getElementById('thaiWord');
+        const thaiPhonetic = document.getElementById('thaiPhonetic');
+        const thaiWordDisplay = document.getElementById('thaiWordDisplay');
+        const thaiPhoneticDisplay = document.getElementById('thaiPhoneticDisplay');
+        const englishTranslation = document.getElementById('englishTranslation');
         const revealBtn = document.getElementById('revealBtn');
         const assessmentButtons = document.getElementById('assessmentButtons');
         const correctBtn = document.getElementById('correctBtn');
@@ -858,15 +883,14 @@
         const resetBtn = document.getElementById('resetBtn');
         const progressFill = document.getElementById('progressFill');
         const flipDirectionBtn = document.getElementById('flipDirectionBtn');
-        const changeSetBtn = document.getElementById('changeSetBtn');
-        const currentSetName = document.getElementById('currentSetName');
-        const wordCount = document.getElementById('wordCount');
+        const practiceSettingsBtn = document.getElementById('practiceSettingsBtn');
 
         // Setup screen elements
         const csvFileInput = document.getElementById('csvFileInput');
         const importBtn = document.getElementById('importBtn');
         const clearDataBtn = document.getElementById('clearDataBtn');
         const backToHomeBtn = document.getElementById('backToHomeBtn');
+        const setupBackBtn = document.getElementById('setupBackBtn');
         const setupFeedback = document.getElementById('setupFeedback');
         const dataInfoText = document.getElementById('dataInfoText');
         const currentDataInfo = document.getElementById('currentDataInfo');
@@ -886,7 +910,6 @@
             if (AppState.vocabulary.length > 0) {
                 AppState.score.total = AppState.vocabulary.length;
                 updateScoreDisplay();
-                updateWordCount();
             }
         }
 
@@ -915,7 +938,7 @@
                     const data = JSON.parse(saved);
                     AppState.vocabulary = data.vocabulary || [];
                     AppState.sourceLanguage = data.sourceLanguage || 'English';
-                    AppState.targetLanguage = data.targetLanguage || 'Filipino';
+                    AppState.targetLanguage = data.targetLanguage || 'Thai';
                     AppState.phoneticColumn = data.phoneticColumn || false;
                     AppState.currentSetName = data.currentSetName || 'Imported Set';
                     AppState.reversed = data.reversed || false;
@@ -958,7 +981,6 @@
             updateDataInfo();
             updateLanguageSubtitle();
             updateScoreDisplay();
-            updateWordCount();
             
             showFeedback('All data cleared', 'success');
         }
@@ -992,12 +1014,25 @@
             // Screen-specific setup
             if (screenName === 'practice') {
                 resetPracticeState();
+                updateCardDisplay();
                 showNextWord();
-                updateWordCount();
             } else if (screenName === 'setup') {
                 csvFileInput.value = '';
                 setupFeedback.classList.add('hidden');
                 updateDataInfo();
+            }
+        }
+
+        // Update card display based on direction
+        function updateCardDisplay() {
+            if (AppState.reversed) {
+                // Thai → English mode
+                englishMode.classList.add('hidden');
+                thaiMode.classList.remove('hidden');
+            } else {
+                // English → Thai mode
+                thaiMode.classList.add('hidden');
+                englishMode.classList.remove('hidden');
             }
         }
 
@@ -1008,12 +1043,6 @@
             } else {
                 languageSubtitle.textContent = `${AppState.sourceLanguage} → ${AppState.targetLanguage}`;
             }
-        }
-
-        // Update word count display
-        function updateWordCount() {
-            currentSetName.textContent = AppState.currentSetName;
-            wordCount.textContent = `${AppState.vocabulary.length} words`;
         }
 
         // Get a random word that's not the same as the last one
@@ -1032,8 +1061,9 @@
         // Show next word in practice mode
         function showNextWord() {
             if (AppState.vocabulary.length === 0) {
-                sourceWordElement.textContent = 'No vocabulary loaded';
-                phoneticElement.textContent = '';
+                englishWord.textContent = 'No vocabulary loaded';
+                thaiWord.textContent = '';
+                thaiPhonetic.textContent = '';
                 revealBtn.disabled = true;
                 return;
             }
@@ -1046,20 +1076,27 @@
             
             const currentWord = AppState.vocabulary[newIndex];
             
-            // Show either source→target or target→source based on reversed state
+            // Update display based on direction
             if (AppState.reversed) {
-                sourceWordElement.textContent = currentWord.target;
-                phoneticElement.textContent = currentWord.phonetic || '';
-                targetWordElement.textContent = currentWord.source;
+                // Thai → English mode
+                thaiWordDisplay.textContent = currentWord.target;
+                thaiPhoneticDisplay.textContent = currentWord.phonetic || '';
+                englishTranslation.textContent = currentWord.source;
+                
+                // Hide translation
+                englishTranslation.classList.add('hidden');
             } else {
-                sourceWordElement.textContent = currentWord.source;
-                phoneticElement.textContent = currentWord.phonetic || '';
-                targetWordElement.textContent = currentWord.target;
+                // English → Thai mode
+                englishWord.textContent = currentWord.source;
+                thaiWord.textContent = currentWord.target;
+                thaiPhonetic.textContent = currentWord.phonetic || '';
+                
+                // Hide Thai word and phonetic
+                thaiWord.classList.add('hidden');
+                thaiPhonetic.classList.add('hidden');
             }
             
-            // Hide translation and show reveal button
-            targetWordElement.classList.add('hidden');
-            phoneticElement.classList.remove('hidden');
+            // Show reveal button
             assessmentButtons.classList.add('hidden');
             revealBtn.classList.remove('hidden');
             
@@ -1077,15 +1114,22 @@
 
         // Reveal translation
         function revealTranslation() {
-            targetWordElement.classList.remove('hidden');
-            if (!AppState.phoneticColumn || AppState.reversed) {
-                phoneticElement.classList.add('hidden');
+            if (AppState.reversed) {
+                // Thai → English mode
+                englishTranslation.classList.remove('hidden');
+            } else {
+                // English → Thai mode
+                thaiWord.classList.remove('hidden');
+                if (AppState.phoneticColumn) {
+                    thaiPhonetic.classList.remove('hidden');
+                }
             }
+            
             revealBtn.classList.add('hidden');
             assessmentButtons.classList.remove('hidden');
         }
 
-        // Flip direction (source↔target)
+        // Flip direction (English↔Thai)
         function flipDirection() {
             AppState.reversed = !AppState.reversed;
             AppState.score.correct = 0;
@@ -1093,6 +1137,7 @@
             
             saveVocabularyToStorage();
             updateLanguageSubtitle();
+            updateCardDisplay();
             updateScoreDisplay();
             updateProgress();
             showNextWord();
@@ -1212,7 +1257,7 @@
                     updateScoreDisplay();
                     updateProgress();
                     updateDataInfo();
-                    updateWordCount();
+                    updateCardDisplay();
                     
                     // Show success message
                     const phoneticText = result.hasPhonetic ? ' (with phonetic)' : '';
@@ -1267,7 +1312,7 @@
             });
             
             flipDirectionBtn.addEventListener('click', flipDirection);
-            changeSetBtn.addEventListener('click', () => {
+            practiceSettingsBtn.addEventListener('click', () => {
                 showScreen('setup');
             });
 
@@ -1280,6 +1325,13 @@
             });
             backToHomeBtn.addEventListener('click', () => {
                 showScreen('home');
+            });
+            setupBackBtn.addEventListener('click', () => {
+                if (AppState.vocabulary.length > 0) {
+                    showScreen('practice');
+                } else {
+                    showScreen('home');
+                }
             });
             
             // Allow Enter key on file input to trigger import

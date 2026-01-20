@@ -1,0 +1,151 @@
+index,English,Chinese,Phonetic
+1,I,我,wo
+2,You,你,ni
+3,He,他,ta
+4,She,她,ta
+5,We,我们,wo men
+6,They,他们,ta men
+7,This,这个,zhe ge
+8,That,那个,na ge
+9,What,什么,shen me
+10,Who,谁,shei
+11,Where,哪里,na li
+12,When,什么时候,shen me shi hou
+13,Why,为什么,wei shen me
+14,How,怎么,zen me
+15,Yes,是,shi
+16,No,不,bu
+17,Please,请,qing
+18,Thank you,谢谢,xie xie
+19,Sorry,对不起,dui bu qi
+20,Hello,你好,ni hao
+21,Goodbye,再见,zai jian
+22,Good,好,hao
+23,Bad,坏,huai
+24,Big,大,da
+25,Small,小,xiao
+26,Hot,热,re
+27,Cold,冷,leng
+28,New,新,xin
+29,Old,旧,jiu
+30,Easy,容易,rong yi
+31,Hard,难,nan
+32,Day,天,tian
+33,Night,夜晚,ye wan
+34,Today,今天,jin tian
+35,Tomorrow,明天,ming tian
+36,Yesterday,昨天,zuo tian
+37,Time,时间,shi jian
+38,People,人,ren
+39,Man,男人,nan ren
+40,Woman,女人,nv ren
+41,Child,孩子,hai zi
+42,Friend,朋友,peng you
+43,Family,家庭,jia ting
+44,Food,食物,shi wu
+45,Water,水,shui
+46,House,房子,fang zi
+47,Car,车,che
+48,Money,钱,qian
+49,Work,工作,gong zuo
+50,School,学校,xue xiao
+51,Love,爱,ai
+52,Like,喜欢,xi huan
+53,Want,想要,xiang yao
+54,Need,需要,xu yao
+55,Go,去,qu
+56,Come,来,lai
+57,See,看,kan
+58,Know,知道,zhi dao
+59,Think,想,xiang
+60,Speak,说,shuo
+61,Listen,听,ting
+62,Look,看,kan
+63,Give,给,gei
+64,Take,拿,na
+65,Make,做,zuo
+66,Use,用,yong
+67,Find,找,zhao
+68,Help,帮助,bang zhu
+69,Feel,感觉,gan jue
+70,Live,住,zhu
+71,Die,死,si
+72,Happy,高兴,gao xing
+73,Sad,难过,nan guo
+74,Angry,生气,sheng qi
+75,Tired,累,lei
+76,Hungry,饿,e
+77,Thirsty,渴,ke
+78,Beautiful,漂亮,piao liang
+79,Ugly,丑,chou
+80,Fast,快,kuai
+81,Slow,慢,man
+82,Near,近,jin
+83,Far,远,yuan
+84,Here,这里,zhe li
+85,There,那里,na li
+86,Again,再,zai
+87,Always,总是,zong shi
+88,Never,从不,cong bu
+89,Sometimes,有时候,you shi hou
+90,Now,现在,xian zai
+91,Later,以后,yi hou
+92,Before,以前,yi qian
+93,After,之后,zhi hou
+94,Because,因为,yin wei
+95,And,和,he
+96,Or,或者,huo zhe
+97,But,但是,dan shi
+98,Very,很,hen
+99,More,更多,geng duo
+100,Enough,够,gou
+101,Open,打开,da kai
+102,Close,关闭,guan bi
+103,Start,开始,kai shi
+104,Stop,停止,ting zhi
+105,Buy,买,mai
+106,Sell,卖,mai
+107,Pay,付,fu
+108,Ask,问,wen
+109,Answer,回答,hui da
+110,Wait,等,deng
+111,Walk,走,zou
+112,Run,跑,pao
+113,Sit,坐,zuo
+114,Stand,站,zhan
+115,Sleep,睡觉,shui jiao
+116,Wake up,醒,xing
+117,Drink,喝,he
+118,Eat,吃,chi
+119,Think about,考虑,kao lv
+120,Understand,明白,ming bai
+121,Remember,记得,ji de
+122,Forget,忘记,wang ji
+123,Learn,学习,xue xi
+124,Teach,教,jiao
+125,Travel,旅行,lv xing
+126,Work hard,努力工作,nu li gong zuo
+127,Free,空闲,kong xian
+128,Busy,忙,mang
+129,Early,早,zao
+130,Late,晚,wan
+131,Cheap,便宜,pian yi
+132,Expensive,贵,gui
+133,Same,一样,yi yang
+134,Different,不同,bu tong
+135,Important,重要,zhong yao
+136,Dangerous,危险,wei xian
+137,Safe,安全,an quan
+138,Strong,强,qiang
+139,Weak,弱,ruo
+140,Right,正确,zheng que
+141,Wrong,错误,cuo wu
+142,Possible,可能,ke neng
+143,Impossible,不可能,bu ke neng
+144,Quickly,很快,hen kuai
+145,Slowly,慢慢,man man
+146,Morning,早上,zao shang
+147,Afternoon,下午,xia wu
+148,Evening,晚上,wan shang
+149,Night time,夜里,ye li
+150,Every day,每天,mei tian
