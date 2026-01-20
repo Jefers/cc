@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulator - Small words. Big fluency.</title>
+    <style>
+        /* CSS Custom Properties */
+        :root {
+            /* Dark mode - default */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent-color: #6366f1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            
+            /* Light mode overrides */
+            --primary-bg-light: #ffffff;
+            --secondary-bg-light: #f8f9fa;
+            --tertiary-bg-light: #e9ecef;
+            --primary-text-light: #1a1a1a;
+            --secondary-text-light: #6c757d;
+            --border-color-light: rgba(0, 0, 0, 0.1);
+            
+            /* Glowing border colors */
+            --glow-color-1: #6366f1;
+            --glow-color-2: #8b5cf6;
+            --glow-color-3: #ec4899;
+            --glow-color-4: #06b6d4;
+            
+            /* Design tokens */
+            --border-radius-card: 16px;
+            --border-radius-button: 12px;
+            --transition: all 0.3s ease;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            
+            /* Current theme (dark by default) */
+            --current-primary-bg: var(--primary-bg);
+            --current-secondary-bg: var(--secondary-bg);
+            --current-tertiary-bg: var(--tertiary-bg);
+            --current-primary-text: var(--primary-text);
+            --current-secondary-text: var(--secondary-text);
+            --current-border-color: var(--border-color);
+        }
+
+        /* Light mode theme class */
+        .light-mode {
+            --current-primary-bg: var(--primary-bg-light);
+            --current-secondary-bg: var(--secondary-bg-light);
+            --current-tertiary-bg: var(--tertiary-bg-light);
+            --current-primary-text: var(--primary-text-light);
+            --current-secondary-text: var(--secondary-text-light);
+            --current-border-color: var(--border-color-light);
+        }
+
+        /* CSS Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            line-height: 1.6;
+            color: var(--current-primary-text);
+            background-color: var(--current-primary-bg);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Animated glowing border */
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .card-glow-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            border-radius: var(--border-radius-card);
+            margin: 24px 0;
+        }
+
+        .card-glow-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: conic-gradient(
+                from var(--angle),
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            border-radius: calc(var(--border-radius-card) + 4px);
+            z-index: 0;
+            animation: rotate 4s linear infinite;
+            opacity: 0.7;
+            filter: blur(20px);
+        }
+
+        .card-glow-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: conic-gradient(
+                from var(--angle),
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            border-radius: calc(var(--border-radius-card) + 2px);
+            z-index: 1;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        /* Fallback for browsers that don't support @property */
+        @supports not (background: conic-gradient(from var(--angle), red, blue)) {
+            .card-glow-wrapper::before,
+            .card-glow-wrapper::after {
+                animation: rotate-fallback 4s linear infinite;
+            }
+            
+            @keyframes rotate-fallback {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            position: absolute;
+            left: 0;
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--glow-color-1), var(--glow-color-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .app-title {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: var(--current-secondary-text);
+            text-align: center;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--current-secondary-text);
+            text-align: center;
+            margin: 8px 0 24px;
+            font-weight: 500;
+        }
+
+        /* Score counter in top right */
+        .score-counter {
+            position: absolute;
+            right: 0;
+            top: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-button);
+            backdrop-filter: blur(10px);
+            background-color: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--current-border-color);
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        /* Card */
+        .card {
+            background: var(--current-secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: 40px 32px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 1px solid var(--current-border-color);
+            backdrop-filter: blur(10px);
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-display {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 20px 0;
+            color: var(--current-primary-text);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .translation {
+            font-size: 42px;
+            background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 18px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--border-radius-button);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
+            color: white;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--current-tertiary-bg);
+            color: var(--current-primary-text);
+            border: 1px solid var(--current-border-color);
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-correct {
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-wrong {
+            background: linear-gradient(135deg, #ef4444, var(--glow-color-3));
+            color: white;
+            flex: 1;
+        }
+
+        .btn-correct:hover,
+        .btn-wrong:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .assessment-buttons {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            max-width: 320px;
+            margin-top: 16px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--current-secondary-text);
+            transition: var(--transition);
+            border-radius: var(--border-radius-button);
+            backdrop-filter: blur(10px);
+            background-color: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--current-border-color);
+        }
+
+        .btn-icon:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 24px 0;
+            text-align: center;
+            margin-top: 24px;
+            border-top: 1px solid var(--current-border-color);
+        }
+
+        /* Setup Screen */
+        .setup-instructions {
+            background: var(--current-secondary-bg);
+            padding: 24px;
+            border-radius: var(--border-radius-card);
+            margin: 24px 0;
+            border: 1px solid var(--current-border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .setup-instructions h3 {
+            color: var(--current-primary-text);
+            margin-bottom: 16px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .setup-instructions code {
+            background-color: var(--current-tertiary-bg);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            display: block;
+            margin: 12px 0;
+            color: var(--current-primary-text);
+            border: 1px solid var(--current-border-color);
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 18px;
+            border: 2px dashed var(--current-border-color);
+            border-radius: var(--border-radius-card);
+            background-color: var(--current-secondary-bg);
+            color: var(--current-primary-text);
+            font-size: 16px;
+            margin: 20px 0;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .file-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .feedback {
+            padding: 20px;
+            border-radius: var(--border-radius-card);
+            margin: 20px 0;
+            font-weight: 500;
+            text-align: center;
+            border: 1px solid transparent;
+            backdrop-filter: blur(10px);
+        }
+
+        .success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(236, 72, 153, 0.1));
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: var(--current-tertiary-bg);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid var(--current-border-color);
+            transition: var(--transition);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, var(--accent-color), var(--glow-color-2));
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+        }
+
+        .light-mode .toggle-switch::before {
+            transform: translateX(30px);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--current-tertiary-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--glow-color-2));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            body {
+                padding: 24px;
+            }
+            
+            .word-display {
+                font-size: 56px;
+            }
+            
+            .translation {
+                font-size: 48px;
+            }
+            
+            .app-title {
+                font-size: 48px;
+            }
+            
+            .btn {
+                padding: 20px 40px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .app-title {
+                font-size: 36px;
+            }
+            
+            .word-display {
+                font-size: 40px;
+            }
+            
+            .translation {
+                font-size: 36px;
+            }
+            
+            .assessment-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .card-glow-wrapper::before,
+            .card-glow-wrapper::after {
+                animation: none;
+            }
+            
+            .btn:hover,
+            .card:hover {
+                transform: none;
+            }
+            
+            .toggle-switch::before {
+                transition: none;
+            }
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .screen {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen A: Home -->
+    <div id="homeScreen" class="screen">
+        <header class="header">
+            <div class="logo">📘</div>
+            <div>
+                <h1 class="app-title">Vocabulator</h1>
+                <p class="tagline">Small words. Big fluency.</p>
+            </div>
+        </header>
+        
+        <div class="main">
+            <div class="card-glow-wrapper">
+                <div class="card">
+                    <h2 style="margin-bottom: 32px; color: var(--current-secondary-text); font-weight: 300;">
+                        Ready to learn?
+                    </h2>
+                    <button id="startBtn" class="btn btn-primary" style="width: 100%; max-width: 280px;">
+                        Start Learning
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <button id="settingsBtn" class="btn-icon" aria-label="Settings">
+                ⚙️ Import Words
+            </button>
+        </footer>
+    </div>
+
+    <!-- Screen B: Practice Mode -->
+    <div id="practiceScreen" class="screen hidden">
+        <header class="header">
+            <div class="logo">📘</div>
+            <div>
+                <h1 class="app-title">Vocabulator</h1>
+                <div id="languageSubtitle" class="subtitle">English → Filipino</div>
+            </div>
+            <div id="scoreDisplay" class="score-counter">0 / 0</div>
+        </header>
+        
+        <div class="main">
+            <div class="card-glow-wrapper">
+                <div class="card">
+                    <div id="sourceWord" class="word-display">Hello</div>
+                    <div id="targetWord" class="translation hidden">Kamusta</div>
+                </div>
+            </div>
+            
+            <button id="revealBtn" class="btn btn-secondary" style="max-width: 280px;">
+                Reveal Translation
+            </button>
+            
+            <div id="assessmentButtons" class="assessment-buttons hidden">
+                <button id="correctBtn" class="btn btn-correct">
+                    ✅ Correct
+                </button>
+                <button id="wrongBtn" class="btn btn-wrong">
+                    ❌ Wrong
+                </button>
+            </div>
+            
+            <div class="progress-bar" style="max-width: 280px;">
+                <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <button id="resetBtn" class="btn btn-secondary" style="max-width: 200px;">
+                Reset Session
+            </button>
+        </footer>
+    </div>
+
+    <!-- Screen C: Setup / Import -->
+    <div id="setupScreen" class="screen hidden">
+        <header class="header">
+            <div class="logo">📘</div>
+            <h1 class="app-title">Setup</h1>
+        </header>
+        
+        <div class="main">
+            <div class="card">
+                <div class="setup-instructions">
+                    <h3>Import Vocabulary CSV</h3>
+                    <p>Upload a CSV file with the following format:</p>
+                    <code>index,English,Filipino</code>
+                    <p>The first two columns after index are used as source → target language.</p>
+                    <p>Example:</p>
+                    <code>
+                        1,Hello,Kamusta<br>
+                        2,Thank you,Salamat<br>
+                        3,Goodbye,Paalam
+                    </code>
+                </div>
+                
+                <input type="file" id="csvFileInput" class="file-input" accept=".csv">
+                
+                <div id="setupFeedback" class="feedback hidden"></div>
+                
+                <button id="importBtn" class="btn btn-primary" style="width: 100%;">
+                    Import Vocabulary
+                </button>
+                
+                <button id="backToHomeBtn" class="btn btn-secondary" style="width: 100%; margin-top: 16px;">
+                    ← Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <div id="themeToggle" class="toggle-switch" aria-label="Toggle theme">
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const AppState = {
+            currentScreen: 'home',
+            vocabulary: [],
+            sourceLanguage: 'English',
+            targetLanguage: 'Filipino',
+            currentWordIndex: -1,
+            score: {
+                correct: 0,
+                total: 0
+            },
+            lastWordIndex: -1 // To prevent immediate repeats
+        };
+
+        // DOM Elements
+        const screens = {
+            home: document.getElementById('homeScreen'),
+            practice: document.getElementById('practiceScreen'),
+            setup: document.getElementById('setupScreen')
+        };
+
+        // Home screen elements
+        const startBtn = document.getElementById('startBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+
+        // Practice screen elements
+        const languageSubtitle = document.getElementById('languageSubtitle');
+        const sourceWordElement = document.getElementById('sourceWord');
+        const targetWordElement = document.getElementById('targetWord');
+        const revealBtn = document.getElementById('revealBtn');
+        const assessmentButtons = document.getElementById('assessmentButtons');
+        const correctBtn = document.getElementById('correctBtn');
+        const wrongBtn = document.getElementById('wrongBtn');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressFill = document.getElementById('progressFill');
+
+        // Setup screen elements
+        const csvFileInput = document.getElementById('csvFileInput');
+        const importBtn = document.getElementById('importBtn');
+        const backToHomeBtn = document.getElementById('backToHomeBtn');
+        const setupFeedback = document.getElementById('setupFeedback');
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Initialize app
+        function initApp() {
+            loadVocabularyFromStorage();
+            updateLanguageSubtitle();
+            setupEventListeners();
+            setupThemeToggle();
+            
+            // Check if we have vocabulary loaded
+            if (AppState.vocabulary.length > 0) {
+                AppState.score.total = AppState.vocabulary.length;
+                updateScoreDisplay();
+            }
+        }
+
+        // Theme toggle functionality
+        function setupThemeToggle() {
+            // Check for saved theme or prefer-color-scheme
+            const savedTheme = localStorage.getItem('vocabulator_theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'light' || (!savedTheme && !prefersDark)) {
+                document.body.classList.add('light-mode');
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                localStorage.setItem('vocabulator_theme', isLight ? 'light' : 'dark');
+            });
+        }
+
+        // Load vocabulary from localStorage
+        function loadVocabularyFromStorage() {
+            try {
+                const saved = localStorage.getItem('vocabulator_vocabulary');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    AppState.vocabulary = data.vocabulary || [];
+                    AppState.sourceLanguage = data.sourceLanguage || 'English';
+                    AppState.targetLanguage = data.targetLanguage || 'Filipino';
+                    
+                    if (AppState.vocabulary.length > 0) {
+                        AppState.score.total = AppState.vocabulary.length;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading vocabulary:', error);
+                AppState.vocabulary = [];
+            }
+        }
+
+        // Save vocabulary to localStorage
+        function saveVocabularyToStorage() {
+            const data = {
+                vocabulary: AppState.vocabulary,
+                sourceLanguage: AppState.sourceLanguage,
+                targetLanguage: AppState.targetLanguage
+            };
+            localStorage.setItem('vocabulator_vocabulary', JSON.stringify(data));
+        }
+
+        // Switch between screens
+        function showScreen(screenName) {
+            // Hide all screens
+            Object.values(screens).forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            // Show target screen
+            screens[screenName].classList.remove('hidden');
+            AppState.currentScreen = screenName;
+            
+            // Screen-specific setup
+            if (screenName === 'practice') {
+                resetPracticeState();
+                showNextWord();
+            } else if (screenName === 'setup') {
+                csvFileInput.value = '';
+                setupFeedback.classList.add('hidden');
+            }
+        }
+
+        // Update language subtitle
+        function updateLanguageSubtitle() {
+            languageSubtitle.textContent = `${AppState.sourceLanguage} → ${AppState.targetLanguage}`;
+        }
+
+        // Get a random word that's not the same as the last one
+        function getRandomWordIndex() {
+            if (AppState.vocabulary.length === 0) return -1;
+            if (AppState.vocabulary.length === 1) return 0;
+            
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * AppState.vocabulary.length);
+            } while (newIndex === AppState.lastWordIndex);
+            
+            return newIndex;
+        }
+
+        // Show next word in practice mode
+        function showNextWord() {
+            if (AppState.vocabulary.length === 0) {
+                sourceWordElement.textContent = 'No vocabulary loaded';
+                revealBtn.disabled = true;
+                return;
+            }
+            
+            const newIndex = getRandomWordIndex();
+            if (newIndex === -1) return;
+            
+            AppState.currentWordIndex = newIndex;
+            AppState.lastWordIndex = newIndex;
+            
+            const currentWord = AppState.vocabulary[newIndex];
+            sourceWordElement.textContent = currentWord.source;
+            targetWordElement.textContent = currentWord.target;
+            
+            // Hide translation and show reveal button
+            targetWordElement.classList.add('hidden');
+            assessmentButtons.classList.add('hidden');
+            revealBtn.classList.remove('hidden');
+            
+            // Update progress
+            updateProgress();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            if (AppState.score.total > 0) {
+                const progress = (AppState.score.correct / AppState.score.total) * 100;
+                progressFill.style.width = `${progress}%`;
+            }
+        }
+
+        // Reveal translation
+        function revealTranslation() {
+            targetWordElement.classList.remove('hidden');
+            revealBtn.classList.add('hidden');
+            assessmentButtons.classList.remove('hidden');
+        }
+
+        // Handle correct answer
+        function handleCorrect() {
+            AppState.score.correct++;
+            updateScoreDisplay();
+            updateProgress();
+            showNextWord();
+        }
+
+        // Handle wrong answer
+        function handleWrong() {
+            showNextWord();
+        }
+
+        // Reset practice session
+        function resetPracticeState() {
+            AppState.score.correct = 0;
+            AppState.lastWordIndex = -1;
+            if (AppState.vocabulary.length > 0) {
+                AppState.score.total = AppState.vocabulary.length;
+            }
+            updateScoreDisplay();
+            updateProgress();
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `${AppState.score.correct} / ${AppState.score.total}`;
+        }
+
+        // Parse CSV file
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) {
+                throw new Error('CSV must have at least a header row and one data row');
+            }
+            
+            // Parse headers
+            const headers = lines[0].split(',').map(h => h.trim());
+            if (headers.length < 3) {
+                throw new Error('CSV must have at least 3 columns: index, source, target');
+            }
+            
+            // Extract language names from headers
+            const sourceLanguage = headers[1];
+            const targetLanguage = headers[2];
+            
+            // Parse data rows
+            const vocabulary = [];
+            for (let i = 1; i < lines.length; i++) {
+                const cells = lines[i].split(',').map(cell => cell.trim());
+                if (cells.length >= 3) {
+                    vocabulary.push({
+                        source: cells[1],
+                        target: cells[2]
+                    });
+                }
+            }
+            
+            if (vocabulary.length === 0) {
+                throw new Error('No valid vocabulary rows found');
+            }
+            
+            return {
+                vocabulary,
+                sourceLanguage,
+                targetLanguage
+            };
+        }
+
+        // Handle CSV import
+        function handleCSVImport() {
+            const file = csvFileInput.files[0];
+            if (!file) {
+                showFeedback('Please select a CSV file first', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const result = parseCSV(event.target.result);
+                    
+                    // Update app state
+                    AppState.vocabulary = result.vocabulary;
+                    AppState.sourceLanguage = result.sourceLanguage;
+                    AppState.targetLanguage = result.targetLanguage;
+                    AppState.score.total = result.vocabulary.length;
+                    AppState.score.correct = 0;
+                    
+                    // Save to localStorage
+                    saveVocabularyToStorage();
+                    
+                    // Update UI
+                    updateLanguageSubtitle();
+                    updateScoreDisplay();
+                    updateProgress();
+                    
+                    // Show success message
+                    showFeedback(`Successfully loaded ${result.vocabulary.length} words!`, 'success');
+                    
+                    // Switch to practice mode after a delay
+                    setTimeout(() => {
+                        showScreen('practice');
+                    }, 1500);
+                    
+                } catch (error) {
+                    showFeedback(`Error: ${error.message}`, 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                showFeedback('Error reading file', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Show feedback message
+        function showFeedback(message, type) {
+            setupFeedback.textContent = message;
+            setupFeedback.className = `feedback ${type}`;
+            setupFeedback.classList.remove('hidden');
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Home screen
+            startBtn.addEventListener('click', () => {
+                if (AppState.vocabulary.length > 0) {
+                    showScreen('practice');
+                } else {
+                    showScreen('setup');
+                }
+            });
+            
+            settingsBtn.addEventListener('click', () => {
+                showScreen('setup');
+            });
+
+            // Practice screen
+            revealBtn.addEventListener('click', revealTranslation);
+            correctBtn.addEventListener('click', handleCorrect);
+            wrongBtn.addEventListener('click', handleWrong);
+            resetBtn.addEventListener('click', () => {
+                resetPracticeState();
+                showNextWord();
+            });
+
+            // Setup screen
+            importBtn.addEventListener('click', handleCSVImport);
+            backToHomeBtn.addEventListener('click', () => {
+                showScreen('home');
+            });
+            
+            // Allow Enter key on file input to trigger import
+            csvFileInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleCSVImport();
+                }
+            });
+        }
+
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
