@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSite Style Background</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base setup */
+        body {
+            background-color: #0a0a0a;
+        }
+
+        /* The liquid blob animations - fast deformation */
+        @keyframes liquidBlob1 {
+            0%, 100% {
+                border-radius: 40% 60% 50% 50%;
+                transform: scaleX(1) scaleY(1) rotate(0deg) translate(0, 0);
+            }
+            12.5% {
+                border-radius: 20% 80% 70% 30%;
+                transform: scaleX(1.6) scaleY(0.4) rotate(25deg) translate(30px, -20px);
+            }
+            25% {
+                border-radius: 80% 20% 30% 70%;
+                transform: scaleX(0.5) scaleY(2.1) rotate(-15deg) translate(-20px, 30px);
+            }
+            37.5% {
+                border-radius: 30% 70% 80% 20%;
+                transform: scaleX(1.8) scaleY(0.6) rotate(40deg) translate(40px, 20px);
+            }
+            50% {
+                border-radius: 70% 30% 20% 80%;
+                transform: scaleX(0.6) scaleY(1.4) rotate(-25deg) translate(-30px, -30px);
+            }
+            62.5% {
+                border-radius: 20% 80% 60% 40%;
+                transform: scaleX(1.3) scaleY(0.8) rotate(15deg) translate(20px, 40px);
+            }
+            75% {
+                border-radius: 60% 40% 40% 60%;
+                transform: scaleX(0.8) scaleY(1.2) rotate(-35deg) translate(-40px, -10px);
+            }
+            87.5% {
+                border-radius: 40% 60% 70% 30%;
+                transform: scaleX(1.1) scaleY(0.9) rotate(10deg) translate(10px, -40px);
+            }
+        }
+
+        @keyframes liquidBlob2 {
+            0%, 100% {
+                border-radius: 60% 40% 30% 70%;
+                transform: scaleX(1) scaleY(1) rotate(0deg) translate(0, 0);
+            }
+            20% {
+                border-radius: 40% 60% 70% 30%;
+                transform: scaleX(0.7) scaleY(1.3) rotate(20deg) translate(-50px, 30px);
+            }
+            40% {
+                border-radius: 30% 70% 50% 50%;
+                transform: scaleX(1.4) scaleY(0.6) rotate(-30deg) translate(40px, -40px);
+            }
+            60% {
+                border-radius: 70% 30% 60% 40%;
+                transform: scaleX(0.5) scaleY(1.8) rotate(25deg) translate(-30px, -20px);
+            }
+            80% {
+                border-radius: 50% 50% 40% 60%;
+                transform: scaleX(1.2) scaleY(0.8) rotate(-15deg) translate(20px, 30px);
+            }
+        }
+
+        @keyframes liquidBlob3 {
+            0%, 100% {
+                border-radius: 50% 50% 60% 40%;
+                transform: scaleX(1) scaleY(1) rotate(0deg) translate(0, 0);
+            }
+            16.6% {
+                border-radius: 30% 70% 40% 60%;
+                transform: scaleX(1.5) scaleY(0.5) rotate(30deg) translate(25px, 25px);
+            }
+            33.3% {
+                border-radius: 70% 30% 50% 50%;
+                transform: scaleX(0.6) scaleY(1.4) rotate(-20deg) translate(-35px, 15px);
+            }
+            50% {
+                border-radius: 40% 60% 70% 30%;
+                transform: scaleX(1.2) scaleY(0.9) rotate(45deg) translate(15px, -35px);
+            }
+            66.6% {
+                border-radius: 60% 40% 30% 70%;
+                transform: scaleX(0.8) scaleY(1.6) rotate(-35deg) translate(-25px, -25px);
+            }
+            83.3% {
+                border-radius: 50% 50% 60% 40%;
+                transform: scaleX(1.3) scaleY(0.7) rotate(15deg) translate(35px, 10px);
+            }
+        }
+
+        /* Noise texture overlay - simulating the background_noisy.webp */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.9;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            mix-blend-mode: overlay;
+        }
+
+        /* Dark translucent overlay to mute the blobs */
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.85);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Content layer */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-hidden text-slate-200 antialiased">
+
+    <!-- Layer 1: Animated Liquid Blobs (Bottom) -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        
+        <!-- Blob 1: Purple-Pink, Large, Top-left -->
+        <div class="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 opacity-40"
+             style="animation: liquidBlob1 12s ease-in-out infinite; filter: blur(120px);">
+        </div>
+
+        <!-- Blob 2: Blue-Cyan, Large, Top-right -->
+        <div class="absolute -top-1/4 -right-1/4 w-[900px] h-[900px] bg-gradient-to-bl from-blue-600 via-cyan-500 to-teal-500 opacity-35"
+             style="animation: liquidBlob2 15s ease-in-out infinite; filter: blur(130px);">
+        </div>
+
+        <!-- Blob 3: Amber-Orange, Large, Bottom-left -->
+        <div class="absolute -bottom-1/4 -left-1/4 w-[850px] h-[850px] bg-gradient-to-tr from-amber-600 via-orange-500 to-red-500 opacity-30"
+             style="animation: liquidBlob3 18s ease-in-out infinite; filter: blur(110px);">
+        </div>
+
+        <!-- Blob 4: Green-Emerald, Medium, Bottom-right -->
+        <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-600 via-green-500 to-lime-500 opacity-25"
+             style="animation: liquidBlob1 14s ease-in-out infinite reverse; filter: blur(100px);">
+        </div>
+
+        <!-- Blob 5: Indigo-Violet, Center (faint) -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-r from-indigo-700 via-purple-700 to-fuchsia-600 opacity-20"
+             style="animation: liquidBlob2 20s ease-in-out infinite; filter: blur(150px);">
+        </div>
+
+    </div>
+
+    <!-- Layer 2: Dark Translucent Overlay (Middle) -->
+    <div class="dark-overlay"></div>
+
+    <!-- Layer 3: Noise Texture (Top of background) -->
+    <div class="noise-overlay"></div>
+
+    <!-- Layer 4: Content -->
+    <div class="content-layer flex flex-col items-center justify-center min-h-screen p-6">
+        
+        <!-- Main Content Card -->
+        <div class="max-w-3xl w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl">
+            
+            <div class="space-y-6">
+                <!-- Header -->
+                <div class="space-y-2 text-center">
+                    <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent tracking-tight">
+                        DeepSite Effect
+                    </h1>
+                    <p class="text-lg text-slate-400 font-light">
+                        Large liquid blobs morphing behind dark translucent layers
+                    </p>
+                </div>
+
+                <!-- Visual Explanation -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 text-sm">
+                    <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-3 opacity-50 blur-xl"></div>
+                        <h3 class="font-semibold text-slate-200 mb-1">Layer 1: Blobs</h3>
+                        <p class="text-slate-500">Large gradient divs with heavy blur and morphing animations</p>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
+                        <div class="w-12 h-12 bg-black/80 mx-auto mb-3 rounded border border-white/20"></div>
+                        <h3 class="font-semibold text-slate-200 mb-1">Layer 2: Overlay</h3>
+                        <p class="text-slate-500">Dark translucent mask (85% opacity) mutes the colors</p>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
+                        <div class="w-12 h-12 bg-neutral-800 mx-auto mb-3 rounded relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-50" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E');"></div>
+                        </div>
+                        <h3 class="font-semibold text-slate-200 mb-1">Layer 3: Noise</h3>
+                        <p class="text-slate-500">Grain texture overlay for tactile depth</p>
+                    </div>
+                </div>
+
+                <!-- Implementation Notes -->
+                <div class="mt-8 p-4 bg-black/30 border border-white/5 rounded-lg font-mono text-xs text-slate-400 overflow-x-auto">
+<pre>/* The trick is the layering order:
+   1. Blobs (z-index: 0, fixed, heavy blur)
+   2. Dark overlay (z-index: 0, rgba(10,10,10,0.85))
+   3. Noise (z-index: 0, mix-blend-mode: overlay)
+   4. Content (z-index: 10) */</pre>
+                </div>
+
+                <div class="flex justify-center gap-4 mt-6">
+                    <button class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all text-white font-medium backdrop-blur-sm">
+                        Try It Yourself
+                    </button>
+                    <button class="px-6 py-3 bg-transparent hover:bg-white/5 border border-white/10 rounded-lg transition-all text-slate-400 font-medium">
+                        View Source
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-8 text-slate-600 text-sm">
+            Based on the DeepSite by enzostvs implementation
+        </p>
+    </div>
+
+</body>
+</html>

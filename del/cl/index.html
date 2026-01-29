@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .setup-section {
+            background: #f7f9fc;
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .setup-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .instruction {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: #718096;
+        }
+        
+        button.danger {
+            background: #f56565;
+        }
+        
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .file-category {
+            margin-bottom: 30px;
+        }
+        
+        .file-category h3 {
+            color: #2d3748;
+            padding: 15px;
+            background: #edf2f7;
+            border-radius: 8px 8px 0 0;
+            margin: 0;
+        }
+        
+        .file-list {
+            border: 2px solid #edf2f7;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-item:hover {
+            background: #f7fafc;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+        
+        .file-details {
+            font-size: 0.9em;
+            color: #718096;
+            word-break: break-all;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+        
+        .file-actions button {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            margin: 0;
+        }
+        
+        .warning {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #742a2a;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📁 File Analyzer</h1>
+            <p>Find oldest and largest files in any directory</p>
+        </div>
+        
+        <div class="content">
+            <div class="setup-section">
+                <h2>🚀 Setup Instructions</h2>
+                
+                <div class="instruction">
+                    <strong>Step 1:</strong> Download the companion script below and save it to your computer
+                </div>
+                
+                <button onclick="downloadScript()">Download analyze_files.sh</button>
+                
+                <div class="instruction">
+                    <strong>Step 2:</strong> Open Terminal and make the script executable:
+                    <div class="code-block">chmod +x ~/Downloads/analyze_files.sh</div>
+                </div>
+                
+                <div class="instruction">
+                    <strong>Step 3:</strong> Run the script with your target directory:
+                    <div class="code-block">~/Downloads/analyze_files.sh /path/to/directory 5</div>
+                    <small>The number (5) specifies how many oldest/largest files to find</small>
+                </div>
+                
+                <div class="instruction">
+                    <strong>Step 4:</strong> Load the generated results file below
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Number of files to find (n):</label>
+                <input type="number" id="fileCount" value="5" min="1" max="100">
+            </div>
+            
+            <div class="input-group">
+                <label>Load Results File:</label>
+                <input type="file" id="resultsFile" accept=".json">
+            </div>
+            
+            <button onclick="loadResults()">📂 Load Results</button>
+            
+            <div id="resultsSection" class="results-section hidden">
+                <div class="warning">
+                    ⚠️ <strong>Warning:</strong> Opening and deleting files will copy Terminal commands to your clipboard. Review commands before executing them.
+                </div>
+                
+                <div class="file-category">
+                    <h3>⏰ Oldest Files</h3>
+                    <div id="oldestFiles" class="file-list"></div>
+                </div>
+                
+                <div class="file-category">
+                    <h3>📊 Largest Files</h3>
+                    <div id="largestFiles" class="file-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentResults = null;
+
+        function downloadScript() {
+            const script = `#!/bin/bash
+
+# File Analyzer Script
+# Usage: ./analyze_files.sh <directory> [count]
+
+DIR="$1"
+COUNT="\${2:-5}"
+OUTPUT_FILE="$HOME/Desktop/file_analysis_results.json"
+
+if [ -z "$DIR" ]; then
+    echo "Usage: $0 <directory> [count]"
+    exit 1
+fi
+
+if [ ! -d "$DIR" ]; then
+    echo "Error: Directory '$DIR' does not exist"
+    exit 1
+fi
+
+echo "Analyzing directory: $DIR"
+echo "Finding top $COUNT oldest and largest files..."
+
+# Function to escape JSON strings
+escape_json() {
+    local str="$1"
+    # Escape backslashes first
+    str="\${str//\\\\/\\\\\\\\}"
+    # Escape double quotes
+    str="\${str//\\"/\\\\\\\"}"
+    # Escape newlines
+    str="\${str//$'\\n'/\\\\n}"
+    # Escape tabs
+    str="\${str//$'\\t'/\\\\t}"
+    echo "$str"
+}
+
+# Function to format size
+format_size() {
+    local size=$1
+    if [ $size -ge 1073741824 ]; then
+        printf "%.2f GB" $(awk "BEGIN {print $size/1073741824}")
+    elif [ $size -ge 1048576 ]; then
+        printf "%.2f MB" $(awk "BEGIN {print $size/1048576}")
+    elif [ $size -ge 1024 ]; then
+        printf "%.2f KB" $(awk "BEGIN {print $size/1024}")
+    else
+        echo "$size bytes"
+    fi
+}
+
+# Create temporary files
+OLDEST_TEMP=$(mktemp)
+LARGEST_TEMP=$(mktemp)
+
+# Find oldest files (by modification time)
+find "$DIR" -type f -print0 2>/dev/null | \\
+    xargs -0 stat -f "%m %z %N" 2>/dev/null | \\
+    sort -n | \\
+    head -n "$COUNT" > "$OLDEST_TEMP"
+
+# Find largest files
+find "$DIR" -type f -print0 2>/dev/null | \\
+    xargs -0 stat -f "%z %m %N" 2>/dev/null | \\
+    sort -rn | \\
+    head -n "$COUNT" > "$LARGEST_TEMP"
+
+# Start JSON output
+cat > "$OUTPUT_FILE" << 'JSONSTART'
+{
+  "directory": "DIRNAME_PLACEHOLDER",
+  "count": COUNT_PLACEHOLDER,
+  "timestamp": "TIMESTAMP_PLACEHOLDER",
+  "oldest": [
+JSONSTART
+
+# Replace placeholders
+sed -i '' "s|DIRNAME_PLACEHOLDER|$(escape_json "$DIR")|g" "$OUTPUT_FILE"
+sed -i '' "s|COUNT_PLACEHOLDER|$COUNT|g" "$OUTPUT_FILE"
+sed -i '' "s|TIMESTAMP_PLACEHOLDER|$(date -u +%Y-%m-%dT%H:%M:%SZ)|g" "$OUTPUT_FILE"
+
+# Process oldest files
+first=true
+while IFS= read -r line; do
+    mtime=$(echo "$line" | awk '{print $1}')
+    size=$(echo "$line" | awk '{print $2}')
+    filepath=$(echo "$line" | cut -d' ' -f3-)
+    filename=$(basename "$filepath")
+    date_str=$(date -r "$mtime" "+%Y-%m-%d %H:%M:%S")
+    size_str=$(format_size "$size")
+    
+    # Escape for JSON
+    filepath_escaped=$(escape_json "$filepath")
+    filename_escaped=$(escape_json "$filename")
+    
+    if [ "$first" != true ]; then
+        echo "," >> "$OUTPUT_FILE"
+    fi
+    first=false
+    
+    echo -n "    {\"path\": \\"$filepath_escaped\\", \"name\": \\"$filename_escaped\\", \"date\": \\"$date_str\\", \"size\": \\"$size_str\\", \"sizeBytes\": $size}" >> "$OUTPUT_FILE"
+done < "$OLDEST_TEMP"
+
+echo "" >> "$OUTPUT_FILE"
+echo "  ]," >> "$OUTPUT_FILE"
+echo "  \"largest\": [" >> "$OUTPUT_FILE"
+
+# Process largest files
+first=true
+while IFS= read -r line; do
+    size=$(echo "$line" | awk '{print $1}')
+    mtime=$(echo "$line" | awk '{print $2}')
+    filepath=$(echo "$line" | cut -d' ' -f3-)
+    filename=$(basename "$filepath")
+    date_str=$(date -r "$mtime" "+%Y-%m-%d %H:%M:%S")
+    size_str=$(format_size "$size")
+    
+    # Escape for JSON
+    filepath_escaped=$(escape_json "$filepath")
+    filename_escaped=$(escape_json "$filename")
+    
+    if [ "$first" != true ]; then
+        echo "," >> "$OUTPUT_FILE"
+    fi
+    first=false
+    
+    echo -n "    {\"path\": \\"$filepath_escaped\\", \"name\": \\"$filename_escaped\\", \"date\": \\"$date_str\\", \"size\": \\"$size_str\\", \"sizeBytes\": $size}" >> "$OUTPUT_FILE"
+done < "$LARGEST_TEMP"
+
+echo "" >> "$OUTPUT_FILE"
+echo "  ]" >> "$OUTPUT_FILE"
+echo "}" >> "$OUTPUT_FILE"
+
+# Cleanup
+rm "$OLDEST_TEMP" "$LARGEST_TEMP"
+
+echo ""
+echo "✅ Analysis complete!"
+echo "Results saved to: $OUTPUT_FILE"
+echo ""
+echo "Load this file in the HTML interface to view and manage files."
+`;
+
+            const blob = new Blob([script], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'analyze_files.sh';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadResults() {
+            const fileInput = document.getElementById('resultsFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a results file first');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    currentResults = JSON.parse(e.target.result);
+                    displayResults();
+                } catch (error) {
+                    alert('Error parsing results file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function displayResults() {
+            document.getElementById('resultsSection').classList.remove('hidden');
+            
+            const oldestDiv = document.getElementById('oldestFiles');
+            const largestDiv = document.getElementById('largestFiles');
+            
+            oldestDiv.innerHTML = '';
+            largestDiv.innerHTML = '';
+            
+            currentResults.oldest.forEach(file => {
+                oldestDiv.appendChild(createFileItem(file));
+            });
+            
+            currentResults.largest.forEach(file => {
+                largestDiv.appendChild(createFileItem(file));
+            });
+        }
+
+        function createFileItem(file) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            
+            const safeEscape = (str) => {
+                return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/'/g, "\\'");
+            };
+            
+            const escapedPath = safeEscape(file.path);
+            const escapedName = file.name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const escapedPathDisplay = file.path.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            div.innerHTML = `
+                <div class="file-info">
+                    <div class="file-name">${escapedName}</div>
+                    <div class="file-details">
+                        📁 ${escapedPathDisplay}<br>
+                        📅 Modified: ${file.date} | 📊 Size: ${file.size}
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button onclick="openFile('${escapedPath}')">👁️ Open</button>
+                    <button class="danger" onclick="deleteFile('${escapedPath}')">🗑️ Delete</button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function openFile(path) {
+            const command = `open "${path}"`;
+            copyToClipboard(command);
+            alert('Command copied to clipboard! Paste and run in Terminal:\n\n' + command);
+        }
+
+        function deleteFile(path) {
+            if (!confirm('Are you sure you want to delete this file?\n\n' + path)) {
+                return;
+            }
+            
+            const command = `rm "${path}"`;
+            copyToClipboard(command);
+            alert('DELETE command copied to clipboard! Paste and run in Terminal:\n\n' + command + '\n\nWARNING: This will permanently delete the file!');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard. Please copy this manually:\n\n' + text);
+            });
+        }
+    </script>
+</body>
+</html>
