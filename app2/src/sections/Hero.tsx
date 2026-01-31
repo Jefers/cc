@@ -6,88 +6,95 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const subheadingRef = useRef<HTMLParagraphElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const contentWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    const heading = headingRef.current;
     const subheading = subheadingRef.current;
+    const heading = headingRef.current;
     const cta = ctaRef.current;
+    const contentWrapper = contentWrapperRef.current;
 
-    if (!section || !heading || !subheading || !cta) return;
+    if (!section || !subheading || !heading || !cta || !contentWrapper) return;
 
     const letters = heading.querySelectorAll('.letter');
 
-    // Initial entrance animation
-    const tl = gsap.timeline({ delay: 0.5 });
+    // Kill any existing ScrollTriggers for this section
+    ScrollTrigger.getAll().forEach(st => {
+      if (st.vars.trigger === section) st.kill();
+    });
+
+    // Initial entrance animation - runs on page load
+    const tl = gsap.timeline({ delay: 0.3 });
 
     tl.fromTo(
+      subheading,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+    )
+    .fromTo(
       letters,
       {
         opacity: 0,
-        y: 100,
-        rotateX: -90,
+        y: 80,
+        rotateX: -60,
       },
       {
         opacity: 1,
         y: 0,
         rotateX: 0,
-        duration: 0.8,
-        stagger: 0.05,
-        ease: 'back.out(1.7)',
-      }
+        duration: 0.7,
+        stagger: 0.06,
+        ease: 'back.out(1.4)',
+      },
+      '-=0.2'
     )
-      .fromTo(
-        subheading,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-        '-=0.3'
-      )
-      .fromTo(
-        cta,
-        { opacity: 0, scale: 0.8 },
-        { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' },
-        '-=0.2'
-      );
+    .fromTo(
+      cta,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+      '-=0.3'
+    );
 
-    // Scroll-triggered exit animation
+    // Scroll-triggered animation - letters fade out as you scroll, but CTA stays longer
     const scrollTl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: '+=100%',
+        end: '+=80%',
         pin: true,
-        scrub: 0.5,
+        scrub: 0.8,
+        onLeaveBack: () => {
+          // Reset all elements when scrolling back to top
+          gsap.set([subheading, ...letters, cta], { opacity: 1, y: 0, x: 0 });
+        }
       },
     });
 
-    scrollTl
-      .to(letters, {
-        opacity: 0,
-        y: -100,
-        stagger: 0.02,
-        ease: 'power2.in',
-      })
-      .to(
-        subheading,
-        {
-          opacity: 0,
-          y: -50,
-          ease: 'power2.in',
-        },
-        '<'
-      )
-      .to(
-        cta,
-        {
-          opacity: 0,
-          scale: 0.5,
-          ease: 'power2.in',
-        },
-        '<'
-      );
+    // Subheading fades out first
+    scrollTl.to(subheading, {
+      opacity: 0,
+      y: -30,
+      ease: 'power2.in',
+    }, 0);
+
+    // Letters fade out one by one with stagger
+    scrollTl.to(letters, {
+      opacity: 0,
+      y: -60,
+      stagger: 0.03,
+      ease: 'power2.in',
+    }, 0.1);
+
+    // CTA buttons stay visible longer and fade out near the end
+    scrollTl.to(cta, {
+      opacity: 0,
+      y: -40,
+      ease: 'power2.in',
+    }, 0.5);
 
     return () => {
       ScrollTrigger.getAll().forEach(st => {
@@ -102,15 +109,14 @@ const Hero = () => {
     <section
       id="hero"
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center section-padding"
+      className="relative min-h-screen flex flex-col items-center justify-center section-padding overflow-hidden"
     >
       {/* Main Content */}
-      <div className="relative z-10 text-center">
-
-                {/* Subheading */}
+      <div ref={contentWrapperRef} className="relative z-10 text-center">
+        {/* Subheading - NOW FIRST */}
         <p
           ref={subheadingRef}
-          className="text-xl sm:text-2xl md:text-3xl font-oswald tracking-[0.3em] text-yellow mb-12"
+          className="text-xl sm:text-2xl md:text-3xl font-oswald tracking-[0.4em] text-yellow mb-6"
         >
           COACH
         </p>
@@ -118,7 +124,7 @@ const Hero = () => {
         {/* Main Heading */}
         <h1
           ref={headingRef}
-          className="heading-xl font-oswald font-bold text-white mb-4"
+          className="heading-xl font-oswald font-bold text-white mb-10"
           style={{ perspective: '1000px' }}
         >
           {name.split('').map((letter, index) => (
@@ -135,14 +141,18 @@ const Hero = () => {
           ))}
         </h1>
 
+        {/* Tagline */}
+        <p className="text-lg sm:text-xl text-white/70 mb-10 font-light tracking-wide">
+          Built for More. Training for Life.
+        </p>
 
         {/* CTA Buttons */}
         <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
-            href="#manifesto"
+            href="#packages"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById('manifesto')?.scrollIntoView({ behavior: 'smooth' });
+              document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="btn-primary text-lg flex items-center gap-2 group"
           >
