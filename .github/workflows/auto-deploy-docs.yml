@@ -1,0 +1,43 @@
+name: Auto Build & Deploy to /docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allows manual trigger from Actions tab
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for git commit below
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: app2/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --prefix app2
+
+      - name: Build app
+        run: npm run build --prefix app2
+
+      - name: Copy dist to docs
+        run: |
+          rm -rf docs
+          mkdir -p docs
+          cp -r app2/dist/* docs/
+
+      - name: Commit and push docs update
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add docs
+          git commit -m "Auto-update /docs with latest build [ci skip]" || echo "No changes to commit"
+          git push
