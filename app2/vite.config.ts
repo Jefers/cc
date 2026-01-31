@@ -5,7 +5,7 @@ import { inspectAttr } from 'kimi-plugin-inspect-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/cc/',  // ← Change this line: replace './' with '/cc/' (your repo name)
+  base: '/cc/app2/',
   plugins: [inspectAttr(), react()],
   resolve: {
     alias: {
