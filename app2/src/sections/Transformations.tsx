@@ -11,7 +11,7 @@ const transformations = [
     duration: '8 Months',
     result: 'Hyrox Competitor • -28kg',
     highlight: 'First Race: 1:35:22',
-    image: '/transformation-1.jpg',
+    image: '/transformation-2.jpg',
     icon: Trophy,
   },
   {
