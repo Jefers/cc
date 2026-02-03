@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debt Consolidation Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables and Base Styles */
+        :root {
+            /* Color scheme - Dark mode */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent-color: #22c55e;
+            --border-color: rgba(255, 255, 255, 0.1);
+            
+            /* Light mode overrides - applied via .light-mode class */
+            --primary-bg-light: #ffffff;
+            --secondary-bg-light: #f8f9fa;
+            --tertiary-bg-light: #e9ecef;
+            --primary-text-light: #1a1a1a;
+            --secondary-text-light: #6c757d;
+            --border-color-light: rgba(0, 0, 0, 0.1);
+            
+            /* Theme color variations */
+            --theme-1: #22c55e;
+            --theme-2: #16a34a;
+            --theme-3: #15803d;
+            --theme-4: #bbf7d0;
+            
+            /* Glowing border colors */
+            --glow-color-1: #22c55e;
+            --glow-color-2: #16a34a;
+            --glow-color-3: #10b981;
+            --glow-color-4: #86efac;
+            
+            /* Design tokens */
+            --border-radius-card: 16px;
+            --border-radius-button: 12px;
+            --border-radius-input: 12px;
+            --transition-base: all 0.3s ease;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --font-size-base: 16px;
+            --line-height-base: 1.6;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Z-index layers */
+            --z-background: 0;
+            --z-content: 10;
+            --z-overlay: 100;
+            --z-modal: 1000;
+            --z-toast: 10000;
+        }
+
+        .light-mode {
+            --primary-bg: var(--primary-bg-light);
+            --secondary-bg: var(--secondary-bg-light);
+            --tertiary-bg: var(--tertiary-bg-light);
+            --primary-text: var(--primary-text-light);
+            --secondary-text: var(--secondary-text-light);
+            --border-color: var(--border-color-light);
+        }
+
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-base);
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            transition: var(--transition-base);
+            padding-bottom: 80px;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        /* Header */
+        header {
+            padding: var(--spacing-md) 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .logo i {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .icon-button {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--primary-text);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .icon-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Glowing Border System */
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .card-glow-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: var(--border-radius-card);
+            margin: 0 0 var(--spacing-lg) 0;
+        }
+
+        .card-glow-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: conic-gradient(
+                from var(--angle),
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            border-radius: calc(var(--border-radius-card) + 4px);
+            z-index: var(--z-background);
+            animation: rotate 4s linear infinite;
+            opacity: 0.7;
+            filter: blur(20px);
+        }
+
+        .card-glow-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: conic-gradient(
+                from var(--angle),
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            border-radius: calc(var(--border-radius-card) + 2px);
+            z-index: calc(var(--z-background) + 1);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        .card-glow {
+            position: relative;
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            z-index: calc(var(--z-background) + 2);
+            overflow: hidden;
+        }
+
+        /* Fallback for browsers without @property support */
+        @supports not (background: conic-gradient(from var(--angle), red, blue)) {
+            .card-glow-wrapper::before,
+            .card-glow-wrapper::after {
+                animation: rotate-fallback 4s linear infinite;
+            }
+            
+            @keyframes rotate-fallback {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            transition: var(--transition-base);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--theme-1), var(--theme-2));
+            opacity: 0;
+            transition: var(--transition-base);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.2rem;
+            color: var(--primary-text);
+        }
+
+        .card h2 i {
+            color: var(--accent-color);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+            color: var(--secondary-text);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .tooltip-icon {
+            color: var(--accent-color);
+            cursor: help;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .tooltip-text {
+            position: absolute;
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-input);
+            font-size: 0.85rem;
+            width: 250px;
+            z-index: var(--z-modal);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-base);
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+        }
+
+        .tooltip-icon:hover .tooltip-text {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 14px 14px 42px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 16px;
+            transition: var(--transition-base);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: var(--border-radius-button);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition-base);
+            border: none;
+            outline: none;
+            width: 100%; /* Mobile: full width */
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            color: white;
+        }
+
+        .btn-primary:hover, .btn-primary:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover, .btn-secondary:active {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Debt Accounts List */
+        .debt-accounts {
+            margin-top: var(--spacing-md);
+        }
+
+        .debt-account-item {
+            background: var(--tertiary-bg);
+            border-radius: var(--border-radius-input);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .debt-account-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--primary-text);
+        }
+
+        .debt-account-info p {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+        }
+
+        .debt-account-amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent-color);
+        }
+
+        .delete-account {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition-base);
+        }
+
+        .delete-account:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (min-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .summary-card {
+            background: var(--tertiary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-md);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-card h3 {
+            font-size: 0.95rem;
+            color: var(--secondary-text);
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-text);
+            margin-bottom: 4px;
+        }
+
+        .summary-card .subtext {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: var(--spacing-lg) 0;
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--tertiary-bg);
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-text);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .metric-name {
+            text-align: left;
+            color: var(--secondary-text);
+            font-weight: 500;
+            padding-left: 16px;
+        }
+
+        .comparison-table .metric-value {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .comparison-table .unit-text {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Percentage Display */
+        .percentage-display {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: 18px;
+            margin: var(--spacing-lg) 0;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .percentage-display h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--primary-text);
+        }
+
+        .percentage-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: var(--border-radius-button);
+        }
+
+        .percentage-positive {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .percentage-label {
+            font-size: 0.95rem;
+            color: var(--secondary-text);
+            margin-top: 5px;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: var(--z-modal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-base);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: var(--transition-base);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal-header h2 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--secondary-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .modal-close:hover {
+            color: var(--primary-text);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-button);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--accent-color);
+            z-index: var(--z-toast);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition-base);
+            max-width: 300px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        /* Mobile-First Responsive Design */
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 var(--spacing-lg);
+            }
+            
+            .btn {
+                width: auto;
+                padding: 14px 24px;
+            }
+            
+            .button-group {
+                display: flex;
+                gap: 12px;
+            }
+            
+            .comparison-table th {
+                padding: 18px 15px;
+            }
+            
+            .comparison-table td {
+                padding: 16px 15px;
+            }
+            
+            .debt-account-item {
+                padding: var(--spacing-lg);
+            }
+        }
+
+        /* Accessibility: Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .card-glow-wrapper::before,
+            .card-glow-wrapper::after {
+                animation: none !important;
+            }
+            
+            .btn:hover, .btn:active,
+            .card:hover {
+                transform: none !important;
+            }
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: center;
+            z-index: var(--z-content);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+        }
+
+        /* Helper classes */
+        .text-success {
+            color: var(--accent-color);
+        }
+
+        .text-warning {
+            color: #f59e0b;
+        }
+
+        .text-danger {
+            color: #ef4444;
+        }
+
+        .mt-1 { margin-top: var(--spacing-sm); }
+        .mt-2 { margin-top: var(--spacing-md); }
+        .mt-3 { margin-top: var(--spacing-lg); }
+        .mb-1 { margin-bottom: var(--spacing-sm); }
+        .mb-2 { margin-bottom: var(--spacing-md); }
+        .mb-3 { margin-bottom: var(--spacing-lg); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-calculator"></i>
+                <h1>Debt Consolidation</h1>
+            </div>
+            <div class="header-actions">
+                <button class="icon-button" id="exportBtn" title="Export to CSV">
+                    <i class="fas fa-file-export"></i>
+                </button>
+                <button class="icon-button" id="settingsBtn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="icon-button" id="themeToggle" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Current Debts Card -->
+        <div class="card-glow-wrapper">
+            <div class="card-glow">
+                <h2><i class="fas fa-credit-card"></i> Current Credit Card Debts</h2>
+                
+                <!-- Add Debt Account Form -->
+                <form id="addDebtForm">
+                    <div class="form-group">
+                        <label for="debtName">
+                            Account Name
+                            <div class="tooltip-icon">
+                                <i class="fas fa-info-circle"></i>
+                                <div class="tooltip-text">
+                                    Name your credit card or loan account for easy reference
+                                </div>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-file-signature"></i>
+                            <input type="text" id="debtName" class="form-control" placeholder="e.g., Chase Sapphire" required>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="form-group">
+                            <label for="debtBalance">
+                                Current Balance
+                                <div class="tooltip-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="tooltip-text">
+                                        Current outstanding balance on this account
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-money-bill"></i>
+                                <input type="number" id="debtBalance" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="debtInterest">
+                                Interest Rate (%)
+                                <div class="tooltip-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="tooltip-text">
+                                        Annual percentage rate (APR) - can be 0% or very low
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-percentage"></i>
+                                <input type="number" id="debtInterest" class="form-control" placeholder="0.0" min="0" max="100" step="0.001" value="0.001" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="form-group">
+                            <label for="debtPayment">
+                                Monthly Payment
+                                <div class="tooltip-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="tooltip-text">
+                                        The fixed amount you pay each month. End date will be calculated based on this.
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="number" id="debtPayment" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="debtEndDate">
+                                Calculated End Date
+                                <div class="tooltip-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="tooltip-text">
+                                        Calculated based on your monthly payment. This is when the debt will be paid off.
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-calendar-day"></i>
+                                <input type="text" id="debtEndDate" class="form-control" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Add Account
+                    </button>
+                </form>
+                
+                <!-- Debt Accounts List -->
+                <div class="debt-accounts mt-3" id="debtAccounts">
+                    <div class="debt-account-item">
+                        <div class="debt-account-info">
+                            <h4>No accounts added yet</h4>
+                            <p>Add your first credit card debt above</p>
+                        </div>
+                        <div class="debt-account-amount">0.00</div>
+                    </div>
+                </div>
+                
+                <!-- Total Debt Summary -->
+                <div class="summary-cards mt-3">
+                    <div class="summary-card">
+                        <h3>Total Debt</h3>
+                        <div class="value" id="totalDebt">0.00</div>
+                        <div class="subtext">Sum of all balances</div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h3>Avg. Interest Rate</h3>
+                        <div class="value" id="avgInterest">0.0%</div>
+                        <div class="subtext">Weighted average</div>
+                    </div>
+                </div>
+                
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Total Monthly Payment</h3>
+                        <div class="value" id="totalMonthlyPayment">0.00</div>
+                        <div class="subtext">Sum of all payments</div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h3>Latest Payoff Date</h3>
+                        <div class="value" id="estimatedPayoff">-</div>
+                        <div class="subtext">Based on current payments</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consolidated Loan Card -->
+        <div class="card-glow-wrapper">
+            <div class="card-glow">
+                <h2><i class="fas fa-hand-holding-usd"></i> Consolidated Loan</h2>
+                
+                <!-- Consolidated Loan Form -->
+                <form id="consolidatedLoanForm">
+                    <div class="form-group">
+                        <label for="loanAmount">
+                            Loan Amount
+                            <div class="tooltip-icon">
+                                <i class="fas fa-info-circle"></i>
+                                <div class="tooltip-text">
+                                    Auto-filled with total debt amount. Adjust if needed.
+                                </div>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-money-bill"></i>
+                            <input type="number" id="loanAmount" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="form-group">
+                            <label for="loanInterest">
+                                Interest Rate (%)
+                                <div class="tooltip-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="tooltip-text">
+                                        Annual interest rate for the consolidated loan
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-percentage"></i>
+                                <input type="number" id="loanInterest" class="form-control" placeholder="0.0" min="0" max="100" step="0.001" value="0.001" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loanTerm">
+                                Loan Term (months)
+                                <div class="tooltip-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="tooltip-text">
+                                        Number of months to repay the consolidated loan
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-clock"></i>
+                                <input type="number" id="loanTerm" class="form-control" placeholder="36" min="1" max="360" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i> Calculate Loan
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetLoanBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Loan Results -->
+                <div id="loanResults" class="hidden mt-3">
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h3>Monthly Payment</h3>
+                            <div class="value" id="loanMonthlyPayment">0.00</div>
+                            <div class="subtext">Fixed monthly amount</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <h3>Total Interest</h3>
+                            <div class="value" id="loanTotalInterest">0.00</div>
+                            <div class="subtext">Over loan term</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h3>Total Repayment</h3>
+                            <div class="value" id="loanTotalRepayment">0.00</div>
+                            <div class="subtext">Principal + Interest</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <h3>Payoff Date</h3>
+                            <div class="value" id="loanPayoffDate">-</div>
+                            <div class="subtext">Estimated completion</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="card">
+            <h2><i class="fas fa-balance-scale"></i> Comparison</h2>
+            
+            <!-- Savings Percentage Display -->
+            <div class="percentage-display">
+                <h3>Potential Monthly Savings</h3>
+                <div class="percentage-value percentage-positive" id="savingsPercentage">0%</div>
+                <div class="percentage-label">When switching to consolidated loan</div>
+            </div>
+            
+            <!-- Comparison Table -->
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Debts</th>
+                        <th>Consolidated Loan</th>
+                        <th>Difference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="metric-name">Monthly Payment</td>
+                        <td><span class="metric-value" id="compareCurrentPayment">0.00</span></td>
+                        <td><span class="metric-value" id="compareLoanPayment">0.00</span></td>
+                        <td><span class="metric-value text-success" id="comparePaymentDiff">0.00</span></td>
+                    </tr>
+                    <tr>
+                        <td class="metric-name">Total Interest</td>
+                        <td><span class="metric-value" id="compareCurrentInterest">0.00</span></td>
+                        <td><span class="metric-value" id="compareLoanInterest">0.00</span></td>
+                        <td><span class="metric-value text-success" id="compareInterestDiff">0.00</span></td>
+                    </tr>
+                    <tr>
+                        <td class="metric-name">Payoff Time</td>
+                        <td><span class="metric-value" id="compareCurrentPayoff">-</span></td>
+                        <td><span class="metric-value" id="compareLoanPayoff">-</span></td>
+                        <td><span class="metric-value text-success" id="comparePayoffDiff">-</span></td>
+                    </tr>
+                    <tr>
+                        <td class="metric-name">Total Repayment</td>
+                        <td><span class="metric-value" id="compareCurrentTotal">0.00</span></td>
+                        <td><span class="metric-value" id="compareLoanTotal">0.00</span></td>
+                        <td><span class="metric-value text-success" id="compareTotalDiff">0.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Action Buttons -->
+            <div class="button-group mt-3">
+                <button class="btn btn-primary" id="addSampleDataBtn">
+                    <i class="fas fa-vial"></i> Add Sample Data
+                </button>
+                <button class="btn btn-secondary" id="clearAllDataBtn">
+                    <i class="fas fa-trash-alt"></i> Clear All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-note">
+                <i class="fas fa-info-circle"></i> All data is stored locally in your browser
+            </div>
+            <div class="footer-note">
+                Currency: <span id="currencySymbol">$</span> • Last updated: <span id="lastUpdated">Just now</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="modal-close" id="closeSettings">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="currencyInput">
+                    Currency Symbol
+                    <div class="tooltip-icon">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="tooltip-text">
+                            Enter your currency symbol (e.g., $, €, £, ¥, ₹)
+                        </div>
+                    </div>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <input type="text" id="currencyInput" class="form-control" maxlength="3" placeholder="$">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="decimalPlaces">
+                    Decimal Places
+                    <div class="tooltip-icon">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="tooltip-text">
+                            Number of decimal places to show for amounts
+                        </div>
+                    </div>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-hashtag"></i>
+                    <select id="decimalPlaces" class="form-control">
+                        <option value="0">0 (Round to nearest)</option>
+                        <option value="1">1 decimal place</option>
+                        <option value="2" selected>2 decimal places</option>
+                        <option value="3">3 decimal places</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="dateFormat">
+                    Date Format
+                    <div class="tooltip-icon">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="tooltip-text">
+                            How dates should be displayed
+                        </div>
+                    </div>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar"></i>
+                    <select id="dateFormat" class="form-control">
+                        <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY (European)</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="autoCalculate" checked>
+                    Auto-calculate on changes
+                    <div class="tooltip-icon">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="tooltip-text">
+                            Automatically recalculate when you change any value
+                        </div>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-primary" id="saveSettings">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+                <button class="btn btn-secondary" id="resetSettings">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Data saved successfully!</span>
+    </div>
+
+    <script>
+        // App Configuration
+        const appConfig = {
+            currencySymbol: '$',
+            decimalPlaces: 2,
+            dateFormat: 'MM/DD/YYYY',
+            autoCalculate: true
+        };
+        
+        // App State
+        let debtAccounts = [];
+        let consolidatedLoan = null;
+        
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const currencyInput = document.getElementById('currencyInput');
+        const decimalPlacesSelect = document.getElementById('decimalPlaces');
+        const dateFormatSelect = document.getElementById('dateFormat');
+        const autoCalculateCheckbox = document.getElementById('autoCalculate');
+        const saveSettingsBtn = document.getElementById('saveSettings');
+        const resetSettingsBtn = document.getElementById('resetSettings');
+        const currencySymbolEl = document.getElementById('currencySymbol');
+        
+        // Other DOM elements
+        const addDebtForm = document.getElementById('addDebtForm');
+        const debtAccountsList = document.getElementById('debtAccounts');
+        const totalDebtEl = document.getElementById('totalDebt');
+        const avgInterestEl = document.getElementById('avgInterest');
+        const totalMonthlyPaymentEl = document.getElementById('totalMonthlyPayment');
+        const estimatedPayoffEl = document.getElementById('estimatedPayoff');
+        const debtEndDateInput = document.getElementById('debtEndDate');
+        const consolidatedLoanForm = document.getElementById('consolidatedLoanForm');
+        const loanAmountInput = document.getElementById('loanAmount');
+        const loanInterestInput = document.getElementById('loanInterest');
+        const loanTermInput = document.getElementById('loanTerm');
+        const loanResults = document.getElementById('loanResults');
+        const loanMonthlyPaymentEl = document.getElementById('loanMonthlyPayment');
+        const loanTotalInterestEl = document.getElementById('loanTotalInterest');
+        const loanTotalRepaymentEl = document.getElementById('loanTotalRepayment');
+        const loanPayoffDateEl = document.getElementById('loanPayoffDate');
+        const savingsPercentageEl = document.getElementById('savingsPercentage');
+        const resetLoanBtn = document.getElementById('resetLoanBtn');
+        const addSampleDataBtn = document.getElementById('addSampleDataBtn');
+        const clearAllDataBtn = document.getElementById('clearAllDataBtn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const lastUpdatedEl = document.getElementById('lastUpdated');
+        
+        // Initialize Settings
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('appSettings');
+            if (savedSettings) {
+                Object.assign(appConfig, JSON.parse(savedSettings));
+            }
+            applySettings();
+        }
+        
+        function applySettings() {
+            // Update UI with settings
+            currencyInput.value = appConfig.currencySymbol;
+            decimalPlacesSelect.value = appConfig.decimalPlaces;
+            dateFormatSelect.value = appConfig.dateFormat;
+            autoCalculateCheckbox.checked = appConfig.autoCalculate;
+            currencySymbolEl.textContent = appConfig.currencySymbol;
+            
+            // Update all displayed values
+            updateDebtDisplay();
+            updateDebtTotals();
+            if (consolidatedLoan) {
+                updateConsolidatedLoanDisplay();
+                updateComparison();
+            }
+        }
+        
+        function saveSettings() {
+            appConfig.currencySymbol = currencyInput.value.trim() || '$';
+            appConfig.decimalPlaces = parseInt(decimalPlacesSelect.value);
+            appConfig.dateFormat = dateFormatSelect.value;
+            appConfig.autoCalculate = autoCalculateCheckbox.checked;
+            
+            localStorage.setItem('appSettings', JSON.stringify(appConfig));
+            applySettings();
+            showToast('Settings saved');
+            settingsModal.classList.remove('active');
+        }
+        
+        // Formatting functions
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined) return appConfig.currencySymbol + '0'.padEnd(appConfig.decimalPlaces + 1, '0');
+            return appConfig.currencySymbol + amount.toFixed(appConfig.decimalPlaces);
+        }
+        
+        function formatPercentage(rate) {
+            if (rate === null || rate === undefined) return '0.0%';
+            return rate.toFixed(1) + '%';
+        }
+        
+        function formatDate(date) {
+            if (!date) return '-';
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const day = d.getDate().toString().padStart(2, '0');
+            
+            switch(appConfig.dateFormat) {
+                case 'DD/MM/YYYY': return `${day}/${month}/${year}`;
+                case 'YYYY-MM-DD': return `${year}-${month}-${day}`;
+                default: return `${month}/${day}/${year}`;
+            }
+        }
+        
+        // Calculate end date based on monthly payment
+        function calculateEndDate(balance, interestRate, monthlyPayment) {
+            if (!balance || !monthlyPayment || monthlyPayment <= 0) return null;
+            
+            const monthlyRate = interestRate / 100 / 12;
+            let remainingBalance = balance;
+            let months = 0;
+            const maxMonths = 600; // 50 years max
+            
+            while (remainingBalance > 0 && months < maxMonths) {
+                // Add interest
+                remainingBalance += remainingBalance * monthlyRate;
+                // Apply payment
+                remainingBalance = Math.max(0, remainingBalance - monthlyPayment);
+                months++;
+            }
+            
+            if (months >= maxMonths) return null; // Would never be paid off
+            
+            const endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + months);
+            return endDate;
+        }
+        
+        // Calculate months between two dates
+        function monthsBetween(date1, date2) {
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            return (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+        }
+        
+        // Update debt totals and display
+        function updateDebtTotals() {
+            if (debtAccounts.length === 0) {
+                totalDebtEl.textContent = formatCurrency(0);
+                avgInterestEl.textContent = formatPercentage(0);
+                totalMonthlyPaymentEl.textContent = formatCurrency(0);
+                estimatedPayoffEl.textContent = '-';
+                loanAmountInput.value = '';
+                return;
+            }
+            
+            let totalBalance = 0;
+            let totalMonthly = 0;
+            let weightedInterest = 0;
+            let latestEndDate = null;
+            
+            debtAccounts.forEach(account => {
+                totalBalance += account.balance;
+                totalMonthly += account.monthlyPayment;
+                weightedInterest += account.balance * account.interestRate;
+                
+                if (account.endDate && (!latestEndDate || new Date(account.endDate) > latestEndDate)) {
+                    latestEndDate = new Date(account.endDate);
+                }
+            });
+            
+            const avgInterest = totalBalance > 0 ? weightedInterest / totalBalance : 0;
+            
+            totalDebtEl.textContent = formatCurrency(totalBalance);
+            avgInterestEl.textContent = formatPercentage(avgInterest);
+            totalMonthlyPaymentEl.textContent = formatCurrency(totalMonthly);
+            
+            // Update loan amount input with total debt
+            loanAmountInput.value = totalBalance.toFixed(appConfig.decimalPlaces);
+            
+            // Update estimated payoff
+            if (latestEndDate) {
+                const today = new Date();
+                const months = monthsBetween(today, latestEndDate);
+                estimatedPayoffEl.textContent = `${months} months`;
+            } else {
+                estimatedPayoffEl.textContent = '-';
+            }
+            
+            // Auto-calculate consolidated loan if enabled
+            if (appConfig.autoCalculate && consolidatedLoan) {
+                calculateConsolidatedLoan();
+            }
+            
+            saveData();
+        }
+        
+        // Update debt accounts list display
+        function updateDebtDisplay() {
+            if (debtAccounts.length === 0) {
+                debtAccountsList.innerHTML = `
+                    <div class="debt-account-item">
+                        <div class="debt-account-info">
+                            <h4>No accounts added yet</h4>
+                            <p>Add your first credit card debt above</p>
+                        </div>
+                        <div class="debt-account-amount">${formatCurrency(0)}</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            debtAccountsList.innerHTML = '';
+            
+            debtAccounts.forEach((account, index) => {
+                const accountElement = document.createElement('div');
+                accountElement.className = 'debt-account-item';
+                accountElement.innerHTML = `
+                    <div class="debt-account-info">
+                        <h4>${account.name}</h4>
+                        <p>${formatPercentage(account.interestRate)} interest • ${formatCurrency(account.monthlyPayment)}/mo</p>
+                    </div>
+                    <div class="debt-account-amount">${formatCurrency(account.balance)}</div>
+                    <button class="delete-account" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                debtAccountsList.appendChild(accountElement);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-account').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteDebtAccount(index);
+                });
+            });
+        }
+        
+        // Add new debt account
+        addDebtForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const debtName = document.getElementById('debtName').value;
+            const debtBalance = parseFloat(document.getElementById('debtBalance').value);
+            const debtInterest = parseFloat(document.getElementById('debtInterest').value);
+            const debtPayment = parseFloat(document.getElementById('debtPayment').value);
+            
+            // Validate inputs
+            if (debtBalance <= 0 || debtInterest < 0 || debtPayment <= 0) {
+                showToast('Please enter valid positive amounts');
+                return;
+            }
+            
+            // Calculate end date
+            const endDate = calculateEndDate(debtBalance, debtInterest, debtPayment);
+            
+            const newAccount = {
+                id: Date.now(),
+                name: debtName,
+                balance: debtBalance,
+                interestRate: debtInterest,
+                monthlyPayment: debtPayment,
+                endDate: endDate ? endDate.toISOString() : null
+            };
+            
+            debtAccounts.push(newAccount);
+            updateDebtDisplay();
+            updateDebtTotals();
+            
+            // Reset form
+            addDebtForm.reset();
+            document.getElementById('debtInterest').value = 0.001;
+            
+            showToast(`Added ${debtName} account`);
+        });
+        
+        // Update end date when payment changes
+        document.getElementById('debtPayment').addEventListener('input', function() {
+            const balance = parseFloat(document.getElementById('debtBalance').value) || 0;
+            const interest = parseFloat(document.getElementById('debtInterest').value) || 0.001;
+            const payment = parseFloat(this.value) || 0;
+            
+            if (balance > 0 && payment > 0) {
+                const endDate = calculateEndDate(balance, interest, payment);
+                debtEndDateInput.value = endDate ? formatDate(endDate) : 'Never (payment too low)';
+            } else {
+                debtEndDateInput.value = '';
+            }
+        });
+        
+        // Delete debt account
+        function deleteDebtAccount(index) {
+            const accountName = debtAccounts[index].name;
+            debtAccounts.splice(index, 1);
+            updateDebtDisplay();
+            updateDebtTotals();
+            showToast(`Removed ${accountName} account`);
+        }
+        
+        // Calculate consolidated loan
+        function calculateConsolidatedLoan() {
+            const amount = parseFloat(loanAmountInput.value);
+            const interest = parseFloat(loanInterestInput.value);
+            const term = parseInt(loanTermInput.value);
+            
+            if (!amount || amount <= 0 || !term || term <= 0) {
+                loanResults.classList.add('hidden');
+                return;
+            }
+            
+            // Handle zero or very low interest rate
+            const monthlyRate = interest / 100 / 12;
+            
+            let monthlyPayment;
+            if (monthlyRate < 0.0000001) { // Essentially zero
+                monthlyPayment = amount / term;
+            } else {
+                // Standard loan formula
+                monthlyPayment = amount * monthlyRate * Math.pow(1 + monthlyRate, term) / 
+                               (Math.pow(1 + monthlyRate, term) - 1);
+            }
+            
+            // Calculate totals
+            const totalRepayment = monthlyPayment * term;
+            const totalInterest = totalRepayment - amount;
+            
+            // Calculate payoff date
+            const today = new Date();
+            const payoffDate = new Date(today);
+            payoffDate.setMonth(payoffDate.getMonth() + term);
+            
+            // Update display
+            updateConsolidatedLoanDisplay(monthlyPayment, totalInterest, totalRepayment, payoffDate);
+            
+            // Save loan data
+            consolidatedLoan = {
+                amount,
+                interest,
+                term,
+                monthlyPayment,
+                totalInterest,
+                totalRepayment,
+                payoffDate: payoffDate.toISOString()
+            };
+            
+            // Update comparison
+            updateComparison();
+            
+            saveData();
+        }
+        
+        function updateConsolidatedLoanDisplay(monthlyPayment, totalInterest, totalRepayment, payoffDate) {
+            loanMonthlyPaymentEl.textContent = formatCurrency(monthlyPayment);
+            loanTotalInterestEl.textContent = formatCurrency(totalInterest);
+            loanTotalRepaymentEl.textContent = formatCurrency(totalRepayment);
+            loanPayoffDateEl.textContent = formatDate(payoffDate);
+            loanResults.classList.remove('hidden');
+        }
+        
+        // Update comparison table
+        function updateComparison() {
+            if (debtAccounts.length === 0 || !consolidatedLoan) {
+                return;
+            }
+            
+            // Calculate current debt totals
+            let currentTotalBalance = 0;
+            let currentTotalMonthly = 0;
+            let currentTotalInterest = 0;
+            let currentMaxEndDate = null;
+            
+            debtAccounts.forEach(account => {
+                currentTotalBalance += account.balance;
+                currentTotalMonthly += account.monthlyPayment;
+                
+                // Calculate interest for current debt
+                if (account.endDate) {
+                    const months = monthsBetween(new Date(), new Date(account.endDate));
+                    const monthlyRate = account.interestRate / 100 / 12;
+                    let remaining = account.balance;
+                    let interest = 0;
+                    
+                    for (let i = 0; i < months && remaining > 0; i++) {
+                        const monthlyInterest = remaining * monthlyRate;
+                        interest += monthlyInterest;
+                        remaining = Math.max(0, remaining + monthlyInterest - account.monthlyPayment);
+                    }
+                    
+                    currentTotalInterest += interest;
+                }
+                
+                if (account.endDate && (!currentMaxEndDate || new Date(account.endDate) > currentMaxEndDate)) {
+                    currentMaxEndDate = new Date(account.endDate);
+                }
+            });
+            
+            const currentTotalRepayment = currentTotalBalance + currentTotalInterest;
+            const currentPayoffMonths = currentMaxEndDate ? monthsBetween(new Date(), currentMaxEndDate) : 0;
+            
+            // Get consolidated loan values
+            const loanMonthly = consolidatedLoan.monthlyPayment;
+            const loanTotalInterest = consolidatedLoan.totalInterest;
+            const loanTotalRepayment = consolidatedLoan.totalRepayment;
+            const loanPayoffMonths = consolidatedLoan.term;
+            
+            // Calculate differences
+            const paymentDiff = currentTotalMonthly - loanMonthly;
+            const interestDiff = currentTotalInterest - loanTotalInterest;
+            const totalDiff = currentTotalRepayment - loanTotalRepayment;
+            const payoffDiff = currentPayoffMonths - loanPayoffMonths;
+            
+            // Update comparison table
+            document.getElementById('compareCurrentPayment').textContent = formatCurrency(currentTotalMonthly);
+            document.getElementById('compareLoanPayment').textContent = formatCurrency(loanMonthly);
+            document.getElementById('comparePaymentDiff').textContent = formatCurrency(paymentDiff);
+            
+            document.getElementById('compareCurrentInterest').textContent = formatCurrency(currentTotalInterest);
+            document.getElementById('compareLoanInterest').textContent = formatCurrency(loanTotalInterest);
+            document.getElementById('compareInterestDiff').textContent = formatCurrency(interestDiff);
+            
+            document.getElementById('compareCurrentPayoff').textContent = currentPayoffMonths ? `${currentPayoffMonths} months` : '-';
+            document.getElementById('compareLoanPayoff').textContent = `${loanPayoffMonths} months`;
+            document.getElementById('comparePayoffDiff').textContent = currentPayoffMonths ? `${payoffDiff} months` : '-';
+            
+            document.getElementById('compareCurrentTotal').textContent = formatCurrency(currentTotalRepayment);
+            document.getElementById('compareLoanTotal').textContent = formatCurrency(loanTotalRepayment);
+            document.getElementById('compareTotalDiff').textContent = formatCurrency(totalDiff);
+            
+            // Update savings percentage
+            const savingsPercentage = currentTotalMonthly > 0 ? ((paymentDiff / currentTotalMonthly) * 100) : 0;
+            savingsPercentageEl.textContent = savingsPercentage.toFixed(1) + '%';
+            
+            // Update color classes for differences
+            const paymentDiffEl = document.getElementById('comparePaymentDiff');
+            const interestDiffEl = document.getElementById('compareInterestDiff');
+            const totalDiffEl = document.getElementById('compareTotalDiff');
+            const payoffDiffEl = document.getElementById('comparePayoffDiff');
+            
+            paymentDiffEl.className = paymentDiff >= 0 ? 'metric-value text-success' : 'metric-value text-danger';
+            interestDiffEl.className = interestDiff >= 0 ? 'metric-value text-success' : 'metric-value text-danger';
+            totalDiffEl.className = totalDiff >= 0 ? 'metric-value text-success' : 'metric-value text-danger';
+            payoffDiffEl.className = payoffDiff >= 0 ? 'metric-value text-success' : 'metric-value text-danger';
+        }
+        
+        // Export to CSV
+        function exportToCSV() {
+            if (debtAccounts.length === 0 && !consolidatedLoan) {
+                showToast('No data to export');
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Add header
+            csvContent += "Debt Consolidation Analysis\n\n";
+            
+            // Add current debts
+            csvContent += "Current Debts\n";
+            csvContent += "Account Name,Balance,Interest Rate (%),Monthly Payment,End Date\n";
+            debtAccounts.forEach(account => {
+                csvContent += `"${account.name}",${account.balance},${account.interestRate},${account.monthlyPayment},"${formatDate(account.endDate)}"\n`;
+            });
+            
+            // Add totals
+            const totalBalance = debtAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+            const totalMonthly = debtAccounts.reduce((sum, acc) => sum + acc.monthlyPayment, 0);
+            const weightedInterest = debtAccounts.reduce((sum, acc) => sum + acc.balance * acc.interestRate, 0);
+            const avgInterest = totalBalance > 0 ? weightedInterest / totalBalance : 0;
+            
+            csvContent += `\nTotal,${totalBalance},${avgInterest.toFixed(2)},${totalMonthly},\n`;
+            
+            // Add consolidated loan
+            if (consolidatedLoan) {
+                csvContent += "\nConsolidated Loan\n";
+                csvContent += "Loan Amount,Interest Rate (%),Term (months),Monthly Payment,Total Interest,Total Repayment,Payoff Date\n";
+                csvContent += `${consolidatedLoan.amount},${consolidatedLoan.interest},${consolidatedLoan.term},${consolidatedLoan.monthlyPayment},${consolidatedLoan.totalInterest},${consolidatedLoan.totalRepayment},"${formatDate(consolidatedLoan.payoffDate)}"\n`;
+            }
+            
+            // Add comparison
+            csvContent += "\nComparison\n";
+            csvContent += "Metric,Current Debts,Consolidated Loan,Difference\n";
+            
+            // Calculate comparison values
+            const currentTotalBalance = totalBalance;
+            const currentTotalMonthly = totalMonthly;
+            let currentTotalInterest = 0;
+            debtAccounts.forEach(account => {
+                if (account.endDate) {
+                    const months = monthsBetween(new Date(), new Date(account.endDate));
+                    const monthlyRate = account.interestRate / 100 / 12;
+                    let remaining = account.balance;
+                    for (let i = 0; i < months && remaining > 0; i++) {
+                        currentTotalInterest += remaining * monthlyRate;
+                        remaining = Math.max(0, remaining * (1 + monthlyRate) - account.monthlyPayment);
+                    }
+                }
+            });
+            
+            const currentTotalRepayment = currentTotalBalance + currentTotalInterest;
+            
+            if (consolidatedLoan) {
+                const paymentDiff = currentTotalMonthly - consolidatedLoan.monthlyPayment;
+                const interestDiff = currentTotalInterest - consolidatedLoan.totalInterest;
+                const totalDiff = currentTotalRepayment - consolidatedLoan.totalRepayment;
+                
+                csvContent += `Monthly Payment,${currentTotalMonthly},${consolidatedLoan.monthlyPayment},${paymentDiff}\n`;
+                csvContent += `Total Interest,${currentTotalInterest},${consolidatedLoan.totalInterest},${interestDiff}\n`;
+                csvContent += `Total Repayment,${currentTotalRepayment},${consolidatedLoan.totalRepayment},${totalDiff}\n`;
+            }
+            
+            // Create download link
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "debt_consolidation_analysis.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Data exported to CSV');
+        }
+        
+        // Consolidated loan form submission
+        consolidatedLoanForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateConsolidatedLoan();
+            showToast('Consolidated loan calculated');
+        });
+        
+        // Reset loan button
+        resetLoanBtn.addEventListener('click', function() {
+            consolidatedLoanForm.reset();
+            loanResults.classList.add('hidden');
+            consolidatedLoan = null;
+            localStorage.removeItem('consolidatedLoan');
+            showToast('Consolidated loan reset');
+        });
+        
+        // Add sample data
+        addSampleDataBtn.addEventListener('click', function() {
+            // Clear existing data
+            debtAccounts = [];
+            
+            // Add sample accounts
+            const sampleAccounts = [
+                {
+                    id: 1,
+                    name: "Chase Sapphire",
+                    balance: 4500,
+                    interestRate: 22.5,
+                    monthlyPayment: 150,
+                    endDate: calculateEndDate(4500, 22.5, 150).toISOString()
+                },
+                {
+                    id: 2,
+                    name: "Amex Platinum",
+                    balance: 3200,
+                    interestRate: 19.9,
+                    monthlyPayment: 110,
+                    endDate: calculateEndDate(3200, 19.9, 110).toISOString()
+                },
+                {
+                    id: 3,
+                    name: "Bank of America",
+                    balance: 1800,
+                    interestRate: 24.9,
+                    monthlyPayment: 65,
+                    endDate: calculateEndDate(1800, 24.9, 65).toISOString()
+                }
+            ];
+            
+            debtAccounts = sampleAccounts;
+            updateDebtDisplay();
+            updateDebtTotals();
+            
+            // Set sample consolidated loan
+            loanAmountInput.value = (4500 + 3200 + 1800).toFixed(2);
+            loanInterestInput.value = 12.5;
+            loanTermInput.value = 36;
+            
+            calculateConsolidatedLoan();
+            
+            showToast('Sample data loaded');
+        });
+        
+        // Clear all data
+        clearAllDataBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                debtAccounts = [];
+                consolidatedLoan = null;
+                localStorage.clear();
+                
+                updateDebtDisplay();
+                updateDebtTotals();
+                
+                consolidatedLoanForm.reset();
+                loanResults.classList.add('hidden');
+                
+                showToast('All data cleared');
+            }
+        });
+        
+        // Load saved data
+        function loadSavedData() {
+            const savedDebts = localStorage.getItem('debtAccounts');
+            const savedLoan = localStorage.getItem('consolidatedLoan');
+            
+            if (savedDebts) {
+                debtAccounts = JSON.parse(savedDebts);
+                updateDebtDisplay();
+                updateDebtTotals();
+            }
+            
+            if (savedLoan) {
+                consolidatedLoan = JSON.parse(savedLoan);
+                loanAmountInput.value = consolidatedLoan.amount;
+                loanInterestInput.value = consolidatedLoan.interest;
+                loanTermInput.value = consolidatedLoan.term;
+                calculateConsolidatedLoan();
+            }
+            
+            updateLastUpdated();
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('debtAccounts', JSON.stringify(debtAccounts));
+            
+            if (consolidatedLoan) {
+                localStorage.setItem('consolidatedLoan', JSON.stringify(consolidatedLoan));
+            }
+            
+            updateLastUpdated();
+        }
+        
+        // Update last updated timestamp
+        function updateLastUpdated() {
+            const now = new Date();
+            lastUpdatedEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Show toast notification
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLightMode = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+            
+            // Update icon
+            const icon = themeToggle.querySelector('i');
+            icon.className = isLightMode ? 'fas fa-sun' : 'fas fa-moon';
+            
+            showToast('Theme changed to ' + (isLightMode ? 'light' : 'dark') + ' mode');
+        });
+        
+        // Settings modal
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+        
+        closeSettings.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+        
+        saveSettingsBtn.addEventListener('click', saveSettings);
+        
+        resetSettingsBtn.addEventListener('click', () => {
+            if (confirm('Reset all settings to defaults?')) {
+                localStorage.removeItem('appSettings');
+                loadSettings();
+                showToast('Settings reset to defaults');
+            }
+        });
+        
+        // Export button
+        exportBtn.addEventListener('click', exportToCSV);
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            const icon = themeToggle.querySelector('i');
+            icon.className = 'fas fa-sun';
+        }
+        
+        // Initialize the app
+        loadSettings();
+        loadSavedData();
+        
+        // Update last updated every minute
+        setInterval(updateLastUpdated, 60000);
+    </script>
+</body>
+</html>
