@@ -4,3 +4,10 @@ menu.json
 generate_links_csv.sh
 links_simple.csv
 node_modules/
+menu_links.csv
+menu_links_simple.csv
+links.csv
+links_simple.csv
+menu-generator.sh 
+quick-menu-generator.sh
+data.csv    

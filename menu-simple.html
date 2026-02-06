@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Portfolio</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #9333ea;
+            --glow-1: #9333ea;
+            --glow-2: #7c3aed;
+            --glow-3: #8b5cf6;
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--glow-1), var(--glow-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .project-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(147, 51, 234, 0.3);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--glow-1), var(--glow-2), var(--glow-3));
+            border-radius: calc(var(--radius) + 2px);
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .project-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .project-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .project-title a:hover {
+            color: var(--accent);
+        }
+
+        .project-category {
+            display: inline-block;
+            background: rgba(147, 51, 234, 0.1);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .project-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            float: left;
+            margin-right: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .project-link {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 16px;
+            transition: var(--transition);
+        }
+
+        .project-link:hover {
+            background: var(--glow-2);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Project Portfolio</h1>
+            <p>${total_projects} projects • ${unique_categories} categories</p>
+        </div>
+        
+        <div class="grid">
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hiprox/favicon.ico" alt="HiProX" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hiprox</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hiprox/index.html" target="_blank" rel="noopener noreferrer">HiProX</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hiprox/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/sl/favicon.ico" alt="Meal \& Stock Planner" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">sl</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/sl/index.html" target="_blank" rel="noopener noreferrer">Meal \& Stock Planner</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/sl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/pis/gl/favicon.ico" alt="PIS Wizard - Project Intent Specification" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">pis</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/pis/gl/index.html" target="_blank" rel="noopener noreferrer">PIS Wizard - Project Intent Specification</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/pis/gl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/mdc/favicon.ico" alt="MarkDownCards" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">mdc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/mdc/index.html" target="_blank" rel="noopener noreferrer">MarkDownCards</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/mdc/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/B4M/favicon.ico" alt="Lisburn Personal Trainer - Coach Christian | Built for More!" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">B4M</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/B4M/index.html" target="_blank" rel="noopener noreferrer">Lisburn Personal Trainer - Coach Christian | Built for More!</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/B4M/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/pk/favicon.ico" alt="5-Step Process Killer" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">pk</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/pk/index.html" target="_blank" rel="noopener noreferrer">5-Step Process Killer</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/pk/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/holiday/favicon.ico" alt="Philippine Adventure 🌴" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">holiday</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/holiday/index.html" target="_blank" rel="noopener noreferrer">Philippine Adventure 🌴</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/holiday/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/car/favicon.ico" alt="Modern CSS Carousel" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">car</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/car/index.html" target="_blank" rel="noopener noreferrer">Modern CSS Carousel</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/car/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/car/kimi/favicon.ico" alt="Modern CSS Carousel" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">car</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/car/kimi/index.html" target="_blank" rel="noopener noreferrer">Modern CSS Carousel</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/car/kimi/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/emr/favicon.ico" alt="Meter Reader" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">emr</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/emr/index.html" target="_blank" rel="noopener noreferrer">Meter Reader</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/emr/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/emr/node_modules/idb-keyval/dist/test/favicon.ico" alt="test" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">emr</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/emr/node_modules/idb-keyval/dist/test/index.html" target="_blank" rel="noopener noreferrer">test</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/emr/node_modules/idb-keyval/dist/test/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/daad/favicon.ico" alt="Your Client Acquisition Story" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">daad</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/daad/index.html" target="_blank" rel="noopener noreferrer">Your Client Acquisition Story</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/daad/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/tools/favicon.ico" alt="Fitness Metrics Tools" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">tools</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/tools/index.html" target="_blank" rel="noopener noreferrer">Fitness Metrics Tools</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/tools/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/svg-icon-system/favicon.ico" alt="SVG Icon System" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">svg-icon-system</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/svg-icon-system/index.html" target="_blank" rel="noopener noreferrer">SVG Icon System</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/svg-icon-system/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/mt/favicon.ico" alt="MotorTrip Calc - Motorbike Camping Cost Estimator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">mt</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/mt/index.html" target="_blank" rel="noopener noreferrer">MotorTrip Calc - Motorbike Camping Cost Estimator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/mt/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/bp/cgtp/favicon.ico" alt="Mobile-first Boilerplate — Light \& Dark" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">bp</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/bp/cgtp/index.html" target="_blank" rel="noopener noreferrer">Mobile-first Boilerplate — Light \& Dark</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/bp/cgtp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/bp/ds/favicon.ico" alt="Modern UI Boilerplate" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">bp</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/bp/ds/index.html" target="_blank" rel="noopener noreferrer">Modern UI Boilerplate</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/bp/ds/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/bp/claude/favicon.ico" alt="Modern Design System" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">bp</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/bp/claude/index.html" target="_blank" rel="noopener noreferrer">Modern Design System</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/bp/claude/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/bp/grok/favicon.ico" alt="Design System Boilerplate" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">bp</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/bp/grok/index.html" target="_blank" rel="noopener noreferrer">Design System Boilerplate</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/bp/grok/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/apl/favicon.ico" alt="Design Template" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">apl</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/apl/index.html" target="_blank" rel="noopener noreferrer">Design Template</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/apl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hm/favicon.ico" alt="House Material Prompt Builder" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hm</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hm/index.html" target="_blank" rel="noopener noreferrer">House Material Prompt Builder</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hm/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hd/favicon.ico" alt="Happy Days" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hd</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hd/index.html" target="_blank" rel="noopener noreferrer">Happy Days</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hd/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/bc/favicon.ico" alt="Bullion Count Calculator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">bc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/bc/index.html" target="_blank" rel="noopener noreferrer">Bullion Count Calculator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/bc/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dm2/favicon.ico" alt="Dynamic Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dm2</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dm2/index.html" target="_blank" rel="noopener noreferrer">Dynamic Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dm2/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/cn/favicon.ico" alt="Client Notes - Fitness Coach" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">cn</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/cn/index.html" target="_blank" rel="noopener noreferrer">Client Notes - Fitness Coach</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/cn/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/clip/km/favicon.ico" alt="Video Clipper" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">clip</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/clip/km/index.html" target="_blank" rel="noopener noreferrer">Video Clipper</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/clip/km/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/clip/gp/favicon.ico" alt="Simple Video Clipper" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">clip</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/clip/gp/index.html" target="_blank" rel="noopener noreferrer">Simple Video Clipper</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/clip/gp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/clip/dp/favicon.ico" alt="Video Clipper | Browser-Based Video Editing" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">clip</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/clip/dp/index.html" target="_blank" rel="noopener noreferrer">Video Clipper | Browser-Based Video Editing</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/clip/dp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/el/gl/favicon.ico" alt="Household Electric Estimator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">el</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/el/gl/index.html" target="_blank" rel="noopener noreferrer">Household Electric Estimator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/el/gl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/el/dp/favicon.ico" alt="dp" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">el</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/el/dp/index.html" target="_blank" rel="noopener noreferrer">dp</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/el/dp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ezfit/favicon.ico" alt="EZfit - Fitness Routine Tracker" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ezfit</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ezfit/index.html" target="_blank" rel="noopener noreferrer">EZfit - Fitness Routine Tracker</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ezfit/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/gallery/favicon.ico" alt="Photo Gallery" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">gallery</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/gallery/index.html" target="_blank" rel="noopener noreferrer">Photo Gallery</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/gallery/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ppc/favicon.ico" alt="Pasko Panalo Club - Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ppc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ppc/index.html" target="_blank" rel="noopener noreferrer">Pasko Panalo Club - Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ppc/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ppc/members/favicon.ico" alt="Pasko Panalo Club" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ppc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ppc/members/index.html" target="_blank" rel="noopener noreferrer">Pasko Panalo Club</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ppc/members/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/it/gpt/favicon.ico" alt="Streaming Diagnostic Checklist — Francine" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">it</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/it/gpt/index.html" target="_blank" rel="noopener noreferrer">Streaming Diagnostic Checklist — Francine</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/it/gpt/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/it/ds/favicon.ico" alt="Webcam Quality Diagnostic" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">it</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/it/ds/index.html" target="_blank" rel="noopener noreferrer">Webcam Quality Diagnostic</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/it/ds/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/it/dsk/favicon.ico" alt="Webcam Quality Diagnostic" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">it</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/it/dsk/index.html" target="_blank" rel="noopener noreferrer">Webcam Quality Diagnostic</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/it/dsk/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/cs/favicon.ico" alt="Sleep Strategy Tracker" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">cs</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/cs/index.html" target="_blank" rel="noopener noreferrer">Sleep Strategy Tracker</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/cs/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/favicon.ico" alt="File System Navigator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/index.html" target="_blank" rel="noopener noreferrer">File System Navigator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/gr/favicon.ico" alt="Jar Money" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/gr/index.html" target="_blank" rel="noopener noreferrer">Jar Money</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/gr/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/gp/favicon.ico" alt="Jars" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/gp/index.html" target="_blank" rel="noopener noreferrer">Jars</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/gp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/gl/favicon.ico" alt="Money Jars" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/gl/index.html" target="_blank" rel="noopener noreferrer">Money Jars</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/gl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/dp/favicon.ico" alt="Money Jars" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/dp/index.html" target="_blank" rel="noopener noreferrer">Money Jars</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/dp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/gm/favicon.ico" alt="Jars" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/gm/index.html" target="_blank" rel="noopener noreferrer">Jars</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/gm/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/cl/favicon.ico" alt="Money Jars" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/cl/index.html" target="_blank" rel="noopener noreferrer">Money Jars</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/cl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/jar/qw/favicon.ico" alt="Money Jars" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">jar</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/jar/qw/index.html" target="_blank" rel="noopener noreferrer">Money Jars</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/jar/qw/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/fb/favicon.ico" alt="fb" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">fb</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/fb/index.html" target="_blank" rel="noopener noreferrer">fb</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/fb/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dmc/favicon.ico" alt="Dynamic Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dmc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dmc/index.html" target="_blank" rel="noopener noreferrer">Dynamic Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dmc/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dabas/favicon.ico" alt="Your Business Systems Blueprint" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dabas</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dabas/index.html" target="_blank" rel="noopener noreferrer">Your Business Systems Blueprint</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dabas/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dmd/favicon.ico" alt="Dynamic Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dmd</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dmd/index.html" target="_blank" rel="noopener noreferrer">Dynamic Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dmd/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ocr/favicon.ico" alt="TextSnap - Image Text Extractor" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ocr</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ocr/index.html" target="_blank" rel="noopener noreferrer">TextSnap - Image Text Extractor</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ocr/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/fractal/glk47/favicon.ico" alt="Infinite Fractal Explorer" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">fractal</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/fractal/glk47/index.html" target="_blank" rel="noopener noreferrer">Infinite Fractal Explorer</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/fractal/glk47/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/markdown-site/pages/favicon.ico" alt="Dynamic Website" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">markdown-site</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/markdown-site/pages/index.html" target="_blank" rel="noopener noreferrer">Dynamic Website</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/markdown-site/pages/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/s2s/favicon.ico" alt="Snap2Sell MVP" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">s2s</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/s2s/index.html" target="_blank" rel="noopener noreferrer">Snap2Sell MVP</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/s2s/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/lsm/favicon.ico" alt="Advanced LocalStorage Manager" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">lsm</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/lsm/index.html" target="_blank" rel="noopener noreferrer">Advanced LocalStorage Manager</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/lsm/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/game/glk/favicon.ico" alt="Arcade 10-in-1" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">game</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/game/glk/index.html" target="_blank" rel="noopener noreferrer">Arcade 10-in-1</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/game/glk/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/td/favicon.ico" alt="Workouts" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">td</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/td/index.html" target="_blank" rel="noopener noreferrer">Workouts</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/td/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/docs/favicon.ico" alt="Christian Coaching" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">docs</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/docs/index.html" target="_blank" rel="noopener noreferrer">Christian Coaching</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/docs/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/qr/favicon.ico" alt="QR Code Generator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">qr</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/qr/index.html" target="_blank" rel="noopener noreferrer">QR Code Generator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/qr/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/tc/favicon.ico" alt="Till Banking" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">tc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/tc/index.html" target="_blank" rel="noopener noreferrer">Till Banking</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/tc/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/wl/deep/favicon.ico" alt="FitTrack | 12-Week Weight Loss Journey" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">wl</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/wl/deep/index.html" target="_blank" rel="noopener noreferrer">FitTrack | 12-Week Weight Loss Journey</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/wl/deep/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/wl/kimi/favicon.ico" alt="12-Week Weight Loss Tracker" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">wl</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/wl/kimi/index.html" target="_blank" rel="noopener noreferrer">12-Week Weight Loss Tracker</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/wl/kimi/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/qn/favicon.ico" alt="QNotes (qn)" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">qn</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/qn/index.html" target="_blank" rel="noopener noreferrer">QNotes (qn)</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/qn/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ss/favicon.ico" alt="Sleep Strategies" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ss</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ss/index.html" target="_blank" rel="noopener noreferrer">Sleep Strategies</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ss/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/gymerly/favicon.ico" alt="Gymerly" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">gymerly</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/gymerly/index.html" target="_blank" rel="noopener noreferrer">Gymerly</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/gymerly/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/cclub/favicon.ico" alt="CClub - Filipino Christmas Savings Club" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">cclub</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/cclub/index.html" target="_blank" rel="noopener noreferrer">CClub - Filipino Christmas Savings Club</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/cclub/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/cclub/members/favicon.ico" alt="CClub - Member Home" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">cclub</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/cclub/members/index.html" target="_blank" rel="noopener noreferrer">CClub - Member Home</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/cclub/members/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/daba/favicon.ico" alt="Business Systems Quest" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">daba</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/daba/index.html" target="_blank" rel="noopener noreferrer">Business Systems Quest</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/daba/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/daba/bsrb/favicon.ico" alt="Business Systems Documentation" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">daba</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/daba/bsrb/index.html" target="_blank" rel="noopener noreferrer">Business Systems Documentation</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/daba/bsrb/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ps/favicon.ico" alt="PhotoShop Clone - Layer-Based Image Editor" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ps</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ps/index.html" target="_blank" rel="noopener noreferrer">PhotoShop Clone - Layer-Based Image Editor</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ps/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/vc/ds/favicon.ico" alt="Vocabulato - Small words. Big fluency." class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">vc</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/vc/ds/index.html" target="_blank" rel="noopener noreferrer">Vocabulato - Small words. Big fluency.</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/vc/ds/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/si/favicon.ico" alt="Shop Inventory App" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">si</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/si/index.html" target="_blank" rel="noopener noreferrer">Shop Inventory App</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/si/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/del/cl/favicon.ico" alt="File Analyzer" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">del</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/del/cl/index.html" target="_blank" rel="noopener noreferrer">File Analyzer</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/del/cl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/gp/favicon.ico" alt="Mobile App Prompt Generator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">gp</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/gp/index.html" target="_blank" rel="noopener noreferrer">Mobile App Prompt Generator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/gp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/an/km/favicon.ico" alt="DeepSite Background" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">an</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/an/km/index.html" target="_blank" rel="noopener noreferrer">DeepSite Background</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/an/km/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/money/glm47/favicon.ico" alt="Money Tracker - Spend Visualizer" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">money</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/money/glm47/index.html" target="_blank" rel="noopener noreferrer">Money Tracker - Spend Visualizer</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/money/glm47/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/money/grok/favicon.ico" alt="Money Tracker - Spend Visualizer" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">money</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/money/grok/index.html" target="_blank" rel="noopener noreferrer">Money Tracker - Spend Visualizer</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/money/grok/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/gb/favicon.ico" alt="Human Gut Bacteria Taxonomy Tree" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">gb</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/gb/index.html" target="_blank" rel="noopener noreferrer">Human Gut Bacteria Taxonomy Tree</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/gb/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/gb/kimi/favicon.ico" alt="Human Gut Microbiome Interactive Tree" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">gb</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/gb/kimi/index.html" target="_blank" rel="noopener noreferrer">Human Gut Microbiome Interactive Tree</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/gb/kimi/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dm/favicon.ico" alt="Dynamic Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dm</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dm/index.html" target="_blank" rel="noopener noreferrer">Dynamic Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dm/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dd/favicon.ico" alt="dd" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dd</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dd/index.html" target="_blank" rel="noopener noreferrer">dd</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dd/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/fitness-hub/favicon.ico" alt="Fitness Hub" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">fitness-hub</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/fitness-hub/index.html" target="_blank" rel="noopener noreferrer">Fitness Hub</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/fitness-hub/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/mm/favicon.ico" alt="Training Days" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">mm</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/mm/index.html" target="_blank" rel="noopener noreferrer">Training Days</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/mm/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/trip-planner/favicon.ico" alt="Trip Planner" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">trip-planner</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/trip-planner/index.html" target="_blank" rel="noopener noreferrer">Trip Planner</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/trip-planner/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hn/favicon.ico" alt="Unit Price Calculator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hn</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hn/index.html" target="_blank" rel="noopener noreferrer">Unit Price Calculator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hn/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ecmr/favicon.ico" alt="Meter Reader" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ecmr</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ecmr/index.html" target="_blank" rel="noopener noreferrer">Meter Reader</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ecmr/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/pinecraft/favicon.ico" alt="Pinecraft" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">pinecraft</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/pinecraft/index.html" target="_blank" rel="noopener noreferrer">Pinecraft</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/pinecraft/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ppclub/favicon.ico" alt="Pasko Panalo Club" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ppclub</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ppclub/index.html" target="_blank" rel="noopener noreferrer">Pasko Panalo Club</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ppclub/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/je/ds/favicon.ico" alt="ds" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">je</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/je/ds/index.html" target="_blank" rel="noopener noreferrer">ds</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/je/ds/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hours/favicon.ico" alt="Hours Tracker" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hours</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hours/index.html" target="_blank" rel="noopener noreferrer">Hours Tracker</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hours/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hours/glm47/favicon.ico" alt="Hours Tracker - Compact Edition" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hours</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hours/glm47/index.html" target="_blank" rel="noopener noreferrer">Hours Tracker - Compact Edition</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hours/glm47/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hours/grok/favicon.ico" alt="Hours Tracker" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hours</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hours/grok/index.html" target="_blank" rel="noopener noreferrer">Hours Tracker</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hours/grok/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hours/grok2/favicon.ico" alt="Hours Tracker - Compact Edition" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hours</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hours/grok2/index.html" target="_blank" rel="noopener noreferrer">Hours Tracker - Compact Edition</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hours/grok2/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/hours/kimi/favicon.ico" alt="Hours Tracker" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">hours</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/hours/kimi/index.html" target="_blank" rel="noopener noreferrer">Hours Tracker</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/hours/kimi/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dad/favicon.ico" alt="Funnel Quest: Build Your Client Acquisition System" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dad</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dad/index.html" target="_blank" rel="noopener noreferrer">Funnel Quest: Build Your Client Acquisition System</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dad/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/dm1/favicon.ico" alt="Dynamic Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">dm1</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/dm1/index.html" target="_blank" rel="noopener noreferrer">Dynamic Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/dm1/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ln/favicon.ico" alt="Debt Consolidation Calculator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ln</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ln/index.html" target="_blank" rel="noopener noreferrer">Debt Consolidation Calculator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ln/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/JP/trustee/favicon.ico" alt="trustee" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">JP</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/JP/trustee/index.html" target="_blank" rel="noopener noreferrer">trustee</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/JP/trustee/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/JP/favicon.ico" alt="Pasko Panalo Club - Menu" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">JP</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/JP/index.html" target="_blank" rel="noopener noreferrer">Pasko Panalo Club - Menu</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/JP/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/JP/members/favicon.ico" alt="Pasko Panalo Club - Smart Saving for Christmas" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">JP</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/JP/members/index.html" target="_blank" rel="noopener noreferrer">Pasko Panalo Club - Smart Saving for Christmas</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/JP/members/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/personal-trainer-website/favicon.ico" alt="Personal Trainer Website" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">personal-trainer-website</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/personal-trainer-website/index.html" target="_blank" rel="noopener noreferrer">Personal Trainer Website</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/personal-trainer-website/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/boilerp/favicon.ico" alt="Modern Animated Glowing Border" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">boilerp</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/boilerp/index.html" target="_blank" rel="noopener noreferrer">Modern Animated Glowing Border</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/boilerp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/client-site/favicon.ico" alt="Dynamic Website" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">client-site</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/client-site/index.html" target="_blank" rel="noopener noreferrer">Dynamic Website</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/client-site/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/client-site/pages/favicon.ico" alt="Home" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">client-site</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/client-site/pages/index.html" target="_blank" rel="noopener noreferrer">Home</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/client-site/pages/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/sim/el/gl/favicon.ico" alt="House Power Simulator V3" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">sim</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/sim/el/gl/index.html" target="_blank" rel="noopener noreferrer">House Power Simulator V3</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/sim/el/gl/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ip/ssp/favicon.ico" alt="Pro Self-Portrait Setup Guide" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ip</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ip/ssp/index.html" target="_blank" rel="noopener noreferrer">Pro Self-Portrait Setup Guide</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ip/ssp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/gena/favicon.ico" alt="Gen Z \& Gen Alpha Slang Dictionary" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">gena</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/gena/index.html" target="_blank" rel="noopener noreferrer">Gen Z \& Gen Alpha Slang Dictionary</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/gena/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/rb/gp/favicon.ico" alt="Rent vs Buy Simulator" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">rb</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/rb/gp/index.html" target="_blank" rel="noopener noreferrer">Rent vs Buy Simulator</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/rb/gp/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/rb/gl/index.html" alt="Rent vs Buy Simulator (Historical" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">https://jefers.github.io/cc/rb/gl/favicon.ico</div>
+                <h3 class="project-title">
+                    <a href=" Deterministic)" target="_blank" rel="noopener noreferrer">Rent vs Buy Simulator (Historical</a>
+                </h3>
+                <a href=" Deterministic)" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/ws/gm/favicon.ico" alt="Client Discovery Form - Website Content" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">ws</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/ws/gm/index.html" target="_blank" rel="noopener noreferrer">Client Discovery Form - Website Content</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/ws/gm/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/triply/favicon.ico" alt="Trip Planner 🗺️" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">triply</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/triply/index.html" target="_blank" rel="noopener noreferrer">Trip Planner 🗺️</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/triply/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+            <div class="project-card">
+                <img src="https://jefers.github.io/cc/genz/favicon.ico" alt="Gen Z \& Gen Alpha Slang Dictionary" class="project-thumbnail" onerror="this.style.display='none'">
+                <div class="project-category">genz</div>
+                <h3 class="project-title">
+                    <a href="https://jefers.github.io/cc/genz/index.html" target="_blank" rel="noopener noreferrer">Gen Z \& Gen Alpha Slang Dictionary</a>
+                </h3>
+                <a href="https://jefers.github.io/cc/genz/index.html" class="project-link" target="_blank" rel="noopener noreferrer">
+                    Open Project
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Generated from CSV • Auto-updating • $(date)</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add hover effects
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'all 0.3s ease';
+            });
+        });
+        
+        // Make all links open in new tab
+        document.querySelectorAll('a').forEach(link => {
+            if (link.href && !link.href.includes('#')) {
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+            }
+        });
+    </script>
+</body>
+</html>
