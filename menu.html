@@ -6,75 +6,51 @@
     <title>Project Portfolio Menu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS @property for modern browsers - Updated to Purple Theme */
         @property --angle {
             syntax: '<angle>';
             initial-value: 0deg;
             inherits: false;
         }
 
-        /* COMPREHENSIVE DESIGN SYSTEM - PURPLE THEME */
         :root {
-            /* Color scheme - Dark mode */
             --primary-bg: #0a0a0a;
             --secondary-bg: #1a1a1a;
             --tertiary-bg: #2a2a2a;
             --primary-text: #ffffff;
             --secondary-text: #a0a0a0;
-            --accent-color: #9333ea; /* Purple accent */
+            --accent-color: #9333ea;
+            --accent-danger: #ef4444;
+            --accent-warning: #f59e0b;
+            --accent-success: #10b981;
             --border-color: rgba(255, 255, 255, 0.1);
             
-            /* Light mode overrides */
-            --primary-bg-light: #ffffff;
-            --secondary-bg-light: #f8f9fa;
-            --tertiary-bg-light: #e9ecef;
-            --primary-text-light: #1a1a1a;
-            --secondary-text-light: #6c757d;
-            --border-color-light: rgba(0, 0, 0, 0.1);
-            
-            /* Theme color variations - Purple theme */
             --theme-1: #9333ea;
             --theme-2: #7c3aed;
             --theme-3: #6d28d9;
-            --theme-4: #ddd6fe;
             
-            /* Glowing border colors - Purple theme */
             --glow-color-1: #9333ea;
             --glow-color-2: #7c3aed;
             --glow-color-3: #8b5cf6;
             --glow-color-4: #c4b5fd;
             
-            /* Design tokens */
             --border-radius-card: 16px;
             --border-radius-button: 12px;
-            --border-radius-input: 12px;
             --transition-base: all 0.3s ease;
-            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            --font-size-base: 16px;
-            --line-height-base: 1.6;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             
-            /* Spacing */
-            --spacing-xs: 4px;
             --spacing-sm: 8px;
             --spacing-md: 16px;
             --spacing-lg: 24px;
             --spacing-xl: 32px;
-            
-            /* Z-index layers */
-            --z-background: 0;
-            --z-content: 10;
-            --z-overlay: 100;
-            --z-modal: 1000;
-            --z-toast: 10000;
         }
 
         .light-mode {
-            --primary-bg: var(--primary-bg-light);
-            --secondary-bg: var(--secondary-bg-light);
-            --tertiary-bg: var(--tertiary-bg-light);
-            --primary-text: var(--primary-text-light);
-            --secondary-text: var(--secondary-text-light);
-            --border-color: var(--border-color-light);
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --tertiary-bg: #e9ecef;
+            --primary-text: #1a1a1a;
+            --secondary-text: #6c757d;
+            --border-color: rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -85,8 +61,6 @@
 
         body {
             font-family: var(--font-stack);
-            font-size: var(--font-size-base);
-            line-height: var(--line-height-base);
             background-color: var(--primary-bg);
             color: var(--primary-text);
             padding: var(--spacing-md);
@@ -99,7 +73,7 @@
             margin: 0 auto;
         }
 
-        /* Header Styles */
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -122,13 +96,6 @@
             font-size: 2rem;
         }
 
-        .controls {
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: center;
-        }
-
-        /* Theme Toggle */
         .theme-toggle {
             background: var(--tertiary-bg);
             border: 1px solid var(--border-color);
@@ -146,11 +113,70 @@
         .theme-toggle:hover {
             color: var(--accent-color);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
         }
 
-        .theme-toggle i {
-            font-size: 1.25rem;
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: var(--border-radius-button);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition-base);
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--accent-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0d9669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
         }
 
         /* Filter Controls */
@@ -180,7 +206,7 @@
             padding: 12px 12px 12px 40px;
             background: var(--tertiary-bg);
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-input);
+            border-radius: var(--border-radius-button);
             color: var(--primary-text);
             font-size: 16px;
             transition: var(--transition-base);
@@ -192,34 +218,34 @@
             box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
         }
 
-        .category-filter {
-            min-width: 180px;
+        .view-controls {
+            display: flex;
+            gap: var(--spacing-sm);
         }
 
-        .select-input {
-            width: 100%;
-            padding: 12px 14px;
+        .view-btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-button);
             background: var(--tertiary-bg);
+            color: var(--secondary-text);
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-input);
-            color: var(--primary-text);
-            font-size: 16px;
             cursor: pointer;
             transition: var(--transition-base);
+            font-weight: 500;
         }
 
-        .select-input:focus {
-            outline: none;
+        .view-btn.active {
+            background: var(--accent-color);
+            color: white;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
         }
 
-        /* Stats Display */
+        /* Stats */
         .stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
-            flex-wrap: wrap;
         }
 
         .stat-card {
@@ -227,8 +253,8 @@
             border-radius: var(--border-radius-card);
             padding: var(--spacing-md);
             border: 1px solid var(--border-color);
-            min-width: 150px;
             transition: var(--transition-base);
+            text-align: center;
         }
 
         .stat-card:hover {
@@ -241,7 +267,7 @@
             font-weight: 700;
             color: var(--accent-color);
             line-height: 1;
-            margin-bottom: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
         }
 
         .stat-label {
@@ -257,7 +283,7 @@
             margin-bottom: var(--spacing-xl);
         }
 
-        /* Glowing Card System */
+        /* Glowing Card */
         .card-glow-wrapper {
             position: relative;
             width: 100%;
@@ -278,7 +304,7 @@
                 var(--glow-color-1)
             );
             border-radius: calc(var(--border-radius-card) + 4px);
-            z-index: var(--z-background);
+            z-index: 0;
             animation: rotate 4s linear infinite;
             opacity: 0.7;
             filter: blur(20px);
@@ -297,7 +323,7 @@
                 var(--glow-color-1)
             );
             border-radius: calc(var(--border-radius-card) + 2px);
-            z-index: calc(var(--z-background) + 1);
+            z-index: 1;
             animation: rotate 4s linear infinite;
         }
 
@@ -307,7 +333,6 @@
             }
         }
 
-        /* Fallback for browsers without @property support */
         @supports not (background: conic-gradient(from var(--angle), red, blue)) {
             .card-glow-wrapper::before,
             .card-glow-wrapper::after {
@@ -326,7 +351,7 @@
             background: var(--secondary-bg);
             border-radius: var(--border-radius-card);
             padding: var(--spacing-lg);
-            z-index: calc(var(--z-background) + 2);
+            z-index: 2;
             overflow: hidden;
             height: 100%;
             display: flex;
@@ -338,6 +363,15 @@
             transform: translateY(-8px);
         }
 
+        .project-card.hidden {
+            opacity: 0.5;
+            background: var(--tertiary-bg);
+        }
+
+        .project-card.deleted {
+            display: none;
+        }
+
         .project-header {
             display: flex;
             align-items: flex-start;
@@ -345,13 +379,22 @@
             margin-bottom: var(--spacing-md);
         }
 
-        .project-thumbnail {
+        .thumbnail-placeholder {
             width: 60px;
             height: 60px;
             border-radius: 12px;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
             flex-shrink: 0;
+        }
+
+        .project-info {
+            flex: 1;
         }
 
         .project-title {
@@ -359,13 +402,12 @@
             font-weight: 600;
             color: var(--primary-text);
             line-height: 1.3;
-            margin-bottom: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
         }
 
         .project-title a {
             color: inherit;
             text-decoration: none;
-            transition: var(--transition-base);
         }
 
         .project-title a:hover {
@@ -380,19 +422,12 @@
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
-            border: 1px solid rgba(147, 51, 234, 0.2);
-        }
-
-        .project-description {
-            color: var(--secondary-text);
-            margin-bottom: var(--spacing-md);
-            flex-grow: 1;
         }
 
         .project-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-sm);
             margin-bottom: var(--spacing-md);
         }
 
@@ -405,45 +440,109 @@
             border: 1px solid var(--border-color);
         }
 
-        .project-footer {
+        .project-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: auto;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: var(--border-radius-button);
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .hide-btn {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .hide-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .show-btn {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .show-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Hidden Panel */
+        .hidden-panel {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .hidden-panel.show {
+            display: block;
+        }
+
+        .hidden-panel h3 {
+            margin-bottom: var(--spacing-md);
+            color: var(--accent-warning);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .hidden-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .hidden-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: var(--spacing-md);
-            border-top: 1px solid var(--border-color);
-            margin-top: auto;
-        }
-
-        .project-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
+            padding: var(--spacing-md);
             background: var(--tertiary-bg);
-            color: var(--primary-text);
             border-radius: var(--border-radius-button);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition-base);
             border: 1px solid var(--border-color);
         }
 
-        .project-link:hover {
-            background: var(--accent-color);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.4);
+        .hidden-item-info {
+            flex: 1;
         }
 
-        .project-link i {
-            font-size: 0.9rem;
+        .hidden-item-title {
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
-        .project-color {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
+        .hidden-item-category {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
         }
 
         /* Footer */
@@ -456,23 +555,38 @@
             margin-top: var(--spacing-xl);
         }
 
-        /* No Results Message */
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: var(--spacing-xl);
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             background: var(--secondary-bg);
-            border-radius: var(--border-radius-card);
-            border: 1px solid var(--border-color);
+            color: var(--primary-text);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-button);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--accent-color);
+            z-index: 10000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition-base);
+            max-width: 300px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
 
-        .no-results i {
-            font-size: 3rem;
-            color: var(--secondary-text);
-            margin-bottom: var(--spacing-md);
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
         }
 
-        /* Responsive Design */
+        .toast i {
+            color: var(--accent-color);
+        }
+
+        /* Responsive */
         @media (min-width: 768px) {
             body {
                 padding: var(--spacing-lg);
@@ -482,13 +596,17 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .stat-card {
-                min-width: 180px;
+            .hidden-list {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (min-width: 1024px) {
             .projects-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .hidden-list {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
@@ -499,11 +617,9 @@
             }
         }
 
-        /* Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
             
@@ -513,73 +629,78 @@
             }
             
             .project-card:hover,
-            .project-link:hover,
-            .theme-toggle:hover {
+            .action-btn:hover {
                 transform: none !important;
             }
-        }
-
-        /* Focus States for Accessibility */
-        :focus-visible {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="logo">
                 <i class="fas fa-code"></i>
-                <span>Portfolio Menu</span>
+                <span>Project Portfolio</span>
             </div>
-            <div class="controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
         </header>
 
-        <!-- Filter Controls -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="exportActive">
+                <i class="fas fa-download"></i> Export Active
+            </button>
+            <button class="btn btn-secondary" id="exportHidden">
+                <i class="fas fa-eye-slash"></i> Export Hidden
+            </button>
+            <button class="btn btn-success" id="showAll">
+                <i class="fas fa-eye"></i> Show All
+            </button>
+            <button class="btn btn-danger" id="clearHidden">
+                <i class="fas fa-trash"></i> Clear Hidden
+            </button>
+        </div>
+
         <div class="filter-controls">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text" class="search-input" id="searchInput" placeholder="Search projects...">
             </div>
-            <div class="category-filter">
-                <select class="select-input" id="categoryFilter">
-                    <option value="">All Categories</option>
-                    <!-- Categories will be populated by JavaScript -->
-                </select>
+            <div class="view-controls">
+                <button class="view-btn active" data-view="active">Active</button>
+                <button class="view-btn" data-view="hidden">Hidden</button>
+                <button class="view-btn" data-view="all">All</button>
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-value" id="totalProjects">0</div>
                 <div class="stat-label">Total Projects</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="visibleProjects">0</div>
-                <div class="stat-label">Visible Projects</div>
+                <div class="stat-value" id="activeProjects">0</div>
+                <div class="stat-label">Active Projects</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="uniqueCategories">0</div>
-                <div class="stat-label">Categories</div>
+                <div class="stat-value" id="hiddenProjects">0</div>
+                <div class="stat-label">Hidden Projects</div>
             </div>
         </div>
 
-        <!-- Projects Grid -->
         <div class="projects-grid" id="projectsGrid">
-            <!-- Projects will be loaded here -->
+            <!-- Projects loaded here -->
         </div>
 
-        <!-- Footer -->
+        <div class="hidden-panel" id="hiddenPanel">
+            <h3><i class="fas fa-eye-slash"></i> Hidden Projects</h3>
+            <div class="hidden-list" id="hiddenList"></div>
+        </div>
+
         <footer class="footer">
-            <p>Generated from CSV data • Updated automatically</p>
-            <p><i class="fas fa-sync-alt"></i> Auto-refresh when CSV changes</p>
+            <p>Click "Hide" to temporarily hide projects • Double-click to permanently delete</p>
+            <p><i class="fas fa-save"></i> All changes are saved in your browser</p>
         </footer>
     </div>
 
@@ -591,15 +712,9 @@
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             const isLightMode = document.body.classList.contains('light-mode');
-            
-            // Update icon
             themeIcon.className = isLightMode ? 'fas fa-sun' : 'fas fa-moon';
-            
-            // Save preference
             localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-            
-            // Show toast notification
-            showToast(`Switched to ${isLightMode ? 'light' : 'dark'} mode`);
+            showToast('Theme changed');
         });
 
         // Load saved theme
@@ -609,1080 +724,1298 @@
             themeIcon.className = 'fas fa-sun';
         }
 
-        // Project Data and Filtering
-        let projects = [];
-        let categories = new Set();
+        // Project Data
+        const PROJECTS = [
+            {
+                id: "c2be243c25a4fb09adb8512f0e1ccc36",
+                title: "HiProX",
+                url: "https://jefers./cc/hiprox/index.html",
+                category: "hiprox",
+                tags: "hiprox",
+                color: "#3498db",
+                initials: "H"
+            },
+            {
+                id: "5b742cbeb1729edee21c2d0c1294774b",
+                title: "Meal & Stock Planner",
+                url: "https://jefers.github.io/cc/sl/index.html",
+                category: "sl",
+                tags: "sl",
+                color: "#3498db",
+                initials: "MS"
+            },
+            {
+                id: "318ae99fa0c1e610c2090ce817b22cb9",
+                title: "PIS Wizard - Project Intent Specification",
+                url: "https://jefers.github.io/cc/pis/gl/index.html",
+                category: "pis",
+                tags: "pis;gl",
+                color: "#3498db",
+                initials: "PI"
+            },
+            {
+                id: "07bc9e1763a7d6644da1ee51f3bd5511",
+                title: "MarkDownCards",
+                url: "https://jefers.github.io/cc/mdc/index.html",
+                category: "mdc",
+                tags: "mdc",
+                color: "#3498db",
+                initials: "M"
+            },
+            {
+                id: "061ad13ec90b2c7698ab644da32b24dd",
+                title: "Lisburn Personal Trainer - Coach Christian | Built for More!",
+                url: "https://jefers.github.io/cc/B4M/index.html",
+                category: "B4M",
+                tags: "B4M",
+                color: "#3498db",
+                initials: "LP"
+            },
+            {
+                id: "6e4d100540998bdf0adf5242ddcda805",
+                title: "5-Step Process Killer",
+                url: "https://jefers.github.io/cc/pk/index.html",
+                category: "pk",
+                tags: "pk",
+                color: "#3498db",
+                initials: "SP"
+            },
+            {
+                id: "9a27d120729c821a76cd1a33013df148",
+                title: "Philippine Adventure 🌴",
+                url: "https://jefers.github.io/cc/holiday/index.html",
+                category: "holiday",
+                tags: "holiday",
+                color: "#3498db",
+                initials: "PA"
+            },
+            {
+                id: "e927703c2d22634b7074360c56a41fbf",
+                title: "Modern CSS Carousel",
+                url: "https://jefers.github.io/cc/car/index.html",
+                category: "car",
+                tags: "car",
+                color: "#3498db",
+                initials: "MC"
+            },
+            {
+                id: "480c74868127f2b56b7aeaf8b0ab94c2",
+                title: "Modern CSS Carousel",
+                url: "https://jefers.github.io/cc/car/kimi/index.html",
+                category: "car",
+                tags: "car;kimi",
+                color: "#3498db",
+                initials: "MC"
+            },
+            {
+                id: "1f646f91b138db8339451ef43dc00853",
+                title: "Meter Reader",
+                url: "https://jefers.github.io/cc/emr/index.html",
+                category: "emr",
+                tags: "emr",
+                color: "#3498db",
+                initials: "MR"
+            },
+            {
+                id: "909d9313d64389337e0f9abeb28dca25",
+                title: "test",
+                url: "https://jefers.github.io/cc/emr/node_modules/idb-keyval/dist/test/index.html",
+                category: "emr",
+                tags: "emr;node_modules;idb_keyval;dist;test",
+                color: "#3498db",
+                initials: "TE"
+            },
+            {
+                id: "c2a894cce0138e5e182ed004fca27fd2",
+                title: "Your Client Acquisition Story",
+                url: "https://jefers.github.io/cc/daad/index.html",
+                category: "daad",
+                tags: "daad",
+                color: "#3498db",
+                initials: "YC"
+            },
+            {
+                id: "2a0e9dcb4625c71d656de1652d4b3dff",
+                title: "Fitness Metrics Tools",
+                url: "https://jefers.github.io/cc/tools/index.html",
+                category: "tools",
+                tags: "tools",
+                color: "#3498db",
+                initials: "FM"
+            },
+            {
+                id: "685d3c25523437ad421cad27982151e8",
+                title: "SVG Icon System",
+                url: "https://jefers.github.io/cc/svg-icon-system/index.html",
+                category: "svg-icon-system",
+                tags: "svg_icon_system",
+                color: "#3498db",
+                initials: "SV"
+            },
+            {
+                id: "194ada7b33f61b041ffc2a0a8d29f8a9",
+                title: "MotorTrip Calc - Motorbike Camping Cost Estimator",
+                url: "https://jefers.github.io/cc/mt/index.html",
+                category: "mt",
+                tags: "mt",
+                color: "#3498db",
+                initials: "MC"
+            },
+            {
+                id: "d3f1918cafe6aaa8789ea582ec4c5a35",
+                title: "Mobile-first Boilerplate — Light & Dark",
+                url: "https://jefers.github.io/cc/bp/cgtp/index.html",
+                category: "bp",
+                tags: "bp;cgtp",
+                color: "#3498db",
+                initials: "MB"
+            },
+            {
+                id: "523dd55f46322cd6b05d374626115345",
+                title: "Modern UI Boilerplate",
+                url: "https://jefers.github.io/cc/bp/ds/index.html",
+                category: "bp",
+                tags: "bp;ds",
+                color: "#3498db",
+                initials: "MU"
+            },
+            {
+                id: "da2b9551beff25e139881928dcbbd406",
+                title: "Modern Design System",
+                url: "https://jefers.github.io/cc/bp/claude/index.html",
+                category: "bp",
+                tags: "bp;claude",
+                color: "#3498db",
+                initials: "MD"
+            },
+            {
+                id: "327ebba1fd4220b549666bd0a6c5ef18",
+                title: "Design System Boilerplate",
+                url: "https://jefers.github.io/cc/bp/grok/index.html",
+                category: "bp",
+                tags: "bp;grok",
+                color: "#3498db",
+                initials: "DS"
+            },
+            {
+                id: "1dad8b983ebbcd8813e2e3c3e3c234d6",
+                title: "Design Template",
+                url: "https://jefers.github.io/cc/apl/index.html",
+                category: "apl",
+                tags: "apl",
+                color: "#3498db",
+                initials: "DT"
+            },
+            {
+                id: "f0fa96ef334c7033699d7a86d43c6002",
+                title: "House Material Prompt Builder",
+                url: "https://jefers.github.io/cc/hm/index.html",
+                category: "hm",
+                tags: "hm",
+                color: "#3498db",
+                initials: "HM"
+            },
+            {
+                id: "2614acdfbf062b5b32bb2a5838a1cadb",
+                title: "Happy Days",
+                url: "https://jefers.github.io/cc/hd/index.html",
+                category: "hd",
+                tags: "hd",
+                color: "#3498db",
+                initials: "HD"
+            },
+            {
+                id: "cad563332cd016b6a521ba3c0269ad12",
+                title: "Bullion Count Calculator",
+                url: "https://jefers.github.io/cc/bc/index.html",
+                category: "bc",
+                tags: "bc",
+                color: "#3498db",
+                initials: "BC"
+            },
+            {
+                id: "9cbea943b34fce87696234a57715a16a",
+                title: "Dynamic Menu",
+                url: "https://jefers.github.io/cc/dm2/index.html",
+                category: "dm2",
+                tags: "dm2",
+                color: "#3498db",
+                initials: "DM"
+            },
+            {
+                id: "aa4765254965d1879c81c883361b2909",
+                title: "Client Notes - Fitness Coach",
+                url: "https://jefers.github.io/cc/cn/index.html",
+                category: "cn",
+                tags: "cn",
+                color: "#3498db",
+                initials: "CN"
+            },
+            {
+                id: "ee0b16e12a901d773ae025f3a2b03457",
+                title: "Video Clipper",
+                url: "https://jefers.github.io/cc/clip/km/index.html",
+                category: "clip",
+                tags: "clip;km",
+                color: "#3498db",
+                initials: "VC"
+            },
+            {
+                id: "f6998c84cbf45c4d605ba57ad0f17d23",
+                title: "Simple Video Clipper",
+                url: "https://jefers.github.io/cc/clip/gp/index.html",
+                category: "clip",
+                tags: "clip;gp",
+                color: "#3498db",
+                initials: "SV"
+            },
+            {
+                id: "12291efb2167ad36cf085804f56c7595",
+                title: "Video Clipper | Browser-Based Video Editing",
+                url: "https://jefers.github.io/cc/clip/dp/index.html",
+                category: "clip",
+                tags: "clip;dp",
+                color: "#3498db",
+                initials: "VC"
+            },
+            {
+                id: "9e4a7c75723ae2aeefce9f137860f581",
+                title: "Household Electric Estimator",
+                url: "https://jefers.github.io/cc/el/gl/index.html",
+                category: "el",
+                tags: "el;gl",
+                color: "#3498db",
+                initials: "HE"
+            },
+            {
+                id: "a7f1740962883f2bd5b7aeadde27dfc5",
+                title: "dp",
+                url: "https://jefers.github.io/cc/el/dp/index.html",
+                category: "el",
+                tags: "el;dp",
+                color: "#3498db",
+                initials: "DP"
+            },
+            {
+                id: "375b72103f4d0823dc6195b18d631b3d",
+                title: "EZfit - Fitness Routine Tracker",
+                url: "https://jefers.github.io/cc/ezfit/index.html",
+                category: "ezfit",
+                tags: "ezfit",
+                color: "#3498db",
+                initials: "EZ"
+            },
+            {
+                id: "5197db84c4f910ce55129ce89b0cd937",
+                title: "Photo Gallery",
+                url: "https://jefers.github.io/cc/gallery/index.html",
+                category: "gallery",
+                tags: "gallery",
+                color: "#3498db",
+                initials: "PG"
+            },
+            {
+                id: "b09b54e251e1273324ad76cbcdc92888",
+                title: "Pasko Panalo Club - Menu",
+                url: "https://jefers.github.io/cc/ppc/index.html",
+                category: "ppc",
+                tags: "ppc",
+                color: "#3498db",
+                initials: "PP"
+            },
+            {
+                id: "4b0244a506bd1ef3c8eeb8653e472990",
+                title: "Pasko Panalo Club",
+                url: "https://jefers.github.io/cc/ppc/members/index.html",
+                category: "ppc",
+                tags: "ppc;members",
+                color: "#3498db",
+                initials: "PP"
+            },
+            {
+                id: "2789aca06291eb34a9def6d346016b03",
+                title: "Streaming Diagnostic Checklist — Francine",
+                url: "https://jefers.github.io/cc/it/gpt/index.html",
+                category: "it",
+                tags: "it;gpt",
+                color: "#3498db",
+                initials: "SD"
+            },
+            {
+                id: "36d91ba68e9eaf77aa26fc6863e2d8a6",
+                title: "Webcam Quality Diagnostic",
+                url: "https://jefers.github.io/cc/it/ds/index.html",
+                category: "it",
+                tags: "it;ds",
+                color: "#3498db",
+                initials: "WQ"
+            },
+            {
+                id: "8bd2cc38f565a170213fa9b3b7c4988a",
+                title: "Webcam Quality Diagnostic",
+                url: "https://jefers.github.io/cc/it/dsk/index.html",
+                category: "it",
+                tags: "it;dsk",
+                color: "#3498db",
+                initials: "WQ"
+            },
+            {
+                id: "8dfe3d2ae9139ca4a9cdd6207c4d6ae5",
+                title: "Sleep Strategy Tracker",
+                url: "https://jefers.github.io/cc/cs/index.html",
+                category: "cs",
+                tags: "cs",
+                color: "#3498db",
+                initials: "SS"
+            },
+            {
+                id: "b0970413cfe45dd570a2fb0217c8d760",
+                title: "File System Navigator",
+                url: "https://jefers.github.io/cc/jar/index.html",
+                category: "jar",
+                tags: "jar",
+                color: "#3498db",
+                initials: "FS"
+            },
+            {
+                id: "0eea157ad8ac31621647735d9e88120e",
+                title: "Jar Money",
+                url: "https://jefers.github.io/cc/jar/gr/index.html",
+                category: "jar",
+                tags: "jar;gr",
+                color: "#3498db",
+                initials: "JM"
+            },
+            {
+                id: "fe4f3b93be5fb77f2dddb67cc6f3caa2",
+                title: "Jars",
+                url: "https://jefers.github.io/cc/jar/gp/index.html",
+                category: "jar",
+                tags: "jar;gp",
+                color: "#3498db",
+                initials: "J"
+            },
+            {
+                id: "641d73f81aea1212dd49354a218db15a",
+                title: "Money Jars",
+                url: "https://jefers.github.io/cc/jar/gl/index.html",
+                category: "jar",
+                tags: "jar;gl",
+                color: "#3498db",
+                initials: "MJ"
+            },
+            {
+                id: "76c92df31db77c7891f0cde6a5caa0c6",
+                title: "Money Jars",
+                url: "https://jefers.github.io/cc/jar/dp/index.html",
+                category: "jar",
+                tags: "jar;dp",
+                color: "#3498db",
+                initials: "MJ"
+            },
+            {
+                id: "669527fb6b8110d5ca42fb6cd855f2aa",
+                title: "Jars",
+                url: "https://jefers.github.io/cc/jar/gm/index.html",
+                category: "jar",
+                tags: "jar;gm",
+                color: "#3498db",
+                initials: "J"
+            },
+            {
+                id: "dd40039503975159683cb2bfce56fe9c",
+                title: "Money Jars",
+                url: "https://jefers.github.io/cc/jar/cl/index.html",
+                category: "jar",
+                tags: "jar;cl",
+                color: "#3498db",
+                initials: "MJ"
+            },
+            {
+                id: "2fac8af1ad127ce78fff8bfb0a179901",
+                title: "Money Jars",
+                url: "https://jefers.github.io/cc/jar/qw/index.html",
+                category: "jar",
+                tags: "jar;qw",
+                color: "#3498db",
+                initials: "MJ"
+            },
+            {
+                id: "c3a7e7ed29def2321cbc56bf77ec225e",
+                title: "fb",
+                url: "https://jefers.github.io/cc/fb/index.html",
+                category: "fb",
+                tags: "fb",
+                color: "#3498db",
+                initials: "FB"
+            },
+            {
+                id: "365d5209138dd33472d564819b490e0f",
+                title: "Dynamic Menu",
+                url: "https://jefers.github.io/cc/dmc/index.html",
+                category: "dmc",
+                tags: "dmc",
+                color: "#3498db",
+                initials: "DM"
+            },
+            {
+                id: "a5410fbff00205658c3fee3e5dfa6cda",
+                title: "Your Business Systems Blueprint",
+                url: "https://jefers.github.io/cc/dabas/index.html",
+                category: "dabas",
+                tags: "dabas",
+                color: "#3498db",
+                initials: "YB"
+            },
+            {
+                id: "546d3fac54713042fd592cf6e13b0f7f",
+                title: "Dynamic Menu",
+                url: "https://jefers.github.io/cc/dmd/index.html",
+                category: "dmd",
+                tags: "dmd",
+                color: "#3498db",
+                initials: "DM"
+            },
+            {
+                id: "408d97d591b0ea60234f7db101826cbb",
+                title: "TextSnap - Image Text Extractor",
+                url: "https://jefers.github.io/cc/ocr/index.html",
+                category: "ocr",
+                tags: "ocr",
+                color: "#3498db",
+                initials: "TI"
+            },
+            {
+                id: "ce61768b846580ec0680fbff2195878f",
+                title: "Infinite Fractal Explorer",
+                url: "https://jefers.github.io/cc/fractal/glk47/index.html",
+                category: "fractal",
+                tags: "fractal;glk47",
+                color: "#3498db",
+                initials: "IF"
+            },
+            {
+                id: "45fd83f1222463b0822bca11a502139d",
+                title: "Dynamic Website",
+                url: "https://jefers.github.io/cc/markdown-site/pages/index.html",
+                category: "markdown-site",
+                tags: "markdown_site;pages",
+                color: "#3498db",
+                initials: "DW"
+            },
+            {
+                id: "811d0e1f125d21806ef26ac25645e383",
+                title: "Snap2Sell MVP",
+                url: "https://jefers.github.io/cc/s2s/index.html",
+                category: "s2s",
+                tags: "s2s",
+                color: "#3498db",
+                initials: "SM"
+            },
+            {
+                id: "a94723a758d68e017e8954a123b33590",
+                title: "Advanced LocalStorage Manager",
+                url: "https://jefers.github.io/cc/lsm/index.html",
+                category: "lsm",
+                tags: "lsm",
+                color: "#3498db",
+                initials: "AL"
+            },
+            {
+                id: "dea4550f5defdce1e157d4339ba6e687",
+                title: "Arcade 10-in-1",
+                url: "https://jefers.github.io/cc/game/glk/index.html",
+                category: "game",
+                tags: "game;glk",
+                color: "#3498db",
+                initials: "A"
+            },
+            {
+                id: "71993c333dc58ae2727397664f2d19d3",
+                title: "Workouts",
+                url: "https://jefers.github.io/cc/td/index.html",
+                category: "td",
+                tags: "td",
+                color: "#3498db",
+                initials: "W"
+            },
+            {
+                id: "eeafeeda7b25e3e1e103ded8352615d9",
+                title: "Christian Coaching",
+                url: "https://jefers.github.io/cc/docs/index.html",
+                category: "docs",
+                tags: "docs",
+                color: "#3498db",
+                initials: "CC"
+            },
+            {
+                id: "2881631abc9a3a37ba472d2977d9ab71",
+                title: "QR Code Generator",
+                url: "https://jefers.github.io/cc/qr/index.html",
+                category: "qr",
+                tags: "qr",
+                color: "#3498db",
+                initials: "QR"
+            },
+            {
+                id: "b921a2313d7bb92132334719787fefb1",
+                title: "Till Banking",
+                url: "https://jefers.github.io/cc/tc/index.html",
+                category: "tc",
+                tags: "tc",
+                color: "#3498db",
+                initials: "TB"
+            },
+            {
+                id: "f286d4a66273bd727c4ec33a6631f337",
+                title: "FitTrack | 12-Week Weight Loss Journey",
+                url: "https://jefers.github.io/cc/wl/deep/index.html",
+                category: "wl",
+                tags: "wl;deep",
+                color: "#3498db",
+                initials: "FW"
+            },
+            {
+                id: "232f2aa7e24ac47acb0020940dfa0730",
+                title: "12-Week Weight Loss Tracker",
+                url: "https://jefers.github.io/cc/wl/kimi/index.html",
+                category: "wl",
+                tags: "wl;kimi",
+                color: "#3498db",
+                initials: "WW"
+            },
+            {
+                id: "263d06b74f4095888007a31034a88149",
+                title: "QNotes (qn)",
+                url: "https://jefers.github.io/cc/qn/index.html",
+                category: "qn",
+                tags: "qn",
+                color: "#3498db",
+                initials: "QN"
+            },
+            {
+                id: "bda554a6acca1e0b00e6ecbec937d77c",
+                title: "Sleep Strategies",
+                url: "https://jefers.github.io/cc/ss/index.html",
+                category: "ss",
+                tags: "ss",
+                color: "#3498db",
+                initials: "SS"
+            },
+            {
+                id: "68340ae93f39ba14be9c7049195a9ecb",
+                title: "Gymerly",
+                url: "https://jefers.github.io/cc/gymerly/index.html",
+                category: "gymerly",
+                tags: "gymerly",
+                color: "#3498db",
+                initials: "G"
+            },
+            {
+                id: "048f24a6e6279927e61ad418654327cf",
+                title: "CClub - Filipino Christmas Savings Club",
+                url: "https://jefers.github.io/cc/cclub/index.html",
+                category: "cclub",
+                tags: "cclub",
+                color: "#3498db",
+                initials: "CC"
+            },
+            {
+                id: "30664a8f713a06c8be5af6c5ed3b6605",
+                title: "CClub - Member Home",
+                url: "https://jefers.github.io/cc/cclub/members/index.html",
+                category: "cclub",
+                tags: "cclub;members",
+                color: "#3498db",
+                initials: "CC"
+            },
+            {
+                id: "f059c9993b201f00ef55a9e18e4d9f7d",
+                title: "Business Systems Quest",
+                url: "https://jefers.github.io/cc/daba/index.html",
+                category: "daba",
+                tags: "daba",
+                color: "#3498db",
+                initials: "BS"
+            },
+            {
+                id: "d3782f56dcf5eb42fd0db08fb10d592b",
+                title: "Business Systems Documentation",
+                url: "https://jefers.github.io/cc/daba/bsrb/index.html",
+                category: "daba",
+                tags: "daba;bsrb",
+                color: "#3498db",
+                initials: "BS"
+            },
+            {
+                id: "fa6d9c3e62b13c25aed8e9e6965bce78",
+                title: "PhotoShop Clone - Layer-Based Image Editor",
+                url: "https://jefers.github.io/cc/ps/index.html",
+                category: "ps",
+                tags: "ps",
+                color: "#3498db",
+                initials: "PC"
+            },
+            {
+                id: "50045f3c0c28aa11b147268796d87c4b",
+                title: "Vocabulato - Small words. Big fluency.",
+                url: "https://jefers.github.io/cc/vc/ds/index.html",
+                category: "vc",
+                tags: "vc;ds",
+                color: "#3498db",
+                initials: "VS"
+            },
+            {
+                id: "fc196637c58e64f90836554531f7ad69",
+                title: "Shop Inventory App",
+                url: "https://jefers.github.io/cc/si/index.html",
+                category: "si",
+                tags: "si",
+                color: "#3498db",
+                initials: "SI"
+            },
+            {
+                id: "f8588df53d13ecd148e8d8c8c9dd8481",
+                title: "File Analyzer",
+                url: "https://jefers.github.io/cc/del/cl/index.html",
+                category: "del",
+                tags: "del;cl",
+                color: "#3498db",
+                initials: "FA"
+            },
+            {
+                id: "81fe5c5476923918a63c2ce92064f0d7",
+                title: "Mobile App Prompt Generator",
+                url: "https://jefers.github.io/cc/gp/index.html",
+                category: "gp",
+                tags: "gp",
+                color: "#3498db",
+                initials: "MA"
+            },
+            {
+                id: "58fad756d256cf04afb50b459170ad32",
+                title: "DeepSite Background",
+                url: "https://jefers.github.io/cc/an/km/index.html",
+                category: "an",
+                tags: "an;km",
+                color: "#3498db",
+                initials: "DB"
+            },
+            {
+                id: "3c87c9e0e9aff88689a7d8a998b55b41",
+                title: "Money Tracker - Spend Visualizer",
+                url: "https://jefers.github.io/cc/money/glm47/index.html",
+                category: "money",
+                tags: "money;glm47",
+                color: "#3498db",
+                initials: "MT"
+            },
+            {
+                id: "886134ea7b16fe2b02589cdec613b98a",
+                title: "Money Tracker - Spend Visualizer",
+                url: "https://jefers.github.io/cc/money/grok/index.html",
+                category: "money",
+                tags: "money;grok",
+                color: "#3498db",
+                initials: "MT"
+            },
+            {
+                id: "3efe27dc8fedeae646e3f6b8c091877d",
+                title: "Human Gut Bacteria Taxonomy Tree",
+                url: "https://jefers.github.io/cc/gb/index.html",
+                category: "gb",
+                tags: "gb",
+                color: "#3498db",
+                initials: "HG"
+            },
+            {
+                id: "83554d85c04fd68ef204bef2112dce5f",
+                title: "Human Gut Microbiome Interactive Tree",
+                url: "https://jefers.github.io/cc/gb/kimi/index.html",
+                category: "gb",
+                tags: "gb;kimi",
+                color: "#3498db",
+                initials: "HG"
+            },
+            {
+                id: "d3a62a31be5c64fa68ac94985cb374d7",
+                title: "Dynamic Menu",
+                url: "https://jefers.github.io/cc/dm/index.html",
+                category: "dm",
+                tags: "dm",
+                color: "#3498db",
+                initials: "DM"
+            },
+            {
+                id: "17688a8e037bc901064978b173cfbd8d",
+                title: "dd",
+                url: "https://jefers.github.io/cc/dd/index.html",
+                category: "dd",
+                tags: "dd",
+                color: "#3498db",
+                initials: "DD"
+            },
+            {
+                id: "757bf0e1a342fd9e38e345b83f39cd6c",
+                title: "Fitness Hub",
+                url: "https://jefers.github.io/cc/fitness-hub/index.html",
+                category: "fitness-hub",
+                tags: "fitness_hub",
+                color: "#3498db",
+                initials: "FH"
+            },
+            {
+                id: "b6c79d4cf6f9c6a950d95b488aeccc27",
+                title: "Training Days",
+                url: "https://jefers.github.io/cc/mm/index.html",
+                category: "mm",
+                tags: "mm",
+                color: "#3498db",
+                initials: "TD"
+            },
+            {
+                id: "50e1ee7fddef6d15a777c9d69fefa30b",
+                title: "Trip Planner",
+                url: "https://jefers.github.io/cc/trip-planner/index.html",
+                category: "trip-planner",
+                tags: "trip_planner",
+                color: "#3498db",
+                initials: "TP"
+            },
+            {
+                id: "7f0b058915156285898b7c1583426bdc",
+                title: "Unit Price Calculator",
+                url: "https://jefers.github.io/cc/hn/index.html",
+                category: "hn",
+                tags: "hn",
+                color: "#3498db",
+                initials: "UP"
+            },
+            {
+                id: "0da65deeb08fc6c1bf541f0bdb3d201d",
+                title: "Meter Reader",
+                url: "https://jefers.github.io/cc/ecmr/index.html",
+                category: "ecmr",
+                tags: "ecmr",
+                color: "#3498db",
+                initials: "MR"
+            },
+            {
+                id: "e5c9581885101b5631a20052ff294339",
+                title: "Pinecraft",
+                url: "https://jefers.github.io/cc/pinecraft/index.html",
+                category: "pinecraft",
+                tags: "pinecraft",
+                color: "#3498db",
+                initials: "P"
+            },
+            {
+                id: "6cf32343d4cb2f2b0cfe4571707eb842",
+                title: "Pasko Panalo Club",
+                url: "https://jefers.github.io/cc/ppclub/index.html",
+                category: "ppclub",
+                tags: "ppclub",
+                color: "#3498db",
+                initials: "PP"
+            },
+            {
+                id: "805d476c57e03c9510c7000b53a4defe",
+                title: "ds",
+                url: "https://jefers.github.io/cc/je/ds/index.html",
+                category: "je",
+                tags: "je;ds",
+                color: "#3498db",
+                initials: "DS"
+            },
+            {
+                id: "5f64d87282462b3e898b7ae7e04029b8",
+                title: "Hours Tracker",
+                url: "https://jefers.github.io/cc/hours/index.html",
+                category: "hours",
+                tags: "hours",
+                color: "#3498db",
+                initials: "HT"
+            },
+            {
+                id: "11808ef224a6f4083f21c43d9b9790cb",
+                title: "Hours Tracker - Compact Edition",
+                url: "https://jefers.github.io/cc/hours/glm47/index.html",
+                category: "hours",
+                tags: "hours;glm47",
+                color: "#3498db",
+                initials: "HT"
+            },
+            {
+                id: "8fd132feed1a4fa81fd6bcd9f39a2224",
+                title: "Hours Tracker",
+                url: "https://jefers.github.io/cc/hours/grok/index.html",
+                category: "hours",
+                tags: "hours;grok",
+                color: "#3498db",
+                initials: "HT"
+            },
+            {
+                id: "48925c23da6f659cef10d812cc7ed74f",
+                title: "Hours Tracker - Compact Edition",
+                url: "https://jefers.github.io/cc/hours/grok2/index.html",
+                category: "hours",
+                tags: "hours;grok2",
+                color: "#3498db",
+                initials: "HT"
+            },
+            {
+                id: "36b5e537634d4b61d630c1e21c8e2049",
+                title: "Hours Tracker",
+                url: "https://jefers.github.io/cc/hours/kimi/index.html",
+                category: "hours",
+                tags: "hours;kimi",
+                color: "#3498db",
+                initials: "HT"
+            },
+            {
+                id: "97c1670612ccb5451eac7141a18561f6",
+                title: "Funnel Quest: Build Your Client Acquisition System",
+                url: "https://jefers.github.io/cc/dad/index.html",
+                category: "dad",
+                tags: "dad",
+                color: "#3498db",
+                initials: "FQ"
+            },
+            {
+                id: "0677920f3a8114cae41afeadcc3955b8",
+                title: "Dynamic Menu",
+                url: "https://jefers.github.io/cc/dm1/index.html",
+                category: "dm1",
+                tags: "dm1",
+                color: "#3498db",
+                initials: "DM"
+            },
+            {
+                id: "8193e874446329f4fb7d2dc5d5e7701c",
+                title: "Debt Consolidation Calculator",
+                url: "https://jefers.github.io/cc/ln/index.html",
+                category: "ln",
+                tags: "ln",
+                color: "#3498db",
+                initials: "DC"
+            },
+            {
+                id: "e758a13824396a49dc1571ee2d8774bc",
+                title: "trustee",
+                url: "https://jefers.github.io/cc/JP/trustee/index.html",
+                category: "JP",
+                tags: "JP;trustee",
+                color: "#3498db",
+                initials: "TR"
+            },
+            {
+                id: "971267dc3293261e08ad8cffda55ddae",
+                title: "Pasko Panalo Club - Menu",
+                url: "https://jefers.github.io/cc/JP/index.html",
+                category: "JP",
+                tags: "JP",
+                color: "#3498db",
+                initials: "PP"
+            },
+            {
+                id: "33b86abae80ea4049ae3b6d3d8649e2f",
+                title: "Pasko Panalo Club - Smart Saving for Christmas",
+                url: "https://jefers.github.io/cc/JP/members/index.html",
+                category: "JP",
+                tags: "JP;members",
+                color: "#3498db",
+                initials: "PP"
+            },
+            {
+                id: "8fd55ce26c9fbbccf9e475b2bc5d261b",
+                title: "Personal Trainer Website",
+                url: "https://jefers.github.io/cc/personal-trainer-website/index.html",
+                category: "personal-trainer-website",
+                tags: "personal_trainer_website",
+                color: "#3498db",
+                initials: "PT"
+            },
+            {
+                id: "f6dd4c925e59ff6bd0b7e31d0233cecf",
+                title: "Modern Animated Glowing Border",
+                url: "https://jefers.github.io/cc/boilerp/index.html",
+                category: "boilerp",
+                tags: "boilerp",
+                color: "#3498db",
+                initials: "MA"
+            },
+            {
+                id: "7430d7eaca4b26754630d4822cc4d8fb",
+                title: "Dynamic Website",
+                url: "https://jefers.github.io/cc/client-site/index.html",
+                category: "client-site",
+                tags: "client_site",
+                color: "#3498db",
+                initials: "DW"
+            },
+            {
+                id: "9565953e595b7fd3c6f9483a03560345",
+                title: "Home",
+                url: "https://jefers.github.io/cc/client-site/pages/index.html",
+                category: "client-site",
+                tags: "client_site;pages",
+                color: "#3498db",
+                initials: "H"
+            },
+            {
+                id: "3e90e88b9d2b9103054e4cd0a05ac9e4",
+                title: "House Power Simulator V3",
+                url: "https://jefers.github.io/cc/sim/el/gl/index.html",
+                category: "sim",
+                tags: "sim;el;gl",
+                color: "#3498db",
+                initials: "HP"
+            },
+            {
+                id: "db7ea64ee0b9c5e7b33e69d164ab3647",
+                title: "Pro Self-Portrait Setup Guide",
+                url: "https://jefers.github.io/cc/ip/ssp/index.html",
+                category: "ip",
+                tags: "ip;ssp",
+                color: "#3498db",
+                initials: "PS"
+            },
+            {
+                id: "c0bd8d41266d79367fe5a7e1b6881e63",
+                title: "Gen Z & Gen Alpha Slang Dictionary",
+                url: "https://jefers.github.io/cc/gena/index.html",
+                category: "gena",
+                tags: "gena",
+                color: "#3498db",
+                initials: "GZ"
+            },
+            {
+                id: "f0d446b0463196fb4a715cc17bb2a69e",
+                title: "Rent vs Buy Simulator",
+                url: "https://jefers.github.io/cc/rb/gp/index.html",
+                category: "rb",
+                tags: "rb;gp",
+                color: "#3498db",
+                initials: "RB"
+            },
+            {
+                id: "c348b59ce4c80f7c8fd8aecd96080b5a",
+                title: "Rent vs Buy Simulator (Historical",
+                url: " Deterministic)",
+                category: "https://jefers.github.io/cc/rb/gl/favicon.ico",
+                tags: "rb",
+                color: "rb;gl,#3498db",
+                initials: "RB"
+            },
+            {
+                id: "195d2c589718c7039b74288354ebcf81",
+                title: "Client Discovery Form - Website Content",
+                url: "https://jefers.github.io/cc/ws/gm/index.html",
+                category: "ws",
+                tags: "ws;gm",
+                color: "#3498db",
+                initials: "CD"
+            },
+            {
+                id: "062a27a3ddb93a2718c1ecebd03505d4",
+                title: "Trip Planner 🗺️",
+                url: "https://jefers.github.io/cc/triply/index.html",
+                category: "triply",
+                tags: "triply",
+                color: "#3498db",
+                initials: "TP"
+            },
+            {
+                id: "dbcda1c4f65bd740fe9eb21aca39c34c",
+                title: "Gen Z & Gen Alpha Slang Dictionary",
+                url: "https://jefers.github.io/cc/genz/index.html",
+                category: "genz",
+                tags: "genz",
+                color: "#3498db",
+                initials: "GZ"
+            },
+        ];
 
-        // Load CSV data (embedded in HTML for this example)
-        const csvData = `
-{
-    "title": "HiProX",
-    "url": "https://jefers.github.io/cc/hiprox/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hiprox/favicon.ico",
-    "category": "hiprox",
-    "tags": "hiprox",
-    "color": "#3498db"
-},
-{
-    "title": "Meal & Stock Planner",
-    "url": "https://jefers.github.io/cc/sl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/sl/favicon.ico",
-    "category": "sl",
-    "tags": "sl",
-    "color": "#3498db"
-},
-{
-    "title": "PIS Wizard - Project Intent Specification",
-    "url": "https://jefers.github.io/cc/pis/gl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/pis/gl/favicon.ico",
-    "category": "pis",
-    "tags": "pis;gl",
-    "color": "#3498db"
-},
-{
-    "title": "MarkDownCards",
-    "url": "https://jefers.github.io/cc/mdc/index.html",
-    "thumbnail": "https://jefers.github.io/cc/mdc/favicon.ico",
-    "category": "mdc",
-    "tags": "mdc",
-    "color": "#3498db"
-},
-{
-    "title": "Lisburn Personal Trainer - Coach Christian | Built for More!",
-    "url": "https://jefers.github.io/cc/B4M/index.html",
-    "thumbnail": "https://jefers.github.io/cc/B4M/favicon.ico",
-    "category": "B4M",
-    "tags": "B4M",
-    "color": "#3498db"
-},
-{
-    "title": "5-Step Process Killer",
-    "url": "https://jefers.github.io/cc/pk/index.html",
-    "thumbnail": "https://jefers.github.io/cc/pk/favicon.ico",
-    "category": "pk",
-    "tags": "pk",
-    "color": "#3498db"
-},
-{
-    "title": "Philippine Adventure 🌴",
-    "url": "https://jefers.github.io/cc/holiday/index.html",
-    "thumbnail": "https://jefers.github.io/cc/holiday/favicon.ico",
-    "category": "holiday",
-    "tags": "holiday",
-    "color": "#3498db"
-},
-{
-    "title": "Modern CSS Carousel",
-    "url": "https://jefers.github.io/cc/car/index.html",
-    "thumbnail": "https://jefers.github.io/cc/car/favicon.ico",
-    "category": "car",
-    "tags": "car",
-    "color": "#3498db"
-},
-{
-    "title": "Modern CSS Carousel",
-    "url": "https://jefers.github.io/cc/car/kimi/index.html",
-    "thumbnail": "https://jefers.github.io/cc/car/kimi/favicon.ico",
-    "category": "car",
-    "tags": "car;kimi",
-    "color": "#3498db"
-},
-{
-    "title": "Meter Reader",
-    "url": "https://jefers.github.io/cc/emr/index.html",
-    "thumbnail": "https://jefers.github.io/cc/emr/favicon.ico",
-    "category": "emr",
-    "tags": "emr",
-    "color": "#3498db"
-},
-{
-    "title": "test",
-    "url": "https://jefers.github.io/cc/emr/node_modules/idb-keyval/dist/test/index.html",
-    "thumbnail": "https://jefers.github.io/cc/emr/node_modules/idb-keyval/dist/test/favicon.ico",
-    "category": "emr",
-    "tags": "emr;node_modules;idb_keyval;dist;test",
-    "color": "#3498db"
-},
-{
-    "title": "Your Client Acquisition Story",
-    "url": "https://jefers.github.io/cc/daad/index.html",
-    "thumbnail": "https://jefers.github.io/cc/daad/favicon.ico",
-    "category": "daad",
-    "tags": "daad",
-    "color": "#3498db"
-},
-{
-    "title": "Fitness Metrics Tools",
-    "url": "https://jefers.github.io/cc/tools/index.html",
-    "thumbnail": "https://jefers.github.io/cc/tools/favicon.ico",
-    "category": "tools",
-    "tags": "tools",
-    "color": "#3498db"
-},
-{
-    "title": "SVG Icon System",
-    "url": "https://jefers.github.io/cc/svg-icon-system/index.html",
-    "thumbnail": "https://jefers.github.io/cc/svg-icon-system/favicon.ico",
-    "category": "svg-icon-system",
-    "tags": "svg_icon_system",
-    "color": "#3498db"
-},
-{
-    "title": "MotorTrip Calc - Motorbike Camping Cost Estimator",
-    "url": "https://jefers.github.io/cc/mt/index.html",
-    "thumbnail": "https://jefers.github.io/cc/mt/favicon.ico",
-    "category": "mt",
-    "tags": "mt",
-    "color": "#3498db"
-},
-{
-    "title": "Mobile-first Boilerplate — Light & Dark",
-    "url": "https://jefers.github.io/cc/bp/cgtp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/bp/cgtp/favicon.ico",
-    "category": "bp",
-    "tags": "bp;cgtp",
-    "color": "#3498db"
-},
-{
-    "title": "Modern UI Boilerplate",
-    "url": "https://jefers.github.io/cc/bp/ds/index.html",
-    "thumbnail": "https://jefers.github.io/cc/bp/ds/favicon.ico",
-    "category": "bp",
-    "tags": "bp;ds",
-    "color": "#3498db"
-},
-{
-    "title": "Modern Design System",
-    "url": "https://jefers.github.io/cc/bp/claude/index.html",
-    "thumbnail": "https://jefers.github.io/cc/bp/claude/favicon.ico",
-    "category": "bp",
-    "tags": "bp;claude",
-    "color": "#3498db"
-},
-{
-    "title": "Design System Boilerplate",
-    "url": "https://jefers.github.io/cc/bp/grok/index.html",
-    "thumbnail": "https://jefers.github.io/cc/bp/grok/favicon.ico",
-    "category": "bp",
-    "tags": "bp;grok",
-    "color": "#3498db"
-},
-{
-    "title": "Design Template",
-    "url": "https://jefers.github.io/cc/apl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/apl/favicon.ico",
-    "category": "apl",
-    "tags": "apl",
-    "color": "#3498db"
-},
-{
-    "title": "House Material Prompt Builder",
-    "url": "https://jefers.github.io/cc/hm/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hm/favicon.ico",
-    "category": "hm",
-    "tags": "hm",
-    "color": "#3498db"
-},
-{
-    "title": "Happy Days",
-    "url": "https://jefers.github.io/cc/hd/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hd/favicon.ico",
-    "category": "hd",
-    "tags": "hd",
-    "color": "#3498db"
-},
-{
-    "title": "Bullion Count Calculator",
-    "url": "https://jefers.github.io/cc/bc/index.html",
-    "thumbnail": "https://jefers.github.io/cc/bc/favicon.ico",
-    "category": "bc",
-    "tags": "bc",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Menu",
-    "url": "https://jefers.github.io/cc/dm2/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dm2/favicon.ico",
-    "category": "dm2",
-    "tags": "dm2",
-    "color": "#3498db"
-},
-{
-    "title": "Client Notes - Fitness Coach",
-    "url": "https://jefers.github.io/cc/cn/index.html",
-    "thumbnail": "https://jefers.github.io/cc/cn/favicon.ico",
-    "category": "cn",
-    "tags": "cn",
-    "color": "#3498db"
-},
-{
-    "title": "Video Clipper",
-    "url": "https://jefers.github.io/cc/clip/km/index.html",
-    "thumbnail": "https://jefers.github.io/cc/clip/km/favicon.ico",
-    "category": "clip",
-    "tags": "clip;km",
-    "color": "#3498db"
-},
-{
-    "title": "Simple Video Clipper",
-    "url": "https://jefers.github.io/cc/clip/gp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/clip/gp/favicon.ico",
-    "category": "clip",
-    "tags": "clip;gp",
-    "color": "#3498db"
-},
-{
-    "title": "Video Clipper | Browser-Based Video Editing",
-    "url": "https://jefers.github.io/cc/clip/dp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/clip/dp/favicon.ico",
-    "category": "clip",
-    "tags": "clip;dp",
-    "color": "#3498db"
-},
-{
-    "title": "Household Electric Estimator",
-    "url": "https://jefers.github.io/cc/el/gl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/el/gl/favicon.ico",
-    "category": "el",
-    "tags": "el;gl",
-    "color": "#3498db"
-},
-{
-    "title": "dp",
-    "url": "https://jefers.github.io/cc/el/dp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/el/dp/favicon.ico",
-    "category": "el",
-    "tags": "el;dp",
-    "color": "#3498db"
-},
-{
-    "title": "EZfit - Fitness Routine Tracker",
-    "url": "https://jefers.github.io/cc/ezfit/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ezfit/favicon.ico",
-    "category": "ezfit",
-    "tags": "ezfit",
-    "color": "#3498db"
-},
-{
-    "title": "Photo Gallery",
-    "url": "https://jefers.github.io/cc/gallery/index.html",
-    "thumbnail": "https://jefers.github.io/cc/gallery/favicon.ico",
-    "category": "gallery",
-    "tags": "gallery",
-    "color": "#3498db"
-},
-{
-    "title": "Pasko Panalo Club - Menu",
-    "url": "https://jefers.github.io/cc/ppc/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ppc/favicon.ico",
-    "category": "ppc",
-    "tags": "ppc",
-    "color": "#3498db"
-},
-{
-    "title": "Pasko Panalo Club",
-    "url": "https://jefers.github.io/cc/ppc/members/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ppc/members/favicon.ico",
-    "category": "ppc",
-    "tags": "ppc;members",
-    "color": "#3498db"
-},
-{
-    "title": "Streaming Diagnostic Checklist — Francine",
-    "url": "https://jefers.github.io/cc/it/gpt/index.html",
-    "thumbnail": "https://jefers.github.io/cc/it/gpt/favicon.ico",
-    "category": "it",
-    "tags": "it;gpt",
-    "color": "#3498db"
-},
-{
-    "title": "Webcam Quality Diagnostic",
-    "url": "https://jefers.github.io/cc/it/ds/index.html",
-    "thumbnail": "https://jefers.github.io/cc/it/ds/favicon.ico",
-    "category": "it",
-    "tags": "it;ds",
-    "color": "#3498db"
-},
-{
-    "title": "Webcam Quality Diagnostic",
-    "url": "https://jefers.github.io/cc/it/dsk/index.html",
-    "thumbnail": "https://jefers.github.io/cc/it/dsk/favicon.ico",
-    "category": "it",
-    "tags": "it;dsk",
-    "color": "#3498db"
-},
-{
-    "title": "Sleep Strategy Tracker",
-    "url": "https://jefers.github.io/cc/cs/index.html",
-    "thumbnail": "https://jefers.github.io/cc/cs/favicon.ico",
-    "category": "cs",
-    "tags": "cs",
-    "color": "#3498db"
-},
-{
-    "title": "File System Navigator",
-    "url": "https://jefers.github.io/cc/jar/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/favicon.ico",
-    "category": "jar",
-    "tags": "jar",
-    "color": "#3498db"
-},
-{
-    "title": "Jar Money",
-    "url": "https://jefers.github.io/cc/jar/gr/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/gr/favicon.ico",
-    "category": "jar",
-    "tags": "jar;gr",
-    "color": "#3498db"
-},
-{
-    "title": "Jars",
-    "url": "https://jefers.github.io/cc/jar/gp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/gp/favicon.ico",
-    "category": "jar",
-    "tags": "jar;gp",
-    "color": "#3498db"
-},
-{
-    "title": "Money Jars",
-    "url": "https://jefers.github.io/cc/jar/gl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/gl/favicon.ico",
-    "category": "jar",
-    "tags": "jar;gl",
-    "color": "#3498db"
-},
-{
-    "title": "Money Jars",
-    "url": "https://jefers.github.io/cc/jar/dp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/dp/favicon.ico",
-    "category": "jar",
-    "tags": "jar;dp",
-    "color": "#3498db"
-},
-{
-    "title": "Jars",
-    "url": "https://jefers.github.io/cc/jar/gm/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/gm/favicon.ico",
-    "category": "jar",
-    "tags": "jar;gm",
-    "color": "#3498db"
-},
-{
-    "title": "Money Jars",
-    "url": "https://jefers.github.io/cc/jar/cl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/cl/favicon.ico",
-    "category": "jar",
-    "tags": "jar;cl",
-    "color": "#3498db"
-},
-{
-    "title": "Money Jars",
-    "url": "https://jefers.github.io/cc/jar/qw/index.html",
-    "thumbnail": "https://jefers.github.io/cc/jar/qw/favicon.ico",
-    "category": "jar",
-    "tags": "jar;qw",
-    "color": "#3498db"
-},
-{
-    "title": "fb",
-    "url": "https://jefers.github.io/cc/fb/index.html",
-    "thumbnail": "https://jefers.github.io/cc/fb/favicon.ico",
-    "category": "fb",
-    "tags": "fb",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Menu",
-    "url": "https://jefers.github.io/cc/dmc/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dmc/favicon.ico",
-    "category": "dmc",
-    "tags": "dmc",
-    "color": "#3498db"
-},
-{
-    "title": "Your Business Systems Blueprint",
-    "url": "https://jefers.github.io/cc/dabas/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dabas/favicon.ico",
-    "category": "dabas",
-    "tags": "dabas",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Menu",
-    "url": "https://jefers.github.io/cc/dmd/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dmd/favicon.ico",
-    "category": "dmd",
-    "tags": "dmd",
-    "color": "#3498db"
-},
-{
-    "title": "TextSnap - Image Text Extractor",
-    "url": "https://jefers.github.io/cc/ocr/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ocr/favicon.ico",
-    "category": "ocr",
-    "tags": "ocr",
-    "color": "#3498db"
-},
-{
-    "title": "Infinite Fractal Explorer",
-    "url": "https://jefers.github.io/cc/fractal/glk47/index.html",
-    "thumbnail": "https://jefers.github.io/cc/fractal/glk47/favicon.ico",
-    "category": "fractal",
-    "tags": "fractal;glk47",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Website",
-    "url": "https://jefers.github.io/cc/markdown-site/pages/index.html",
-    "thumbnail": "https://jefers.github.io/cc/markdown-site/pages/favicon.ico",
-    "category": "markdown-site",
-    "tags": "markdown_site;pages",
-    "color": "#3498db"
-},
-{
-    "title": "Snap2Sell MVP",
-    "url": "https://jefers.github.io/cc/s2s/index.html",
-    "thumbnail": "https://jefers.github.io/cc/s2s/favicon.ico",
-    "category": "s2s",
-    "tags": "s2s",
-    "color": "#3498db"
-},
-{
-    "title": "Advanced LocalStorage Manager",
-    "url": "https://jefers.github.io/cc/lsm/index.html",
-    "thumbnail": "https://jefers.github.io/cc/lsm/favicon.ico",
-    "category": "lsm",
-    "tags": "lsm",
-    "color": "#3498db"
-},
-{
-    "title": "Arcade 10-in-1",
-    "url": "https://jefers.github.io/cc/game/glk/index.html",
-    "thumbnail": "https://jefers.github.io/cc/game/glk/favicon.ico",
-    "category": "game",
-    "tags": "game;glk",
-    "color": "#3498db"
-},
-{
-    "title": "Workouts",
-    "url": "https://jefers.github.io/cc/td/index.html",
-    "thumbnail": "https://jefers.github.io/cc/td/favicon.ico",
-    "category": "td",
-    "tags": "td",
-    "color": "#3498db"
-},
-{
-    "title": "Christian Coaching",
-    "url": "https://jefers.github.io/cc/docs/index.html",
-    "thumbnail": "https://jefers.github.io/cc/docs/favicon.ico",
-    "category": "docs",
-    "tags": "docs",
-    "color": "#3498db"
-},
-{
-    "title": "QR Code Generator",
-    "url": "https://jefers.github.io/cc/qr/index.html",
-    "thumbnail": "https://jefers.github.io/cc/qr/favicon.ico",
-    "category": "qr",
-    "tags": "qr",
-    "color": "#3498db"
-},
-{
-    "title": "Till Banking",
-    "url": "https://jefers.github.io/cc/tc/index.html",
-    "thumbnail": "https://jefers.github.io/cc/tc/favicon.ico",
-    "category": "tc",
-    "tags": "tc",
-    "color": "#3498db"
-},
-{
-    "title": "FitTrack | 12-Week Weight Loss Journey",
-    "url": "https://jefers.github.io/cc/wl/deep/index.html",
-    "thumbnail": "https://jefers.github.io/cc/wl/deep/favicon.ico",
-    "category": "wl",
-    "tags": "wl;deep",
-    "color": "#3498db"
-},
-{
-    "title": "12-Week Weight Loss Tracker",
-    "url": "https://jefers.github.io/cc/wl/kimi/index.html",
-    "thumbnail": "https://jefers.github.io/cc/wl/kimi/favicon.ico",
-    "category": "wl",
-    "tags": "wl;kimi",
-    "color": "#3498db"
-},
-{
-    "title": "QNotes (qn)",
-    "url": "https://jefers.github.io/cc/qn/index.html",
-    "thumbnail": "https://jefers.github.io/cc/qn/favicon.ico",
-    "category": "qn",
-    "tags": "qn",
-    "color": "#3498db"
-},
-{
-    "title": "Sleep Strategies",
-    "url": "https://jefers.github.io/cc/ss/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ss/favicon.ico",
-    "category": "ss",
-    "tags": "ss",
-    "color": "#3498db"
-},
-{
-    "title": "Gymerly",
-    "url": "https://jefers.github.io/cc/gymerly/index.html",
-    "thumbnail": "https://jefers.github.io/cc/gymerly/favicon.ico",
-    "category": "gymerly",
-    "tags": "gymerly",
-    "color": "#3498db"
-},
-{
-    "title": "CClub - Filipino Christmas Savings Club",
-    "url": "https://jefers.github.io/cc/cclub/index.html",
-    "thumbnail": "https://jefers.github.io/cc/cclub/favicon.ico",
-    "category": "cclub",
-    "tags": "cclub",
-    "color": "#3498db"
-},
-{
-    "title": "CClub - Member Home",
-    "url": "https://jefers.github.io/cc/cclub/members/index.html",
-    "thumbnail": "https://jefers.github.io/cc/cclub/members/favicon.ico",
-    "category": "cclub",
-    "tags": "cclub;members",
-    "color": "#3498db"
-},
-{
-    "title": "Business Systems Quest",
-    "url": "https://jefers.github.io/cc/daba/index.html",
-    "thumbnail": "https://jefers.github.io/cc/daba/favicon.ico",
-    "category": "daba",
-    "tags": "daba",
-    "color": "#3498db"
-},
-{
-    "title": "Business Systems Documentation",
-    "url": "https://jefers.github.io/cc/daba/bsrb/index.html",
-    "thumbnail": "https://jefers.github.io/cc/daba/bsrb/favicon.ico",
-    "category": "daba",
-    "tags": "daba;bsrb",
-    "color": "#3498db"
-},
-{
-    "title": "PhotoShop Clone - Layer-Based Image Editor",
-    "url": "https://jefers.github.io/cc/ps/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ps/favicon.ico",
-    "category": "ps",
-    "tags": "ps",
-    "color": "#3498db"
-},
-{
-    "title": "Vocabulato - Small words. Big fluency.",
-    "url": "https://jefers.github.io/cc/vc/ds/index.html",
-    "thumbnail": "https://jefers.github.io/cc/vc/ds/favicon.ico",
-    "category": "vc",
-    "tags": "vc;ds",
-    "color": "#3498db"
-},
-{
-    "title": "Shop Inventory App",
-    "url": "https://jefers.github.io/cc/si/index.html",
-    "thumbnail": "https://jefers.github.io/cc/si/favicon.ico",
-    "category": "si",
-    "tags": "si",
-    "color": "#3498db"
-},
-{
-    "title": "File Analyzer",
-    "url": "https://jefers.github.io/cc/del/cl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/del/cl/favicon.ico",
-    "category": "del",
-    "tags": "del;cl",
-    "color": "#3498db"
-},
-{
-    "title": "Mobile App Prompt Generator",
-    "url": "https://jefers.github.io/cc/gp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/gp/favicon.ico",
-    "category": "gp",
-    "tags": "gp",
-    "color": "#3498db"
-},
-{
-    "title": "DeepSite Background",
-    "url": "https://jefers.github.io/cc/an/km/index.html",
-    "thumbnail": "https://jefers.github.io/cc/an/km/favicon.ico",
-    "category": "an",
-    "tags": "an;km",
-    "color": "#3498db"
-},
-{
-    "title": "Money Tracker - Spend Visualizer",
-    "url": "https://jefers.github.io/cc/money/glm47/index.html",
-    "thumbnail": "https://jefers.github.io/cc/money/glm47/favicon.ico",
-    "category": "money",
-    "tags": "money;glm47",
-    "color": "#3498db"
-},
-{
-    "title": "Money Tracker - Spend Visualizer",
-    "url": "https://jefers.github.io/cc/money/grok/index.html",
-    "thumbnail": "https://jefers.github.io/cc/money/grok/favicon.ico",
-    "category": "money",
-    "tags": "money;grok",
-    "color": "#3498db"
-},
-{
-    "title": "Human Gut Bacteria Taxonomy Tree",
-    "url": "https://jefers.github.io/cc/gb/index.html",
-    "thumbnail": "https://jefers.github.io/cc/gb/favicon.ico",
-    "category": "gb",
-    "tags": "gb",
-    "color": "#3498db"
-},
-{
-    "title": "Human Gut Microbiome Interactive Tree",
-    "url": "https://jefers.github.io/cc/gb/kimi/index.html",
-    "thumbnail": "https://jefers.github.io/cc/gb/kimi/favicon.ico",
-    "category": "gb",
-    "tags": "gb;kimi",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Menu",
-    "url": "https://jefers.github.io/cc/dm/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dm/favicon.ico",
-    "category": "dm",
-    "tags": "dm",
-    "color": "#3498db"
-},
-{
-    "title": "dd",
-    "url": "https://jefers.github.io/cc/dd/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dd/favicon.ico",
-    "category": "dd",
-    "tags": "dd",
-    "color": "#3498db"
-},
-{
-    "title": "Fitness Hub",
-    "url": "https://jefers.github.io/cc/fitness-hub/index.html",
-    "thumbnail": "https://jefers.github.io/cc/fitness-hub/favicon.ico",
-    "category": "fitness-hub",
-    "tags": "fitness_hub",
-    "color": "#3498db"
-},
-{
-    "title": "Training Days",
-    "url": "https://jefers.github.io/cc/mm/index.html",
-    "thumbnail": "https://jefers.github.io/cc/mm/favicon.ico",
-    "category": "mm",
-    "tags": "mm",
-    "color": "#3498db"
-},
-{
-    "title": "Trip Planner",
-    "url": "https://jefers.github.io/cc/trip-planner/index.html",
-    "thumbnail": "https://jefers.github.io/cc/trip-planner/favicon.ico",
-    "category": "trip-planner",
-    "tags": "trip_planner",
-    "color": "#3498db"
-},
-{
-    "title": "Unit Price Calculator",
-    "url": "https://jefers.github.io/cc/hn/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hn/favicon.ico",
-    "category": "hn",
-    "tags": "hn",
-    "color": "#3498db"
-},
-{
-    "title": "Meter Reader",
-    "url": "https://jefers.github.io/cc/ecmr/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ecmr/favicon.ico",
-    "category": "ecmr",
-    "tags": "ecmr",
-    "color": "#3498db"
-},
-{
-    "title": "Pinecraft",
-    "url": "https://jefers.github.io/cc/pinecraft/index.html",
-    "thumbnail": "https://jefers.github.io/cc/pinecraft/favicon.ico",
-    "category": "pinecraft",
-    "tags": "pinecraft",
-    "color": "#3498db"
-},
-{
-    "title": "Pasko Panalo Club",
-    "url": "https://jefers.github.io/cc/ppclub/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ppclub/favicon.ico",
-    "category": "ppclub",
-    "tags": "ppclub",
-    "color": "#3498db"
-},
-{
-    "title": "ds",
-    "url": "https://jefers.github.io/cc/je/ds/index.html",
-    "thumbnail": "https://jefers.github.io/cc/je/ds/favicon.ico",
-    "category": "je",
-    "tags": "je;ds",
-    "color": "#3498db"
-},
-{
-    "title": "Hours Tracker",
-    "url": "https://jefers.github.io/cc/hours/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hours/favicon.ico",
-    "category": "hours",
-    "tags": "hours",
-    "color": "#3498db"
-},
-{
-    "title": "Hours Tracker - Compact Edition",
-    "url": "https://jefers.github.io/cc/hours/glm47/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hours/glm47/favicon.ico",
-    "category": "hours",
-    "tags": "hours;glm47",
-    "color": "#3498db"
-},
-{
-    "title": "Hours Tracker",
-    "url": "https://jefers.github.io/cc/hours/grok/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hours/grok/favicon.ico",
-    "category": "hours",
-    "tags": "hours;grok",
-    "color": "#3498db"
-},
-{
-    "title": "Hours Tracker - Compact Edition",
-    "url": "https://jefers.github.io/cc/hours/grok2/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hours/grok2/favicon.ico",
-    "category": "hours",
-    "tags": "hours;grok2",
-    "color": "#3498db"
-},
-{
-    "title": "Hours Tracker",
-    "url": "https://jefers.github.io/cc/hours/kimi/index.html",
-    "thumbnail": "https://jefers.github.io/cc/hours/kimi/favicon.ico",
-    "category": "hours",
-    "tags": "hours;kimi",
-    "color": "#3498db"
-},
-{
-    "title": "Funnel Quest: Build Your Client Acquisition System",
-    "url": "https://jefers.github.io/cc/dad/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dad/favicon.ico",
-    "category": "dad",
-    "tags": "dad",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Menu",
-    "url": "https://jefers.github.io/cc/dm1/index.html",
-    "thumbnail": "https://jefers.github.io/cc/dm1/favicon.ico",
-    "category": "dm1",
-    "tags": "dm1",
-    "color": "#3498db"
-},
-{
-    "title": "Debt Consolidation Calculator",
-    "url": "https://jefers.github.io/cc/ln/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ln/favicon.ico",
-    "category": "ln",
-    "tags": "ln",
-    "color": "#3498db"
-},
-{
-    "title": "trustee",
-    "url": "https://jefers.github.io/cc/JP/trustee/index.html",
-    "thumbnail": "https://jefers.github.io/cc/JP/trustee/favicon.ico",
-    "category": "JP",
-    "tags": "JP;trustee",
-    "color": "#3498db"
-},
-{
-    "title": "Pasko Panalo Club - Menu",
-    "url": "https://jefers.github.io/cc/JP/index.html",
-    "thumbnail": "https://jefers.github.io/cc/JP/favicon.ico",
-    "category": "JP",
-    "tags": "JP",
-    "color": "#3498db"
-},
-{
-    "title": "Pasko Panalo Club - Smart Saving for Christmas",
-    "url": "https://jefers.github.io/cc/JP/members/index.html",
-    "thumbnail": "https://jefers.github.io/cc/JP/members/favicon.ico",
-    "category": "JP",
-    "tags": "JP;members",
-    "color": "#3498db"
-},
-{
-    "title": "Personal Trainer Website",
-    "url": "https://jefers.github.io/cc/personal-trainer-website/index.html",
-    "thumbnail": "https://jefers.github.io/cc/personal-trainer-website/favicon.ico",
-    "category": "personal-trainer-website",
-    "tags": "personal_trainer_website",
-    "color": "#3498db"
-},
-{
-    "title": "Modern Animated Glowing Border",
-    "url": "https://jefers.github.io/cc/boilerp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/boilerp/favicon.ico",
-    "category": "boilerp",
-    "tags": "boilerp",
-    "color": "#3498db"
-},
-{
-    "title": "Dynamic Website",
-    "url": "https://jefers.github.io/cc/client-site/index.html",
-    "thumbnail": "https://jefers.github.io/cc/client-site/favicon.ico",
-    "category": "client-site",
-    "tags": "client_site",
-    "color": "#3498db"
-},
-{
-    "title": "Home",
-    "url": "https://jefers.github.io/cc/client-site/pages/index.html",
-    "thumbnail": "https://jefers.github.io/cc/client-site/pages/favicon.ico",
-    "category": "client-site",
-    "tags": "client_site;pages",
-    "color": "#3498db"
-},
-{
-    "title": "House Power Simulator V3",
-    "url": "https://jefers.github.io/cc/sim/el/gl/index.html",
-    "thumbnail": "https://jefers.github.io/cc/sim/el/gl/favicon.ico",
-    "category": "sim",
-    "tags": "sim;el;gl",
-    "color": "#3498db"
-},
-{
-    "title": "Pro Self-Portrait Setup Guide",
-    "url": "https://jefers.github.io/cc/ip/ssp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ip/ssp/favicon.ico",
-    "category": "ip",
-    "tags": "ip;ssp",
-    "color": "#3498db"
-},
-{
-    "title": "Gen Z & Gen Alpha Slang Dictionary",
-    "url": "https://jefers.github.io/cc/gena/index.html",
-    "thumbnail": "https://jefers.github.io/cc/gena/favicon.ico",
-    "category": "gena",
-    "tags": "gena",
-    "color": "#3498db"
-},
-{
-    "title": "Rent vs Buy Simulator",
-    "url": "https://jefers.github.io/cc/rb/gp/index.html",
-    "thumbnail": "https://jefers.github.io/cc/rb/gp/favicon.ico",
-    "category": "rb",
-    "tags": "rb;gp",
-    "color": "#3498db"
-},
-{
-    "title": "Rent vs Buy Simulator (Historical",
-    "url": " Deterministic)",
-    "thumbnail": "https://jefers.github.io/cc/rb/gl/index.html",
-    "category": "https://jefers.github.io/cc/rb/gl/favicon.ico",
-    "tags": "rb",
-    "color": "rb;gl,#3498db"
-},
-{
-    "title": "Client Discovery Form - Website Content",
-    "url": "https://jefers.github.io/cc/ws/gm/index.html",
-    "thumbnail": "https://jefers.github.io/cc/ws/gm/favicon.ico",
-    "category": "ws",
-    "tags": "ws;gm",
-    "color": "#3498db"
-},
-{
-    "title": "Trip Planner 🗺️",
-    "url": "https://jefers.github.io/cc/triply/index.html",
-    "thumbnail": "https://jefers.github.io/cc/triply/favicon.ico",
-    "category": "triply",
-    "tags": "triply",
-    "color": "#3498db"
-},
-{
-    "title": "Gen Z & Gen Alpha Slang Dictionary",
-    "url": "https://jefers.github.io/cc/genz/index.html",
-    "thumbnail": "https://jefers.github.io/cc/genz/favicon.ico",
-    "category": "genz",
-    "tags": "genz",
-    "color": "#3498db"
-},
-`;
-
-        // Parse CSV data
-        function parseCSVData(csv) {
-            const lines = csv.trim().split('\n');
-            const projects = [];
-            const categories = new Set();
-            
-            lines.forEach(line => {
-                if (line.trim()) {
-                    try {
-                        const project = JSON.parse(line.replace(/,$/, ''));
-                        projects.push(project);
-                        categories.add(project.category);
-                    } catch (e) {
-                        console.warn('Failed to parse line:', line);
-                    }
-                }
-            });
-            
-            return { projects, categories };
-        }
+        // State Management
+        let hiddenProjects = JSON.parse(localStorage.getItem('hiddenProjects') || '{}');
+        let deletedProjects = JSON.parse(localStorage.getItem('deletedProjects') || '{}');
+        let currentView = 'active';
+        let searchQuery = '';
 
         // Initialize
         function init() {
-            const { projects: loadedProjects, categories: loadedCategories } = parseCSVData(csvData);
-            projects = loadedProjects;
-            categories = loadedCategories;
-            
             updateStats();
-            populateCategoryFilter();
-            renderProjects(projects);
+            renderProjects();
+            setupEventListeners();
         }
 
-        // Update statistics
-        function updateStats(filteredProjects = projects) {
-            document.getElementById('totalProjects').textContent = projects.length;
-            document.getElementById('visibleProjects').textContent = filteredProjects.length;
-            document.getElementById('uniqueCategories').textContent = categories.size;
-        }
-
-        // Populate category filter dropdown
-        function populateCategoryFilter() {
-            const filter = document.getElementById('categoryFilter');
-            const sortedCategories = Array.from(categories).sort();
+        // Update Stats
+        function updateStats() {
+            const total = PROJECTS.length;
+            const hidden = Object.keys(hiddenProjects).length;
+            const active = total - hidden;
             
-            sortedCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                filter.appendChild(option);
+            document.getElementById('totalProjects').textContent = total;
+            document.getElementById('activeProjects').textContent = active;
+            document.getElementById('hiddenProjects').textContent = hidden;
+        }
+
+        // Create Project Element
+        function createProjectElement(project, isHidden) {
+            const div = document.createElement('div');
+            div.className = `card-glow-wrapper ${isHidden ? 'hidden' : ''}`;
+            div.id = `project-${project.id}`;
+            
+            const tags = project.tags.split(';').filter(tag => tag.trim());
+            const tagElements = tags.map(tag => 
+                `<span class="tag">${tag.trim()}</span>`
+            ).join('');
+            
+            div.innerHTML = `
+                <div class="project-card ${isHidden ? 'hidden' : ''}">
+                    <div class="project-header">
+                        <div class="thumbnail-placeholder">
+                            ${project.initials || 'PJ'}
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">
+                                <a href="${project.url}" target="_blank" rel="noopener">
+                                    ${project.title}
+                                </a>
+                            </h3>
+                            <span class="project-category">${project.category}</span>
+                        </div>
+                    </div>
+                    <div class="project-tags">${tagElements}</div>
+                    <div class="project-actions">
+                        ${isHidden ? 
+                            `<button class="action-btn show-btn" data-id="${project.id}">
+                                <i class="fas fa-eye"></i> Show
+                            </button>` :
+                            `<button class="action-btn hide-btn" data-id="${project.id}">
+                                <i class="fas fa-eye-slash"></i> Hide
+                            </button>`
+                        }
+                        <button class="action-btn delete-btn" data-id="${project.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Double-click to delete
+            div.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.action-btn')) return;
+                deleteProject(project.id);
             });
+            
+            return div;
         }
 
-        // Render projects to the grid
-        function renderProjects(projectsToRender) {
+        // Create Hidden List Item
+        function createHiddenListItem(project) {
+            const div = document.createElement('div');
+            div.className = 'hidden-item';
+            div.innerHTML = `
+                <div class="hidden-item-info">
+                    <div class="hidden-item-title">${project.title}</div>
+                    <div class="hidden-item-category">${project.category}</div>
+                </div>
+                <button class="btn btn-success" data-id="${project.id}" onclick="showProject('${project.id}')">
+                    <i class="fas fa-eye"></i> Show
+                </button>
+            `;
+            return div;
+        }
+
+        // Render Projects
+        function renderProjects() {
             const grid = document.getElementById('projectsGrid');
+            const hiddenList = document.getElementById('hiddenList');
+            const hiddenPanel = document.getElementById('hiddenPanel');
             
-            if (projectsToRender.length === 0) {
+            grid.innerHTML = '';
+            hiddenList.innerHTML = '';
+            
+            let visibleCount = 0;
+            let hiddenCount = 0;
+            
+            PROJECTS.forEach(project => {
+                if (deletedProjects[project.id]) return;
+                
+                const isHidden = hiddenProjects[project.id];
+                const matchesSearch = !searchQuery || 
+                    project.title.toLowerCase().includes(searchQuery) ||
+                    project.category.toLowerCase().includes(searchQuery) ||
+                    project.tags.toLowerCase().includes(searchQuery);
+                
+                if (!matchesSearch) return;
+                
+                if (currentView === 'all') {
+                    grid.appendChild(createProjectElement(project, isHidden));
+                    visibleCount++;
+                } else if (currentView === 'active' && !isHidden) {
+                    grid.appendChild(createProjectElement(project, false));
+                    visibleCount++;
+                } else if (currentView === 'hidden' && isHidden) {
+                    hiddenList.appendChild(createHiddenListItem(project));
+                    hiddenCount++;
+                }
+            });
+            
+            // Show/hide hidden panel
+            hiddenPanel.classList.toggle('show', currentView === 'hidden' && hiddenCount > 0);
+            
+            // No results message
+            if (visibleCount === 0 && currentView !== 'hidden') {
                 grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
+                    <div style="grid-column:1/-1; text-align:center; padding:40px;">
+                        <i class="fas fa-search" style="font-size:3rem; color:var(--secondary-text); margin-bottom:16px;"></i>
                         <h3>No projects found</h3>
-                        <p>Try adjusting your search or filter criteria</p>
+                        <p>Try a different search or change view</p>
                     </div>
                 `;
+            }
+            
+            if (hiddenCount === 0 && currentView === 'hidden') {
+                hiddenList.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--secondary-text);">
+                        <i class="fas fa-eye" style="font-size:3rem; margin-bottom:16px;"></i>
+                        <h3>No hidden projects</h3>
+                    </div>
+                `;
+            }
+        }
+
+        // Project Actions
+        function hideProject(id) {
+            hiddenProjects[id] = true;
+            localStorage.setItem('hiddenProjects', JSON.stringify(hiddenProjects));
+            updateStats();
+            renderProjects();
+            showToast('Project hidden');
+        }
+
+        function showProject(id) {
+            delete hiddenProjects[id];
+            localStorage.setItem('hiddenProjects', JSON.stringify(hiddenProjects));
+            updateStats();
+            renderProjects();
+            showToast('Project restored');
+        }
+
+        function deleteProject(id) {
+            if (confirm('Permanently delete this project?')) {
+                deletedProjects[id] = true;
+                localStorage.setItem('deletedProjects', JSON.stringify(deletedProjects));
+                updateStats();
+                renderProjects();
+                showToast('Project deleted');
+            }
+        }
+
+        // Export Functions
+        function exportProjects(type) {
+            let data;
+            let filename;
+            
+            if (type === 'active') {
+                data = PROJECTS.filter(p => !hiddenProjects[p.id] && !deletedProjects[p.id]);
+                filename = 'active-projects.json';
+            } else {
+                data = PROJECTS.filter(p => hiddenProjects[p.id]);
+                filename = 'hidden-projects.json';
+            }
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(`Exported ${data.length} projects`);
+        }
+
+        function showAllProjects() {
+            hiddenProjects = {};
+            localStorage.setItem('hiddenProjects', JSON.stringify(hiddenProjects));
+            updateStats();
+            renderProjects();
+            showToast('All projects shown');
+        }
+
+        function clearHiddenList() {
+            if (Object.keys(hiddenProjects).length === 0) {
+                showToast('No hidden projects');
                 return;
             }
             
-            grid.innerHTML = '';
-            
-            projectsToRender.forEach(project => {
-                const tags = project.tags.split(';').filter(tag => tag.trim());
-                const tagElements = tags.map(tag => 
-                    `<span class="tag">${tag.trim()}</span>`
-                ).join('');
-                
-                const projectCard = document.createElement('div');
-                projectCard.className = 'card-glow-wrapper';
-                projectCard.innerHTML = `
-                    <div class="project-card">
-                        <div class="project-header">
-                            <img src="${project.thumbnail}" 
-                                 alt="${project.title} thumbnail" 
-                                 class="project-thumbnail"
-                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHJ4PSIxMiIgZmlsbD0iIzJhMmEyYSIvPjxwYXRoIGQ9Ik0yMCAyMEg0MFY0MEgyMFYyMFpNMzAgMzBIMzVWMzVIMzBWMzBaTTI1IDI1SDMwVjMwSDI1VjI1Wk0zNSAyNUg0MFYzMEgzNVYyNVoiIGZpbGw9IiA5MzMzZWEiIGZpbGwtb3BhY2l0eT0iMC43Ii8+PC9zdmc+'">
-                            <div>
-                                <h3 class="project-title">
-                                    <a href="${project.url}" target="_blank" rel="noopener noreferrer">
-                                        ${project.title}
-                                    </a>
-                                </h3>
-                                <span class="project-category">${project.category}</span>
-                            </div>
-                        </div>
-                        <p class="project-description">Click to view ${project.title}</p>
-                        <div class="project-tags">
-                            ${tagElements}
-                        </div>
-                        <div class="project-footer">
-                            <a href="${project.url}" class="project-link" target="_blank" rel="noopener noreferrer">
-                                <i class="fas fa-external-link-alt"></i>
-                                Open Project
-                            </a>
-                            <div class="project-color" style="background-color: ${project.color};" title="Color: ${project.color}"></div>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(projectCard);
-            });
+            if (confirm('Clear all hidden projects?')) {
+                hiddenProjects = {};
+                localStorage.setItem('hiddenProjects', JSON.stringify(hiddenProjects));
+                updateStats();
+                renderProjects();
+                showToast('Hidden list cleared');
+            }
         }
 
-        // Filter projects based on search and category
-        function filterProjects() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const selectedCategory = document.getElementById('categoryFilter').value;
-            
-            const filtered = projects.filter(project => {
-                const matchesSearch = !searchTerm || 
-                    project.title.toLowerCase().includes(searchTerm) ||
-                    project.tags.toLowerCase().includes(searchTerm) ||
-                    project.category.toLowerCase().includes(searchTerm);
-                
-                const matchesCategory = !selectedCategory || project.category === selectedCategory;
-                
-                return matchesSearch && matchesCategory;
-            });
-            
-            renderProjects(filtered);
-            updateStats(filtered);
-        }
-
-        // Toast notification
+        // Toast Notification
         function showToast(message) {
-            // Remove existing toast
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) existingToast.remove();
-            
-            // Create new toast
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
             document.body.appendChild(toast);
             
-            // Show toast
             setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Hide toast after 3 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        // Event listeners for filtering
-        document.getElementById('searchInput').addEventListener('input', filterProjects);
-        document.getElementById('categoryFilter').addEventListener('change', filterProjects);
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', init);
-
-        // Auto-refresh simulation (could be extended to fetch from server)
-        setInterval(() => {
-            const lastModified = localStorage.getItem('csvLastModified') || 0;
-            const currentTime = Date.now();
+        // Event Listeners
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                renderProjects();
+            });
             
-            // Check every 30 seconds if we should refresh
-            if (currentTime - lastModified > 30000) {
-                console.log('Checking for CSV updates...');
-                // In a real implementation, you would fetch the CSV here
-            }
-        }, 30000);
+            // View controls
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentView = btn.dataset.view;
+                    renderProjects();
+                });
+            });
+            
+            // Action buttons
+            document.getElementById('exportActive').addEventListener('click', () => exportProjects('active'));
+            document.getElementById('exportHidden').addEventListener('click', () => exportProjects('hidden'));
+            document.getElementById('showAll').addEventListener('click', showAllProjects);
+            document.getElementById('clearHidden').addEventListener('click', clearHiddenList);
+            
+            // Project action delegation
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.action-btn');
+                if (!btn) return;
+                
+                const id = btn.dataset.id;
+                if (btn.classList.contains('hide-btn')) hideProject(id);
+                else if (btn.classList.contains('show-btn')) showProject(id);
+                else if (btn.classList.contains('delete-btn')) deleteProject(id);
+            });
+        }
+
+        // Global functions for inline onclick
+        window.showProject = showProject;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
