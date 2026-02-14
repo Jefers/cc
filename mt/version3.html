@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MotorTrip Calc - Tanay Camping Trips</title>
+    <title>MotorTrip Calc - Motorbike Camping Cost Estimator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* CSS Variables - Blue Theme */
@@ -72,7 +72,7 @@
             --border-color: var(--border-color-light);
         }
 
-        /* Extreme liquid morphing animations */
+        /* Extreme liquid morphing 
         @keyframes blob {
             0%, 100% { 
                 border-radius: 40% 60% 50% 50%; 
@@ -94,7 +94,7 @@
                 border-radius: 70% 30% 30% 70%; 
                 transform: scaleX(0.6) scaleY(1.5) rotate(-40deg) translate(-50px, -20px); 
             }
-        }
+        }*/
 
         /* Animated motorcycle icon */
         @keyframes motorcycle-move {
@@ -249,7 +249,7 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            font-size: 2.2rem;
+            font-size: 2.2rem; /* Bigger font as requested */
             font-weight: 800;
             color: var(--accent-color);
         }
@@ -635,178 +635,6 @@
             background: var(--secondary-bg);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Trip Selector and Quick Stats */
-        .trip-selector-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .trip-selector-row select {
-            flex: 2;
-            min-width: 200px;
-        }
-        
-        .trip-selector-row .btn {
-            flex: 1;
-        }
-
-        .quick-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-size: 0.95rem;
-        }
-        
-        .quick-stats i {
-            color: var(--accent-color);
-            margin-right: 4px;
-        }
-
-        /* Trips Gallery Styles */
-        .trips-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .trip-card {
-            background: var(--tertiary-bg);
-            border-radius: var(--border-radius-card);
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            transition: var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .trip-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            border-color: var(--accent-color);
-        }
-
-        .trip-card.featured {
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .trip-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-
-        .trip-card-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary-text);
-            margin-right: 8px;
-        }
-
-        .trip-card-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            white-space: nowrap;
-            background: rgba(59, 130, 246, 0.1);
-            padding: 4px 8px;
-            border-radius: 20px;
-        }
-
-        .trip-card-location {
-            font-size: 0.9rem;
-            color: var(--secondary-text);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .trip-card-location i {
-            color: var(--accent-color);
-            font-size: 0.8rem;
-        }
-
-        .trip-card-desc {
-            font-size: 0.9rem;
-            color: var(--primary-text);
-            margin-bottom: 12px;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .trip-card-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .trip-card-detail {
-            background: var(--secondary-bg);
-            padding: 4px 8px;
-            border-radius: 16px;
-            font-size: 0.8rem;
-            color: var(--primary-text);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .trip-card-detail i {
-            color: var(--accent-color);
-            font-size: 0.7rem;
-        }
-
-        .trip-card-features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-
-        .trip-feature {
-            background: var(--accent-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            opacity: 0.9;
-        }
-
-        .trip-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .trip-card-footer .btn-small {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius-button);
-            cursor: pointer;
-            transition: var(--transition-base);
-        }
-
-        .trip-card-footer .btn-small:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         /* Settings Modal */
@@ -1268,54 +1096,6 @@
             </button>
         </div>
 
-        <!-- Trip Selector -->
-        <div class="card-glow-wrapper" style="margin-bottom: 20px;">
-            <div class="card-glow">
-                <div class="form-group">
-                    <div class="form-header">
-                        <i class="fas fa-map-marked-alt"></i>
-                        <h3>Browse Tanay Camping Trips</h3>
-                    </div>
-                    <div class="trip-selector-row">
-                        <select id="tripSelector" class="form-control">
-                            <option value="">-- Select a pre-loaded trip --</option>
-                            <option value="river-ranch">River Ranch PH (₱950)</option>
-                            <option value="bulod-campsite">Bulod Campsite (₱400-600)</option>
-                            <option value="camp-irog-daraitan">Camp Irog Daraitan (₱500-700)</option>
-                            <option value="daranak-batlag-area">Daranak/Batlag Falls Area (₱500-700)</option>
-                            <option value="atburan-camping">Atburan Camping Ground (₱400-600)</option>
-                            <option value="luklukan-camp">Luklukan Camp and Chill (₱500-700)</option>
-                            <option value="blessed-hm">Blessed HM Campsite (₱600-800)</option>
-                            <option value="camp-majai">Camp Majai Riverfront (₱500-700)</option>
-                        </select>
-                        <button type="button" class="btn btn-primary" id="loadTripBtn">
-                            <i class="fas fa-download"></i> Load Trip
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="showAllTripsBtn">
-                            <i class="fas fa-list"></i> Show All
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tanay Quick Stats -->
-        <div class="card-glow-wrapper" style="margin-bottom: 20px;">
-            <div class="card-glow">
-                <div class="quick-stats">
-                    <div>
-                        <i class="fas fa-info-circle"></i>
-                        <span style="font-weight: 600;">Tanay Camping Guide</span>
-                    </div>
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <span><i class="fas fa-tent"></i> 8 campsites</span>
-                        <span><i class="fas fa-clock"></i> 45-90 min travel</span>
-                        <span><i class="fas fa-tag"></i> ₱400-950 per person</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Calculator Card with Glowing Border -->
         <div class="card-glow-wrapper">
             <div class="card-glow">
@@ -1564,24 +1344,6 @@
         </div>
     </div>
 
-    <!-- Trips Gallery Modal -->
-    <div class="modal-overlay" id="tripsGalleryModal">
-        <div class="modal" style="max-width: 900px;">
-            <div class="modal-header">
-                <h2><i class="fas fa-map-marked-alt"></i> Tanay Camping Trips Gallery</h2>
-                <button class="close-modal" id="closeGalleryModalBtn">&times;</button>
-            </div>
-            
-            <div style="max-height: 70vh; overflow-y: auto; padding-right: 10px;" id="tripsGalleryContent">
-                <!-- Trips will be loaded here dynamically -->
-            </div>
-            
-            <div class="button-group" style="margin-top: 20px;">
-                <button type="button" class="btn btn-secondary" id="closeGalleryModalBtn2">Close</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Copy Modal -->
     <div class="copy-modal" id="copyModal">
         <div class="copy-modal-content">
@@ -1607,163 +1369,6 @@
     </div>
 
     <script>
-        // Tanay Trips Data
-        const tanayTrips = [
-            {
-                id: 'river-ranch',
-                name: 'River Ranch PH',
-                location: 'Barangay Cayabu, Tanay',
-                area: 'Sierra Madre mountains',
-                description: 'Remote valley with direct river access for swimming/fishing, peaceful nature vibes, and mountain views. Beginner-friendly, accessible by any vehicle (including scooters). Great for chill group camping.',
-                travelTime: '60-75 min',
-                priceBreakdown: {
-                    entranceCampingFee: '~800 PHP/head',
-                    meals: '~150 PHP',
-                    totalPerPerson: '~950 PHP',
-                    notes: 'Discounts for PWD/seniors sometimes ~700 PHP'
-                },
-                features: ['river access', 'mountain views', 'beginner-friendly', 'scooter accessible', 'fishing', 'swimming'],
-                campingFee: 800,
-                foodCost: 150,
-                totalMin: 950,
-                totalMax: 950
-            },
-            {
-                id: 'bulod-campsite',
-                name: 'Bulod Campsite',
-                location: 'Daraitan, Tanay',
-                area: 'Along Agos River',
-                description: 'Riverside along Agos River with mountain backdrop, swimming spots, and thrilling access (some muddy paths but scooter-friendly to entry). Secluded for groups, nature immersion.',
-                travelTime: '70-90 min',
-                priceBreakdown: {
-                    entranceCampingFee: '200-400 PHP/head',
-                    meals: '~150 PHP',
-                    totalPerPerson: '400-600 PHP/person'
-                },
-                features: ['riverside', 'mountain backdrop', 'swimming', 'secluded', 'scooter accessible'],
-                campingFeeMin: 200,
-                campingFeeMax: 400,
-                foodCost: 150,
-                totalMin: 400,
-                totalMax: 600
-            },
-            {
-                id: 'camp-irog-daraitan',
-                name: 'Camp Irog Daraitan',
-                location: 'Across Agos River, Daraitan, Tanay',
-                area: 'Near Tinipak River',
-                description: 'Peaceful riverside camping with mountain surroundings, near Tinipak River for more water activities. Secluded, immersive in nature.',
-                travelTime: '75-90 min',
-                priceBreakdown: {
-                    entranceCampingFee: '300-500 PHP/head',
-                    meals: '~150 PHP',
-                    totalPerPerson: '500-700 PHP/person',
-                    notes: 'Group-friendly rates available'
-                },
-                features: ['riverside', 'near Tinipak River', 'mountain surroundings', 'secluded', 'water activities'],
-                campingFeeMin: 300,
-                campingFeeMax: 500,
-                foodCost: 150,
-                totalMin: 500,
-                totalMax: 700
-            },
-            {
-                id: 'daranak-batlag-area',
-                name: 'Daranak/Batlag Falls Area',
-                location: 'Near Daranak Falls, Tanay',
-                area: 'Near the falls',
-                description: 'River-fed pools from the falls, with mountain hills/trails. Some nearby private campsites allow overnight (book ahead; not directly at falls, but close). Relaxing swim spots and fresh air.',
-                travelTime: '45-60 min to falls, plus short ride to camp',
-                priceBreakdown: {
-                    entranceCampingFee: '~50 PHP day access + 300-500 PHP overnight',
-                    meals: '~150 PHP',
-                    totalPerPerson: '500-700 PHP/person'
-                },
-                features: ['near waterfalls', 'river pools', 'hiking trails', 'mountain views', 'swimming'],
-                campingFeeMin: 350,
-                campingFeeMax: 550,
-                foodCost: 150,
-                totalMin: 500,
-                totalMax: 700
-            },
-            {
-                id: 'atburan-camping',
-                name: 'Atburan Camping Ground',
-                location: 'Sitio Atburan, Tanay',
-                area: 'Mountain-river setting',
-                description: 'Mountain-river setting with nature trails and water access. Budget option for groups seeking quiet escapes.',
-                travelTime: '60-80 min',
-                priceBreakdown: {
-                    entranceCampingFee: '200-400 PHP/head',
-                    meals: '~150 PHP',
-                    totalPerPerson: '400-600 PHP/person'
-                },
-                features: ['mountain-river', 'nature trails', 'water access', 'budget-friendly', 'quiet'],
-                campingFeeMin: 200,
-                campingFeeMax: 400,
-                foodCost: 150,
-                totalMin: 400,
-                totalMax: 600
-            },
-            {
-                id: 'luklukan-camp',
-                name: 'Luklukan Camp and Chill',
-                location: 'Tanay',
-                area: 'Hidden riverside spot',
-                description: 'Hidden riverside spot with grassy areas, river views, and mountain peace. Perfect for car/scooter camping and outdoor cooking.',
-                travelTime: '60-75 min',
-                priceBreakdown: {
-                    entranceCampingFee: '300-500 PHP/head or group rate',
-                    meals: '~150 PHP',
-                    totalPerPerson: '500-700 PHP/person'
-                },
-                features: ['riverside', 'grassy areas', 'river views', 'scooter accessible', 'outdoor cooking'],
-                campingFeeMin: 300,
-                campingFeeMax: 500,
-                foodCost: 150,
-                totalMin: 500,
-                totalMax: 700
-            },
-            {
-                id: 'blessed-hm',
-                name: 'Blessed HM Campsite',
-                location: 'Brgy. Laiban, Tanay',
-                area: 'Home-by-the-river',
-                description: 'Home-by-the-river with peaceful waters, mountain air, and cozy vibes. Good for small groups.',
-                travelTime: '70-90 min',
-                priceBreakdown: {
-                    entranceCampingFee: '400-600 PHP/head',
-                    meals: '~150 PHP',
-                    totalPerPerson: '600-800 PHP/person'
-                },
-                features: ['riverside', 'peaceful waters', 'mountain air', 'cozy', 'small groups'],
-                campingFeeMin: 400,
-                campingFeeMax: 600,
-                foodCost: 150,
-                totalMin: 600,
-                totalMax: 800
-            },
-            {
-                id: 'camp-majai',
-                name: 'Camp Majai Riverfront',
-                location: 'Tanay area',
-                area: 'Riverfront',
-                description: 'Relaxing riverfront with cold river swims, clear views, and mountain surroundings. Peaceful for unwinding.',
-                travelTime: '60-80 min',
-                priceBreakdown: {
-                    entranceCampingFee: '300-500 PHP/head',
-                    meals: '~150 PHP',
-                    totalPerPerson: '500-700 PHP/person'
-                },
-                features: ['riverfront', 'cold river swims', 'clear views', 'mountain surroundings', 'peaceful'],
-                campingFeeMin: 300,
-                campingFeeMax: 500,
-                foodCost: 150,
-                totalMin: 500,
-                totalMax: 700
-            }
-        ];
-
         // App State
         const state = {
             currency: '₱',
@@ -1779,10 +1384,8 @@
         const clearHistoryBtn = document.getElementById('clearHistoryBtn');
         const settingsModal = document.getElementById('settingsModal');
         const copyModal = document.getElementById('copyModal');
-        const tripsGalleryModal = document.getElementById('tripsGalleryModal');
         const closeModalBtns = document.querySelectorAll('#closeModalBtn, #closeModalBtn2');
         const closeCopyModalBtns = document.querySelectorAll('#closeCopyModalBtn, #closeCopyModalBtn2');
-        const closeGalleryModalBtns = document.querySelectorAll('#closeGalleryModalBtn, #closeGalleryModalBtn2');
         const applySettingsBtn = document.getElementById('applySettingsBtn');
         const copyToClipboardBtn = document.getElementById('copyToClipboardBtn');
         const currencyBtns = document.querySelectorAll('.currency-btn');
@@ -1807,11 +1410,6 @@
         const foodCostInput = document.getElementById('foodCost');
         const miscCostInput = document.getElementById('miscCost');
         const fuelEfficiencyInput = document.getElementById('fuelEfficiency');
-        
-        // Trip selector elements
-        const loadTripBtn = document.getElementById('loadTripBtn');
-        const showAllTripsBtn = document.getElementById('showAllTripsBtn');
-        const tripSelector = document.getElementById('tripSelector');
 
         // Initialize the app
         function init() {
@@ -1853,9 +1451,6 @@
             closeCopyModalBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(copyModal, false)));
             copyToClipboardBtn.addEventListener('click', copyToClipboard);
             
-            // Trip gallery modal
-            closeGalleryModalBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(tripsGalleryModal, false)));
-            
             // Currency selection
             currencyBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1885,16 +1480,7 @@
                 input.addEventListener('change', calculateTotal);
             });
             
-            // Trip selector
-            if (loadTripBtn) {
-                loadTripBtn.addEventListener('click', loadSelectedTrip);
-            }
-            
-            if (showAllTripsBtn) {
-                showAllTripsBtn.addEventListener('click', showTripsGallery);
-            }
-            
-            // Close modals on overlay click
+            // Close modal on overlay click
             settingsModal.addEventListener('click', (e) => {
                 if (e.target === settingsModal) {
                     toggleModal(settingsModal, false);
@@ -1904,12 +1490,6 @@
             copyModal.addEventListener('click', (e) => {
                 if (e.target === copyModal) {
                     toggleModal(copyModal, false);
-                }
-            });
-            
-            tripsGalleryModal.addEventListener('click', (e) => {
-                if (e.target === tripsGalleryModal) {
-                    toggleModal(tripsGalleryModal, false);
                 }
             });
         }
@@ -2340,140 +1920,6 @@
                 updateHistoryDisplay();
                 showToast('All history cleared');
             }
-        }
-
-        // Load trip data into form
-        function loadTripIntoTrip(trip) {
-            // Set description
-            tripDescriptionInput.value = trip.name;
-            
-            // Set date to today
-            const today = new Date();
-            tripDateInput.value = today.toISOString().split('T')[0];
-            
-            // Set distance (default for Tanay area)
-            distanceInput.value = 120; // Approximate round trip from Metro Manila
-            
-            // Set fuel price (keep current or use default)
-            if (!fuelPriceInput.value) fuelPriceInput.value = 56.10;
-            
-            // Set camping costs based on trip
-            if (trip.campingFee) {
-                // Fixed fee
-                campsiteFeeInput.value = trip.campingFee;
-            } else if (trip.campingFeeMin && trip.campingFeeMax) {
-                // Use average for range
-                const avgFee = Math.round((trip.campingFeeMin + trip.campingFeeMax) / 2);
-                campsiteFeeInput.value = avgFee;
-            }
-            
-            // Set food cost
-            foodCostInput.value = trip.foodCost || 150;
-            
-            // Set default values for other fields
-            tentRentalInput.value = tentRentalInput.value || 250;
-            parkingFeeInput.value = parkingFeeInput.value || 150;
-            environmentalFeeInput.value = environmentalFeeInput.value || 30;
-            miscCostInput.value = miscCostInput.value || 100;
-            
-            // Recalculate
-            calculateTotal();
-            
-            // Show confirmation
-            showToast(`Loaded: ${trip.name}`);
-        }
-
-        // Handle trip selection from dropdown
-        function loadSelectedTrip() {
-            const selectedId = tripSelector.value;
-            
-            if (!selectedId) {
-                showToast('Please select a trip');
-                return;
-            }
-            
-            const trip = tanayTrips.find(t => t.id === selectedId);
-            if (trip) {
-                loadTripIntoTrip(trip);
-            }
-        }
-
-        // Render trips gallery
-        function renderTripsGallery() {
-            const galleryContent = document.getElementById('tripsGalleryContent');
-            if (!galleryContent) return;
-            
-            let html = '<div class="trips-grid">';
-            
-            tanayTrips.forEach(trip => {
-                const priceDisplay = trip.totalMin === trip.totalMax 
-                    ? `₱${trip.totalMin}`
-                    : `₱${trip.totalMin}-${trip.totalMax}`;
-                
-                const featuresHtml = trip.features.slice(0, 4).map(f => 
-                    `<span class="trip-feature">${f}</span>`
-                ).join('');
-                
-                html += `
-                    <div class="trip-card" onclick="selectTripFromCard('${trip.id}')">
-                        <div class="trip-card-header">
-                            <div class="trip-card-title">${trip.name}</div>
-                            <div class="trip-card-price">${priceDisplay}</div>
-                        </div>
-                        <div class="trip-card-location">
-                            <i class="fas fa-map-marker-alt"></i> ${trip.location}
-                        </div>
-                        <div class="trip-card-desc">${trip.description}</div>
-                        <div class="trip-card-details">
-                            <span class="trip-card-detail">
-                                <i class="fas fa-clock"></i> ${trip.travelTime}
-                            </span>
-                            <span class="trip-card-detail">
-                                <i class="fas fa-tent"></i> ${trip.priceBreakdown.entranceCampingFee}
-                            </span>
-                            <span class="trip-card-detail">
-                                <i class="fas fa-utensils"></i> ${trip.priceBreakdown.meals}
-                            </span>
-                        </div>
-                        <div class="trip-card-features">
-                            ${featuresHtml}
-                        </div>
-                        <div class="trip-card-footer">
-                            <button class="btn-small" onclick="event.stopPropagation(); selectTripFromCard('${trip.id}')">
-                                <i class="fas fa-download"></i> Load Trip
-                            </button>
-                            <span style="color: var(--secondary-text); font-size: 0.8rem;">
-                                <i class="fas fa-users"></i> per person
-                            </span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            galleryContent.innerHTML = html;
-        }
-
-        // Select trip from card (make it globally accessible)
-        window.selectTripFromCard = function(tripId) {
-            const trip = tanayTrips.find(t => t.id === tripId);
-            if (trip) {
-                loadTripIntoTrip(trip);
-                
-                // Close gallery modal if open
-                if (tripsGalleryModal) {
-                    toggleModal(tripsGalleryModal, false);
-                }
-                
-                // Update dropdown selection
-                if (tripSelector) tripSelector.value = tripId;
-            }
-        };
-
-        // Show trips gallery modal
-        function showTripsGallery() {
-            renderTripsGallery();
-            toggleModal(tripsGalleryModal, true);
         }
 
         // Show toast notification
