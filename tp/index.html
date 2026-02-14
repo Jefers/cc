@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Essential PWA Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Trip Planner">
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Trip Planner">
+    <meta name="description" content="Trip Cost Estimator - Plan and calculate your day trips, road trips, and overnight stays">
+    
+    <title>Trip Planner - Cost Estimator</title>
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/tp/manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" href="/tp/icons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/tp/icons/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/tp/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/tp/icons/icon-512.png">
+    
+    <!-- Font Awesome (local fallback in service worker) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables - Purple Theme */
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --tertiary-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #a0a0a0;
+            --accent-color: #8b5cf6;
+            --border-color: rgba(255, 255, 255, 0.1);
+            
+            --primary-bg-light: #ffffff;
+            --secondary-bg-light: #f8f9fa;
+            --tertiary-bg-light: #e9ecef;
+            --primary-text-light: #1a1a1a;
+            --secondary-text-light: #6c757d;
+            --border-color-light: rgba(0, 0, 0, 0.1);
+            
+            --theme-1: #8b5cf6;
+            --theme-2: #7c3aed;
+            --theme-3: #6d28d9;
+            --theme-4: #ede9fe;
+            
+            --glow-color-1: #8b5cf6;
+            --glow-color-2: #a78bfa;
+            --glow-color-3: #c4b5fd;
+            --glow-color-4: #ddd6fe;
+            
+            --border-radius-card: 16px;
+            --border-radius-button: 12px;
+            --border-radius-input: 12px;
+            --transition-base: all 0.3s ease;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --font-size-base: 16px;
+            --line-height-base: 1.6;
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            --z-background: 0;
+            --z-content: 10;
+            --z-overlay: 100;
+            --z-modal: 1000;
+            --z-toast: 10000;
+        }
+
+        .light-mode {
+            --primary-bg: var(--primary-bg-light);
+            --secondary-bg: var(--secondary-bg-light);
+            --tertiary-bg: var(--tertiary-bg-light);
+            --primary-text: var(--primary-text-light);
+            --secondary-text: var(--secondary-text-light);
+            --border-color: var(--border-color-light);
+        }
+
+        @keyframes vehicle-move {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(5px) rotate(5deg); }
+            75% { transform: translateX(-5px) rotate(-5deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-base);
+            padding: var(--spacing-md);
+            transition: var(--transition-base);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: var(--z-content);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .vehicle-icon {
+            font-size: 2.5rem;
+            animation: vehicle-move 3s ease-in-out infinite;
+            color: var(--accent-color);
+        }
+
+        .app-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            cursor: text;
+            outline: none;
+            border-bottom: 2px dashed transparent;
+            transition: border-color 0.2s;
+        }
+        .app-name:focus {
+            border-bottom-color: var(--accent-color);
+        }
+
+        .theme-toggle {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-button);
+            color: var(--primary-text);
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--secondary-bg);
+        }
+
+        /* Animated Glowing Border System */
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .card-glow-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: var(--border-radius-card);
+            margin: 0 0 20px 0;
+        }
+
+        .card-glow-wrapper::before,
+        .card-glow-wrapper::after {
+            content: '';
+            position: absolute;
+            pointer-events: none;
+            border-radius: calc(var(--border-radius-card) + 4px);
+            z-index: var(--z-background);
+            animation: rotate 4s linear infinite;
+        }
+
+        .card-glow-wrapper::before {
+            inset: -4px;
+            background: conic-gradient(
+                from var(--angle),
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            opacity: 0.7;
+            filter: blur(20px);
+        }
+
+        .card-glow-wrapper::after {
+            inset: -2px;
+            background: conic-gradient(
+                from var(--angle),
+                var(--glow-color-1),
+                var(--glow-color-2),
+                var(--glow-color-3),
+                var(--glow-color-4),
+                var(--glow-color-1)
+            );
+            z-index: calc(var(--z-background) + 1);
+        }
+
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        @supports not (background: conic-gradient(from var(--angle), red, blue)) {
+            .card-glow-wrapper::before,
+            .card-glow-wrapper::after {
+                animation: rotate-fallback 4s linear infinite;
+            }
+            
+            @keyframes rotate-fallback {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+
+        .card-glow {
+            position: relative;
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            z-index: calc(var(--z-background) + 2);
+            overflow: hidden;
+        }
+
+        /* Trip Type Selector */
+        .trip-type-selector {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .trip-type-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 16px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-button);
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .trip-type-btn:hover {
+            background: var(--secondary-bg);
+            border-color: var(--accent-color);
+        }
+
+        .trip-type-btn.active {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .trip-type-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Total Display - with map icon */
+        .total-display {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+        }
+
+        .total-label {
+            font-size: 1.1rem;
+            color: var(--secondary-text);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .map-icon {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 1.8rem;
+            transition: transform 0.2s;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        .map-icon:hover {
+            transform: scale(1.3);
+            animation: none;
+        }
+
+        .total-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.1;
+        }
+
+        .total-details {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+        }
+
+        /* Trip Description */
+        .trip-description-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .trip-description-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 18px;
+            font-weight: 600;
+            transition: var(--transition-base);
+            text-align: center;
+        }
+
+        .trip-description-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Trip Date */
+        .trip-date-group {
+            margin-top: var(--spacing-md);
+        }
+
+        .date-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .date-input {
+            flex: 1;
+            padding: 14px 16px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 16px;
+        }
+
+        /* People Count */
+        .people-count-group {
+            margin: var(--spacing-lg) 0;
+        }
+
+        .people-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .people-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 16px;
+        }
+
+        /* Destination Selector + Add button */
+        .destination-section {
+            margin: var(--spacing-lg) 0;
+            padding: var(--spacing-md) 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .destination-section label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--secondary-text);
+            font-weight: 500;
+        }
+
+        .destination-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .destination-row select {
+            flex: 2;
+            min-width: 200px;
+            padding: 14px 16px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .destination-row button {
+            width: auto;
+            padding: 14px 20px;
+            white-space: nowrap;
+        }
+
+        .add-btn {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        .add-btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* Input Form */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary-text);
+        }
+
+        .form-header i {
+            color: var(--accent-color);
+        }
+
+        .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        @media (min-width: 768px) {
+            .input-row {
+                flex-direction: row;
+            }
+            
+            .input-row .form-group {
+                flex: 1;
+            }
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+
+        .info-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text);
+            cursor: help;
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--tertiary-bg);
+            transition: var(--transition-base);
+        }
+
+        .info-icon:hover {
+            color: var(--accent-color);
+            background: var(--secondary-bg);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-button);
+            font-size: 0.85rem;
+            width: 220px;
+            z-index: var(--z-modal);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-base);
+            right: 0;
+            top: calc(100% + 8px);
+        }
+
+        .info-icon:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 40px 14px 42px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 16px;
+            transition: var(--transition-base);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--secondary-text);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        /* Accommodation Section (for overnight stays) */
+        .accommodation-section {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .accommodation-section.hidden {
+            display: none;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        @media (min-width: 768px) {
+            .button-group {
+                flex-direction: row;
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: var(--border-radius-button);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition-base);
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .btn {
+                width: auto;
+                padding: 14px 24px;
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            color: white;
+        }
+
+        .btn-primary:hover, .btn-primary:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover, .btn-secondary:active {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: var(--z-modal);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-base);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(20px);
+            transition: var(--transition-base);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 1.4rem;
+            color: var(--primary-text);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .close-modal:hover {
+            color: var(--primary-text);
+        }
+
+        .settings-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .settings-group h3 {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-text);
+        }
+
+        .settings-input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .settings-input-wrapper {
+            position: relative;
+        }
+
+        .settings-input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+
+        .settings-control {
+            width: 100%;
+            padding: 14px 14px 14px 42px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+            font-size: 16px;
+        }
+
+        .currency-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .currency-option {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .currency-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-button);
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: var(--transition-base);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .currency-btn:hover {
+            background: var(--secondary-bg);
+        }
+
+        .currency-btn.active {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .decimal-options {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .decimal-btn {
+            padding: 10px 16px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-button);
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .decimal-btn:hover {
+            background: var(--secondary-bg);
+        }
+
+        .decimal-btn.active {
+            background: linear-gradient(135deg, var(--theme-1), var(--theme-2));
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        /* Map Modal */
+        .map-modal-content {
+            max-width: 700px;
+        }
+        .map-container {
+            width: 100%;
+            height: 350px;
+            margin: 15px 0;
+            border-radius: var(--border-radius-input);
+            overflow: hidden;
+            background: var(--tertiary-bg);
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .coords-display {
+            background: var(--tertiary-bg);
+            padding: 12px;
+            border-radius: var(--border-radius-input);
+            text-align: center;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .rating-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background: var(--tertiary-bg);
+            border-radius: var(--border-radius-button);
+        }
+        .rating-stars {
+            color: #ffc107;
+            letter-spacing: 2px;
+        }
+        .review-count {
+            color: var(--secondary-text);
+        }
+        .google-maps-btn {
+            background: #4285F4;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            border-radius: var(--border-radius-button);
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .google-maps-btn:hover {
+            background: #3367D6;
+        }
+        .destination-image {
+            width: 144px;
+            height: 192px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 10px auto;
+            display: block;
+            border: 2px solid var(--accent-color);
+        }
+
+        /* Add Destination Modal */
+        .add-modal-content {
+            max-width: 500px;
+        }
+        .add-form-row {
+            margin-bottom: 15px;
+        }
+        .add-form-row label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--secondary-text);
+        }
+        .add-form-row input, .add-form-row textarea {
+            width: 100%;
+            padding: 10px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-input);
+            color: var(--primary-text);
+        }
+        .image-preview {
+            width: 144px;
+            height: 192px;
+            border-radius: 12px;
+            background: var(--tertiary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+            overflow: hidden;
+            border: 2px dashed var(--accent-color);
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Copy Modal */
+        .copy-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: var(--z-modal);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-base);
+        }
+
+        .copy-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .copy-modal-content {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(20px);
+            transition: var(--transition-base);
+        }
+
+        .copy-modal.active .copy-modal-content {
+            transform: translateY(0);
+        }
+
+        .copy-text {
+            background: var(--tertiary-bg);
+            border-radius: var(--border-radius-input);
+            padding: var(--spacing-md);
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: var(--spacing-md) 0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* History Section */
+        .history-section {
+            margin-top: var(--spacing-xl);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .history-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-text);
+        }
+
+        .clear-history {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .clear-history:hover {
+            color: #ef4444;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .history-item {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-card);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-base);
+        }
+
+        .history-item:hover {
+            background: var(--tertiary-bg);
+        }
+
+        .history-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-text);
+        }
+
+        .history-total {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            white-space: nowrap;
+        }
+
+        .history-date {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin: 4px 0;
+        }
+
+        .history-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
+            font-size: 0.9rem;
+            margin-top: var(--spacing-sm);
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .history-detail {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-detail span:first-child {
+            color: var(--secondary-text);
+        }
+
+        .history-detail span:last-child {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .history-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .history-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-button);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--accent-color);
+            z-index: var(--z-toast);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition-base);
+            max-width: 300px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .card-glow-wrapper::before,
+            .card-glow-wrapper::after,
+            .vehicle-icon,
+            .map-icon {
+                animation: none !important;
+            }
+            
+            .btn:hover, .btn:active,
+            .info-icon:hover,
+            .history-item:hover,
+            .map-icon:hover {
+                transform: none !important;
+            }
+            
+            .modal,
+            .copy-modal-content {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Theme Toggle -->
+        <div class="header">
+            <div class="app-title">
+                <i class="fas fa-car vehicle-icon"></i>
+                <div class="app-name" id="appName" contenteditable="true">Trip Planner</div>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                <span>Dark</span>
+            </button>
+        </div>
+
+        <!-- Main Calculator Card with Glowing Border -->
+        <div class="card-glow-wrapper">
+            <div class="card-glow">
+                <!-- Trip Type Selector -->
+                <div class="trip-type-selector">
+                    <button type="button" class="trip-type-btn active" data-type="day">
+                        <i class="fas fa-sun"></i> Day Trip
+                    </button>
+                    <button type="button" class="trip-type-btn" data-type="road">
+                        <i class="fas fa-road"></i> Road Trip
+                    </button>
+                    <button type="button" class="trip-type-btn" data-type="overnight">
+                        <i class="fas fa-hotel"></i> Overnight
+                    </button>
+                </div>
+
+                <!-- Total Display with map icon -->
+                <div class="total-display">
+                    <div class="total-label">
+                        Total Trip Cost
+                        <i class="fas fa-map-marked-alt map-icon" id="mapIcon" title="Show on map"></i>
+                    </div>
+                    <div class="total-amount" id="totalAmount">$ 0</div>
+                    <div class="total-details">
+                        <span id="perPerson">Per Person: $ 0</span>
+                        <span id="perPair">Per Pair: $ 0</span>
+                        <span id="perGroup" style="display: none;">Per Group: $ 0</span>
+                    </div>
+                </div>
+
+                <!-- Trip Description -->
+                <div class="trip-description-group">
+                    <input type="text" id="tripDescription" class="trip-description-input" placeholder="Trip Description (e.g., Beach Day, Mountain Drive)" value="Weekend Getaway">
+                </div>
+
+                <!-- Trip Date -->
+                <div class="trip-date-group">
+                    <label for="tripDate">Trip Date</label>
+                    <div class="date-input-wrapper">
+                        <i class="fas fa-calendar-alt" style="color: var(--accent-color);"></i>
+                        <input type="date" id="tripDate" class="date-input">
+                    </div>
+                </div>
+
+                <!-- Number of People -->
+                <div class="people-count-group">
+                    <label for="peopleCount">Number of People</label>
+                    <div class="people-input-wrapper">
+                        <i class="fas fa-users" style="color: var(--accent-color);"></i>
+                        <input type="number" id="peopleCount" class="people-input" value="2" min="1" max="20" step="1">
+                    </div>
+                </div>
+
+                <!-- Destination Selector + Add button -->
+                <div class="destination-section">
+                    <label for="destinationSelect">Load a destination:</label>
+                    <div class="destination-row">
+                        <select id="destinationSelect" class="form-control">
+                            <option value="">-- Select a destination --</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary" id="loadDestinationBtn">
+                            <i class="fas fa-download"></i> Load
+                        </button>
+                        <button type="button" class="btn btn-secondary add-btn" id="addDestinationBtn">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <form id="tripForm">
+                    <!-- Travel Details -->
+                    <div class="form-group">
+                        <div class="form-header">
+                            <i class="fas fa-route"></i>
+                            <h3>Travel Details</h3>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="distance">Distance (km)</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-road"></i>
+                                    <input type="number" id="distance" class="form-control" value="200" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Round trip distance in kilometers</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fuelPrice">Fuel Price per Liter</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-gas-pump"></i>
+                                    <input type="number" id="fuelPrice" class="form-control" value="1.50" min="0" step="0.01">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Cost of fuel per liter (in your currency)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Destination Costs -->
+                    <div class="form-group">
+                        <div class="form-header">
+                            <i class="fas fa-map-pin"></i>
+                            <h3>Destination Costs</h3>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="entryFee">Entry/Admission Fee</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    <input type="number" id="entryFee" class="form-control" value="0" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Per person entry or admission fee</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="parkingFee">Parking Fee</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-parking"></i>
+                                    <input type="number" id="parkingFee" class="form-control" value="0" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Total parking fee (shared among group)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-row" style="margin-top: var(--spacing-md);">
+                            <div class="form-group">
+                                <label for="activityFee">Activity/Attraction Fee</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-hiking"></i>
+                                    <input type="number" id="activityFee" class="form-control" value="0" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Per person fee for activities or attractions</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="destinationMisc">Other Destination Fees</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <input type="number" id="destinationMisc" class="form-control" value="0" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Any other destination-specific fees</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accommodation Section (hidden by default) -->
+                    <div class="accommodation-section" id="accommodationSection">
+                        <div class="form-header">
+                            <i class="fas fa-bed"></i>
+                            <h3>Accommodation</h3>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="accommodationCost">Accommodation Cost</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-hotel"></i>
+                                    <input type="number" id="accommodationCost" class="form-control" value="0" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Total cost for accommodation (shared among group)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="accommodationType">Accommodation Type</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-tag"></i>
+                                    <select id="accommodationType" class="form-control">
+                                        <option value="hotel">Hotel</option>
+                                        <option value="hostel">Hostel</option>
+                                        <option value="airbnb">Airbnb</option>
+                                        <option value="camping">Camping</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Food & Miscellaneous -->
+                    <div class="form-group">
+                        <div class="form-header">
+                            <i class="fas fa-utensils"></i>
+                            <h3>Food & Miscellaneous</h3>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="foodCost">Food & Drinks</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-utensils"></i>
+                                    <input type="number" id="foodCost" class="form-control" value="50" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Per person food and drinks budget</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="miscCost">Other Miscellaneous</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <input type="number" id="miscCost" class="form-control" value="20" min="0" step="1">
+                                    <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div class="tooltip">Other expenses, souvenirs, etc. per person</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" id="settingsBtn">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </button>
+                        <button type="button" class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i>
+                            Save This Trip
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <div class="history-header">
+                <h2><i class="fas fa-history"></i> Trip History</h2>
+                <button class="clear-history" id="clearHistoryBtn">
+                    <i class="fas fa-trash-alt"></i>
+                    Clear All
+                </button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- History items will be added here dynamically -->
+                <div class="history-item empty-history">
+                    <div class="history-date">No trips saved yet</div>
+                    <div class="history-details">
+                        <div class="history-detail">
+                            <span>Save a trip to see it here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Trip Planner • Plan your day trips, road trips & overnight stays • All calculations are estimates</p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Vehicle Fuel Efficiency</h3>
+                <div class="settings-input-group">
+                    <div class="settings-input-wrapper">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <input type="number" id="fuelEfficiency" class="settings-control" value="10" min="1" step="0.1" placeholder="Fuel efficiency (km/L)">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Currency</h3>
+                <div class="currency-options">
+                    <div class="currency-option">
+                        <button type="button" class="currency-btn" data-currency="$">$ USD</button>
+                    </div>
+                    <div class="currency-option">
+                        <button type="button" class="currency-btn" data-currency="€">€ EUR</button>
+                    </div>
+                    <div class="currency-option">
+                        <button type="button" class="currency-btn" data-currency="£">£ GBP</button>
+                    </div>
+                    <div class="currency-option">
+                        <button type="button" class="currency-btn" data-currency="¥">¥ JPY</button>
+                    </div>
+                    <div class="currency-option">
+                        <button type="button" class="currency-btn" data-currency="₱">₱ PHP</button>
+                    </div>
+                    <div class="currency-option">
+                        <button type="button" class="currency-btn" data-currency="฿">฿ THB</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Decimal Places</h3>
+                <div class="decimal-options">
+                    <button type="button" class="decimal-btn" data-decimals="0">0 ($ 1,234)</button>
+                    <button type="button" class="decimal-btn" data-decimals="2">2 ($ 1,234.56)</button>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" id="closeModalBtn2">Close</button>
+                <button type="button" class="btn btn-primary" id="applySettingsBtn">Apply Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Modal -->
+    <div class="modal-overlay" id="mapModal">
+        <div class="modal map-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-map-marked-alt"></i> <span id="mapLocationName">Location</span></h2>
+                <button class="close-modal" id="closeMapModalBtn">&times;</button>
+            </div>
+            <div class="map-container" id="mapContainer"></div>
+            <div class="coords-display" id="mapCoords"></div>
+            <div class="rating-info" id="ratingInfo" style="display: none;">
+                <span class="rating-stars" id="ratingStars"></span>
+                <span class="review-count" id="reviewCount"></span>
+            </div>
+            <img id="destinationImage" class="destination-image" style="display: none;" alt="Destination">
+            <a href="#" target="_blank" id="googleMapsLink" class="google-maps-btn">
+                <i class="fab fa-google"></i> Open in Google Maps
+            </a>
+            <div class="button-group" style="margin-top: 15px;">
+                <button type="button" class="btn btn-secondary" id="closeMapModalBtn2">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Destination Modal -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal add-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Destination</h2>
+                <button class="close-modal" id="closeAddModalBtn">&times;</button>
+            </div>
+            <div class="add-form-row">
+                <label>Destination Name</label>
+                <input type="text" id="addName" placeholder="e.g., Grand Canyon, Beach Resort">
+            </div>
+            <div class="add-form-row">
+                <label>Latitude</label>
+                <input type="number" step="any" id="addLat" placeholder="36.0544">
+            </div>
+            <div class="add-form-row">
+                <label>Longitude</label>
+                <input type="number" step="any" id="addLon" placeholder="-112.1401">
+            </div>
+            <div class="add-form-row">
+                <label>Entry Fee (per person) $</label>
+                <input type="number" id="addEntryFee" value="0">
+            </div>
+            <div class="add-form-row">
+                <label>Food Cost (per person) $</label>
+                <input type="number" id="addFoodCost" value="50">
+            </div>
+            <div class="add-form-row">
+                <label>Activity Fee (per person) $</label>
+                <input type="number" id="addActivityFee" value="0">
+            </div>
+            <div class="add-form-row">
+                <label>Rating (optional)</label>
+                <input type="number" step="0.1" id="addRating" placeholder="4.5">
+            </div>
+            <div class="add-form-row">
+                <label>Number of Reviews (optional)</label>
+                <input type="number" id="addReviews" placeholder="120">
+            </div>
+            <div class="add-form-row">
+                <label>Picture (optional)</label>
+                <input type="file" id="addImage" accept="image/*">
+                <div class="image-preview" id="imagePreview">
+                    <img id="previewImg" style="display: none;">
+                    <span id="previewPlaceholder">No image</span>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" id="closeAddModalBtn2">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveDestinationBtn">Save Destination</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Modal -->
+    <div class="copy-modal" id="copyModal">
+        <div class="copy-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-copy"></i> Copy Trip Details</h2>
+                <button class="close-modal" id="closeCopyModalBtn">&times;</button>
+            </div>
+            <p style="margin-bottom: var(--spacing-md); color: var(--secondary-text);">Copy the text below to share via messaging app:</p>
+            <div class="copy-text" id="copyText"></div>
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" id="closeCopyModalBtn2">Close</button>
+                <button type="button" class="btn btn-primary" id="copyToClipboardBtn">
+                    <i class="fas fa-copy"></i> Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Trip saved successfully!</span>
+    </div>
+
+    <!-- PWA Installation Prompt -->
+    <div id="installPrompt" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--secondary-bg); color: var(--primary-text); padding: 15px; border-radius: var(--border-radius-card); box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10000; border: 1px solid var(--border-color); backdrop-filter: blur(10px);">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-download" style="color: var(--accent-color); font-size: 1.2rem;"></i>
+                <div>
+                    <div style="font-weight: 600;">Install Trip Planner</div>
+                    <div style="font-size: 0.9rem; color: var(--secondary-text);">Add to home screen for full offline experience</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="installCancel" style="padding: 8px 16px; background: var(--tertiary-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius-button); color: var(--primary-text); cursor: pointer;">Later</button>
+                <button id="installAccept" style="padding: 8px 16px; background: linear-gradient(135deg, var(--theme-1), var(--theme-2)); border: none; border-radius: var(--border-radius-button); color: white; cursor: pointer; font-weight: 600;">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // PWA Installation Prompt
+    let deferredPrompt;
+    const installPrompt = document.getElementById('installPrompt');
+    const installCancel = document.getElementById('installCancel');
+    const installAccept = document.getElementById('installAccept');
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    if (!isStandalone) {
+        const lastDismissed = localStorage.getItem('installPromptDismissed');
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        const showPrompt = !lastDismissed || (Date.now() - parseInt(lastDismissed) > oneWeek);
+        if (showPrompt) {
+            setTimeout(() => { installPrompt.style.display = 'block'; }, 5000);
+        }
+    }
+
+    installCancel.addEventListener('click', () => {
+        installPrompt.style.display = 'none';
+        localStorage.setItem('installPromptDismissed', Date.now());
+    });
+
+    installAccept.addEventListener('click', () => {
+        installPrompt.style.display = 'none';
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+        }
+        localStorage.setItem('installPromptAccepted', Date.now());
+    });
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const lastDismissed = localStorage.getItem('installPromptDismissed');
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        if (!lastDismissed || (Date.now() - parseInt(lastDismissed) > oneWeek)) {
+            installPrompt.style.display = 'block';
+        }
+    });
+
+    // ---------- APP STATE ----------
+    const state = {
+        currency: '$',
+        decimals: 2,
+        fuelEfficiency: 10,
+        history: [],
+        customDestinations: [],   // user-added destinations
+        currentTripType: 'day'     // day, road, overnight
+    };
+
+    // Current destination coordinates (if known)
+    let currentDestination = {
+        lat: null,
+        lon: null,
+        name: 'Grand Canyon',
+        rating: null,
+        reviews: null,
+        image: null
+    };
+
+    // ---------- DEFAULT SAMPLE DESTINATIONS (built-in) ----------
+    const defaultDestinations = [
+        { 
+            name: "Grand Canyon National Park", 
+            entryFee: 35, 
+            foodCost: 50, 
+            activityFee: 0,
+            lat: 36.0544,
+            lon: -112.1401,
+            rating: 4.9,
+            reviews: 15000,
+            image: null
+        },
+        { 
+            name: "Yellowstone National Park", 
+            entryFee: 35, 
+            foodCost: 55, 
+            activityFee: 0,
+            lat: 44.4280,
+            lon: -110.5885,
+            rating: 4.8,
+            reviews: 12000,
+            image: null
+        },
+        { 
+            name: "Miami Beach", 
+            entryFee: 0, 
+            foodCost: 65, 
+            activityFee: 30,
+            lat: 25.7907,
+            lon: -80.1300,
+            rating: 4.6,
+            reviews: 8000,
+            image: null
+        },
+        { 
+            name: "Lake Tahoe", 
+            entryFee: 10, 
+            foodCost: 60, 
+            activityFee: 25,
+            lat: 39.0968,
+            lon: -120.0324,
+            rating: 4.7,
+            reviews: 6000,
+            image: null
+        },
+        { 
+            name: "Blue Ridge Parkway", 
+            entryFee: 0, 
+            foodCost: 45, 
+            activityFee: 0,
+            lat: 35.7659,
+            lon: -82.2654,
+            rating: 4.8,
+            reviews: 4500,
+            image: null
+        },
+        { 
+            name: "Niagara Falls", 
+            entryFee: 25, 
+            foodCost: 50, 
+            activityFee: 35,
+            lat: 43.0828,
+            lon: -79.0742,
+            rating: 4.7,
+            reviews: 20000,
+            image: null
+        },
+        { 
+            name: "Yosemite National Park", 
+            entryFee: 35, 
+            foodCost: 55, 
+            activityFee: 0,
+            lat: 37.8651,
+            lon: -119.5383,
+            rating: 4.9,
+            reviews: 11000,
+            image: null
+        },
+        { 
+            name: "Zion National Park", 
+            entryFee: 35, 
+            foodCost: 50, 
+            activityFee: 0,
+            lat: 37.2982,
+            lon: -113.0263,
+            rating: 4.9,
+            reviews: 9500,
+            image: null
+        }
+    ];
+
+    // Combined destinations (default + custom)
+    let allDestinations = [...defaultDestinations];
+
+    // DOM Elements
+    const themeToggle = document.getElementById('themeToggle');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const mapModal = document.getElementById('mapModal');
+    const copyModal = document.getElementById('copyModal');
+    const addModal = document.getElementById('addModal');
+    const closeModalBtns = document.querySelectorAll('#closeModalBtn, #closeModalBtn2');
+    const closeMapModalBtns = document.querySelectorAll('#closeMapModalBtn, #closeMapModalBtn2');
+    const closeCopyModalBtns = document.querySelectorAll('#closeCopyModalBtn, #closeCopyModalBtn2');
+    const closeAddModalBtns = document.querySelectorAll('#closeAddModalBtn, #closeAddModalBtn2');
+    const applySettingsBtn = document.getElementById('applySettingsBtn');
+    const copyToClipboardBtn = document.getElementById('copyToClipboardBtn');
+    const currencyBtns = document.querySelectorAll('.currency-btn');
+    const decimalBtns = document.querySelectorAll('.decimal-btn');
+    const tripTypeBtns = document.querySelectorAll('.trip-type-btn');
+    const totalAmount = document.getElementById('totalAmount');
+    const perPerson = document.getElementById('perPerson');
+    const perPair = document.getElementById('perPair');
+    const perGroup = document.getElementById('perGroup');
+    const historyList = document.getElementById('historyList');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const copyText = document.getElementById('copyText');
+    const accommodationSection = document.getElementById('accommodationSection');
+    
+    const tripDescriptionInput = document.getElementById('tripDescription');
+    const tripDateInput = document.getElementById('tripDate');
+    const peopleCountInput = document.getElementById('peopleCount');
+    const distanceInput = document.getElementById('distance');
+    const fuelPriceInput = document.getElementById('fuelPrice');
+    const entryFeeInput = document.getElementById('entryFee');
+    const parkingFeeInput = document.getElementById('parkingFee');
+    const activityFeeInput = document.getElementById('activityFee');
+    const destinationMiscInput = document.getElementById('destinationMisc');
+    const accommodationCostInput = document.getElementById('accommodationCost');
+    const accommodationTypeSelect = document.getElementById('accommodationType');
+    const foodCostInput = document.getElementById('foodCost');
+    const miscCostInput = document.getElementById('miscCost');
+    const fuelEfficiencyInput = document.getElementById('fuelEfficiency');
+    const appNameDiv = document.getElementById('appName');
+
+    const destinationSelect = document.getElementById('destinationSelect');
+    const loadDestinationBtn = document.getElementById('loadDestinationBtn');
+    const addDestinationBtn = document.getElementById('addDestinationBtn');
+
+    // Add modal fields
+    const addName = document.getElementById('addName');
+    const addLat = document.getElementById('addLat');
+    const addLon = document.getElementById('addLon');
+    const addEntryFee = document.getElementById('addEntryFee');
+    const addFoodCost = document.getElementById('addFoodCost');
+    const addActivityFee = document.getElementById('addActivityFee');
+    const addRating = document.getElementById('addRating');
+    const addReviews = document.getElementById('addReviews');
+    const addImage = document.getElementById('addImage');
+    const previewImg = document.getElementById('previewImg');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const saveDestinationBtn = document.getElementById('saveDestinationBtn');
+
+    // Map elements
+    const mapIcon = document.getElementById('mapIcon');
+    const mapLocationName = document.getElementById('mapLocationName');
+    const mapContainer = document.getElementById('mapContainer');
+    const mapCoords = document.getElementById('mapCoords');
+    const ratingInfo = document.getElementById('ratingInfo');
+    const ratingStars = document.getElementById('ratingStars');
+    const reviewCount = document.getElementById('reviewCount');
+    const destinationImage = document.getElementById('destinationImage');
+    const googleMapsLink = document.getElementById('googleMapsLink');
+
+    // Initialize the app
+    function init() {
+        // Load saved app name
+        const savedAppName = localStorage.getItem('appName');
+        if (savedAppName) appNameDiv.textContent = savedAppName;
+        appNameDiv.addEventListener('input', () => {
+            localStorage.setItem('appName', appNameDiv.textContent);
+        });
+
+        // Load custom destinations from localStorage
+        loadCustomDestinations();
+
+        // Populate dropdown with all destinations
+        populateDestinationSelect();
+
+        const today = new Date();
+        tripDateInput.value = today.toISOString().split('T')[0];
+        
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            updateThemeToggle();
+        }
+        
+        loadSettings();
+        loadHistory();
+        calculateTotal();
+        setupEventListeners();
+        updateTripType('day');
+    }
+
+    function loadCustomDestinations() {
+        const saved = localStorage.getItem('customDestinations');
+        if (saved) {
+            try {
+                state.customDestinations = JSON.parse(saved);
+                allDestinations = [...defaultDestinations, ...state.customDestinations];
+            } catch (e) {
+                console.warn('Failed to load custom destinations', e);
+            }
+        } else {
+            allDestinations = [...defaultDestinations];
+        }
+    }
+
+    function saveCustomDestinations() {
+        localStorage.setItem('customDestinations', JSON.stringify(state.customDestinations));
+        allDestinations = [...defaultDestinations, ...state.customDestinations];
+        populateDestinationSelect();
+    }
+
+    function populateDestinationSelect() {
+        while (destinationSelect.options.length > 1) {
+            destinationSelect.remove(1);
+        }
+        allDestinations.forEach(dest => {
+            const option = document.createElement('option');
+            option.value = dest.name;
+            option.textContent = dest.name;
+            destinationSelect.appendChild(option);
+        });
+    }
+
+    function loadSelectedDestination() {
+        const selectedName = destinationSelect.value;
+        if (!selectedName) {
+            showToast('Please select a destination');
+            return;
+        }
+        const dest = allDestinations.find(d => d.name === selectedName);
+        if (!dest) return;
+
+        tripDescriptionInput.value = dest.name;
+        entryFeeInput.value = dest.entryFee || 0;
+        foodCostInput.value = dest.foodCost || 50;
+        activityFeeInput.value = dest.activityFee || 0;
+        
+        currentDestination = {
+            lat: dest.lat || null,
+            lon: dest.lon || null,
+            name: dest.name,
+            rating: dest.rating || null,
+            reviews: dest.reviews || null,
+            image: dest.image || null
+        };
+        
+        calculateTotal();
+        showToast(`Loaded "${dest.name}"`);
+    }
+
+    // Show map modal with embedded OSM and Google link
+    function showMap() {
+        let lat = currentDestination.lat;
+        let lon = currentDestination.lon;
+        let name = currentDestination.name;
+
+        if (!lat || !lon) {
+            lat = 36.0544;
+            lon = -112.1401;
+            name = 'Grand Canyon (default)';
+        }
+
+        const osmUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01}%2C${lat-0.01}%2C${lon+0.01}%2C${lat+0.01}&layer=mapnik&marker=${lat}%2C${lon}`;
+        mapContainer.innerHTML = `<iframe src="${osmUrl}" style="width:100%; height:100%; border:0" allowfullscreen loading="lazy"></iframe>`;
+        mapLocationName.textContent = name;
+        mapCoords.textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        googleMapsLink.href = `https://maps.google.com/?daddr=${lat},${lon}`;
+
+        if (currentDestination.rating) {
+            ratingInfo.style.display = 'flex';
+            const fullStars = Math.floor(currentDestination.rating);
+            const halfStar = currentDestination.rating % 1 >= 0.5 ? '½' : '';
+            ratingStars.innerHTML = '★'.repeat(fullStars) + halfStar;
+            reviewCount.textContent = `(${currentDestination.reviews} reviews)`;
+        } else {
+            ratingInfo.style.display = 'none';
+        }
+
+        if (currentDestination.image) {
+            destinationImage.src = currentDestination.image;
+            destinationImage.style.display = 'block';
+        } else {
+            destinationImage.style.display = 'none';
+        }
+
+        toggleModal(mapModal, true);
+    }
+
+    // Handle image preview in add modal
+    addImage.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                previewImg.src = ev.target.result;
+                previewImg.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImg.style.display = 'none';
+            previewPlaceholder.style.display = 'block';
+        }
+    });
+
+    // Save new destination
+    function saveNewDestination() {
+        const name = addName.value.trim();
+        if (!name) { showToast('Name is required'); return; }
+        const lat = parseFloat(addLat.value);
+        const lon = parseFloat(addLon.value);
+        if (isNaN(lat) || isNaN(lon)) { showToast('Valid coordinates required'); return; }
+        const entryFee = parseFloat(addEntryFee.value) || 0;
+        const foodCost = parseFloat(addFoodCost.value) || 0;
+        const activityFee = parseFloat(addActivityFee.value) || 0;
+        const rating = addRating.value ? parseFloat(addRating.value) : null;
+        const reviews = addReviews.value ? parseInt(addReviews.value) : null;
+        const image = previewImg.src && previewImg.src.startsWith('data:') ? previewImg.src : null;
+
+        const newDestination = {
+            name,
+            lat,
+            lon,
+            entryFee,
+            foodCost,
+            activityFee,
+            rating,
+            reviews,
+            image
+        };
+
+        state.customDestinations.push(newDestination);
+        saveCustomDestinations();
+        toggleModal(addModal, false);
+        showToast(`Added "${name}"`);
+        // Clear form
+        addName.value = '';
+        addLat.value = '';
+        addLon.value = '';
+        addEntryFee.value = '0';
+        addFoodCost.value = '50';
+        addActivityFee.value = '0';
+        addRating.value = '';
+        addReviews.value = '';
+        addImage.value = '';
+        previewImg.style.display = 'none';
+        previewPlaceholder.style.display = 'block';
+    }
+
+    function updateTripType(type) {
+        state.currentTripType = type;
+        
+        // Update active button
+        tripTypeBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.type === type) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Show/hide accommodation section
+        if (type === 'overnight') {
+            accommodationSection.classList.remove('hidden');
+        } else {
+            accommodationSection.classList.add('hidden');
+            accommodationCostInput.value = 0;
+        }
+
+        calculateTotal();
+    }
+
+    function setupEventListeners() {
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        settingsBtn.addEventListener('click', () => toggleModal(settingsModal, true));
+        closeModalBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(settingsModal, false)));
+        applySettingsBtn.addEventListener('click', applySettings);
+        
+        closeMapModalBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(mapModal, false)));
+        
+        closeCopyModalBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(copyModal, false)));
+        copyToClipboardBtn.addEventListener('click', copyToClipboard);
+        
+        closeAddModalBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(addModal, false)));
+        saveDestinationBtn.addEventListener('click', saveNewDestination);
+        
+        saveBtn.addEventListener('click', saveTrip);
+        clearHistoryBtn.addEventListener('click', clearHistory);
+        
+        // Trip type buttons
+        tripTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => updateTripType(btn.dataset.type));
+        });
+        
+        const inputs = document.querySelectorAll('.form-control, .trip-description-input, .date-input, .people-input');
+        inputs.forEach(input => {
+            input.addEventListener('input', calculateTotal);
+            input.addEventListener('change', calculateTotal);
+        });
+        
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) toggleModal(settingsModal, false);
+        });
+        
+        mapModal.addEventListener('click', (e) => {
+            if (e.target === mapModal) toggleModal(mapModal, false);
+        });
+        
+        copyModal.addEventListener('click', (e) => {
+            if (e.target === copyModal) toggleModal(copyModal, false);
+        });
+        
+        addModal.addEventListener('click', (e) => {
+            if (e.target === addModal) toggleModal(addModal, false);
+        });
+
+        loadDestinationBtn.addEventListener('click', loadSelectedDestination);
+        addDestinationBtn.addEventListener('click', () => {
+            // Reset form
+            addName.value = '';
+            addLat.value = '';
+            addLon.value = '';
+            addEntryFee.value = '0';
+            addFoodCost.value = '50';
+            addActivityFee.value = '0';
+            addRating.value = '';
+            addReviews.value = '';
+            addImage.value = '';
+            previewImg.style.display = 'none';
+            previewPlaceholder.style.display = 'block';
+            toggleModal(addModal, true);
+        });
+
+        mapIcon.addEventListener('click', showMap);
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const isLightMode = document.body.classList.contains('light-mode');
+        localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+        updateThemeToggle();
+    }
+
+    function updateThemeToggle() {
+        const isLightMode = document.body.classList.contains('light-mode');
+        const icon = themeToggle.querySelector('i');
+        const text = themeToggle.querySelector('span');
+        icon.className = isLightMode ? 'fas fa-sun' : 'fas fa-moon';
+        text.textContent = isLightMode ? 'Light' : 'Dark';
+    }
+
+    function toggleModal(modal, show) {
+        if (show) {
+            if (modal === settingsModal) {
+                fuelEfficiencyInput.value = state.fuelEfficiency;
+                currencyBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.currency === state.currency) btn.classList.add('active');
+                });
+                decimalBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (parseInt(btn.dataset.decimals) === state.decimals) btn.classList.add('active');
+                });
+            }
+            modal.classList.add('active');
+        } else {
+            modal.classList.remove('active');
+        }
+    }
+
+    function loadSettings() {
+        const savedCurrency = localStorage.getItem('currency');
+        const savedDecimals = localStorage.getItem('decimals');
+        const savedFuelEfficiency = localStorage.getItem('fuelEfficiency');
+        if (savedCurrency) state.currency = savedCurrency;
+        if (savedDecimals !== null) state.decimals = parseInt(savedDecimals);
+        if (savedFuelEfficiency !== null) state.fuelEfficiency = parseFloat(savedFuelEfficiency);
+    }
+
+    function applySettings() {
+        state.fuelEfficiency = parseFloat(fuelEfficiencyInput.value) || 10;
+        const activeCurrencyBtn = document.querySelector('.currency-btn.active');
+        state.currency = activeCurrencyBtn.dataset.currency;
+        const activeDecimalBtn = document.querySelector('.decimal-btn.active');
+        state.decimals = parseInt(activeDecimalBtn.dataset.decimals);
+        
+        localStorage.setItem('currency', state.currency);
+        localStorage.setItem('decimals', state.decimals);
+        localStorage.setItem('fuelEfficiency', state.fuelEfficiency);
+        
+        calculateTotal();
+        toggleModal(settingsModal, false);
+        showToast('Settings applied successfully');
+    }
+
+    function calculateTotal() {
+        const people = parseInt(peopleCountInput.value) || 2;
+        const distance = parseFloat(distanceInput.value) || 0;
+        const fuelPrice = parseFloat(fuelPriceInput.value) || 0;
+        const entryFee = parseFloat(entryFeeInput.value) || 0;
+        const parkingFee = parseFloat(parkingFeeInput.value) || 0;
+        const activityFee = parseFloat(activityFeeInput.value) || 0;
+        const destinationMisc = parseFloat(destinationMiscInput.value) || 0;
+        const accommodationCost = parseFloat(accommodationCostInput.value) || 0;
+        const foodCost = parseFloat(foodCostInput.value) || 0;
+        const miscCost = parseFloat(miscCostInput.value) || 0;
+        
+        // Calculate fuel cost (total, then split)
+        const fuelCostTotal = (distance / state.fuelEfficiency) * fuelPrice;
+        
+        // Calculate shared costs
+        const sharedCosts = parkingFee + accommodationCost;
+        const sharedPerPerson = sharedCosts / people;
+        
+        // Calculate per person costs
+        const fuelPerPerson = fuelCostTotal / people;
+        const entryPerPerson = entryFee;
+        const activityPerPerson = activityFee;
+        const destinationMiscPerPerson = destinationMisc;
+        const foodPerPerson = foodCost;
+        const miscPerPerson = miscCost;
+        
+        const totalPerPerson = fuelPerPerson + entryPerPerson + activityPerPerson + destinationMiscPerPerson + sharedPerPerson + foodPerPerson + miscPerPerson;
+        const totalPerPair = totalPerPerson * 2;
+        const totalGroup = totalPerPerson * people;
+        
+        const formatOptions = { minimumFractionDigits: state.decimals, maximumFractionDigits: state.decimals };
+        
+        // Update display
+        totalAmount.textContent = `${state.currency} ${totalPerPerson.toLocaleString(undefined, formatOptions)}`;
+        perPerson.textContent = `Per Person: ${state.currency} ${totalPerPerson.toLocaleString(undefined, formatOptions)}`;
+        perPair.textContent = `Per Pair: ${state.currency} ${totalPerPair.toLocaleString(undefined, formatOptions)}`;
+        
+        if (people > 2) {
+            perGroup.style.display = 'inline';
+            perGroup.textContent = `Per Group (${people}): ${state.currency} ${totalGroup.toLocaleString(undefined, formatOptions)}`;
+        } else {
+            perGroup.style.display = 'none';
+        }
+        
+        return {
+            description: tripDescriptionInput.value || 'Unnamed Trip',
+            date: tripDateInput.value,
+            people: people,
+            perPerson: totalPerPerson,
+            perPair: totalPerPair,
+            totalGroup: totalGroup,
+            fuelCost: fuelPerPerson,
+            fuelCostTotal: fuelCostTotal,
+            fuelPrice: fuelPrice,
+            distance: distance,
+            fuelEfficiency: state.fuelEfficiency,
+            entryFee,
+            parkingFee,
+            activityFee,
+            destinationMisc,
+            accommodationCost,
+            accommodationType: accommodationTypeSelect.value,
+            foodCost,
+            miscCost,
+            tripType: state.currentTripType
+        };
+    }
+
+    function formatDisplayDate(dateString) {
+        if (!dateString) return 'No date';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function generateShareText(trip) {
+        const formatOptions = { minimumFractionDigits: state.decimals, maximumFractionDigits: state.decimals };
+        const dateStr = formatDisplayDate(trip.date);
+        const tripTypeText = {
+            'day': 'Day Trip',
+            'road': 'Road Trip',
+            'overnight': 'Overnight Stay'
+        }[trip.tripType] || 'Trip';
+        
+        let text = `🚗 ${trip.description} - ${tripTypeText}\n📅 ${dateStr}\n👥 ${trip.people} people\n\n`;
+        
+        text += `💰 TOTAL: ${state.currency} ${trip.perPerson.toLocaleString(undefined, formatOptions)} per person\n`;
+        if (trip.people === 2) {
+            text += `       ${state.currency} ${trip.perPair.toLocaleString(undefined, formatOptions)} per pair\n`;
+        } else if (trip.people > 2) {
+            text += `       ${state.currency} ${trip.totalGroup.toLocaleString(undefined, formatOptions)} total for group\n`;
+        }
+        
+        text += `\n📊 BREAKDOWN:\n`;
+        text += `• Distance: ${trip.distance} km\n`;
+        text += `• Fuel Efficiency: ${trip.fuelEfficiency} km/L\n`;
+        text += `• Fuel Price: ${state.currency} ${trip.fuelPrice.toLocaleString(undefined, formatOptions)}/L\n`;
+        text += `• Fuel Cost: ${state.currency} ${(trip.fuelCostTotal).toLocaleString(undefined, formatOptions)} total\n`;
+        text += `• Entry Fee: ${state.currency} ${trip.entryFee.toLocaleString(undefined, formatOptions)}\n`;
+        text += `• Parking: ${state.currency} ${trip.parkingFee.toLocaleString(undefined, formatOptions)}\n`;
+        text += `• Activities: ${state.currency} ${trip.activityFee.toLocaleString(undefined, formatOptions)}\n`;
+        
+        if (trip.tripType === 'overnight') {
+            text += `• Accommodation: ${state.currency} ${trip.accommodationCost.toLocaleString(undefined, formatOptions)} (${trip.accommodationType})\n`;
+        }
+        
+        text += `• Food: ${state.currency} ${trip.foodCost.toLocaleString(undefined, formatOptions)}\n`;
+        text += `• Other: ${state.currency} ${trip.miscCost.toLocaleString(undefined, formatOptions)}\n`;
+        
+        text += `\n⚙️ Calculated with Trip Planner`;
+        
+        return text;
+    }
+
+    function showCopyModal(trip) {
+        copyText.textContent = generateShareText(trip);
+        toggleModal(copyModal, true);
+    }
+
+    function copyToClipboard() {
+        navigator.clipboard.writeText(copyText.textContent).then(() => {
+            showToast('Copied to clipboard!');
+            toggleModal(copyModal, false);
+        }).catch(() => showToast('Failed to copy to clipboard'));
+    }
+
+    function saveTrip() {
+        const description = tripDescriptionInput.value.trim();
+        if (!description) {
+            showToast('Please enter a trip description');
+            tripDescriptionInput.focus();
+            return;
+        }
+        const tripData = calculateTotal();
+        const historyItem = {
+            id: Date.now(),
+            date: tripData.date,
+            description: description,
+            ...tripData,
+            currency: state.currency,
+            decimals: state.decimals,
+            savedAt: new Date().toISOString(),
+            lat: currentDestination.lat,
+            lon: currentDestination.lon,
+            rating: currentDestination.rating,
+            reviews: currentDestination.reviews,
+            image: currentDestination.image
+        };
+        state.history.unshift(historyItem);
+        saveHistory();
+        updateHistoryDisplay();
+        showToast(`"${description}" saved to history`);
+    }
+
+    function loadHistory() {
+        const savedHistory = localStorage.getItem('tripHistory');
+        if (savedHistory) {
+            state.history = JSON.parse(savedHistory);
+            updateHistoryDisplay();
+        }
+    }
+
+    function saveHistory() {
+        localStorage.setItem('tripHistory', JSON.stringify(state.history));
+    }
+
+    function updateHistoryDisplay() {
+        historyList.innerHTML = '';
+        if (state.history.length === 0) {
+            historyList.innerHTML = `<div class="history-item empty-history"><div class="history-date">No trips saved yet</div><div class="history-details"><div class="history-detail"><span>Save a trip to see it here</span></div></div></div>`;
+            return;
+        }
+        state.history.forEach(item => {
+            const formatOptions = { minimumFractionDigits: item.decimals || 0, maximumFractionDigits: item.decimals || 0 };
+            const displayDate = formatDisplayDate(item.date);
+            const tripTypeIcon = {
+                'day': '☀️',
+                'road': '🛣️',
+                'overnight': '🏨'
+            }[item.tripType] || '🚗';
+            
+            const el = document.createElement('div');
+            el.className = 'history-item';
+            el.innerHTML = `
+                <div class="history-header-row">
+                    <div class="history-title">${tripTypeIcon} ${item.description}</div>
+                    <div class="history-total">${item.currency || '$'} ${item.perPerson.toLocaleString(undefined, formatOptions)}</div>
+                    <div class="history-date">${displayDate}</div>
+                </div>
+                <div class="history-details">
+                    <div class="history-detail"><span>People:</span><span>${item.people}</span></div>
+                    <div class="history-detail"><span>Distance:</span><span>${item.distance} km</span></div>
+                    <div class="history-detail"><span>Fuel:</span><span>${item.currency || '$'} ${item.fuelCostTotal.toLocaleString(undefined, formatOptions)}</span></div>
+                    <div class="history-detail"><span>Entry:</span><span>${item.currency || '$'} ${item.entryFee.toLocaleString(undefined, formatOptions)}</span></div>
+                    <div class="history-detail"><span>Food:</span><span>${item.currency || '$'} ${item.foodCost.toLocaleString(undefined, formatOptions)}</span></div>
+                    ${item.tripType === 'overnight' ? `<div class="history-detail"><span>Accommodation:</span><span>${item.currency || '$'} ${item.accommodationCost.toLocaleString(undefined, formatOptions)}</span></div>` : ''}
+                </div>
+                <div class="history-actions">
+                    <button class="btn btn-secondary history-btn load-trip-btn" data-id="${item.id}"><i class="fas fa-undo"></i> Load</button>
+                    <button class="btn btn-secondary history-btn copy-trip-btn" data-id="${item.id}"><i class="fas fa-copy"></i> Copy</button>
+                    <button class="btn btn-secondary history-btn delete-trip-btn" data-id="${item.id}"><i class="fas fa-trash-alt"></i> Delete</button>
+                </div>
+            `;
+            historyList.appendChild(el);
+        });
+        document.querySelectorAll('.load-trip-btn').forEach(btn => btn.addEventListener('click', e => loadTrip(parseInt(e.currentTarget.dataset.id))));
+        document.querySelectorAll('.copy-trip-btn').forEach(btn => btn.addEventListener('click', e => copyTrip(parseInt(e.currentTarget.dataset.id))));
+        document.querySelectorAll('.delete-trip-btn').forEach(btn => btn.addEventListener('click', e => deleteTrip(parseInt(e.currentTarget.dataset.id))));
+    }
+
+    function loadTrip(id) {
+        const trip = state.history.find(item => item.id === id);
+        if (!trip) return;
+        
+        tripDescriptionInput.value = trip.description;
+        tripDateInput.value = trip.date;
+        peopleCountInput.value = trip.people || 2;
+        distanceInput.value = trip.distance;
+        fuelPriceInput.value = trip.fuelPrice;
+        entryFeeInput.value = trip.entryFee;
+        parkingFeeInput.value = trip.parkingFee;
+        activityFeeInput.value = trip.activityFee;
+        destinationMiscInput.value = trip.destinationMisc || 0;
+        accommodationCostInput.value = trip.accommodationCost || 0;
+        accommodationTypeSelect.value = trip.accommodationType || 'hotel';
+        foodCostInput.value = trip.foodCost;
+        miscCostInput.value = trip.miscCost;
+        
+        state.fuelEfficiency = trip.fuelEfficiency;
+        if (trip.currency) state.currency = trip.currency;
+        if (trip.decimals !== undefined) state.decimals = trip.decimals;
+        
+        if (trip.tripType) {
+            updateTripType(trip.tripType);
+        }
+        
+        currentDestination = {
+            lat: trip.lat || null,
+            lon: trip.lon || null,
+            name: trip.description,
+            rating: trip.rating || null,
+            reviews: trip.reviews || null,
+            image: trip.image || null
+        };
+        
+        calculateTotal();
+        showToast(`"${trip.description}" loaded from history`);
+    }
+
+    function copyTrip(id) {
+        const trip = state.history.find(item => item.id === id);
+        if (trip) showCopyModal(trip);
+    }
+
+    function deleteTrip(id) {
+        const trip = state.history.find(item => item.id === id);
+        if (trip && confirm(`Delete "${trip.description}"?`)) {
+            state.history = state.history.filter(item => item.id !== id);
+            saveHistory();
+            updateHistoryDisplay();
+            showToast(`"${trip.description}" deleted`);
+        }
+    }
+
+    function clearHistory() {
+        if (state.history.length && confirm('Clear all trip history?')) {
+            state.history = [];
+            saveHistory();
+            updateHistoryDisplay();
+            showToast('All history cleared');
+        }
+    }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js').catch(console.log);
+        });
+    }
+    </script>
+</body>
+</html>
