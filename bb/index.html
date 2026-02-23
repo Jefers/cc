@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Francine's Fun - Binondo Day Trip</title>
     <style>
-        /* Upgraded Glassmorphism - Pink with Browns/Oranges (2026 Edition) */
+        /* Glassmorphism - Pink/Brown/Orange Theme */
         :root {
             --primary-bg: #0f0015;
             --secondary-bg: rgba(236, 72, 153, 0.08);
@@ -14,21 +14,20 @@
             --secondary-text: #f9e1ed;
             --accent-color: #ec4899; /* Pink */
             --border-color: rgba(236, 72, 153, 0.25);
-            --brown-accent: #8B4513; /* Saddle brown */
-            --orange-accent: #FFA500; /* Orange */
-            --orange-highlight: #FF4500; /* Orange red for highlights */
+            --brown-accent: #8B4513;
+            --orange-accent: #FFA500;
+            --orange-highlight: #FF4500;
 
-            --primary-bg-light: #fff0f7;
-            --secondary-bg-light: rgba(236, 72, 153, 0.06);
-            --tertiary-bg-light: rgba(236, 72, 153, 0.10);
-            --primary-text-light: #1a0d14;
+            --primary-bg-light: #fff5f8;
+            --secondary-bg-light: rgba(255, 182, 193, 0.15);
+            --tertiary-bg-light: rgba(255, 182, 193, 0.20);
+            --primary-text-light: #2d0f1e;
             --secondary-text-light: #6b3e54;
-            --border-color-light: rgba(236, 72, 153, 0.18);
+            --border-color-light: rgba(236, 72, 153, 0.30);
 
-            /* Glassmorphism with new accents */
             --glass-bg: rgba(236, 72, 153, 0.12);
             --glass-border: rgba(236, 72, 153, 0.35);
-            --glass-shadow: 0 8px 32px rgba(236, 72, 153, 0.25);
+            --glass-shadow: 0 8px 32px rgba(139, 69, 19, 0.25);
             --blur-amount: 16px;
 
             --border-radius-card: 20px;
@@ -39,9 +38,8 @@
             --spacing-sm: 8px;
             --spacing-md: 16px;
             --spacing-lg: 24px;
-            --spacing-xl: 32px;
 
-            /* Toggle original colors */
+            /* Toggle colors - restored original */
             --toggle-light: #87CEEB;
             --toggle-dark: #4831d4;
             --sun-color: #ffce54;
@@ -55,11 +53,11 @@
             --primary-text: var(--primary-text-light);
             --secondary-text: var(--secondary-text-light);
             --border-color: var(--border-color-light);
-            --glass-bg: rgba(255, 182, 193, 0.25);
-            --glass-border: rgba(236, 72, 153, 0.28);
-            --glass-shadow: 0 8px 32px rgba(236, 72, 153, 0.15);
-            --brown-accent: #A52A2A; /* Lighter brown for light mode */
-            --orange-accent: #FF8C00; /* Darker orange for contrast */
+            --glass-bg: rgba(255, 182, 193, 0.28);
+            --glass-border: rgba(236, 72, 153, 0.40);
+            --glass-shadow: 0 8px 32px rgba(236, 72, 153, 0.18);
+            --brown-accent: #A0522D;
+            --orange-accent: #FF8C00;
             --orange-highlight: #FF6347;
         }
 
@@ -79,22 +77,22 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(236, 72, 153, 0.35);
-            padding: 12px 16px; /* Reduced padding for less space */
+            padding: 10px 16px;
             text-align: center;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
 
         .header h1 {
             margin: 0;
-            font-size: 1.8rem; /* Smaller font */
+            font-size: 1.7rem;
             font-weight: 800;
-            background: linear-gradient(90deg, var(--orange-accent), var(--orange-highlight), #fda4af);
+            background: linear-gradient(90deg, var(--orange-accent), var(--orange-highlight));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(139, 69, 19, 0.4); /* Brown shadow for depth */
+            text-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
         }
 
         .container {
@@ -113,87 +111,86 @@
             backdrop-filter: blur(var(--blur-amount)) saturate(180%);
             -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(180%);
             border: 1px solid var(--glass-border);
-            border-top-color: rgba(255, 255, 255, 0.4);
+            border-top-color: rgba(255, 255, 255, 0.35);
             border-radius: var(--border-radius-card);
             box-shadow: 
                 var(--glass-shadow),
-                inset 0 1px 0 rgba(255, 255, 255, 0.18),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.08);
             padding: var(--spacing-md);
             transition: var(--transition-base);
             overflow: hidden;
-            position: relative;
         }
 
         .card-glow:hover {
             transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 20px 60px rgba(139, 69, 19, 0.35); /* Brown-tinted shadow */
+            box-shadow: 0 16px 48px rgba(139, 69, 19, 0.3);
         }
 
         .card-glow::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.12),
-                transparent 60%
-            );
+            background: linear-gradient(135deg, rgba(255,255,255,0.10), transparent 60%);
             pointer-events: none;
-            border-radius: var(--border-radius-card);
-            animation: shimmer 6s linear infinite;
+            animation: subtle-shimmer 8s linear infinite;
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        @keyframes subtle-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         h2 {
-            margin-top: 0;
+            margin: 0 0 12px;
             color: var(--primary-text);
             font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            text-shadow: 0 1px 6px rgba(0,0,0,0.3);
         }
 
         .step {
-            padding: var(--spacing-md);
-            margin: var(--spacing-sm) 0;
-            border-radius: var(--border-radius-button);
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 14px;
             cursor: pointer;
             transition: var(--transition-base);
-            background: rgba(255, 255, 255, 0.08); /* Higher opacity for contrast */
-            border: 1px solid rgba(139, 69, 19, 0.3); /* Brown border */
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(139, 69, 19, 0.35);
             color: var(--primary-text);
+            position: relative;
         }
 
         .step.active {
             background: linear-gradient(135deg, var(--orange-highlight), var(--orange-accent));
             border-color: transparent;
-            color: #1a0d14; /* Dark text for contrast on orange */
-            box-shadow: 0 4px 20px rgba(255, 165, 0, 0.5);
+            color: #111; /* High contrast dark text on orange */
+            box-shadow: 0 4px 20px rgba(255, 69, 0, 0.5);
             transform: translateY(-2px);
-            animation: breathe 2s ease-in-out infinite;
         }
 
-        @keyframes breathe {
-            0%, 100% { border-width: 1px; box-shadow: 0 4px 20px rgba(255, 165, 0, 0.5); }
-            50% { border-width: 3px; box-shadow: 0 6px 24px rgba(255, 165, 0, 0.6); }
+        .step .icon {
+            width: 1.1em;
+            height: 1.1em;
+            margin-right: 6px;
+            vertical-align: middle;
+            fill: currentColor;
+            opacity: 0.9;
         }
 
         .step:hover:not(.active) {
-            background: rgba(255, 165, 0, 0.1); /* Orange tint on hover */
+            background: rgba(255, 165, 0, 0.12);
+            border-color: rgba(255, 165, 0, 0.4);
         }
 
         ul {
             padding-left: 20px;
-            margin: 12px 0;
+            margin: 10px 0;
         }
 
-        /* Toggle with original colors */
+        /* Restored original toggle (no visible checkbox) */
         .toggle-wrapper {
             position: fixed;
-            top: 10px; /* Adjusted for smaller header */
+            top: 8px;
             right: 16px;
             cursor: pointer;
             width: 80px;
@@ -207,10 +204,15 @@
             transition: background 0.6s ease;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1001;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body:not(.light-mode) .toggle-wrapper {
             background-color: var(--toggle-dark);
+        }
+
+        #theme-checkbox {
+            display: none;
         }
 
         svg {
@@ -220,23 +222,19 @@
             filter: drop-shadow(0 0 2px rgba(0,0,0,0.1));
         }
 
-        body.light-mode svg {
-            transform: translateX(0);
-        }
-
-        body:not(.light-mode) svg {
+        #theme-checkbox:checked ~ svg {
             transform: translateX(40px);
         }
 
         .sun-ray {
             transform-origin: center;
             transition: transform 0.4s ease, opacity 0.3s ease;
-            stroke: #ffce54;
+            stroke: var(--sun-color);
             stroke-width: 3;
             stroke-linecap: round;
         }
 
-        body:not(.light-mode) .sun-ray {
+        #theme-checkbox:checked ~ svg .sun-ray {
             transform: scale(0);
             opacity: 0;
         }
@@ -246,7 +244,7 @@
             transition: fill 0.5s ease;
         }
 
-        body:not(.light-mode) .main-circle {
+        #theme-checkbox:checked ~ svg .main-circle {
             fill: var(--moon-color);
             filter: drop-shadow(0 0 8px #fff);
         }
@@ -256,26 +254,21 @@
             transform: translate(20px, -20px);
         }
 
-        body:not(.light-mode) .moon-mask {
+        #theme-checkbox:checked ~ svg .moon-mask {
             transform: translate(12px, -5px);
         }
 
-        /* Reduced motion */
+        /* Reduced motion & mobile tweaks */
         @media (prefers-reduced-motion: reduce) {
-            * {
-                transition-duration: 0.01ms !important;
-                animation-duration: 0.01ms !important;
-            }
+            * { transition: none !important; animation: none !important; }
         }
 
-        /* Enhanced mobile responsiveness */
         @media (max-width: 480px) {
             .header h1 { font-size: 1.5rem; }
-            .toggle-wrapper { top: 8px; right: 8px; width: 70px; height: 35px; }
+            .toggle-wrapper { width: 70px; height: 35px; top: 6px; right: 10px; }
             svg { width: 25px; height: 25px; }
-            body:not(.light-mode) svg { transform: translateX(35px); }
+            #theme-checkbox:checked ~ svg { transform: translateX(35px); }
             .container { padding: 12px; }
-            .card-glow { padding: 16px; }
             .step { padding: 12px; font-size: 0.95rem; }
         }
 
@@ -290,7 +283,7 @@
         <h1>Francine's Fun</h1>
     </div>
 
-    <label class="toggle-wrapper" for="theme-checkbox">
+    <label class="toggle-wrapper">
         <input type="checkbox" id="theme-checkbox">
         <svg viewBox="0 0 50 50">
             <defs>
@@ -321,14 +314,17 @@
             <div class="card-glow">
                 <h2>Outbound Journey (Depart ~10 AM, Arrive ~11:45 AM)</h2>
                 <div class="step" id="step-1">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                     <strong>10:00 AM: GrabCar from base to Anonas LRT</strong><br>
                     4-seater GrabCar (~24 km, 45–60 min). Chat, snack, get excited!
                 </div>
                 <div class="step" id="step-2">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l4.5 2.67-.75 1.23L11 11.5V7z"/></svg>
                     <strong>~11:00 AM: Anonas LRT → Recto</strong><br>
                     Buy single-journey tickets. 8 stops westbound (~20–25 min). Enjoy the city views from above!
                 </div>
                 <div class="step" id="step-3">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M19 7c0-1.1-.9-2-2-2h-3v9h3c1.1 0 2-.9 2-2V7zm-7-5H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-5h-5V7c0-1.1-.9-2-2-2z"/></svg>
                     <strong>~11:30 AM: Recto → Binondo Church</strong><br>
                     Hail 2 trikes (~5–10 min ride). Skip the hot walk!
                 </div>
@@ -340,19 +336,23 @@
                 <h2>Binondo Adventure (~11:45 AM – 3:00 PM)</h2>
                 <p>~3–4 hours of food, history, shopping, and good vibes in the heart of Chinatown.</p>
                 <div class="step" id="step-4">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                     <strong>11:45 AM – 12:15 PM: Binondo Church & Plaza</strong><br>
                     Historic basilica, fountain pics, light a candle for good luck!
                 </div>
                 <div class="step" id="step-5">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                     <strong>12:15 PM – 1:30 PM: Food Crawl on Ongpin</strong><br>
                     Shanghai siopao • Dong Bei dumplings • Sincerity fried chicken • Eng Bee Tin ube hopia<br>
                     ~PHP 300–500/person sharing plates.
                 </div>
                 <div class="step" id="step-6">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                     <strong>1:30 PM – 2:30 PM: Sights & Shopping</strong><br>
                     Jones Bridge views • Lucky charms & jade • Seng Guan Temple calm moment.
                 </div>
                 <div class="step" id="step-7">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                     <strong>2:30 PM – 3:00 PM: Chill & Wrap Up</strong><br>
                     Shady spot, egg tarts or iced drinks. Take group selfies!
                 </div>
@@ -363,18 +363,22 @@
             <div class="card-glow">
                 <h2>Return Journey (Depart ~3:00 PM, Back ~4:30–5:00 PM)</h2>
                 <div class="step" id="step-8">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M19 7c0-1.1-.9-2-2-2h-3v9h3c1.1 0 2-.9 2-2V7zm-7-5H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-5h-5V7c0-1.1-.9-2-2-2z"/></svg>
                     <strong>3:00 PM: Trikes to Recto LRT</strong><br>
                     Quick ride back to station.
                 </div>
                 <div class="step" id="step-9">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l4.5 2.67-.75 1.23L11 11.5V7z"/></svg>
                     <strong>~3:15 PM: Recto → Anonas LRT</strong><br>
                     Eastbound train (~20–25 min).
                 </div>
                 <div class="step" id="step-10">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                     <strong>~3:45 PM: GrabCar home</strong><br>
                     Beat the rush hour traffic.
                 </div>
                 <div class="step" id="step-11">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                     <strong>~4:30–5:00 PM: Arrive base</strong><br>
                     Unpack hopia, share stories, rest!
                 </div>
@@ -414,7 +418,7 @@
         const checkbox = document.getElementById('theme-checkbox');
         const body = document.body;
 
-        // Load saved theme preference
+        // Load saved theme
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') {
             checkbox.checked = false;
@@ -424,13 +428,13 @@
             body.classList.remove('light-mode');
         }
 
-        // Toggle & save preference
+        // Toggle & save
         checkbox.addEventListener('change', () => {
             body.classList.toggle('light-mode', !checkbox.checked);
             localStorage.setItem('theme', checkbox.checked ? 'dark' : 'light');
         });
 
-        // Step highlighting & persistence
+        // Step highlighting
         const steps = document.querySelectorAll('.step');
         steps.forEach(step => {
             step.addEventListener('click', () => {
@@ -441,7 +445,7 @@
             });
         });
 
-        // Restore last active step
+        // Restore active step
         const activeId = localStorage.getItem('activeStep');
         if (activeId) {
             const el = document.getElementById(activeId);
