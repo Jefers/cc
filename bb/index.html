@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Francine's Fun Adventures - Binondo Day Trip</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Francine's Fun - Binondo Day Trip</title>
     <style>
-        /* Advanced Glassmorphism - Pink Theme (Enhanced 2026 Edition) */
+        /* Upgraded Glassmorphism - Pink with Browns/Oranges (2026 Edition) */
         :root {
             --primary-bg: #0f0015;
             --secondary-bg: rgba(236, 72, 153, 0.08);
             --tertiary-bg: rgba(236, 72, 153, 0.12);
             --primary-text: #ffffff;
             --secondary-text: #f9e1ed;
-            --accent-color: #ec4899;
+            --accent-color: #ec4899; /* Pink */
             --border-color: rgba(236, 72, 153, 0.25);
+            --brown-accent: #8B4513; /* Saddle brown */
+            --orange-accent: #FFA500; /* Orange */
+            --orange-highlight: #FF4500; /* Orange red for highlights */
 
             --primary-bg-light: #fff0f7;
             --secondary-bg-light: rgba(236, 72, 153, 0.06);
@@ -22,7 +25,7 @@
             --secondary-text-light: #6b3e54;
             --border-color-light: rgba(236, 72, 153, 0.18);
 
-            /* Glassmorphism pink palette */
+            /* Glassmorphism with new accents */
             --glass-bg: rgba(236, 72, 153, 0.12);
             --glass-border: rgba(236, 72, 153, 0.35);
             --glass-shadow: 0 8px 32px rgba(236, 72, 153, 0.25);
@@ -37,6 +40,12 @@
             --spacing-md: 16px;
             --spacing-lg: 24px;
             --spacing-xl: 32px;
+
+            /* Toggle original colors */
+            --toggle-light: #87CEEB;
+            --toggle-dark: #4831d4;
+            --sun-color: #ffce54;
+            --moon-color: #f5f3ce;
         }
 
         .light-mode {
@@ -49,16 +58,20 @@
             --glass-bg: rgba(255, 182, 193, 0.25);
             --glass-border: rgba(236, 72, 153, 0.28);
             --glass-shadow: 0 8px 32px rgba(236, 72, 153, 0.15);
+            --brown-accent: #A52A2A; /* Lighter brown for light mode */
+            --orange-accent: #FF8C00; /* Darker orange for contrast */
+            --orange-highlight: #FF6347;
         }
 
         body {
             margin: 0;
             font-family: var(--font-stack);
-            background: linear-gradient(135deg, #4c1d95, #be185d, #ec4899, #f472b6);
+            background: linear-gradient(135deg, #4c1d95, #be185d, #ec4899, var(--brown-accent), var(--orange-accent));
             background-attachment: fixed;
             color: var(--primary-text);
             min-height: 100vh;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .header {
@@ -66,7 +79,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(236, 72, 153, 0.35);
-            padding: 20px 16px;
+            padding: 12px 16px; /* Reduced padding for less space */
             text-align: center;
             position: sticky;
             top: 0;
@@ -76,22 +89,23 @@
 
         .header h1 {
             margin: 0;
-            font-size: 2.1rem;
+            font-size: 1.8rem; /* Smaller font */
             font-weight: 800;
-            background: linear-gradient(90deg, #ec4899, #f472b6, #fda4af);
+            background: linear-gradient(90deg, var(--orange-accent), var(--orange-highlight), #fda4af);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(236, 72, 153, 0.4);
+            text-shadow: 0 2px 10px rgba(139, 69, 19, 0.4); /* Brown shadow for depth */
         }
 
         .container {
-            padding: 24px 16px;
+            padding: 16px;
             max-width: 100%;
+            margin: 0 auto;
         }
 
         .card-glow-wrapper {
             position: relative;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .card-glow {
@@ -105,15 +119,15 @@
                 var(--glass-shadow),
                 inset 0 1px 0 rgba(255, 255, 255, 0.18),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            padding: var(--spacing-lg);
+            padding: var(--spacing-md);
             transition: var(--transition-base);
             overflow: hidden;
             position: relative;
         }
 
         .card-glow:hover {
-            transform: translateY(-8px) scale(1.015);
-            box-shadow: 0 20px 60px rgba(236, 72, 153, 0.35);
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 60px rgba(139, 69, 19, 0.35); /* Brown-tinted shadow */
         }
 
         .card-glow::before {
@@ -127,6 +141,12 @@
             );
             pointer-events: none;
             border-radius: var(--border-radius-card);
+            animation: shimmer 6s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         h2 {
@@ -142,20 +162,27 @@
             border-radius: var(--border-radius-button);
             cursor: pointer;
             transition: var(--transition-base);
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(236, 72, 153, 0.2);
+            background: rgba(255, 255, 255, 0.08); /* Higher opacity for contrast */
+            border: 1px solid rgba(139, 69, 19, 0.3); /* Brown border */
+            color: var(--primary-text);
         }
 
         .step.active {
-            background: linear-gradient(135deg, #ec4899, #db2777);
+            background: linear-gradient(135deg, var(--orange-highlight), var(--orange-accent));
             border-color: transparent;
-            color: white;
-            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5);
+            color: #1a0d14; /* Dark text for contrast on orange */
+            box-shadow: 0 4px 20px rgba(255, 165, 0, 0.5);
             transform: translateY(-2px);
+            animation: breathe 2s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { border-width: 1px; box-shadow: 0 4px 20px rgba(255, 165, 0, 0.5); }
+            50% { border-width: 3px; box-shadow: 0 6px 24px rgba(255, 165, 0, 0.6); }
         }
 
         .step:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 165, 0, 0.1); /* Orange tint on hover */
         }
 
         ul {
@@ -163,15 +190,15 @@
             margin: 12px 0;
         }
 
-        /* Theme Toggle */
+        /* Toggle with original colors */
         .toggle-wrapper {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 10px; /* Adjusted for smaller header */
+            right: 16px;
             cursor: pointer;
             width: 80px;
             height: 40px;
-            background-color: #fda4af;
+            background-color: var(--toggle-light);
             border-radius: 50px;
             padding: 5px;
             box-sizing: border-box;
@@ -183,11 +210,7 @@
         }
 
         body:not(.light-mode) .toggle-wrapper {
-            background-color: #be185d;
-        }
-
-        #theme-checkbox {
-            display: none;
+            background-color: var(--toggle-dark);
         }
 
         svg {
@@ -208,7 +231,9 @@
         .sun-ray {
             transform-origin: center;
             transition: transform 0.4s ease, opacity 0.3s ease;
-            stroke: #ec4899;
+            stroke: #ffce54;
+            stroke-width: 3;
+            stroke-linecap: round;
         }
 
         body:not(.light-mode) .sun-ray {
@@ -217,12 +242,12 @@
         }
 
         .main-circle {
-            fill: #ec4899;
+            fill: var(--sun-color);
             transition: fill 0.5s ease;
         }
 
         body:not(.light-mode) .main-circle {
-            fill: #fbcfe8;
+            fill: var(--moon-color);
             filter: drop-shadow(0 0 8px #fff);
         }
 
@@ -243,18 +268,26 @@
             }
         }
 
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.5rem; }
+            .toggle-wrapper { top: 8px; right: 8px; width: 70px; height: 35px; }
+            svg { width: 25px; height: 25px; }
+            body:not(.light-mode) svg { transform: translateX(35px); }
+            .container { padding: 12px; }
+            .card-glow { padding: 16px; }
+            .step { padding: 12px; font-size: 0.95rem; }
+        }
+
         @media (min-width: 768px) {
-            .container {
-                max-width: 720px;
-                margin: 0 auto;
-            }
+            .container { max-width: 720px; }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Francine's Fun Adventures</h1>
+        <h1>Francine's Fun</h1>
     </div>
 
     <label class="toggle-wrapper" for="theme-checkbox">
@@ -266,7 +299,7 @@
                     <circle class="moon-mask" cx="25" cy="25" r="18" fill="black" />
                 </mask>
             </defs>
-            <g class="sun-rays" stroke-width="3" stroke-linecap="round">
+            <g class="sun-rays">
                 <line class="sun-ray" x1="25" y1="5" x2="25" y2="10" />
                 <line class="sun-ray" x1="25" y1="40" x2="25" y2="45" />
                 <line class="sun-ray" x1="5" y1="25" x2="10" y2="25" />
