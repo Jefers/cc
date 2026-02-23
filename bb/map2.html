@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binondo Interactive Map - Francine's Fun Adventures</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+        }
+        
+        #map { 
+            height: 100vh; 
+            width: 100vw; 
+        }
+
+        /* Floating Title Overlay */
+        .map-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 25px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid #ff4757;
+            pointer-events: none; /* Lets clicks pass through to the map */
+        }
+
+        .map-title h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #2f3542;
+        }
+
+        .map-title span {
+            font-size: 12px;
+            color: #ff4757;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Custom Map Icons */
+        .custom-icon {
+            background: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-size: 20px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            border: 2px solid white;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-icon:hover {
+            transform: scale(1.2) !important;
+            z-index: 1000 !important;
+        }
+
+        /* Color Coding Borders by Category */
+        .icon-food { border-color: #ffa502; }
+        .icon-landmark { border-color: #3742fa; }
+        .icon-shop { border-color: #ff4757; }
+
+        /* Stylish Popups */
+        .leaflet-popup-content-wrapper {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .leaflet-popup-content {
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #57606f;
+            margin: 15px;
+        }
+        .leaflet-popup-content b {
+            font-size: 15px;
+            color: #2f3542;
+            display: block;
+            margin-bottom: 5px;
+            border-bottom: 2px solid #f1f2f6;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="map-title">
+        <span>Francine's Fun Adventures</span>
+        <h1>Binondo Food & Culture Crawl</h1>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map', {
+            zoomControl: false // Move zoom control for cleaner look
+        });
+
+        // Add zoom control to bottom right
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Add CartoDB Voyager tiles (Clean, street-focused, tourist-friendly map style)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Define custom icon generator
+        function createIcon(emoji, type) {
+            return L.divIcon({
+                className: `custom-icon icon-${type}`,
+                html: emoji,
+                iconSize: [35, 35],
+                iconAnchor: [17, 17],
+                popupAnchor: [0, -15]
+            });
+        }
+
+        // Location Data with Categories and Emojis
+        const places = [
+            {
+                name: 'Binondo Church',
+                lat: 14.60021, lng: 120.97470,
+                type: 'landmark', icon: '⛪',
+                popup: 'Historic 16th-century basilica. Snap group pics in the plaza, light a candle for good vibes!'
+            },
+            {
+                name: 'Shanghai Fried Siopao',
+                lat: 14.5990, lng: 120.9750,
+                type: 'food', icon: '🥟',
+                popup: 'Iconic stall on Ongpin St. Fluffy, crispy-bottom pork buns (~PHP 35). Juicy and addictive!'
+            },
+            {
+                name: 'Dong Bei Dumplings',
+                lat: 14.5995, lng: 120.9755,
+                type: 'food', icon: '🥢',
+                popup: 'Fresh steamed pork/chive dumplings on Yuchengco St. Watch them hand-make \'em—super authentic.'
+            },
+            {
+                name: 'Sincerity Cafe & Restaurant',
+                lat: 14.5998, lng: 120.9758,
+                type: 'food', icon: '🍗',
+                popup: 'Famous fried chicken (~PHP 150/half) and oyster cake. A cult fave for that savory punch!'
+            },
+            {
+                name: 'Eng Bee Tin Bakery',
+                lat: 14.6005, lng: 120.9750,
+                type: 'shop', icon: '🥮',
+                popup: 'Sweet finish with ube hopia (~PHP 50-70/box). Buy extras as pasalubong—they\'re legendary!'
+            },
+            {
+                name: 'Jones Bridge',
+                lat: 14.59583, lng: 120.977306,
+                type: 'landmark', icon: '🌉',
+                popup: 'Stunning views over the Pasig River. Great for Insta pics and a breezy break.'
+            },
+            {
+                name: 'Lucky Charms & Gold Shops',
+                lat: 14.6000, lng: 120.9750,
+                type: 'shop', icon: '🧧',
+                popup: 'Browse feng shui items or gold jewelry (bargain hard!). Fun, affordable souvenirs.'
+            },
+            {
+                name: 'Seng Guan Temple',
+                lat: 14.60765, lng: 120.97475,
+                type: 'landmark', icon: '🛕',
+                popup: 'A peaceful Buddhist spot on Narra St. Vibe check and relax in the calm.'
+            }
+        ];
+
+        // Array to hold coordinates for auto-centering
+        const bounds = [];
+
+        // Add markers to the map
+        places.forEach(place => {
+            const marker = L.marker([place.lat, place.lng], {
+                icon: createIcon(place.icon, place.type)
+            }).addTo(map);
+
+            marker.bindPopup(`<b>${place.name}</b>${place.popup}`);
+            marker.bindTooltip(place.name, { direction: 'top', offset: [0, -15], opacity: 0.9 });
+            
+            // Collect lat/lng to calculate map bounds
+            bounds.push([place.lat, place.lng]);
+        });
+
+        // Automatically zoom and center the map to perfectly fit all the locations
+        map.fitBounds(bounds, { padding: [50, 50] });
+
+    </script>
+</body>
+</html>

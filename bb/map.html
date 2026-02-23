@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binondo Interactive Map - Francine's Fun Adventures</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100vw; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map centered on Binondo
+        const map = L.map('map').setView([14.600, 120.975], 16);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Markers with tooltips/popups
+        const places = [
+            {
+                name: 'Binondo Church & Plaza San Lorenzo Ruiz',
+                lat: 14.60021,
+                lng: 120.97470,
+                popup: 'Historic 16th-century basilica blending Spanish and Chinese architecture. Snap group pics in the plaza, light a candle for good vibes!'
+            },
+            {
+                name: 'Shanghai Fried Siopao (Ongpin St)',
+                lat: 14.5990,
+                lng: 120.9750,
+                popup: 'Iconic stall for fluffy, crispy-bottom pork buns (~PHP 35 each). Juicy and addictive—perfect starter!'
+            },
+            {
+                name: 'Dong Bei Dumplings (Yuchengco St)',
+                lat: 14.5995,
+                lng: 120.9755,
+                popup: 'Fresh steamed pork/chive dumplings (~PHP 100-150 for 8-10 pcs). Watch them hand-make \'em—super authentic.'
+            },
+            {
+                name: 'Sincerity Cafe & Restaurant (Yuchengco St)',
+                lat: 14.5998,
+                lng: 120.9758,
+                popup: 'Famous fried chicken (crispy, juicy ~PHP 150/half) and oyster cake (~PHP 100). A cult fave for that savory punch.'
+            },
+            {
+                name: 'Eng Bee Tin Bakery (Ongpin St)',
+                lat: 14.6005,
+                lng: 120.9750,
+                popup: 'Sweet finish with ube hopia (purple yam pastry, ~PHP 50-70/box). Buy extras as pasalubong—they\'re legendary!'
+            },
+            {
+                name: 'Jones Bridge',
+                lat: 14.59583,
+                lng: 120.977306,
+                popup: 'Stunning views over the Pasig River—newly restored with lights and arches. Great for Insta pics and a breezy break.'
+            },
+            {
+                name: 'Lucky Charms & Gold Shops (Ongpin St)',
+                lat: 14.6000,
+                lng: 120.9750,
+                popup: 'Browse feng shui items, jade bracelets, or gold jewelry (bargain hard!). Fun, affordable souvenirs (~PHP 100-500 for charms).'
+            },
+            {
+                name: 'Seng Guan Temple (Narra St)',
+                lat: 14.60765,
+                lng: 120.97475,
+                popup: 'A peaceful Buddhist spot with incense and statues—vibe check and relax in the calm.'
+            }
+        ];
+
+        // Add markers
+        places.forEach(place => {
+            L.marker([place.lat, place.lng]).addTo(map)
+                .bindPopup(`<b>${place.name}</b><br>${place.popup}`)
+                .bindTooltip(place.name, { permanent: false, direction: 'top' });
+        });
+
+        // Optional: Animate to center on load
+        map.flyTo([14.600, 120.975], 16, { duration: 2 });
+    </script>
+</body>
+</html>

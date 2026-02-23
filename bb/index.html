@@ -13,6 +13,8 @@
             --primary-text: #ffffff;
             --secondary-text: #f9e1ed;
             --accent-color: #ec4899; /* Pink */
+            --link-color: #14e229f5; /* Pink */
+
             --border-color: rgba(236, 72, 153, 0.25);
             --brown-accent: #8B4513;
             --orange-accent: #FFA500;
@@ -39,7 +41,7 @@
             --spacing-md: 16px;
             --spacing-lg: 24px;
 
-            /* Toggle colors - restored original */
+            /* Toggle colors - original */
             --toggle-light: #87CEEB;
             --toggle-dark: #4831d4;
             --sun-color: #ffce54;
@@ -163,15 +165,15 @@
         .step.active {
             background: linear-gradient(135deg, var(--orange-highlight), var(--orange-accent));
             border-color: transparent;
-            color: #111; /* High contrast dark text on orange */
+            color: #111;
             box-shadow: 0 4px 20px rgba(255, 69, 0, 0.5);
             transform: translateY(-2px);
         }
 
         .step .icon {
-            width: 1.1em;
-            height: 1.1em;
-            margin-right: 6px;
+            width: 1.2em;
+            height: 1.2em;
+            margin-right: 8px;
             vertical-align: middle;
             fill: currentColor;
             opacity: 0.9;
@@ -187,7 +189,7 @@
             margin: 10px 0;
         }
 
-        /* Restored original toggle (no visible checkbox) */
+        /* Toggle - original exact structure */
         .toggle-wrapper {
             position: fixed;
             top: 8px;
@@ -258,7 +260,7 @@
             transform: translate(12px, -5px);
         }
 
-        /* Reduced motion & mobile tweaks */
+        /* Reduced motion & mobile */
         @media (prefers-reduced-motion: reduce) {
             * { transition: none !important; animation: none !important; }
         }
@@ -308,107 +310,103 @@
 
     <div class="container">
 
-        <p>Hey team! Here's our exciting plan for a day trip to Binondo, Manila's vibrant Chinatown—the oldest in the world! We'll focus on iconic sights, delicious street food and eats, some shopping for lucky charms and hopia, and relaxing vibes. Starting at 10 AM from our base near SM Hypermarket in Antipolo. Perfect for Francine's fun crew! 🌸</p>
+        <p>Hey team! Here's our exciting plan for a day trip to Binondo, Manila's vibrant Chinatown—the oldest in the world! We'll focus on iconic sights, delicious street food and eats, some shopping for lucky charms and hopia, and relaxing vibes. Starting at 10 AM from our base near SM Hypermarket in Antipolo to avoid morning rush (which peaks 7-9 AM). We'll use Grab to Anonas LRT, LRT-2 to Recto (about 8 stops, ~20-25 min ride), and trikes for the short hop to Binondo (since the ~10-15 min walk from Recto is too hot). We'll spend ~4 hours in Binondo exploring, eating, and chilling—enough time without rushing. Head back around 3 PM to beat evening commuter rush (peaks 5-8 PM). Total day: ~7-8 hours. For 4 of us, sharing rides where possible.</p>
 
         <div class="card-glow-wrapper">
             <div class="card-glow">
-                <h2>Outbound Journey (Depart ~10 AM, Arrive ~11:45 AM)</h2>
+                <h2>Outbound Journey (Depart ~10 AM, Arrive Binondo ~11:45 AM)</h2>
                 <div class="step" id="step-1">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                    <strong>10:00 AM: GrabCar from base to Anonas LRT</strong><br>
-                    4-seater GrabCar (~24 km, 45–60 min). Chat, snack, get excited!
+                    <strong>10:00 AM: Depart base via Grab car.</strong> Grab a 4-seater GrabCar from near SM Hypermarket Antipolo to Anonas LRT Station (distance ~24 km, travel time ~45-60 min depending on light traffic). Chat and hype up the food crawl!
                 </div>
                 <div class="step" id="step-2">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l4.5 2.67-.75 1.23L11 11.5V7z"/></svg>
-                    <strong>~11:00 AM: Anonas LRT → Recto</strong><br>
-                    Buy single-journey tickets. 8 stops westbound (~20–25 min). Enjoy the city views from above!
+                    <strong>~11:00 AM: Arrive Anonas LRT.</strong> Buy single-journey tickets (easy, no need for Beep cards unless we want). Board LRT-2 westbound to Recto (8 stops: Anonas → Cubao → Betty Go-Belmonte → Gilmore → J. Ruiz → V. Mapa → Pureza → Legarda → Recto). Train ride: ~20-25 min. Enjoy the elevated views over Quezon City and Manila.
                 </div>
                 <div class="step" id="step-3">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M19 7c0-1.1-.9-2-2-2h-3v9h3c1.1 0 2-.9 2-2V7zm-7-5H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-5h-5V7c0-1.1-.9-2-2-2z"/></svg>
-                    <strong>~11:30 AM: Recto → Binondo Church</strong><br>
-                    Hail 2 trikes (~5–10 min ride). Skip the hot walk!
+                    <strong>~11:30 AM: Arrive Recto LRT.</strong> Exit and hail 2 trikes (they're everywhere around the station) for the quick ride to Binondo Church/Plaza San Lorenzo Ruiz (starting point, ~5-10 min ride to avoid the heat).
                 </div>
             </div>
         </div>
 
         <div class="card-glow-wrapper">
             <div class="card-glow">
-                <h2>Binondo Adventure (~11:45 AM – 3:00 PM)</h2>
-                <p>~3–4 hours of food, history, shopping, and good vibes in the heart of Chinatown.</p>
+                <h2>Binondo Adventure (~11:45 AM - 3:00 PM, ~3-4 Hours of Fun)</h2>
+                <p>Binondo is a bustling maze of history, flavors, and energy—think colorful streets, ancient temples, and endless eats! We'll walk around Ongpin Street (the heart of Chinatown) at a relaxed pace, mixing sights, food stops, and shopping. It's compact, so no long hauls. Pro tip: Stay hydrated (buy water from vendors), and pace the eating to avoid food coma.</p>
+                <a href="map2.html" target="_blank" style="color: var(--link-color); text-decoration: none; font-weight: bold;">View Interactive Map of Binondo Sights & Eats</a>
                 <div class="step" id="step-4">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                    <strong>11:45 AM – 12:15 PM: Binondo Church & Plaza</strong><br>
-                    Historic basilica, fountain pics, light a candle for good luck!
+                    <strong>11:45 AM - 12:15 PM: Start at Binondo Church & Plaza San Lorenzo Ruiz.</strong> Kick off with this historic gem—a stunning 16th-century basilica blending Spanish and Chinese architecture. Snap group pics in the plaza (fountain views!), light a candle for good vibes, and soak in the atmosphere. It's free and sets an adventurous tone.
                 </div>
                 <div class="step" id="step-5">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    <strong>12:15 PM – 1:30 PM: Food Crawl on Ongpin</strong><br>
-                    Shanghai siopao • Dong Bei dumplings • Sincerity fried chicken • Eng Bee Tin ube hopia<br>
-                    ~PHP 300–500/person sharing plates.
+                    <strong>12:15 PM - 1:30 PM: Food Crawl on Ongpin Street.</strong> Time for the highlight—street food and hole-in-the-wall eats! We'll hop between spots (all within 5-10 min walks). Must-tries for an exciting mix:<br>
+                    - <strong>Shanghai Fried Siopao (iconic stall on Ongpin):</strong> Grab fluffy, crispy-bottom pork buns (~PHP 35 each). Juicy and addictive—perfect starter!<br>
+                    - <strong>Dong Bei Dumplings (Yuchengco St, near Ongpin):</strong> Fresh steamed pork/chive dumplings (~PHP 100-150 for 8-10 pcs). Watch them hand-make 'em—super authentic.<br>
+                    - <strong>Sincerity Cafe & Restaurant (Ongpin St):</strong> Famous fried chicken (crispy, juicy ~PHP 150/half) and oyster cake (~PHP 100). A cult fave for that savory punch.<br>
+                    - <strong>Eng Bee Tin Bakery (Ongpin St):</strong> Sweet finish with ube hopia (purple yam pastry, ~PHP 50-70/box). Buy extras as pasalubong—they're legendary!<br>
+                    Total food spend: Aim ~PHP 300-500/person for sharing portions. Share plates to try more without overeating. If we want sit-down, hit Cafe Mezzanine (firefighter-themed, proceeds to charity) for lumpia or congee.
                 </div>
                 <div class="step" id="step-6">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                    <strong>1:30 PM – 2:30 PM: Sights & Shopping</strong><br>
-                    Jones Bridge views • Lucky charms & jade • Seng Guan Temple calm moment.
+                    <strong>1:30 PM - 2:30 PM: Sights & Shopping Stroll.</strong> Wander deeper into Binondo for that explorer feel. Check out:<br>
+                    - <strong>Jones Bridge</strong> (short walk from plaza): Stunning views over the Pasig River—newly restored with lights and arches. Great for Insta pics and a breezy break.<br>
+                    - <strong>Lucky Charms & Gold Shops</strong> (Ongpin & side streets): Browse feng shui items, jade bracelets, or gold jewelry (bargain hard!). Fun, affordable souvenirs (~PHP 100-500 for charms).<br>
+                    - <strong>Seng Guan Temple</strong> (Narra St, quick detour): A peaceful Buddhist spot with incense and statues—vibe check and relax in the calm.<br>
+                    Keep it light: Window shop, people-watch from a bench, or grab iced tea from a vendor.
                 </div>
                 <div class="step" id="step-7">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    <strong>2:30 PM – 3:00 PM: Chill & Wrap Up</strong><br>
-                    Shady spot, egg tarts or iced drinks. Take group selfies!
+                    <strong>2:30 PM - 3:00 PM: Chill & Wrap Up.</strong> Find a shady spot in Plaza San Lorenzo or a cafe for desserts (try Lord Stow's egg tarts or ube lattes from Apologue Coffee if still hungry). Reflect on the day's highlights—maybe plan our next trip!
                 </div>
             </div>
         </div>
 
         <div class="card-glow-wrapper">
             <div class="card-glow">
-                <h2>Return Journey (Depart ~3:00 PM, Back ~4:30–5:00 PM)</h2>
+                <h2>Return Journey (Depart ~3:00 PM, Arrive Base ~4:30-5:00 PM)</h2>
                 <div class="step" id="step-8">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M19 7c0-1.1-.9-2-2-2h-3v9h3c1.1 0 2-.9 2-2V7zm-7-5H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-5h-5V7c0-1.1-.9-2-2-2z"/></svg>
-                    <strong>3:00 PM: Trikes to Recto LRT</strong><br>
-                    Quick ride back to station.
+                    <strong>3:00 PM: Trikes back to Recto LRT.</strong> Hail 2 trikes from Binondo Church area (~5-10 min ride).
                 </div>
                 <div class="step" id="step-9">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l4.5 2.67-.75 1.23L11 11.5V7z"/></svg>
-                    <strong>~3:15 PM: Recto → Anonas LRT</strong><br>
-                    Eastbound train (~20–25 min).
+                    <strong>~3:15 PM: Board LRT-2 at Recto.</strong> Eastbound to Anonas (same 8 stops, ~20-25 min ride). Trains run every 5-7 min.
                 </div>
                 <div class="step" id="step-10">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    <strong>~3:45 PM: GrabCar home</strong><br>
-                    Beat the rush hour traffic.
+                    <strong>~3:45 PM: Arrive Anonas LRT.</strong> Book a GrabCar back to base (~45-60 min ride, should be pre-rush).
                 </div>
                 <div class="step" id="step-11">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                    <strong>~4:30–5:00 PM: Arrive base</strong><br>
-                    Unpack hopia, share stories, rest!
+                    <strong>~4:30-5:00 PM: Back at base.</strong> Perfect timing to miss evening commuters. Unwind with any pasalubong we grabbed!
                 </div>
             </div>
         </div>
 
         <div class="card-glow-wrapper">
             <div class="card-glow">
-                <h2>Quick Tips</h2>
-                <ul>
-                    <li>Grab app ready • comfy shoes • sunscreen • water bottle</li>
-                    <li>Total walking in Binondo: ~2–3 km (easy pace)</li>
-                    <li>Bargain for charms & souvenirs!</li>
-                </ul>
+                <h2>Tips</h2>
+                <p>Download Grab app for easy booking. Wear comfy shoes/sunscreen (it's hot/humid). Budget extra for spontaneous buys. If anyone needs a break, plenty of benches/cafes. Total walking in Binondo: ~2-3 km, easy and fun.</p>
             </div>
         </div>
 
         <div class="card-glow-wrapper">
             <div class="card-glow">
-                <h2>Cost Breakdown (4 people, PHP, approx. 2026 rates)</h2>
+                <h2>Cost Breakdown (Estimates for 4 People, in PHP; Based on 2026 Rates)</h2>
+                <p>These are approximate—fares can vary with traffic/surge (Grab often has mild surges; LRT-2 single journey max ~PHP 35). Transport total ~PHP 1,600-2,400 (PHP 400-600/person). Food/shopping extra.</p>
                 <ul>
-                    <li>GrabCar each way: 500–700</li>
-                    <li>LRT round-trip per person: 60–70</li>
-                    <li>Trikes round-trip (2 units): 200–300</li>
-                    <li>Food & drinks per person: 300–500</li>
-                    <li>Shopping/souvenirs per person: 200–400</li>
-                    <li><strong>Transport total (group): ~1,500–2,200</strong> (~375–550/person)</li>
-                    <li>Buffer: 200–300/group for extras</li>
+                    <li><strong>GrabCar (Outbound: Antipolo to Anonas):</strong> PHP 500-800 (shared 4-seater; ~24 km, no/low surge at 10 AM).</li>
+                    <li><strong>LRT-2 Tickets (Anonas to Recto, per person):</strong> PHP 30-35 x 4 = PHP 120-140 (single journey max PHP 35 for distance).</li>
+                    <li><strong>Trikes (Recto to Binondo, 2 trikes for 4 people):</strong> PHP 100-150 (short ride, ~PHP 50/trike).</li>
+                    <li><strong>Food & Snacks (per person, sharing):</strong> PHP 300-500 (siopao ~35, dumplings 100-150, chicken 150/half, hopia 50-70; budget for 3-4 stops).</li>
+                    <li><strong>Shopping/Souvenirs (optional, per person):</strong> PHP 200-400 (hopia boxes, charms).</li>
+                    <li><strong>Return Trip (Same as Outbound):</strong> Trikes PHP 100-150 + LRT PHP 120-140 + GrabCar PHP 500-800 (possible slight surge in afternoon, but pre-5 PM should be fine).</li>
+                    <li><strong>Grand Total (Transport Only):</strong> PHP 1,440-2,180 (excludes food/shopping; divide by 4 = PHP 360-545/person).</li>
+                    <li><strong>Buffer:</strong> Add PHP 200-300/group for water/drinks/unexpected (e.g., jeep if no trike).</li>
                 </ul>
-                <p>Let's make it an unforgettable Francine adventure! 🚀🌸</p>
+                <p>This'll be epic—history, flavors, and laughs! Let me know if we tweak anything. 🚀</p>
             </div>
         </div>
 
