@@ -124,7 +124,7 @@
     </div>
 
     <script>
-        // --- TEXT PERSISTENCE (localStorage) ---
+        // --- TEXT PERSISTENCE ---
         const titleEl = document.getElementById('mainTitle');
         const subTitleEl = document.getElementById('subTitle');
 
@@ -134,7 +134,7 @@
         titleEl.addEventListener('input', () => localStorage.setItem('galleryTitle', titleEl.innerText));
         subTitleEl.addEventListener('input', () => localStorage.setItem('gallerySubTitle', subTitleEl.innerText));
 
-        // --- IMAGE PERSISTENCE (IndexedDB) ---
+        // --- IMAGE PERSISTENCE & DB SETUP ---
         const gallery = document.getElementById('gallery');
         let currentActiveItem = null;
         let db;
@@ -148,14 +148,10 @@
         ];
 
         const request = indexedDB.open("BinondoGalleryDB", 1);
-        
         request.onupgradeneeded = (event) => {
             db = event.target.result;
-            if (!db.objectStoreNames.contains("photos")) {
-                db.createObjectStore("photos", { keyPath: "id" });
-            }
+            if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" });
         };
-
         request.onsuccess = (event) => {
             db = event.target.result;
             loadPhotosFromDB();
@@ -169,16 +165,13 @@
             getAllRequest.onsuccess = () => {
                 const photos = getAllRequest.result;
                 gallery.innerHTML = ''; 
-                
                 if (photos.length === 0) {
                     initialPhotos.forEach(photo => {
                         savePhotoToDB(photo.id, photo.url, photo.caption);
                         renderPhotoToDOM(photo.id, photo.url, photo.caption, false);
                     });
                 } else {
-                    photos.reverse().forEach(photo => {
-                        renderPhotoToDOM(photo.id, photo.url, photo.caption, false);
-                    });
+                    photos.reverse().forEach(photo => renderPhotoToDOM(photo.id, photo.url, photo.caption, false));
                 }
             };
         }
@@ -214,41 +207,68 @@
             else gallery.appendChild(itemDiv);
         }
 
+        // --- THE MAGIC COMPRESSION FUNCTION ---
+        function compressImage(file, maxWidth, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const scaleSize = maxWidth / img.width;
+                    
+                    // Only resize if the image is wider than maxWidth
+                    let newWidth = img.width;
+                    let newHeight = img.height;
+                    
+                    if (scaleSize < 1) {
+                        newWidth = maxWidth;
+                        newHeight = img.height * scaleSize;
+                    }
+
+                    canvas.width = newWidth;
+                    canvas.height = newHeight;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                    
+                    // Compress to JPEG format with 70% quality (0.7)
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(compressedDataUrl);
+                }
+            }
+        }
+
+        // --- CAMERA INPUT LOGIC WITH COMPRESSION ---
         document.getElementById('cameraInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
+                // Pass the file, set max width to 1200px, and wait for the compressed result
+                compressImage(file, 1200, function(compressedResult) {
                     const userCaption = prompt("Awesome shot! Give it a caption:") || "My Snap ✨";
                     const uniqueId = 'img_' + Date.now(); 
                     
-                    savePhotoToDB(uniqueId, e.target.result, userCaption);
-                    renderPhotoToDOM(uniqueId, e.target.result, userCaption, true);
-                };
-                reader.readAsDataURL(file);
+                    savePhotoToDB(uniqueId, compressedResult, userCaption);
+                    renderPhotoToDOM(uniqueId, compressedResult, userCaption, true);
+                });
             }
-            this.value = ''; 
+            this.value = ''; // Reset input
         });
 
+        // --- LIGHTBOX LOGIC ---
         document.getElementById('closeBtn').addEventListener('click', () => {
             document.getElementById('lightbox').classList.remove('active');
             setTimeout(() => { document.getElementById('lightbox-img').src = ''; }, 300);
         });
 
-        // --- UPDATED REMOVE LOGIC WITH SAFETY WARNING ---
         document.getElementById('deleteBtn').addEventListener('click', () => {
-            // Added confirmation dialog
-            const userConfirmed = confirm("Remove this photo from your diary?\n\n(Don't worry, the original file is still safe on your phone's camera roll!)");
-            
+            const userConfirmed = confirm("Remove this photo from your diary?\n\n(If you are on an iPhone, this removes it permanently from this app. On Android, your original might still be in your device folders!)");
             if (userConfirmed && currentActiveItem) {
                 const idToDelete = currentActiveItem.dataset.id;
-                
-                // Remove from DB
                 const transaction = db.transaction("photos", "readwrite");
                 const store = transaction.objectStore("photos");
                 store.delete(idToDelete);
-
-                // Remove from Screen
                 currentActiveItem.remove(); 
                 document.getElementById('lightbox').classList.remove('active');
             }
