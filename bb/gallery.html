@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>My Visual Diary</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f4f4f4;
+            --primary: #ff4757;
+            --text-dark: #2f3542;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-tap-highlight-color: transparent; /* Removes blue flash on tap in iOS */
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Inline editable fields styling */
+        [contenteditable="true"] {
+            outline: none;
+            border-bottom: 1px dashed transparent;
+            transition: border-color 0.2s;
+        }
+
+        [contenteditable="true"]:focus {
+            border-bottom: 1px dashed var(--primary);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--text-dark);
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            color: #747d8c;
+        }
+
+        .masonry-container {
+            column-count: 2;
+            column-gap: 15px;
+            padding: 15px;
+            max-width: 100%;
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 15px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .masonry-item img {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 15px 10px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            pointer-events: none; /* Lets taps pass through to the container */
+        }
+
+        /* Full Screen Lightbox */
+        #lightbox {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+        }
+
+        #lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #lightbox img {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+
+        .lightbox-controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .lightbox-btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-close {
+            background: white;
+            color: var(--text-dark);
+        }
+
+        .btn-delete {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Camera Button */
+        .fab-container {
+            position: fixed;
+            bottom: calc(30px + env(safe-area-inset-bottom));
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .fab {
+            background-color: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+            cursor: pointer;
+            border: none;
+        }
+
+        #cameraInput { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 contenteditable="true" spellcheck="false">Binondo Views 📸</h1>
+        <p contenteditable="true" spellcheck="false">Francine's Visual Diary</p>
+    </header>
+
+    <div class="masonry-container" id="gallery"></div>
+
+    <div class="fab-container">
+        <input type="file" accept="image/*" capture="environment" id="cameraInput">
+        <button class="fab" onclick="document.getElementById('cameraInput').click()">📷</button>
+    </div>
+
+    <div id="lightbox">
+        <img id="lightbox-img" src="" alt="Full Screen View">
+        <div class="lightbox-controls">
+            <button class="lightbox-btn btn-close" id="closeBtn">Return</button>
+            <button class="lightbox-btn btn-delete" id="deleteBtn">Delete</button>
+        </div>
+    </div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const cameraInput = document.getElementById('cameraInput');
+        
+        // Lightbox Elements
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.getElementById('closeBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        // Variable to keep track of which image element is currently open
+        let currentActiveItem = null;
+
+        // Swapped the broken Unsplash link for a working one!
+        const initialPhotos = [
+            { url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=500&q=80', caption: 'Binondo Arch Vibe' },
+            { url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80', caption: 'Dumpling Time! 🥟' },
+            { url: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=500&q=80', caption: 'Temple Peace' },
+            { url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80', caption: 'Sincerity Chicken run' },
+            { url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80', caption: 'Delicious Eats' } // Fixed image
+        ];
+
+        function addPhotoToGallery(imgSrc, captionText, prepend = false) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'masonry-item';
+
+            const img = document.createElement('img');
+            img.src = imgSrc;
+
+            const caption = document.createElement('div');
+            caption.className = 'photo-caption';
+            caption.innerText = captionText;
+
+            itemDiv.appendChild(img);
+            itemDiv.appendChild(caption);
+
+            // Add click listener to open the lightbox
+            itemDiv.addEventListener('click', () => {
+                currentActiveItem = itemDiv; // Remember which element we clicked
+                lightboxImg.src = imgSrc;    // Set the high-res source
+                lightbox.classList.add('active'); // Show modal
+            });
+
+            if (prepend) {
+                gallery.prepend(itemDiv);
+            } else {
+                gallery.appendChild(itemDiv);
+            }
+        }
+
+        // Initialize gallery
+        initialPhotos.forEach(photo => addPhotoToGallery(photo.url, photo.caption));
+
+        // Lightbox Close Logic
+        closeBtn.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+            setTimeout(() => { lightboxImg.src = ''; }, 300); // Clear image after transition
+        });
+
+        // Lightbox Delete Logic
+        deleteBtn.addEventListener('click', () => {
+            if (currentActiveItem) {
+                currentActiveItem.remove(); // Removes the photo from the grid entirely
+            }
+            lightbox.classList.remove('active');
+        });
+
+        // Camera Logic
+        cameraInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const userCaption = prompt("Awesome shot! Give it a caption:") || "My Snap ✨";
+                    addPhotoToGallery(e.target.result, userCaption, true);
+                };
+                reader.readAsDataURL(file);
+            }
+            cameraInput.value = '';
+        });
+    </script>
+</body>
+</html>
