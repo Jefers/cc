@@ -6,7 +6,6 @@
     <title>Binondo Diary & Map</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -32,20 +31,14 @@
             position: sticky; top: 0; z-index: 1000;
         }
 
-        [contenteditable="true"] {
-            outline: none; border-bottom: 1px dashed transparent;
-            transition: border-color 0.2s;
-        }
+        [contenteditable="true"] { outline: none; border-bottom: 1px dashed transparent; transition: border-color 0.2s; }
         [contenteditable="true"]:focus { border-bottom: 1px dashed var(--primary); }
 
         header h1 { margin: 0; font-size: 24px; color: var(--text-dark); }
         header p { margin: 5px 0 15px 0; font-size: 14px; color: #747d8c; }
 
         /* View Toggle Switch */
-        .view-toggle {
-            display: inline-flex; background: #e1e5ee; border-radius: 30px;
-            padding: 4px; position: relative;
-        }
+        .view-toggle { display: inline-flex; background: #e1e5ee; border-radius: 30px; padding: 4px; position: relative; }
         .toggle-btn {
             padding: 8px 20px; border-radius: 26px; border: none; background: transparent;
             font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600;
@@ -58,9 +51,9 @@
         #map-view { display: none; height: calc(100vh - 140px); width: 100vw; position: absolute; left: 0; }
         #map { height: 100%; width: 100%; }
 
-        /* Custom Leaflet Map Markers */
+        /* Map Markers */
         .photo-marker {
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 44px; height: 44px; border-radius: 50%;
             border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             object-fit: cover; background: white;
         }
@@ -69,29 +62,21 @@
             font-size: 18px; box-shadow: 0 3px 8px rgba(0,0,0,0.3); border: 2px solid var(--primary);
         }
 
-        .masonry-container {
-            column-count: 2; column-gap: 15px; padding: 15px; max-width: 100%;
-        }
-
+        /* Gallery Grid */
+        .masonry-container { column-count: 2; column-gap: 15px; padding: 15px; max-width: 100%; }
         .masonry-item {
-            break-inside: avoid; margin-bottom: 15px;
-            border-radius: 16px; overflow: hidden;
-            background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: relative; cursor: pointer;
+            break-inside: avoid; margin-bottom: 15px; border-radius: 16px; overflow: hidden;
+            background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; cursor: pointer;
         }
 
-        @keyframes slideFadeIn {
-            0% { opacity: 0; transform: translateY(40px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideFadeIn { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
         .masonry-item.animate-in { animation: slideFadeIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .masonry-item img { width: 100%; display: block; border-radius: 16px; }
 
         .photo-caption {
             position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            color: white; padding: 15px 10px 10px;
-            font-size: 12px; font-weight: 600; pointer-events: none;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white;
+            padding: 15px 10px 10px; font-size: 12px; font-weight: 600; pointer-events: none;
         }
 
         /* Bottom Nav */
@@ -100,17 +85,15 @@
             transform: translateX(-50%); display: flex; align-items: center; gap: 25px; z-index: 1000;
         }
         .btn-shutter {
-            width: 76px; height: 76px; border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.1s;
+            width: 76px; height: 76px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 4px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s;
         }
         .btn-shutter:active { transform: scale(0.95); }
         .btn-shutter svg { width: 32px; height: 32px; stroke: var(--text-dark); }
         .btn-side {
-            width: 50px; height: 50px; border-radius: 50%;
-            background-color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; transition: transform 0.1s;
+            width: 50px; height: 50px; border-radius: 50%; background-color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; transition: 0.1s;
         }
         .btn-side:active { transform: scale(0.95); }
         .btn-side svg { width: 22px; height: 22px; stroke: var(--text-dark); }
@@ -118,38 +101,38 @@
 
         /* Overlays & Dialogs */
         .overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.95); z-index: 2000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
         }
         .overlay.active { opacity: 1; pointer-events: all; }
 
         .dialog-card {
-            background: white; border-radius: 16px; padding: 25px;
-            max-width: 320px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            text-align: center; color: var(--text-dark);
+            background: white; border-radius: 16px; padding: 25px; max-width: 320px; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; color: var(--text-dark);
             transform: translateY(20px); transition: transform 0.3s ease;
         }
         .overlay.active .dialog-card { transform: translateY(0); }
         .dialog-card p { font-size: 14px; margin: 0 0 20px 0; line-height: 1.5; font-weight: 600; }
         .dialog-input {
             width: 100%; box-sizing: border-box; padding: 12px 15px; margin-bottom: 20px;
-            border: 2px solid #e1e5ee; border-radius: 8px; font-family: 'Poppins', sans-serif;
-            font-size: 14px; outline: none; transition: border-color 0.2s;
+            border: 2px solid #e1e5ee; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none;
         }
         .dialog-input:focus { border-color: var(--primary); }
         .dialog-input.hidden { display: none; }
         .dialog-controls { display: flex; gap: 10px; justify-content: center; }
-        .btn {
-            flex: 1; padding: 12px; border-radius: 30px; border: none;
-            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer;
-        }
+        .btn { flex: 1; padding: 12px; border-radius: 30px; border: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
         .btn-light { background: #f1f2f6; color: var(--text-dark); }
         .btn-primary { background: var(--primary); color: white; }
 
-        /* Lightbox Specifics */
+        /* Info Card */
+        .info-card { text-align: left; }
+        .info-card h2 { margin-top: 0; font-size: 20px; color: var(--primary); }
+        .info-card p, .info-card li { font-size: 13px; line-height: 1.6; color: #57606f; }
+        .info-card ul { padding-left: 20px; margin-bottom: 20px; }
+        .info-card .btn { width: 100%; margin-top: 10px; }
+
+        /* Lightbox */
         #lightbox img { max-width: 100%; max-height: 70vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; }
         .lightbox-controls { display: flex; gap: 35px; margin-top: 30px; justify-content: center; align-items: flex-start; }
         .action-group { display: flex; flex-direction: column; align-items: center; gap: 8px; color: white; }
@@ -168,7 +151,6 @@
     <header>
         <h1 id="mainTitle" contenteditable="true" spellcheck="false">Binondo Views</h1>
         <p id="subTitle" contenteditable="true" spellcheck="false">Francine's Visual Diary</p>
-        
         <div class="view-toggle">
             <button class="toggle-btn active" id="btnDiary">Diary</button>
             <button class="toggle-btn" id="btnMap">Map</button>
@@ -211,6 +193,20 @@
         </div>
     </div>
 
+    <div id="infoModal" class="overlay">
+        <div class="info-card dialog-card">
+            <h2>How to use this Diary</h2>
+            <ul>
+                <li><b>Tap the Title or Subtitle</b> to change the text. It saves automatically!</li>
+                <li><b>Tap any photo</b> to view it full screen, share it, or delete it.</li>
+                <li><b>The Center Camera Button</b> lets you pin photos straight to the map!</li>
+            </ul>
+            <p><b>Where do my photos go?</b><br>
+            They are securely saved to your local browser storage. If you want to keep a photo in your device's Camera Roll permanently, tap the photo and use the <b>Share</b> button!</p>
+            <button class="btn btn-primary" id="closeInfoBtn">Got it!</button>
+        </div>
+    </div>
+
     <div id="lightbox" class="overlay">
         <img id="lightbox-img" src="" alt="Full Screen View">
         <div class="lightbox-controls">
@@ -250,14 +246,10 @@
                 
                 cancelBtn.style.display = type === 'alert' ? 'none' : 'block';
                 inputEl.classList.toggle('hidden', type !== 'prompt');
-                
                 if (type === 'prompt') inputEl.value = defaultValue;
                 
                 dialog.classList.add('active');
-                
-                if (type === 'prompt') {
-                    setTimeout(() => { inputEl.focus(); inputEl.select(); }, 100);
-                }
+                if (type === 'prompt') setTimeout(() => { inputEl.focus(); inputEl.select(); }, 100);
 
                 const closeDialog = () => { dialog.classList.remove('active'); cancelBtn.onclick = null; confirmBtn.onclick = null; };
 
@@ -266,33 +258,71 @@
             });
         }
 
+        // --- GPS ENGINE ---
+        function getDeviceLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) return resolve(null);
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                    (err) => resolve(null),
+                    { timeout: 5000, enableHighAccuracy: true }
+                );
+            });
+        }
+
         // --- MAP ENGINE ---
         let map;
-        const photoMarkers = {}; // Keep track of map pins so we can delete them if a photo is binned
+        const photoMarkers = {};
+
+        // Restored ALL original Binondo locations
+        const landmarks = [
+            { name: 'Binondo Church', lat: 14.60021, lng: 120.97470, emoji: '⛪' },
+            { name: 'Shanghai Fried Siopao', lat: 14.5990, lng: 120.9750, emoji: '🥟' },
+            { name: 'Dong Bei Dumplings', lat: 14.5995, lng: 120.9755, emoji: '🥢' },
+            { name: 'Sincerity Cafe', lat: 14.5998, lng: 120.9758, emoji: '🍗' },
+            { name: 'Eng Bee Tin Bakery', lat: 14.6005, lng: 120.9750, emoji: '🥮' },
+            { name: 'Jones Bridge', lat: 14.59583, lng: 120.977306, emoji: '🌉' },
+            { name: 'Lucky Charms Shops', lat: 14.6000, lng: 120.9750, emoji: '🧧' },
+            { name: 'Seng Guan Temple', lat: 14.60765, lng: 120.97475, emoji: '🛕' }
+        ];
 
         function initMap() {
-            if (map) return; // Only init once
+            if (map) return; 
             map = L.map('map', { zoomControl: false }).setView([14.600, 120.975], 16);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-            // Our beautiful CartoDB Voyager theme
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
             }).addTo(map);
 
-            // Add the original tourist landmarks we built
-            const landmarks = [
-                { name: 'Binondo Church', lat: 14.60021, lng: 120.97470, emoji: '⛪' },
-                { name: 'Shanghai Fried Siopao', lat: 14.5990, lng: 120.9750, emoji: '🥟' },
-                { name: 'Dong Bei Dumplings', lat: 14.5995, lng: 120.9755, emoji: '🥢' }
-            ];
+            // Plot static landmarks
             landmarks.forEach(place => {
                 const icon = L.divIcon({ className: 'default-marker', html: place.emoji, iconSize: [30, 30] });
                 L.marker([place.lat, place.lng], { icon: icon }).addTo(map).bindTooltip(place.name, { direction: 'top' });
             });
+
+            // Plot existing photos from the DB on map load
+            if (db) {
+                const transaction = db.transaction("photos", "readonly");
+                const req = transaction.objectStore("photos").getAll();
+                req.onsuccess = () => {
+                    req.result.forEach(photo => { if(photo.lat && photo.lng) addPhotoToMap(photo); });
+                };
+            }
         }
 
-        // Toggle Views
+        function addPhotoToMap(photo) {
+            if (!map) return; // Prevents the crash! Only adds if map is initialized.
+            const customIcon = L.divIcon({
+                className: '', html: `<img src="${photo.url}" class="photo-marker">`,
+                iconSize: [44, 44], iconAnchor: [22, 22]
+            });
+            const marker = L.marker([photo.lat, photo.lng], { icon: customIcon }).addTo(map);
+            marker.bindPopup(`<b>${photo.caption}</b>`);
+            photoMarkers[photo.id] = marker;
+        }
+
+        // View Toggles
         document.getElementById('btnDiary').addEventListener('click', function() {
             this.classList.add('active'); document.getElementById('btnMap').classList.remove('active');
             document.getElementById('gallery-view').style.display = 'block';
@@ -304,7 +334,7 @@
             document.getElementById('gallery-view').style.display = 'none';
             document.getElementById('map-view').style.display = 'block';
             initMap();
-            setTimeout(() => map.invalidateSize(), 100); // Fixes map rendering glitch on unhide
+            setTimeout(() => map.invalidateSize(), 100); 
         });
 
         // --- DATABASE & APP ENGINE ---
@@ -312,7 +342,16 @@
         let currentActiveItem = null;
         let db;
 
-        const request = indexedDB.open("BinondoAppDB", 2);
+        // Restored the default placeholder images
+        const initialPhotos = [
+            { id: 'img_default1', url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=500&q=80', caption: 'Binondo Arch Vibe' },
+            { id: 'img_default2', url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80', caption: 'Dumpling Time! 🥟' },
+            { id: 'img_default3', url: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=500&q=80', caption: 'Temple Peace' },
+            { id: 'img_default4', url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80', caption: 'Sincerity Chicken run' }
+        ];
+
+        // Bumped to version 3 to ensure a completely fresh start and clear any broken data
+        const request = indexedDB.open("BinondoUnifiedDB", 3);
         request.onupgradeneeded = (event) => {
             db = event.target.result;
             if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" });
@@ -326,8 +365,18 @@
             const transaction = db.transaction("photos", "readonly");
             const getAllRequest = transaction.objectStore("photos").getAll();
             getAllRequest.onsuccess = () => {
+                const photos = getAllRequest.result;
                 gallery.innerHTML = ''; 
-                getAllRequest.result.reverse().forEach(photo => renderPhoto(photo, false));
+                
+                if (photos.length === 0) {
+                    // Inject defaults if DB is empty
+                    initialPhotos.forEach(photo => {
+                        savePhotoToDB(photo);
+                        renderPhoto(photo, false);
+                    });
+                } else {
+                    photos.reverse().forEach(photo => renderPhoto(photo, false));
+                }
             };
         }
 
@@ -336,7 +385,6 @@
         }
 
         function renderPhoto(photo, prepend = false) {
-            // Render to Grid
             const itemDiv = document.createElement('div');
             itemDiv.className = 'masonry-item' + (prepend ? ' animate-in' : '');
             itemDiv.dataset.id = photo.id; 
@@ -353,18 +401,8 @@
 
             if (prepend) gallery.prepend(itemDiv); else gallery.appendChild(itemDiv);
 
-            // Render to Map (if it has coords!)
-            if (photo.lat && photo.lng) {
-                if (!map) initMap();
-                const customIcon = L.divIcon({
-                    className: '', // Clear default styling
-                    html: `<img src="${photo.url}" class="photo-marker">`,
-                    iconSize: [40, 40], iconAnchor: [20, 20]
-                });
-                const marker = L.marker([photo.lat, photo.lng], { icon: customIcon }).addTo(map);
-                marker.bindPopup(`<b>${photo.caption}</b>`);
-                photoMarkers[photo.id] = marker; // Save reference for deletion later
-            }
+            // Also plot to map if coords exist!
+            if (photo.lat && photo.lng) addPhotoToMap(photo);
         }
 
         function compressImage(file, callback) {
@@ -382,64 +420,72 @@
             }
         }
 
-        // Handle Snapping/Uploading
+        // --- LINEAR ASYNC CAMERA HANDLER ---
         async function handleImageSelection(event, isCameraSnap) {
             const file = event.target.files[0];
             if (!file) return;
 
-            compressImage(file, async function(compressedResult) {
-                let userCaption = await showCustomDialog('prompt', "Awesome shot! Give it a caption:", "My Snap ✨", "Save");
-                if (userCaption === null) return;
+            // Wait for compression using a Promise
+            const compressedResult = await new Promise(resolve => compressImage(file, resolve));
+            
+            // Wait for User Caption
+            const userCaption = await showCustomDialog('prompt', "Awesome shot! Give it a caption:", "My Snap ✨", "Save");
+            if (userCaption === null) {
+                event.target.value = ''; return; // User hit cancel
+            }
 
-                const photoObj = { id: 'img_' + Date.now(), url: compressedResult, caption: userCaption };
+            const photoObj = { id: 'img_' + Date.now(), url: compressedResult, caption: userCaption };
 
-                // THE SOFT ASK: Only ask for location if they used the actual camera, not the gallery upload!
-                if (isCameraSnap && navigator.geolocation) {
-                    const wantLocation = await showCustomDialog('confirm', 
-                        "Want to pin this snap to your map? Location data stays strictly private on your device.", 
-                        "", "Add Location", "No Thanks"
-                    );
-                    
-                    if (wantLocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (pos) => {
-                                photoObj.lat = pos.coords.latitude;
-                                photoObj.lng = pos.coords.longitude;
-                                savePhotoToDB(photoObj);
-                                renderPhoto(photoObj, true);
-                            },
-                            (err) => {
-                                // If they hit deny on the OS prompt, just save normally
-                                savePhotoToDB(photoObj); renderPhoto(photoObj, true);
-                            },
-                            { timeout: 5000, enableHighAccuracy: true }
-                        );
-                        event.target.value = ''; return; // Stop here, waiting for GPS
+            // Wait for Location Request (Only if it's a camera snap)
+            if (isCameraSnap) {
+                const wantLocation = await showCustomDialog('confirm', 
+                    "Want to pin this snap to your map? Location data stays strictly private on your device.", 
+                    "", "Add Location", "No Thanks"
+                );
+                
+                if (wantLocation) {
+                    const loc = await getDeviceLocation();
+                    if (loc) {
+                        photoObj.lat = loc.lat;
+                        photoObj.lng = loc.lng;
+                    } else {
+                        await showCustomDialog('alert', "Couldn't grab your location. Saving photo normally!");
                     }
                 }
+            }
 
-                // If no location requested or gallery upload used
-                savePhotoToDB(photoObj); renderPhoto(photoObj, true);
-            });
+            // Save and Render!
+            savePhotoToDB(photoObj);
+            renderPhoto(photoObj, true);
             event.target.value = ''; 
         }
 
         document.getElementById('cameraInput').addEventListener('change', e => handleImageSelection(e, true));
         document.getElementById('uploadInput').addEventListener('change', e => handleImageSelection(e, false));
 
-        // Lightbox Buttons
+        // --- LIGHTBOX BUTTONS & TEXT PERSISTENCE ---
+        const titleEl = document.getElementById('mainTitle');
+        const subTitleEl = document.getElementById('subTitle');
+        if(localStorage.getItem('galleryTitle')) titleEl.innerText = localStorage.getItem('galleryTitle');
+        if(localStorage.getItem('gallerySubTitle')) subTitleEl.innerText = localStorage.getItem('gallerySubTitle');
+        titleEl.addEventListener('input', () => localStorage.setItem('galleryTitle', titleEl.innerText));
+        subTitleEl.addEventListener('input', () => localStorage.setItem('gallerySubTitle', subTitleEl.innerText));
+
+        document.getElementById('infoBtn').addEventListener('click', () => document.getElementById('infoModal').classList.add('active'));
+        document.getElementById('closeInfoBtn').addEventListener('click', () => document.getElementById('infoModal').classList.remove('active'));
+
         document.getElementById('closeLightboxBtn').addEventListener('click', () => {
             document.getElementById('lightbox').classList.remove('active');
             setTimeout(() => document.getElementById('lightbox-img').src = '', 300);
         });
 
         document.getElementById('deleteBtn').addEventListener('click', async () => {
-            const userConfirmed = await showCustomDialog('confirm', "Delete this photo? It will be removed permanently!", "", "Delete", "Cancel");
+            const userConfirmed = await showCustomDialog('confirm', "Delete this photo? It will be removed permanently from your diary and map.", "", "Delete", "Cancel");
             if (userConfirmed && currentActiveItem) {
                 const idToDelete = currentActiveItem.dataset.id;
                 db.transaction("photos", "readwrite").objectStore("photos").delete(idToDelete);
                 
-                // Remove from Map too!
+                // Remove from Map 
                 if (photoMarkers[idToDelete] && map) {
                     map.removeLayer(photoMarkers[idToDelete]);
                     delete photoMarkers[idToDelete];
@@ -448,6 +494,22 @@
                 currentActiveItem.remove(); 
                 document.getElementById('lightbox').classList.remove('active');
             }
+        });
+
+        async function dataUrlToFile(dataUrl, filename) {
+            const res = await fetch(dataUrl); const blob = await res.blob();
+            return new File([blob], filename, { type: 'image/jpeg' });
+        }
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            if (!currentActiveItem) return;
+            try {
+                const file = await dataUrlToFile(document.getElementById('lightbox-img').src, 'diary_snap.jpg');
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: 'Visual Diary Snap', text: 'Check out this photo!' });
+                } else {
+                    await showCustomDialog('alert', "Your browser doesn't support direct sharing. Please long-press the image to save or share it!");
+                }
+            } catch (error) { console.error('Error sharing:', error); }
         });
     </script>
 </body>
