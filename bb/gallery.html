@@ -312,7 +312,7 @@
         }
 
         function addPhotoToMap(photo) {
-            if (!map) return; // Prevents the crash! Only adds if map is initialized.
+            if (!map) return; 
             const customIcon = L.divIcon({
                 className: '', html: `<img src="${photo.url}" class="photo-marker">`,
                 iconSize: [44, 44], iconAnchor: [22, 22]
@@ -338,11 +338,11 @@
         });
 
         // --- DATABASE & APP ENGINE ---
-        const gallery = document.getElementById('gallery');
+        // THE FIX: Updated this variable to point to the correct HTML ID!
+        const gallery = document.getElementById('gallery-view');
         let currentActiveItem = null;
         let db;
 
-        // Restored the default placeholder images
         const initialPhotos = [
             { id: 'img_default1', url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=500&q=80', caption: 'Binondo Arch Vibe' },
             { id: 'img_default2', url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80', caption: 'Dumpling Time! 🥟' },
@@ -350,8 +350,8 @@
             { id: 'img_default4', url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80', caption: 'Sincerity Chicken run' }
         ];
 
-        // Bumped to version 3 to ensure a completely fresh start and clear any broken data
-        const request = indexedDB.open("BinondoUnifiedDB", 3);
+        // Bumped version again to ensure clean DB connection
+        const request = indexedDB.open("BinondoUnifiedDB", 4);
         request.onupgradeneeded = (event) => {
             db = event.target.result;
             if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" });
@@ -369,7 +369,6 @@
                 gallery.innerHTML = ''; 
                 
                 if (photos.length === 0) {
-                    // Inject defaults if DB is empty
                     initialPhotos.forEach(photo => {
                         savePhotoToDB(photo);
                         renderPhoto(photo, false);
@@ -401,7 +400,6 @@
 
             if (prepend) gallery.prepend(itemDiv); else gallery.appendChild(itemDiv);
 
-            // Also plot to map if coords exist!
             if (photo.lat && photo.lng) addPhotoToMap(photo);
         }
 
@@ -425,18 +423,15 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            // Wait for compression using a Promise
             const compressedResult = await new Promise(resolve => compressImage(file, resolve));
             
-            // Wait for User Caption
             const userCaption = await showCustomDialog('prompt', "Awesome shot! Give it a caption:", "My Snap ✨", "Save");
             if (userCaption === null) {
-                event.target.value = ''; return; // User hit cancel
+                event.target.value = ''; return; 
             }
 
             const photoObj = { id: 'img_' + Date.now(), url: compressedResult, caption: userCaption };
 
-            // Wait for Location Request (Only if it's a camera snap)
             if (isCameraSnap) {
                 const wantLocation = await showCustomDialog('confirm', 
                     "Want to pin this snap to your map? Location data stays strictly private on your device.", 
@@ -454,7 +449,6 @@
                 }
             }
 
-            // Save and Render!
             savePhotoToDB(photoObj);
             renderPhoto(photoObj, true);
             event.target.value = ''; 
@@ -485,7 +479,6 @@
                 const idToDelete = currentActiveItem.dataset.id;
                 db.transaction("photos", "readwrite").objectStore("photos").delete(idToDelete);
                 
-                // Remove from Map 
                 if (photoMarkers[idToDelete] && map) {
                     map.removeLayer(photoMarkers[idToDelete]);
                     delete photoMarkers[idToDelete];
