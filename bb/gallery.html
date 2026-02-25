@@ -52,6 +52,17 @@
             position: relative; cursor: pointer;
         }
 
+        /* --- NEW ANIMATION CSS --- */
+        @keyframes slideFadeIn {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* The class we add to new snaps for that slow, deliberate glide */
+        .masonry-item.animate-in {
+            animation: slideFadeIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
         .masonry-item img { width: 100%; display: block; border-radius: 16px; }
 
         .photo-caption {
@@ -99,7 +110,7 @@
         }
         .overlay.active { opacity: 1; pointer-events: all; }
 
-        /* Dialog Box Styling (Replaces ugly browser alerts) */
+        /* Dialog Box Styling */
         .dialog-card {
             background: white; border-radius: 16px; padding: 25px;
             max-width: 320px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -257,7 +268,6 @@
 
     <script>
         // --- CUSTOM DIALOG ENGINE ---
-        // This completely replaces browser prompts, confirms, and alerts
         function showCustomDialog(type, message, defaultValue = "") {
             return new Promise((resolve) => {
                 const dialog = document.getElementById('customDialog');
@@ -268,7 +278,6 @@
 
                 msgEl.innerText = message;
                 
-                // Reset states
                 cancelBtn.style.display = type === 'alert' ? 'none' : 'block';
                 inputEl.classList.toggle('hidden', type !== 'prompt');
                 
@@ -282,9 +291,14 @@
                 }
 
                 dialog.classList.add('active');
-                if (type === 'prompt') setTimeout(() => inputEl.focus(), 100);
+                
+                if (type === 'prompt') {
+                    setTimeout(() => {
+                        inputEl.focus();
+                        inputEl.select(); // <--- Instantly highlights the text for lazy typers!
+                    }, 100);
+                }
 
-                // Setup one-time click handlers
                 const closeDialog = () => {
                     dialog.classList.remove('active');
                     cancelBtn.onclick = null;
@@ -293,16 +307,13 @@
 
                 cancelBtn.onclick = () => {
                     closeDialog();
-                    resolve(null); // Return null on cancel
+                    resolve(null);
                 };
 
                 confirmBtn.onclick = () => {
                     closeDialog();
-                    if (type === 'prompt') {
-                        resolve(inputEl.value.trim() || defaultValue); // Return typed value or default
-                    } else {
-                        resolve(true); // Return true for confirm/alert
-                    }
+                    if (type === 'prompt') resolve(inputEl.value.trim() || defaultValue);
+                    else resolve(true);
                 };
             });
         }
@@ -389,8 +400,13 @@
                 document.getElementById('lightbox').classList.add('active');
             });
 
-            if (prepend) gallery.prepend(itemDiv);
-            else gallery.appendChild(itemDiv);
+            if (prepend) {
+                // Add the smooth animation class for brand new photos!
+                itemDiv.classList.add('animate-in');
+                gallery.prepend(itemDiv);
+            } else {
+                gallery.appendChild(itemDiv);
+            }
         }
 
         function compressImage(file, maxWidth, callback) {
@@ -425,10 +441,8 @@
             const file = event.target.files[0];
             if (file) {
                 compressImage(file, 1200, async function(compressedResult) {
-                    // Replaced browser prompt with our custom async dialog!
                     let userCaption = await showCustomDialog('prompt', "Awesome shot! Give it a caption:", "My Snap ✨");
                     
-                    // If user hit cancel, userCaption is null, so we stop saving.
                     if (userCaption !== null) {
                         const uniqueId = 'img_' + Date.now(); 
                         savePhotoToDB(uniqueId, compressedResult, userCaption);
@@ -448,7 +462,6 @@
         });
 
         document.getElementById('deleteBtn').addEventListener('click', async () => {
-            // Replaced browser confirm with our custom async dialog!
             const userConfirmed = await showCustomDialog('confirm', "Delete this photo from your diary? It will be removed permanently!");
             
             if (userConfirmed && currentActiveItem) {
@@ -481,7 +494,6 @@
                         text: 'Check out this photo!'
                     });
                 } else {
-                    // Replaced browser alert with our custom async dialog!
                     await showCustomDialog('alert', "Your browser doesn't support direct sharing. Please long-press the image to save or share it!");
                 }
             } catch (error) {
