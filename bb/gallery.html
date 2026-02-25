@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>My Visual Diary</title>
+    <title>Binondo Diary & Map</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -24,25 +26,51 @@
         }
 
         header {
-            text-align: center; padding: 20px;
+            text-align: center; padding: 20px 20px 10px;
             background: white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 100;
+            position: sticky; top: 0; z-index: 1000;
         }
 
         [contenteditable="true"] {
             outline: none; border-bottom: 1px dashed transparent;
             transition: border-color 0.2s;
         }
-
         [contenteditable="true"]:focus { border-bottom: 1px dashed var(--primary); }
 
         header h1 { margin: 0; font-size: 24px; color: var(--text-dark); }
-        header p { margin: 5px 0 0 0; font-size: 14px; color: #747d8c; }
+        header p { margin: 5px 0 15px 0; font-size: 14px; color: #747d8c; }
+
+        /* View Toggle Switch */
+        .view-toggle {
+            display: inline-flex; background: #e1e5ee; border-radius: 30px;
+            padding: 4px; position: relative;
+        }
+        .toggle-btn {
+            padding: 8px 20px; border-radius: 26px; border: none; background: transparent;
+            font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600;
+            color: #747d8c; cursor: pointer; transition: 0.3s; z-index: 2;
+        }
+        .toggle-btn.active { color: white; background: var(--primary); box-shadow: 0 2px 10px rgba(255, 71, 87, 0.3); }
+
+        /* Container Visibility */
+        #gallery-view { display: block; }
+        #map-view { display: none; height: calc(100vh - 140px); width: 100vw; position: absolute; left: 0; }
+        #map { height: 100%; width: 100%; }
+
+        /* Custom Leaflet Map Markers */
+        .photo-marker {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            object-fit: cover; background: white;
+        }
+        .default-marker {
+            background: white; border-radius: 50%; text-align: center; line-height: 30px;
+            font-size: 18px; box-shadow: 0 3px 8px rgba(0,0,0,0.3); border: 2px solid var(--primary);
+        }
 
         .masonry-container {
-            column-count: 2; column-gap: 15px;
-            padding: 15px; max-width: 100%;
+            column-count: 2; column-gap: 15px; padding: 15px; max-width: 100%;
         }
 
         .masonry-item {
@@ -52,17 +80,11 @@
             position: relative; cursor: pointer;
         }
 
-        /* --- NEW ANIMATION CSS --- */
         @keyframes slideFadeIn {
             0% { opacity: 0; transform: translateY(40px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-
-        /* The class we add to new snaps for that slow, deliberate glide */
-        .masonry-item.animate-in {
-            animation: slideFadeIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
+        .masonry-item.animate-in { animation: slideFadeIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .masonry-item img { width: 100%; display: block; border-radius: 16px; }
 
         .photo-caption {
@@ -72,35 +94,29 @@
             font-size: 12px; font-weight: 600; pointer-events: none;
         }
 
-        /* Center-Aligned Bottom Navigation */
+        /* Bottom Nav */
         .bottom-nav {
             position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%;
             transform: translateX(-50%); display: flex; align-items: center; gap: 25px; z-index: 1000;
         }
-
         .btn-shutter {
             width: 76px; height: 76px; border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            border: 4px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: transform 0.1s;
+            background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.1s;
         }
         .btn-shutter:active { transform: scale(0.95); }
         .btn-shutter svg { width: 32px; height: 32px; stroke: var(--text-dark); }
-
         .btn-side {
             width: 50px; height: 50px; border-radius: 50%;
             background-color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; border: none; transition: transform 0.1s;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; transition: transform 0.1s;
         }
         .btn-side:active { transform: scale(0.95); }
         .btn-side svg { width: 22px; height: 22px; stroke: var(--text-dark); }
         .hidden-input { display: none; }
 
-        /* Overlays (Lightbox, Info, Dialogs) */
+        /* Overlays & Dialogs */
         .overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.95); z-index: 2000;
@@ -110,7 +126,6 @@
         }
         .overlay.active { opacity: 1; pointer-events: all; }
 
-        /* Dialog Box Styling */
         .dialog-card {
             background: white; border-radius: 16px; padding: 25px;
             max-width: 320px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -119,7 +134,6 @@
         }
         .overlay.active .dialog-card { transform: translateY(0); }
         .dialog-card p { font-size: 14px; margin: 0 0 20px 0; line-height: 1.5; font-weight: 600; }
-        
         .dialog-input {
             width: 100%; box-sizing: border-box; padding: 12px 15px; margin-bottom: 20px;
             border: 2px solid #e1e5ee; border-radius: 8px; font-family: 'Poppins', sans-serif;
@@ -127,7 +141,6 @@
         }
         .dialog-input:focus { border-color: var(--primary); }
         .dialog-input.hidden { display: none; }
-
         .dialog-controls { display: flex; gap: 10px; justify-content: center; }
         .btn {
             flex: 1; padding: 12px; border-radius: 30px; border: none;
@@ -136,40 +149,15 @@
         .btn-light { background: #f1f2f6; color: var(--text-dark); }
         .btn-primary { background: var(--primary); color: white; }
 
-        /* Info Card Specifics */
-        .info-card { text-align: left; }
-        .info-card h2 { margin-top: 0; font-size: 20px; color: var(--primary); }
-        .info-card p, .info-card li { font-size: 13px; font-weight: 400; line-height: 1.6; color: #57606f; }
-        .info-card ul { padding-left: 20px; margin-bottom: 20px; }
-        .info-card .btn { width: 100%; margin-top: 10px; }
-
-        /* Lightbox Image & Controls */
-        #lightbox img {
-            max-width: 100%; max-height: 70vh;
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain;
-        }
-        
-        .lightbox-controls { 
-            display: flex; gap: 35px; margin-top: 30px; 
-            justify-content: center; align-items: flex-start;
-        }
-
-        .action-group {
-            display: flex; flex-direction: column; align-items: center; gap: 8px; color: white;
-        }
-
-        .action-group span {
-            font-size: 10px; text-transform: uppercase; font-weight: 600;
-            letter-spacing: 1px; opacity: 0.8;
-        }
-
+        /* Lightbox Specifics */
+        #lightbox img { max-width: 100%; max-height: 70vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; }
+        .lightbox-controls { display: flex; gap: 35px; margin-top: 30px; justify-content: center; align-items: flex-start; }
+        .action-group { display: flex; flex-direction: column; align-items: center; gap: 8px; color: white; }
+        .action-group span { font-size: 10px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; opacity: 0.8; }
         .btn-icon {
-            width: 50px; height: 50px; border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: transform 0.1s, background-color 0.2s; color: white;
+            width: 50px; height: 50px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; color: white;
         }
         .btn-icon:active { transform: scale(0.95); background-color: rgba(255, 255, 255, 0.3); }
         .btn-icon svg { width: 22px; height: 22px; stroke: currentColor; }
@@ -180,9 +168,15 @@
     <header>
         <h1 id="mainTitle" contenteditable="true" spellcheck="false">Binondo Views</h1>
         <p id="subTitle" contenteditable="true" spellcheck="false">Francine's Visual Diary</p>
+        
+        <div class="view-toggle">
+            <button class="toggle-btn active" id="btnDiary">Diary</button>
+            <button class="toggle-btn" id="btnMap">Map</button>
+        </div>
     </header>
 
-    <div class="masonry-container" id="gallery"></div>
+    <div class="masonry-container" id="gallery-view"></div>
+    <div id="map-view"><div id="map"></div></div>
 
     <div class="bottom-nav">
         <button class="btn-side" id="infoBtn">
@@ -209,7 +203,7 @@
     <div id="customDialog" class="overlay" style="z-index: 3000;">
         <div class="dialog-card">
             <p id="dialogMessage"></p>
-            <input type="text" id="dialogInput" class="dialog-input hidden" placeholder="Type here..." autocomplete="off">
+            <input type="text" id="dialogInput" class="dialog-input hidden" autocomplete="off">
             <div class="dialog-controls">
                 <button class="btn btn-light" id="dialogCancel">Cancel</button>
                 <button class="btn btn-primary" id="dialogConfirm">OK</button>
@@ -217,58 +211,32 @@
         </div>
     </div>
 
-    <div id="infoModal" class="overlay">
-        <div class="info-card dialog-card">
-            <h2>How to use this Diary</h2>
-            <ul>
-                <li><b>Tap the Title or Subtitle</b> to change the text. It saves automatically!</li>
-                <li><b>Tap any photo</b> to view it full screen, share it, or delete it.</li>
-                <li><b>The Center Camera Button</b> opens your phone's camera directly.</li>
-            </ul>
-            <p><b>Where do my photos go?</b><br>
-            They are securely saved to your local browser storage. If you want to keep a photo in your device's Camera Roll permanently, tap the photo and use the <b>Share</b> button!</p>
-            <button class="btn btn-primary" id="closeInfoBtn">Got it!</button>
-        </div>
-    </div>
-
     <div id="lightbox" class="overlay">
         <img id="lightbox-img" src="" alt="Full Screen View">
         <div class="lightbox-controls">
-            
             <div class="action-group">
                 <button class="btn-icon" id="closeLightboxBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                </button>
-                <span>Back</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button><span>Back</span>
             </div>
-            
             <div class="action-group">
                 <button class="btn-icon" id="shareBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                    </svg>
-                </button>
-                <span>Share</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                </button><span>Share</span>
             </div>
-            
             <div class="action-group">
                 <button class="btn-icon" id="deleteBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
-                </button>
-                <span>Bin</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button><span>Bin</span>
             </div>
-
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
         // --- CUSTOM DIALOG ENGINE ---
-        function showCustomDialog(type, message, defaultValue = "") {
+        function showCustomDialog(type, message, defaultValue = "", confirmText = "OK", cancelText = "Cancel") {
             return new Promise((resolve) => {
                 const dialog = document.getElementById('customDialog');
                 const msgEl = document.getElementById('dialogMessage');
@@ -277,74 +245,74 @@
                 const confirmBtn = document.getElementById('dialogConfirm');
 
                 msgEl.innerText = message;
+                confirmBtn.innerText = confirmText;
+                cancelBtn.innerText = cancelText;
                 
                 cancelBtn.style.display = type === 'alert' ? 'none' : 'block';
                 inputEl.classList.toggle('hidden', type !== 'prompt');
                 
-                if (type === 'prompt') {
-                    inputEl.value = defaultValue;
-                    confirmBtn.innerText = "Save";
-                } else if (type === 'confirm') {
-                    confirmBtn.innerText = "Delete";
-                } else {
-                    confirmBtn.innerText = "OK";
-                }
-
+                if (type === 'prompt') inputEl.value = defaultValue;
+                
                 dialog.classList.add('active');
                 
                 if (type === 'prompt') {
-                    setTimeout(() => {
-                        inputEl.focus();
-                        inputEl.select(); // <--- Instantly highlights the text for lazy typers!
-                    }, 100);
+                    setTimeout(() => { inputEl.focus(); inputEl.select(); }, 100);
                 }
 
-                const closeDialog = () => {
-                    dialog.classList.remove('active');
-                    cancelBtn.onclick = null;
-                    confirmBtn.onclick = null;
-                };
+                const closeDialog = () => { dialog.classList.remove('active'); cancelBtn.onclick = null; confirmBtn.onclick = null; };
 
-                cancelBtn.onclick = () => {
-                    closeDialog();
-                    resolve(null);
-                };
-
-                confirmBtn.onclick = () => {
-                    closeDialog();
-                    if (type === 'prompt') resolve(inputEl.value.trim() || defaultValue);
-                    else resolve(true);
-                };
+                cancelBtn.onclick = () => { closeDialog(); resolve(null); };
+                confirmBtn.onclick = () => { closeDialog(); resolve(type === 'prompt' ? (inputEl.value.trim() || defaultValue) : true); };
             });
         }
 
-        // --- TEXT PERSISTENCE ---
-        const titleEl = document.getElementById('mainTitle');
-        const subTitleEl = document.getElementById('subTitle');
+        // --- MAP ENGINE ---
+        let map;
+        const photoMarkers = {}; // Keep track of map pins so we can delete them if a photo is binned
 
-        if(localStorage.getItem('galleryTitle')) titleEl.innerText = localStorage.getItem('galleryTitle');
-        if(localStorage.getItem('gallerySubTitle')) subTitleEl.innerText = localStorage.getItem('gallerySubTitle');
+        function initMap() {
+            if (map) return; // Only init once
+            map = L.map('map', { zoomControl: false }).setView([14.600, 120.975], 16);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        titleEl.addEventListener('input', () => localStorage.setItem('galleryTitle', titleEl.innerText));
-        subTitleEl.addEventListener('input', () => localStorage.setItem('gallerySubTitle', subTitleEl.innerText));
+            // Our beautiful CartoDB Voyager theme
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
+            }).addTo(map);
 
-        // --- INFO MODAL LOGIC ---
-        document.getElementById('infoBtn').addEventListener('click', () => document.getElementById('infoModal').classList.add('active'));
-        document.getElementById('closeInfoBtn').addEventListener('click', () => document.getElementById('infoModal').classList.remove('active'));
+            // Add the original tourist landmarks we built
+            const landmarks = [
+                { name: 'Binondo Church', lat: 14.60021, lng: 120.97470, emoji: '⛪' },
+                { name: 'Shanghai Fried Siopao', lat: 14.5990, lng: 120.9750, emoji: '🥟' },
+                { name: 'Dong Bei Dumplings', lat: 14.5995, lng: 120.9755, emoji: '🥢' }
+            ];
+            landmarks.forEach(place => {
+                const icon = L.divIcon({ className: 'default-marker', html: place.emoji, iconSize: [30, 30] });
+                L.marker([place.lat, place.lng], { icon: icon }).addTo(map).bindTooltip(place.name, { direction: 'top' });
+            });
+        }
 
-        // --- IMAGE PERSISTENCE & DB SETUP ---
+        // Toggle Views
+        document.getElementById('btnDiary').addEventListener('click', function() {
+            this.classList.add('active'); document.getElementById('btnMap').classList.remove('active');
+            document.getElementById('gallery-view').style.display = 'block';
+            document.getElementById('map-view').style.display = 'none';
+        });
+
+        document.getElementById('btnMap').addEventListener('click', function() {
+            this.classList.add('active'); document.getElementById('btnDiary').classList.remove('active');
+            document.getElementById('gallery-view').style.display = 'none';
+            document.getElementById('map-view').style.display = 'block';
+            initMap();
+            setTimeout(() => map.invalidateSize(), 100); // Fixes map rendering glitch on unhide
+        });
+
+        // --- DATABASE & APP ENGINE ---
         const gallery = document.getElementById('gallery');
         let currentActiveItem = null;
         let db;
 
-        const initialPhotos = [
-            { id: 'img_1', url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=500&q=80', caption: 'Binondo Arch Vibe' },
-            { id: 'img_2', url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80', caption: 'Dumpling Time! 🥟' },
-            { id: 'img_3', url: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=500&q=80', caption: 'Temple Peace' },
-            { id: 'img_4', url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80', caption: 'Sincerity Chicken run' }
-        ];
-
-        const request = indexedDB.open("BinondoGalleryDB", 1);
+        const request = indexedDB.open("BinondoAppDB", 2);
         request.onupgradeneeded = (event) => {
             db = event.target.result;
             if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" });
@@ -356,148 +324,129 @@
 
         function loadPhotosFromDB() {
             const transaction = db.transaction("photos", "readonly");
-            const store = transaction.objectStore("photos");
-            const getAllRequest = store.getAll();
-
+            const getAllRequest = transaction.objectStore("photos").getAll();
             getAllRequest.onsuccess = () => {
-                const photos = getAllRequest.result;
                 gallery.innerHTML = ''; 
-                if (photos.length === 0) {
-                    initialPhotos.forEach(photo => {
-                        savePhotoToDB(photo.id, photo.url, photo.caption);
-                        renderPhotoToDOM(photo.id, photo.url, photo.caption, false);
-                    });
-                } else {
-                    photos.reverse().forEach(photo => renderPhotoToDOM(photo.id, photo.url, photo.caption, false));
-                }
+                getAllRequest.result.reverse().forEach(photo => renderPhoto(photo, false));
             };
         }
 
-        function savePhotoToDB(id, dataUrl, caption) {
-            const transaction = db.transaction("photos", "readwrite");
-            const store = transaction.objectStore("photos");
-            store.put({ id: id, url: dataUrl, caption: caption });
+        function savePhotoToDB(photoObj) {
+            db.transaction("photos", "readwrite").objectStore("photos").put(photoObj);
         }
 
-        function renderPhotoToDOM(id, imgSrc, captionText, prepend = false) {
+        function renderPhoto(photo, prepend = false) {
+            // Render to Grid
             const itemDiv = document.createElement('div');
-            itemDiv.className = 'masonry-item';
-            itemDiv.dataset.id = id; 
-
-            const img = document.createElement('img');
-            img.src = imgSrc;
-
-            const caption = document.createElement('div');
-            caption.className = 'photo-caption';
-            caption.innerText = captionText;
-
-            itemDiv.appendChild(img);
-            itemDiv.appendChild(caption);
-
+            itemDiv.className = 'masonry-item' + (prepend ? ' animate-in' : '');
+            itemDiv.dataset.id = photo.id; 
+            
+            const img = document.createElement('img'); img.src = photo.url;
+            const caption = document.createElement('div'); caption.className = 'photo-caption'; caption.innerText = photo.caption;
+            
+            itemDiv.appendChild(img); itemDiv.appendChild(caption);
             itemDiv.addEventListener('click', () => {
                 currentActiveItem = itemDiv;
-                document.getElementById('lightbox-img').src = imgSrc;
+                document.getElementById('lightbox-img').src = photo.url;
                 document.getElementById('lightbox').classList.add('active');
             });
 
-            if (prepend) {
-                // Add the smooth animation class for brand new photos!
-                itemDiv.classList.add('animate-in');
-                gallery.prepend(itemDiv);
-            } else {
-                gallery.appendChild(itemDiv);
+            if (prepend) gallery.prepend(itemDiv); else gallery.appendChild(itemDiv);
+
+            // Render to Map (if it has coords!)
+            if (photo.lat && photo.lng) {
+                if (!map) initMap();
+                const customIcon = L.divIcon({
+                    className: '', // Clear default styling
+                    html: `<img src="${photo.url}" class="photo-marker">`,
+                    iconSize: [40, 40], iconAnchor: [20, 20]
+                });
+                const marker = L.marker([photo.lat, photo.lng], { icon: customIcon }).addTo(map);
+                marker.bindPopup(`<b>${photo.caption}</b>`);
+                photoMarkers[photo.id] = marker; // Save reference for deletion later
             }
         }
 
-        function compressImage(file, maxWidth, callback) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
+        function compressImage(file, callback) {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = e => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const scaleSize = maxWidth / img.width;
-                    let newWidth = img.width;
-                    let newHeight = img.height;
-                    
-                    if (scaleSize < 1) {
-                        newWidth = maxWidth;
-                        newHeight = img.height * scaleSize;
-                    }
-
-                    canvas.width = newWidth;
-                    canvas.height = newHeight;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                    callback(compressedDataUrl);
+                    const scale = 1200 / img.width;
+                    canvas.width = scale < 1 ? 1200 : img.width;
+                    canvas.height = scale < 1 ? img.height * scale : img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL('image/jpeg', 0.8));
                 }
             }
         }
 
-        function handleImageSelection(event) {
+        // Handle Snapping/Uploading
+        async function handleImageSelection(event, isCameraSnap) {
             const file = event.target.files[0];
-            if (file) {
-                compressImage(file, 1200, async function(compressedResult) {
-                    let userCaption = await showCustomDialog('prompt', "Awesome shot! Give it a caption:", "My Snap ✨");
+            if (!file) return;
+
+            compressImage(file, async function(compressedResult) {
+                let userCaption = await showCustomDialog('prompt', "Awesome shot! Give it a caption:", "My Snap ✨", "Save");
+                if (userCaption === null) return;
+
+                const photoObj = { id: 'img_' + Date.now(), url: compressedResult, caption: userCaption };
+
+                // THE SOFT ASK: Only ask for location if they used the actual camera, not the gallery upload!
+                if (isCameraSnap && navigator.geolocation) {
+                    const wantLocation = await showCustomDialog('confirm', 
+                        "Want to pin this snap to your map? Location data stays strictly private on your device.", 
+                        "", "Add Location", "No Thanks"
+                    );
                     
-                    if (userCaption !== null) {
-                        const uniqueId = 'img_' + Date.now(); 
-                        savePhotoToDB(uniqueId, compressedResult, userCaption);
-                        renderPhotoToDOM(uniqueId, compressedResult, userCaption, true);
+                    if (wantLocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                photoObj.lat = pos.coords.latitude;
+                                photoObj.lng = pos.coords.longitude;
+                                savePhotoToDB(photoObj);
+                                renderPhoto(photoObj, true);
+                            },
+                            (err) => {
+                                // If they hit deny on the OS prompt, just save normally
+                                savePhotoToDB(photoObj); renderPhoto(photoObj, true);
+                            },
+                            { timeout: 5000, enableHighAccuracy: true }
+                        );
+                        event.target.value = ''; return; // Stop here, waiting for GPS
                     }
-                });
-            }
+                }
+
+                // If no location requested or gallery upload used
+                savePhotoToDB(photoObj); renderPhoto(photoObj, true);
+            });
             event.target.value = ''; 
         }
 
-        document.getElementById('cameraInput').addEventListener('change', handleImageSelection);
-        document.getElementById('uploadInput').addEventListener('change', handleImageSelection);
+        document.getElementById('cameraInput').addEventListener('change', e => handleImageSelection(e, true));
+        document.getElementById('uploadInput').addEventListener('change', e => handleImageSelection(e, false));
 
+        // Lightbox Buttons
         document.getElementById('closeLightboxBtn').addEventListener('click', () => {
             document.getElementById('lightbox').classList.remove('active');
-            setTimeout(() => { document.getElementById('lightbox-img').src = ''; }, 300);
+            setTimeout(() => document.getElementById('lightbox-img').src = '', 300);
         });
 
         document.getElementById('deleteBtn').addEventListener('click', async () => {
-            const userConfirmed = await showCustomDialog('confirm', "Delete this photo from your diary? It will be removed permanently!");
-            
+            const userConfirmed = await showCustomDialog('confirm', "Delete this photo? It will be removed permanently!", "", "Delete", "Cancel");
             if (userConfirmed && currentActiveItem) {
                 const idToDelete = currentActiveItem.dataset.id;
-                const transaction = db.transaction("photos", "readwrite");
-                const store = transaction.objectStore("photos");
-                store.delete(idToDelete);
+                db.transaction("photos", "readwrite").objectStore("photos").delete(idToDelete);
+                
+                // Remove from Map too!
+                if (photoMarkers[idToDelete] && map) {
+                    map.removeLayer(photoMarkers[idToDelete]);
+                    delete photoMarkers[idToDelete];
+                }
+
                 currentActiveItem.remove(); 
                 document.getElementById('lightbox').classList.remove('active');
-            }
-        });
-
-        // --- SHARE LOGIC ---
-        async function dataUrlToFile(dataUrl, filename) {
-            const res = await fetch(dataUrl);
-            const blob = await res.blob();
-            return new File([blob], filename, { type: 'image/jpeg' });
-        }
-
-        document.getElementById('shareBtn').addEventListener('click', async () => {
-            if (!currentActiveItem) return;
-            const imgSrc = document.getElementById('lightbox-img').src;
-            
-            try {
-                const file = await dataUrlToFile(imgSrc, 'diary_snap.jpg');
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Visual Diary Snap',
-                        text: 'Check out this photo!'
-                    });
-                } else {
-                    await showCustomDialog('alert', "Your browser doesn't support direct sharing. Please long-press the image to save or share it!");
-                }
-            } catch (error) {
-                console.error('Error sharing file:', error);
             }
         });
     </script>
