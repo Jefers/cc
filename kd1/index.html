@@ -39,11 +39,7 @@
             --shadow: rgba(0, 0, 0, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -74,10 +70,7 @@
             z-index: 100;
         }
 
-        .header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
+        .header h1 { font-size: 1.25rem; font-weight: 600; }
 
         .theme-toggle {
             background: none;
@@ -89,22 +82,12 @@
             transition: all 0.2s ease;
         }
 
-        .theme-toggle:hover {
-            background: var(--bg-secondary);
-        }
+        .theme-toggle:hover { background: var(--bg-secondary); }
 
-        .main-content {
-            padding: 1rem;
-            min-height: calc(100vh - 140px);
-        }
+        .main-content { padding: 1rem; min-height: calc(100vh - 140px); }
 
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
 
         .bottom-nav {
             position: fixed;
@@ -127,23 +110,11 @@
             gap: 0.25rem;
             padding: 0.5rem;
             color: var(--text-muted);
-            text-decoration: none;
             font-size: 0.75rem;
-            transition: color 0.2s ease;
             cursor: pointer;
         }
-
-        .nav-item.active {
-            color: var(--accent-primary);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-        }
+        .nav-item.active { color: var(--accent-primary); }
+        .nav-icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
 
         .card {
             background: var(--bg-secondary);
@@ -162,37 +133,18 @@
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s ease;
             width: 100%;
         }
-
-        .btn:hover {
-            background: var(--accent-hover);
-        }
-
+        .btn:hover { background: var(--accent-hover); }
         .btn-secondary {
             background: var(--bg-tertiary);
             color: var(--text-primary);
             border: 1px solid var(--border-medium);
         }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.75rem; width: auto; }
 
-        .btn-small {
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            width: auto;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); }
         .form-input, .form-select {
             width: 100%;
             padding: 0.75rem;
@@ -201,15 +153,9 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             font-size: 1rem;
-            font-family: inherit;
         }
 
-        .item-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
+        .item-list { display: flex; flex-direction: column; gap: 0.75rem; }
         .item-row {
             display: flex;
             justify-content: space-between;
@@ -219,32 +165,12 @@
             border: 1px solid var(--border-light);
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
-
-        .item-row:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .item-info {
-            flex: 1;
-        }
-
-        .item-name {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-
-        .item-details {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .item-quantity {
-            font-weight: 600;
-            color: var(--accent-primary);
-        }
-
+        .item-row:hover { background: var(--bg-tertiary); }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 500; margin-bottom: 0.25rem; }
+        .item-details { font-size: 0.875rem; color: var(--text-secondary); }
+        .item-quantity { font-weight: 600; color: var(--accent-primary); }
         .category-badge {
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -270,10 +196,7 @@
             transition: transform 0.2s ease;
             z-index: 50;
         }
-
-        .fab:hover {
-            transform: scale(1.1);
-        }
+        .fab:hover { transform: scale(1.1); }
 
         .modal {
             position: fixed;
@@ -290,11 +213,7 @@
             display: none;
             overflow-y: auto;
         }
-
-        .modal.show {
-            display: flex;
-        }
-
+        .modal.show { display: flex; }
         .modal-content {
             background: var(--bg-primary);
             border-radius: 12px;
@@ -305,38 +224,11 @@
             max-height: calc(100vh - 4rem);
             overflow-y: auto;
         }
-
-        .modal-large {
-            max-width: 500px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        .scrollable-content {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 0.75rem;
-        }
+        .modal-large { max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.125rem; font-weight: 600; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); }
+        .scrollable-content { max-height: 300px; overflow-y: auto; border: 1px solid var(--border-light); border-radius: 8px; padding: 0.75rem; }
 
         .date-tabs {
             display: flex;
@@ -347,7 +239,6 @@
             gap: 0.25rem;
             padding: 0.25rem;
         }
-
         .date-tab {
             flex: 0 0 auto;
             padding: 0.5rem 0.75rem;
@@ -356,161 +247,67 @@
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: inherit;
             border-radius: 6px;
         }
+        .date-tab.active { background: var(--accent-primary); color: white; }
 
-        .date-tab.active {
-            background: var(--accent-primary);
-            color: white;
-        }
-
-        .meal-slots {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
+        .meal-slots { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
         .meal-slot {
+            position: relative;
             background: var(--bg-secondary);
             border: 2px solid var(--border-light);
             border-radius: 8px;
             padding: 1rem;
-            cursor: pointer;
             transition: all 0.2s ease;
         }
-
-        .meal-slot:hover {
-            border-color: var(--accent-primary);
+        .meal-slot:hover { border-color: var(--accent-primary); background: var(--bg-tertiary); }
+        .meal-slot.filled { border-color: var(--accent-primary); background: var(--bg-primary); }
+        .meal-slot.consumed {
+            opacity: 0.6;
+            border-color: var(--text-muted);
             background: var(--bg-tertiary);
         }
-
-        .meal-slot.filled {
-            border-color: var(--accent-primary);
-            background: var(--bg-primary);
-        }
-
-        .meal-content {
-            margin-top: 0.5rem;
-        }
-
-        .meal-details {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
-
-        .meal-ingredients {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        .meal-calories {
-            font-weight: 600;
-            color: var(--accent-primary);
-            font-size: 0.875rem;
-        }
-
-        .meal-notes {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        #daily-totals {
-            text-align: center;
-        }
-
-        .calorie-total {
+        .meal-slot.consumed .meal-content { text-decoration: line-through; }
+        .meal-slot .eat-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
             font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--accent-primary);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-muted);
-        }
-
-        .shopping-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .shopping-checkbox {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--accent-primary);
-        }
-
-        .shopping-item.checked .item-name {
-            text-decoration: line-through;
-            color: var(--text-muted);
-        }
-
-        .supplement-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .supplement-item:last-child {
-            border-bottom: none;
-        }
-
-        .supplement-info h4 {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .supplement-dosage {
-            color: var(--accent-primary);
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-
-        .supplement-reason {
-            font-size: 0.875rem;
+            cursor: pointer;
             color: var(--text-secondary);
+            transition: transform 0.1s;
         }
+        .meal-slot .eat-btn:hover { transform: scale(1.1); }
+        .meal-slot .eat-btn.consumed { color: var(--success); }
 
-        .ingredient-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-light);
-        }
+        .meal-content { margin-top: 0.5rem; padding-right: 2rem; }
+        .meal-details { font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem; }
+        .meal-ingredients { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .meal-calories { font-weight: 600; color: var(--accent-primary); font-size: 0.875rem; }
+        .meal-notes { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
 
-        .ingredient-row:last-child {
-            border-bottom: none;
-        }
+        #daily-totals { text-align: center; }
+        .calorie-total { font-size: 1.25rem; font-weight: 600; color: var(--accent-primary); }
 
-        .ingredient-input {
-            width: 80px;
-            padding: 0.25rem 0.5rem;
-            border: 1px solid var(--border-medium);
-            border-radius: 4px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-        }
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
 
-        .low-stock {
-            color: var(--warning);
-        }
+        .shopping-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light); }
+        .shopping-checkbox { width: 18px; height: 18px; accent-color: var(--accent-primary); }
+        .shopping-item.checked .item-name { text-decoration: line-through; color: var(--text-muted); }
 
-        .out-of-stock {
-            color: var(--danger);
-        }
+        .supplement-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light); }
+        .supplement-item:last-child { border-bottom: none; }
+        .supplement-info h4 { font-weight: 600; margin-bottom: 0.25rem; }
+        .supplement-dosage { color: var(--accent-primary); font-weight: 500; font-size: 0.875rem; }
+        .supplement-reason { font-size: 0.875rem; color: var(--text-secondary); }
+
+        .ingredient-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light); }
+        .ingredient-input { width: 80px; padding: 0.25rem 0.5rem; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-size: 0.875rem; }
+
+        .low-stock { color: var(--warning); }
+        .out-of-stock { color: var(--danger); }
 
         @keyframes slideDown {
             from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
@@ -529,7 +326,7 @@
 <body>
 <div class="app-container">
     <div class="header">
-        <h1 id="page-title">Meal & Stock Planner</h1>
+        <h1 id="page-title">Keto Meal & Stock Planner</h1>
         <button class="theme-toggle" id="theme-toggle">
             <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -538,32 +335,25 @@
     </div>
 
     <div class="main-content">
-        <!-- Inventory Screen -->
         <div class="screen active" id="inventory-screen">
-            <div class="item-list" id="inventory-list">
-                <div class="empty-state"><p>Loading your inventory...</p></div>
-            </div>
+            <div class="item-list" id="inventory-list"><div class="empty-state"><p>Loading inventory...</p></div></div>
         </div>
 
-        <!-- Plan Screen -->
         <div class="screen" id="plan-screen">
             <div class="date-tabs" id="date-tabs-container"></div>
-            <div class="meal-slots" id="meal-slots-container">
-                <!-- 4 slots will be generated dynamically -->
-            </div>
+            <div class="meal-slots" id="meal-slots-container"></div>
             <div class="card" id="daily-totals">
                 <h3>Daily Totals</h3>
                 <div class="totals-content"><span class="calorie-total">~0 kcal</span></div>
             </div>
+            <button class="btn btn-secondary" id="reset-consumed-btn">⟳ Reset Eaten Meals</button>
         </div>
 
-        <!-- Shopping Screen -->
         <div class="screen" id="shopping-screen">
             <div class="card"><button class="btn" id="generate-shopping-list">Generate Shopping List</button></div>
             <div id="shopping-list"><div class="empty-state"><p>No shopping list generated yet.</p></div></div>
         </div>
 
-        <!-- Supplements Screen -->
         <div class="screen" id="supplements-screen">
             <div class="card">
                 <h3>🧪 Recommended Daily Supplements</h3>
@@ -651,16 +441,19 @@
     class DataStore {
         constructor() {
             this.data = this.loadData();
+            // Ensure consumedMeals exists
+            if (!this.data.consumedMeals) this.data.consumedMeals = [];
+            this.saveData();
         }
         loadData() {
             const stored = localStorage.getItem('mealPlannerDatakd');
             if (stored) return JSON.parse(stored);
-            // Use DEFAULT_DATA from external data.js
             if (typeof DEFAULT_DATA !== 'undefined') {
-                return JSON.parse(JSON.stringify(DEFAULT_DATA));
+                const defaultData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                defaultData.consumedMeals = [];
+                return defaultData;
             }
-            // fallback empty structure
-            return { items: [], meals: [], plan: [], supplements: [], notes: {} };
+            return { items: [], meals: [], plan: [], supplements: [], notes: {}, consumedMeals: [] };
         }
         saveData() { localStorage.setItem('mealPlannerDatakd', JSON.stringify(this.data)); }
         generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
@@ -686,6 +479,24 @@
         getPlan() { return this.data.plan; }
         getSupplements() { return this.data.supplements || []; }
         getNotes() { return this.data.notes || {}; }
+
+        // Consumed meals: store as "dayIdx-slotIdx" strings
+        isMealConsumed(dayIdx, slotIdx) {
+            return this.data.consumedMeals.includes(`${dayIdx}-${slotIdx}`);
+        }
+        markMealConsumed(dayIdx, slotIdx) {
+            const key = `${dayIdx}-${slotIdx}`;
+            if (!this.data.consumedMeals.includes(key)) {
+                this.data.consumedMeals.push(key);
+                this.saveData();
+                return true;
+            }
+            return false;
+        }
+        resetAllConsumed() {
+            this.data.consumedMeals = [];
+            this.saveData();
+        }
     }
 
     // ---------- App Controller ----------
@@ -704,7 +515,7 @@
             this.setupEventListeners();
             this.setupThemeToggle();
             this.renderCurrentScreen();
-            this.generateDateTabs(); // create dynamic tabs from plan length
+            this.generateDateTabs();
         }
 
         setupEventListeners() {
@@ -719,6 +530,7 @@
             document.getElementById('close-meal-modal').addEventListener('click', () => this.closeMealModal());
             document.getElementById('save-meal').addEventListener('click', () => this.saveMeal());
             document.getElementById('generate-shopping-list').addEventListener('click', () => this.generateShoppingList());
+            document.getElementById('reset-consumed-btn').addEventListener('click', () => this.resetConsumedMeals());
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
             });
@@ -740,7 +552,7 @@
             const container = document.getElementById('date-tabs-container');
             if (!container) return;
             container.innerHTML = '';
-            plan.forEach((day, idx) => {
+            plan.forEach((_, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'date-tab' + (idx === this.currentDay ? ' active' : '');
                 btn.textContent = `Day ${idx+1}`;
@@ -809,23 +621,87 @@
             for (let i = 0; i < 4; i++) {
                 const mealId = currentPlan.slots[i];
                 const mealData = mealId ? this.dataStore.getMeal(mealId) : null;
+                const consumed = this.dataStore.isMealConsumed(this.currentDay, i);
                 const slotDiv = document.createElement('div');
-                slotDiv.className = 'meal-slot' + (mealData ? ' filled' : '');
-                slotDiv.innerHTML = `<strong>${mealNames[i]}</strong><div class="meal-content"></div>`;
+                slotDiv.className = `meal-slot ${mealData ? 'filled' : ''} ${consumed ? 'consumed' : ''}`;
+                slotDiv.innerHTML = `
+                    <strong>${mealNames[i]}</strong>
+                    <button class="eat-btn ${consumed ? 'consumed' : ''}" data-day="${this.currentDay}" data-slot="${i}">${consumed ? '✓' : '✔️'}</button>
+                    <div class="meal-content"></div>
+                `;
                 const contentDiv = slotDiv.querySelector('.meal-content');
-                if (mealData) {
+                if (mealData && !consumed) {
                     const ingredientsList = mealData.ingredients.map(ing => `${ing.quantity}${ing.unit} ${ing.name}`).join(', ');
                     const caloriesText = mealData.calories ? `<div class="meal-calories">${mealData.calories} kcal</div>` : '';
                     const notesText = mealData.notes ? `<div class="meal-notes">${mealData.notes}</div>` : '';
                     contentDiv.innerHTML = `<div class="meal-details">${mealData.name}</div><div class="meal-ingredients">${ingredientsList}</div>${caloriesText}${notesText}`;
                     if (mealData.calories) dayTotal += mealData.calories;
+                } else if (mealData && consumed) {
+                    // Show basic info but dimmed
+                    const ingredientsList = mealData.ingredients.map(ing => `${ing.quantity}${ing.unit} ${ing.name}`).join(', ');
+                    contentDiv.innerHTML = `<div class="meal-details">${mealData.name}</div><div class="meal-ingredients">${ingredientsList}</div><span style="color:var(--success);">✓ Eaten</span>`;
                 } else {
                     contentDiv.textContent = 'Tap to add meal';
                 }
-                slotDiv.onclick = () => this.openMealSlot(this.currentDay, i, mealId);
+
+                // Eat button handler
+                const eatBtn = slotDiv.querySelector('.eat-btn');
+                if (eatBtn) {
+                    eatBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.markMealAsEaten(this.currentDay, i, mealId);
+                    });
+                }
+
+                // Click on slot (but not on button) opens edit modal, only if not consumed
+                slotDiv.addEventListener('click', (e) => {
+                    if (e.target === eatBtn) return;
+                    if (!consumed) this.openMealSlot(this.currentDay, i, mealId);
+                });
                 slotsContainer.appendChild(slotDiv);
             }
             document.querySelector('.calorie-total').textContent = `~${dayTotal} kcal`;
+        }
+
+        markMealAsEaten(dayIdx, slotIdx, mealId) {
+            if (!mealId) {
+                this.showToast("No meal assigned to this slot.");
+                return;
+            }
+            if (this.dataStore.isMealConsumed(dayIdx, slotIdx)) {
+                this.showToast("Meal already eaten.");
+                return;
+            }
+            const meal = this.dataStore.getMeal(mealId);
+            if (!meal) return;
+
+            // Confirm
+            if (!confirm(`Mark "${meal.name}" as eaten? This will deduct ingredients from your inventory.`)) return;
+
+            // Deduct ingredients
+            let insufficient = false;
+            for (const ing of meal.ingredients) {
+                const item = this.dataStore.getItem(ing.itemId);
+                if (item) {
+                    const newQty = item.quantity - ing.quantity;
+                    this.dataStore.updateItem(ing.itemId, { quantity: Math.max(0, newQty) });
+                    if (newQty < 0) insufficient = true;
+                }
+            }
+            // Mark consumed
+            this.dataStore.markMealConsumed(dayIdx, slotIdx);
+            this.renderPlan();
+            this.renderInventory(); // update inventory view if visible
+            if (insufficient) this.showToast("⚠️ Some ingredients were under-stocked (negative quantity).");
+            else this.showToast(`✅ ${meal.name} eaten! Inventory updated.`);
+        }
+
+        resetConsumedMeals() {
+            if (confirm("Reset all eaten meals? This will NOT restore inventory – only re-enable meals for editing/eating.")) {
+                this.dataStore.resetAllConsumed();
+                this.renderPlan();
+                this.showToast("All meals reactivated.");
+            }
         }
 
         renderShopping() { /* shown on demand */ }
@@ -893,6 +769,10 @@
         }
 
         openMealSlot(dayIdx, slotIdx, existingMealId = null) {
+            if (this.dataStore.isMealConsumed(dayIdx, slotIdx)) {
+                this.showToast("Cannot edit a meal that has already been eaten. Reset it first.");
+                return;
+            }
             this.currentMealSlot = { dayIndex: dayIdx, slotIndex: slotIdx };
             this.editingMealId = existingMealId;
             if (this.dataStore.getItems().length === 0) { alert('Add some items to your inventory first!'); return; }
@@ -1017,8 +897,15 @@
                     }
                 }
             });
-            if (updated) { this.showToast(`Updated ${updated} items!`); this.generateShoppingList(); }
-            else this.showToast('No items marked as purchased.');
+            if (updated) {
+                this.showToast(`Updated ${updated} items!`);
+                // Also reset all consumed meals (reactivate)
+                this.dataStore.resetAllConsumed();
+                this.renderPlan();
+                this.generateShoppingList(); // refresh list
+            } else {
+                this.showToast('No items marked as purchased.');
+            }
         }
 
         showToast(msg) {
