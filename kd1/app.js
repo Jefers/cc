@@ -31,16 +31,16 @@ function roundToPackSize(itemId, neededQty) {
     return Math.ceil(neededQty / pack) * pack;
 }
 
-// ---------- Helper: convert weekday string to number (0=Monday) ----------
+// ---------- Helper: Weekday (starting Sunday) ----------
 function weekdayToNumber(weekdayStr) {
-    const map = { 'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6 };
+    // Sun=0, Mon=1, ..., Sat=6
+    const map = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
     return map[weekdayStr];
 }
 
 function getTodayWeekdayNumber() {
-    // JS getDay(): 0=Sun,1=Mon,...6=Sat -> convert to 0=Mon
-    const jsDay = new Date().getDay();
-    return jsDay === 0 ? 6 : jsDay - 1;
+    // JS getDay(): 0=Sun,1=Mon,...6=Sat -> perfect
+    return new Date().getDay();
 }
 
 // ---------- Data Storage ----------
@@ -48,10 +48,14 @@ class DataStore {
     constructor() {
         this.data = this.loadData();
         if (!this.data.consumedMeals) this.data.consumedMeals = [];
+        // Ensure all items have portionAmount
+        this.data.items.forEach(item => {
+            if (item.portionAmount === undefined) item.portionAmount = 1;
+        });
         this.saveData();
     }
     loadData() {
-        const stored = localStorage.getItem('mealPlannerDatak2');
+        const stored = localStorage.getItem('mealPlannerDatak3');
         if (stored) return JSON.parse(stored);
         if (typeof DEFAULT_DATA !== 'undefined') {
             const defaultData = JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -60,12 +64,22 @@ class DataStore {
         }
         return { items: [], meals: [], plan: [], supplements: [], notes: {}, consumedMeals: [] };
     }
-    saveData() { localStorage.setItem('mealPlannerDatak2', JSON.stringify(this.data)); }
+    saveData() { localStorage.setItem('mealPlannerDatak3', JSON.stringify(this.data)); }
     generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
-    addItem(item) { item.id = this.generateId(); this.data.items.push(item); this.saveData(); return item; }
+    addItem(item) {
+        if (!item.portionAmount) item.portionAmount = 1;
+        item.id = this.generateId();
+        this.data.items.push(item);
+        this.saveData();
+        return item;
+    }
     updateItem(id, updates) {
         const idx = this.data.items.findIndex(i => i.id === id);
-        if (idx !== -1) { this.data.items[idx] = { ...this.data.items[idx], ...updates }; this.saveData(); return this.data.items[idx]; }
+        if (idx !== -1) {
+            this.data.items[idx] = { ...this.data.items[idx], ...updates };
+            this.saveData();
+            return this.data.items[idx];
+        }
         return null;
     }
     deleteItem(id) { this.data.items = this.data.items.filter(i => i.id !== id); this.saveData(); }
@@ -106,6 +120,16 @@ class DataStore {
         this.data.consumedMeals = [];
         this.saveData();
     }
+
+    // Ad‑hoc consumption: reduce quantity by one portion (if enough)
+    consumePortion(itemId) {
+        const item = this.getItem(itemId);
+        if (!item) return false;
+        const portion = item.portionAmount || 1;
+        if (item.quantity < portion) return false;
+        this.updateItem(itemId, { quantity: item.quantity - portion });
+        return true;
+    }
 }
 
 // ---------- App Controller ----------
@@ -113,25 +137,22 @@ class MealPlannerApp {
     constructor() {
         this.dataStore = new DataStore();
         this.currentScreen = 'inventory';
-        this.currentDay = this.getTodayPlanIndex(); // now based on weekday
+        this.currentDay = this.getTodayPlanIndex();
         this.editingItemId = null;
         this.currentMealSlot = null;
         this.editingMealId = null;
         this.initializeApp();
     }
 
-    // NEW: find plan index whose weekday matches today's actual weekday
     getTodayPlanIndex() {
         const plan = this.dataStore.getPlan();
         if (!plan.length) return 0;
-        const todayWeekdayNum = getTodayWeekdayNumber(); // 0=Mon
-        // Find first plan day that has the same weekday
+        const todayWeekdayNum = getTodayWeekdayNumber(); // 0=Sun
         for (let i = 0; i < plan.length; i++) {
             const planDate = new Date(plan[i].date);
             const planWeekdayNum = weekdayToNumber(planDate.toLocaleDateString(undefined, { weekday: 'short' }));
             if (planWeekdayNum === todayWeekdayNum) return i;
         }
-        // Fallback: first day
         return 0;
     }
 
@@ -176,17 +197,28 @@ class MealPlannerApp {
         const container = document.getElementById('date-tabs-container');
         if (!container) return;
         container.innerHTML = '';
-        const todayIdx = this.getTodayPlanIndex(); // weekday‑based index
-        plan.forEach((day, idx) => {
+        const todayIdx = this.getTodayPlanIndex();
+        // Reorder plan so that first tab is Sunday? Actually we just display in plan order but with Sunday highlight.
+        // To make tabs start from Sunday, we would need to reorder the plan array. Simpler: keep as is but ensure the tab order matches plan order.
+        // The user wanted "Days of the week to start on Sunday" – meaning the first tab should be Sunday.
+        // We'll sort the plan array based on weekday starting Sunday.
+        const sortedPlan = [...plan].sort((a,b) => {
+            const aWeekday = weekdayToNumber(new Date(a.date).toLocaleDateString(undefined, { weekday: 'short' }));
+            const bWeekday = weekdayToNumber(new Date(b.date).toLocaleDateString(undefined, { weekday: 'short' }));
+            return aWeekday - bWeekday;
+        });
+        sortedPlan.forEach((day, idx) => {
             const dateObj = new Date(day.date);
-            const weekday = dateObj.toLocaleDateString(undefined, { weekday: 'short' }); // "Mon", "Tue"
+            const weekday = dateObj.toLocaleDateString(undefined, { weekday: 'short' });
             const btn = document.createElement('button');
             btn.className = 'date-tab';
-            if (idx === this.currentDay) btn.classList.add('active');
-            if (idx === todayIdx) btn.classList.add('today'); // highlight today's actual weekday
+            // Find original index to compare with currentDay
+            const originalIdx = plan.findIndex(p => p.date === day.date);
+            if (originalIdx === this.currentDay) btn.classList.add('active');
+            if (originalIdx === todayIdx) btn.classList.add('today');
             btn.textContent = weekday;
-            btn.dataset.date = idx;
-            btn.addEventListener('click', () => this.switchDay(idx));
+            btn.dataset.date = originalIdx;
+            btn.addEventListener('click', () => this.switchDay(originalIdx));
             container.appendChild(btn);
         });
     }
@@ -202,8 +234,8 @@ class MealPlannerApp {
         document.querySelector(`[data-screen="${screen}"]`).classList.add('active');
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(`${screen}-screen`).classList.add('active');
-        const titles = { inventory:'Inventory', plan:'Meal Plan', shopping:'Shopping List', supplements:'Supplements' };
-        document.getElementById('page-title').textContent = titles[screen];
+        const titles = { inventory:'Inventory', plan:'Meal Plan', shopping:'Shopping List', supplements:'Supplements', use:'Use Items' };
+        document.getElementById('page-title').textContent = titles[screen] || 'Keto Planner';
         document.getElementById('add-item-fab').style.display = screen === 'inventory' ? 'block' : 'none';
         this.currentScreen = screen;
         this.renderCurrentScreen();
@@ -214,6 +246,7 @@ class MealPlannerApp {
         else if (this.currentScreen === 'plan') this.renderPlan();
         else if (this.currentScreen === 'shopping') this.renderShopping();
         else if (this.currentScreen === 'supplements') this.renderSupplements();
+        else if (this.currentScreen === 'use') this.renderUseScreen();
     }
 
     renderInventory() {
@@ -331,7 +364,7 @@ class MealPlannerApp {
         }
     }
 
-    renderShopping() { /* on demand via generateShoppingList */ }
+    renderShopping() { /* on demand */ }
 
     renderSupplements() {
         const supplements = this.dataStore.getSupplements();
@@ -354,6 +387,47 @@ class MealPlannerApp {
         container.innerHTML = html;
     }
 
+    // NEW: Ad‑hoc consumption screen
+    renderUseScreen() {
+        const items = this.dataStore.getItems();
+        const container = document.getElementById('use-items-list');
+        if (!items.length) {
+            container.innerHTML = '<div class="empty-state"><p>No items. Add some in Inventory first.</p></div>';
+            return;
+        }
+        container.innerHTML = items.map(item => {
+            const portion = item.portionAmount || 1;
+            const canUse = item.quantity >= portion;
+            return `
+                <div class="use-item-row" data-item-id="${item.id}">
+                    <div class="use-item-info">
+                        <div class="use-item-name">${item.name}</div>
+                        <div class="use-item-details">
+                            ${item.quantity} ${item.unit} left &nbsp;|&nbsp;
+                            Portion: ${portion} ${item.unit}
+                        </div>
+                    </div>
+                    <button class="use-btn" ${!canUse ? 'disabled' : ''}>+</button>
+                </div>
+            `;
+        }).join('');
+        container.querySelectorAll('.use-btn').forEach((btn, idx) => {
+            const itemId = container.children[idx]?.dataset.itemId;
+            if (itemId) {
+                btn.addEventListener('click', () => {
+                    if (this.dataStore.consumePortion(itemId)) {
+                        this.renderUseScreen();   // refresh use screen
+                        this.renderInventory();   // update inventory screen if visible
+                        this.showToast(`Used 1 portion.`);
+                    } else {
+                        this.showToast(`Not enough ${this.dataStore.getItem(itemId)?.name} left.`);
+                        this.renderUseScreen();   // disable button
+                    }
+                });
+            }
+        });
+    }
+
     openItemModal(itemId = null) {
         this.editingItemId = itemId;
         const modal = document.getElementById('item-modal');
@@ -367,10 +441,12 @@ class MealPlannerApp {
             document.getElementById('item-category').value = item.category;
             document.getElementById('item-unit').value = item.unit;
             document.getElementById('item-quantity').value = item.quantity;
+            document.getElementById('item-portion').value = item.portionAmount || 1;
         } else {
             title.textContent = 'Add Item';
             delBtn.style.display = 'none';
             document.getElementById('item-form').reset();
+            document.getElementById('item-portion').value = 1;
         }
         modal.classList.add('show');
     }
@@ -381,18 +457,21 @@ class MealPlannerApp {
             name: document.getElementById('item-name').value.trim(),
             category: document.getElementById('item-category').value,
             unit: document.getElementById('item-unit').value,
-            quantity: parseFloat(document.getElementById('item-quantity').value)
+            quantity: parseFloat(document.getElementById('item-quantity').value),
+            portionAmount: parseFloat(document.getElementById('item-portion').value) || 1
         };
         if (this.editingItemId) this.dataStore.updateItem(this.editingItemId, itemData);
         else this.dataStore.addItem(itemData);
         this.closeItemModal();
         if (this.currentScreen === 'inventory') this.renderInventory();
+        if (this.currentScreen === 'use') this.renderUseScreen();
     }
     deleteCurrentItem() {
         if (this.editingItemId && confirm('Delete this item?')) {
             this.dataStore.deleteItem(this.editingItemId);
             this.closeItemModal();
             if (this.currentScreen === 'inventory') this.renderInventory();
+            if (this.currentScreen === 'use') this.renderUseScreen();
         }
     }
 
@@ -460,14 +539,15 @@ class MealPlannerApp {
         this.showToast('Meal saved!');
     }
 
-    // NEW: shopping list based on today's actual weekday, look ahead 4 days (wrap around)
+    // UPDATED: 5‑day lookahead + low‑stock trigger
     generateShoppingList() {
         const plan = this.dataStore.getPlan();
         if (!plan.length) return;
-        const todayIdx = this.getTodayPlanIndex(); // weekday‑based index
+        const todayIdx = this.getTodayPlanIndex(); // weekday‑based today
         const neededMap = new Map();
-        // Look at today, today+1, today+2, today+3 (wrap if past plan length)
-        for (let offset = 0; offset < 4; offset++) {
+
+        // 1. Planned meals – 5 days (today + next 4)
+        for (let offset = 0; offset < 5; offset++) {
             const dayIdx = (todayIdx + offset) % plan.length;
             const dayPlan = plan[dayIdx];
             for (let slotIdx = 0; slotIdx < dayPlan.slots.length; slotIdx++) {
@@ -495,6 +575,32 @@ class MealPlannerApp {
                 }
             }
         }
+
+        // 2. Low‑stock items (≤10% of pack size)
+        this.dataStore.getItems().forEach(item => {
+            const pack = PACK_SIZES[item.id];
+            if (!pack) return; // skip if no pack size defined
+            const threshold = pack * 0.1;
+            if (item.quantity <= threshold && item.quantity > 0) {
+                const key = item.id;
+                const existing = neededMap.get(key);
+                if (existing) {
+                    // Already needed for meals – ensure we buy at least one pack
+                    existing.needed = Math.max(existing.needed, pack);
+                } else {
+                    neededMap.set(key, {
+                        name: item.name,
+                        category: item.category,
+                        unit: item.unit,
+                        needed: pack,
+                        current: item.quantity,
+                        itemId: item.id
+                    });
+                }
+            }
+        });
+
+        // Calculate deficits with pack rounding
         const toBuy = [];
         neededMap.forEach(item => {
             let deficit = item.needed - item.current;
@@ -516,7 +622,7 @@ class MealPlannerApp {
     renderShoppingList(shoppingItems) {
         const container = document.getElementById('shopping-list');
         if (!shoppingItems.length) {
-            container.innerHTML = `<div class="empty-state"><p>🎉 You have everything you need for the next 4 days!</p></div>`;
+            container.innerHTML = `<div class="empty-state"><p>🎉 You have everything you need for the next 5 days!</p></div>`;
             return;
         }
         const grouped = {};
@@ -562,6 +668,8 @@ class MealPlannerApp {
         if (updated) {
             this.showToast(`✅ Updated ${updated} items!`);
             this.generateShoppingList();
+            this.renderInventory();
+            this.renderUseScreen();
         } else {
             this.showToast('No items marked as purchased.');
         }
@@ -577,7 +685,6 @@ class MealPlannerApp {
     }
 }
 
-// Start the app
 document.addEventListener('DOMContentLoaded', () => {
     window.mealPlannerApp = new MealPlannerApp();
 });

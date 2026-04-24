@@ -43,7 +43,7 @@
 
         <!-- Shopping Screen -->
         <div class="screen" id="shopping-screen">
-            <div class="card"><button class="btn" id="generate-shopping-list">Generate Shopping List (4 days ahead)</button></div>
+            <div class="card"><button class="btn" id="generate-shopping-list">Generate Shopping List (5 days ahead)</button></div>
             <div id="shopping-list"><div class="empty-state"><p>No shopping list generated yet.</p></div></div>
         </div>
 
@@ -53,6 +53,15 @@
                 <h3>🧪 Recommended Daily Supplements</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">Based on your keto protocol:</p>
                 <div id="supplements-list"></div>
+            </div>
+        </div>
+
+        <!-- NEW: Ad‑hoc Consumption Screen -->
+        <div class="screen" id="use-screen">
+            <div class="card">
+                <h3>➕ Use an Item (by portion)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Tap the ➕ button to consume one portion.</p>
+                <div id="use-items-list" class="use-items-list"></div>
             </div>
         </div>
     </div>
@@ -74,11 +83,15 @@
             <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             <span>Supplements</span>
         </div>
+        <div class="nav-item" data-screen="use">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Use</span>
+        </div>
     </div>
 
     <button class="fab" id="add-item-fab">+</button>
 
-    <!-- Item Modal -->
+    <!-- Item Modal (now includes portionAmount field) -->
     <div class="modal" id="item-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -103,6 +116,7 @@
                     </select>
                 </div>
                 <div class="form-group"><label class="form-label">Quantity</label><input type="number" class="form-input" id="item-quantity" min="0" step="0.1" required></div>
+                <div class="form-group"><label class="form-label">Portion Amount (per use)</label><input type="number" class="form-input" id="item-portion" min="0" step="0.1" value="1"></div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button type="submit" class="btn">Save Item</button>
                     <button type="button" class="btn btn-secondary" id="delete-item" style="display: none;">Delete</button>
@@ -111,7 +125,7 @@
         </div>
     </div>
 
-    <!-- Meal Modal -->
+    <!-- Meal Modal (unchanged) -->
     <div class="modal" id="meal-modal">
         <div class="modal-content modal-large">
             <div class="modal-header">

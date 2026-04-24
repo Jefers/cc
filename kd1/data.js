@@ -347,5 +347,5 @@ const DEFAULT_DATA = {
   }
 };
 
-// If using ES modules:
+// If using ES modules: ok
 // export default DEFAULT_DATA;
