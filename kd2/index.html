@@ -23,7 +23,7 @@
             <div class="item-list" id="inventory-list"><div class="empty-state"><p>Loading inventory...</p></div></div>
         </div>
 
-        <!-- Plan Screen -->
+        <!-- Plan Screen (macros now shown) -->
         <div class="screen" id="plan-screen">
             <div class="date-tabs" id="date-tabs-container"></div>
             <div class="meal-slots" id="meal-slots-container"></div>
@@ -37,18 +37,25 @@
                     <span class="calorie-label">📋 Planned:</span>
                     <span class="calorie-value" id="planned-calories">0 kcal</span>
                 </div>
+                <div class="macro-row" id="macro-summary"></div>
             </div>
             <button class="btn btn-secondary" id="reset-consumed-btn">⟳ Reset All Eaten Meals</button>
         </div>
 
-        <!-- Shopping Screen -->
+        <!-- Use Screen (ad‑hoc consumption, no multiplier) -->
+        <div class="screen" id="use-screen">
+            <div class="card">
+                <h3>➕ Use an Item (by portion)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Tap ➕ to consume one portion. Undo toast appears.</p>
+                <div id="use-items-list" class="use-items-list"></div>
+            </div>
+        </div>
+
+        <!-- Shopping Screen (threshold behind cog) -->
         <div class="screen" id="shopping-screen">
-            <div class="card threshold-settings">
-                <label class="form-label">Low‑stock threshold (% of pack size)</label>
-                <div style="display:flex; gap:0.5rem; align-items:center;">
-                    <input type="number" id="threshold-input" class="form-input" value="10" min="0" max="100" style="width:80px;">
-                    <button class="btn btn-small" id="save-threshold">Save</button>
-                </div>
+            <div class="shopping-settings">
+                <span>Low‑stock threshold: <strong id="threshold-display">10%</strong></span>
+                <button class="btn-icon" id="edit-threshold">⚙️</button>
             </div>
             <div class="card"><button class="btn" id="generate-shopping-list">Generate Shopping List (5 days ahead)</button></div>
             <div id="shopping-list"><div class="empty-state"><p>No shopping list generated yet.</p></div></div>
@@ -62,17 +69,9 @@
                 <div id="supplements-list"></div>
             </div>
         </div>
-
-        <!-- Use Screen (ad‑hoc consumption) -->
-        <div class="screen" id="use-screen">
-            <div class="card">
-                <h3>➕ Use an Item (by portion)</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Tap ➕ to deduct the portion. Change the multiplier for multiples.</p>
-                <div id="use-items-list" class="use-items-list"></div>
-            </div>
-        </div>
     </div>
 
+    <!-- Bottom nav reordered: Inventory, Plan, Use, Shopping, Supplements -->
     <div class="bottom-nav">
         <div class="nav-item active" data-screen="inventory">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
@@ -82,6 +81,10 @@
             <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             <span>Plan</span>
         </div>
+        <div class="nav-item" data-screen="use">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Use</span>
+        </div>
         <div class="nav-item" data-screen="shopping">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span>Shopping</span>
@@ -90,15 +93,11 @@
             <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             <span>Supplements</span>
         </div>
-        <div class="nav-item" data-screen="use">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
-            <span>Use</span>
-        </div>
     </div>
 
     <button class="fab" id="add-item-fab">+</button>
 
-    <!-- Item Modal -->
+    <!-- Item Modal (unchanged) -->
     <div class="modal" id="item-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -124,6 +123,11 @@
                 </div>
                 <div class="form-group"><label class="form-label">Quantity</label><input type="number" class="form-input" id="item-quantity" min="0" step="0.1" required></div>
                 <div class="form-group"><label class="form-label">Portion Amount (per use)</label><input type="number" class="form-input" id="item-portion" min="0" step="0.1" value="1"></div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Carbs/unit</label><input type="number" class="form-input" id="item-carbs" min="0" step="0.01" value="0"></div>
+                    <div class="form-group"><label class="form-label">Fat/unit</label><input type="number" class="form-input" id="item-fat" min="0" step="0.01" value="0"></div>
+                    <div class="form-group"><label class="form-label">Protein/unit</label><input type="number" class="form-input" id="item-protein" min="0" step="0.01" value="0"></div>
+                </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button type="submit" class="btn">Save Item</button>
                     <button type="button" class="btn btn-secondary" id="delete-item" style="display: none;">Delete</button>
@@ -132,7 +136,7 @@
         </div>
     </div>
 
-    <!-- Meal Modal (with remove slot button) -->
+    <!-- Meal Modal (no remove slot button) -->
     <div class="modal" id="meal-modal">
         <div class="modal-content modal-large">
             <div class="modal-header">
@@ -145,10 +149,22 @@
                 <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-input" id="meal-notes" placeholder="e.g., work lunch" rows="2"></textarea></div>
                 <div class="form-group"><label class="form-label">Ingredients</label><div id="meal-ingredients" class="scrollable-content"></div></div>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-                <button class="btn" id="save-meal">Save Meal</button>
-                <button class="btn btn-danger" id="remove-meal-slot" style="display:none;">Remove from Slot</button>
+            <button class="btn" id="save-meal">Save Meal</button>
+        </div>
+    </div>
+
+    <!-- Threshold settings modal (small) -->
+    <div class="modal" id="threshold-modal">
+        <div class="modal-content threshold-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Low‑stock threshold</h2>
+                <button class="close-btn" id="close-threshold-modal">&times;</button>
             </div>
+            <div class="form-group">
+                <label class="form-label">Percent (%) of pack size</label>
+                <input type="number" id="threshold-input" class="form-input" min="0" max="100" value="10">
+            </div>
+            <button class="btn" id="save-threshold-btn">Save</button>
         </div>
     </div>
 </div>

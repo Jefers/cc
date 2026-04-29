@@ -46,13 +46,17 @@ class DataStore {
     constructor() {
         this.data = this.loadData();
         if (!this.data.consumedMeals) this.data.consumedMeals = [];
+        // Ensure every item has macros & portionAmount
         this.data.items.forEach(item => {
-            if (item.portionAmount === undefined) item.portionAmount = 1;
+            item.carbs = item.carbs ?? 0;
+            item.fat = item.fat ?? 0;
+            item.protein = item.protein ?? 0;
+            item.portionAmount = item.portionAmount ?? 1;
         });
         this.saveData();
     }
     loadData() {
-        const stored = localStorage.getItem('mealPlannerDatakd2');
+        const stored = localStorage.getItem('mealPlannerDatakd2e');
         if (stored) return JSON.parse(stored);
         if (typeof DEFAULT_DATA !== 'undefined') {
             const defaultData = JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -61,10 +65,13 @@ class DataStore {
         }
         return { items: [], meals: [], plan: [], supplements: [], notes: {}, consumedMeals: [] };
     }
-    saveData() { localStorage.setItem('mealPlannerDatakd2', JSON.stringify(this.data)); }
+    saveData() { localStorage.setItem('mealPlannerDatakd2e', JSON.stringify(this.data)); }
     generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
     addItem(item) {
-        if (!item.portionAmount) item.portionAmount = 1;
+        item.carbs = item.carbs ?? 0;
+        item.fat = item.fat ?? 0;
+        item.protein = item.protein ?? 0;
+        item.portionAmount = item.portionAmount ?? 1;
         item.id = this.generateId();
         this.data.items.push(item);
         this.saveData();
@@ -118,14 +125,13 @@ class DataStore {
         this.saveData();
     }
 
-    // Ad‑hoc consumption: reduce quantity by portion * multiplier
-    consumePortion(itemId, multiplier = 1) {
+    // Ad‑hoc consumption: single portion
+    consumePortion(itemId) {
         const item = this.getItem(itemId);
         if (!item) return false;
         const portion = item.portionAmount || 1;
-        const total = portion * multiplier;
-        if (item.quantity < total) return false;
-        this.updateItem(itemId, { quantity: item.quantity - total });
+        if (item.quantity < portion) return false;
+        this.updateItem(itemId, { quantity: item.quantity - portion });
         return true;
     }
 }
@@ -139,8 +145,8 @@ class MealPlannerApp {
         this.editingItemId = null;
         this.currentMealSlot = null;
         this.editingMealId = null;
-        this.lastAction = null;          // for undo
-        this.lastToast = null;          // reference to current toast element
+        this.lastAction = null;
+        this.lastToast = null;
         this.initializeApp();
     }
 
@@ -174,10 +180,14 @@ class MealPlannerApp {
         document.getElementById('delete-item').addEventListener('click', () => this.deleteCurrentItem());
         document.getElementById('close-meal-modal').addEventListener('click', () => this.closeMealModal());
         document.getElementById('save-meal').addEventListener('click', () => this.saveMeal());
-        document.getElementById('remove-meal-slot')?.addEventListener('click', () => this.removeMealFromSlot());
         document.getElementById('generate-shopping-list').addEventListener('click', () => this.generateShoppingList());
         document.getElementById('reset-consumed-btn').addEventListener('click', () => this.resetAllConsumedMeals());
-        document.getElementById('save-threshold')?.addEventListener('click', () => this.saveLowStockThreshold());
+
+        // Threshold modal
+        document.getElementById('edit-threshold').addEventListener('click', () => this.openThresholdModal());
+        document.getElementById('close-threshold-modal').addEventListener('click', () => this.closeThresholdModal());
+        document.getElementById('save-threshold-btn').addEventListener('click', () => this.saveThreshold());
+
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
         });
@@ -196,7 +206,6 @@ class MealPlannerApp {
 
     // ----- Undo infrastructure -----
     showToast(msg, undoLabel = null, undoCallback = null) {
-        // Remove existing toast
         if (this.lastToast) this.lastToast.remove();
         this.lastAction = undoCallback ? { label: undoLabel, fn: undoCallback } : null;
         const toast = document.createElement('div');
@@ -272,7 +281,7 @@ class MealPlannerApp {
         document.querySelector(`[data-screen="${screen}"]`).classList.add('active');
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(`${screen}-screen`).classList.add('active');
-        const titles = { inventory:'Inventory', plan:'Meal Plan', shopping:'Shopping List', supplements:'Supplements', use:'Use Items' };
+        const titles = { inventory:'Inventory', plan:'Meal Plan', use:'Use Items', shopping:'Shopping List', supplements:'Supplements' };
         document.getElementById('page-title').textContent = titles[screen] || 'Keto Planner';
         document.getElementById('add-item-fab').style.display = screen === 'inventory' ? 'block' : 'none';
         this.currentScreen = screen;
@@ -282,9 +291,9 @@ class MealPlannerApp {
     renderCurrentScreen() {
         if (this.currentScreen === 'inventory') this.renderInventory();
         else if (this.currentScreen === 'plan') this.renderPlan();
+        else if (this.currentScreen === 'use') this.renderUseScreen();
         else if (this.currentScreen === 'shopping') this.renderShopping();
         else if (this.currentScreen === 'supplements') this.renderSupplements();
-        else if (this.currentScreen === 'use') this.renderUseScreen();
     }
 
     // ---- Inventory ----
@@ -292,7 +301,7 @@ class MealPlannerApp {
         const items = this.dataStore.getItems();
         const container = document.getElementById('inventory-list');
         if (!items.length) {
-            container.innerHTML = '<div class="empty-state"><p>No items in your inventory yet.</p><p>Tap the + button to add your first!</p></div>';
+            container.innerHTML = `<div class="empty-state"><p>📦 No items yet</p><p>Tap the + button to add your first!</p></div>`;
             return;
         }
         container.innerHTML = items.map(item => {
@@ -307,24 +316,32 @@ class MealPlannerApp {
         });
     }
 
-    // ---- Plan ----
+    // ---- Plan (with macros) ----
     renderPlan() {
         const plan = this.dataStore.getPlan();
         if (!plan.length) return;
         const currentPlan = plan[this.currentDay];
         const slotsContainer = document.getElementById('meal-slots-container');
         const mealNames = ['Breakfast', 'Lunch', 'Dinner', 'Protein Bridge'];
-        let plannedTotal = 0;
-        let consumedTotal = 0;
+        let plannedCalories = 0, plannedFat = 0, plannedProtein = 0, plannedCarbs = 0;
+        let consumedCalories = 0, consumedFat = 0, consumedProtein = 0, consumedCarbs = 0;
 
         slotsContainer.innerHTML = '';
         for (let i = 0; i < 4; i++) {
             const mealId = currentPlan.slots[i];
             const mealData = mealId ? this.dataStore.getMeal(mealId) : null;
             const consumed = this.dataStore.isMealConsumed(this.currentDay, i);
-            if (mealData && mealData.calories) {
-                plannedTotal += mealData.calories;
-                if (consumed) consumedTotal += mealData.calories;
+            if (mealData) {
+                plannedCalories += mealData.calories || 0;
+                plannedFat += mealData.fat || 0;
+                plannedProtein += mealData.protein || 0;
+                plannedCarbs += mealData.carbs || 0;
+                if (consumed) {
+                    consumedCalories += mealData.calories || 0;
+                    consumedFat += mealData.fat || 0;
+                    consumedProtein += mealData.protein || 0;
+                    consumedCarbs += mealData.carbs || 0;
+                }
             }
             const slotDiv = document.createElement('div');
             slotDiv.className = `meal-slot ${mealData ? 'filled' : ''} ${consumed ? 'consumed' : ''}`;
@@ -337,9 +354,11 @@ class MealPlannerApp {
             const contentDiv = slotDiv.querySelector('.meal-content');
             if (mealData) {
                 const ingredientsList = mealData.ingredients.map(ing => `${ing.quantity}${ing.unit} ${ing.name}`).join(', ');
-                const caloriesText = mealData.calories ? `<div class="meal-calories">${mealData.calories} kcal</div>` : '';
-                const notesText = mealData.notes ? `<div class="meal-notes">${mealData.notes}</div>` : '';
-                contentDiv.innerHTML = `<div class="meal-details">${mealData.name}</div><div class="meal-ingredients">${ingredientsList}</div>${caloriesText}${notesText}`;
+                const cals = mealData.calories ? `<div class="meal-calories">${mealData.calories} kcal</div>` : '';
+                const notes = mealData.notes ? `<div class="meal-notes">${mealData.notes}</div>` : '';
+                const macros = (mealData.fat || mealData.protein || mealData.carbs) ?
+                    `<div class="meal-macros">F:${mealData.fat || 0}g P:${mealData.protein || 0}g C:${mealData.carbs || 0}g</div>` : '';
+                contentDiv.innerHTML = `<div class="meal-details">${mealData.name}</div><div class="meal-ingredients">${ingredientsList}</div>${cals}${macros}${notes}`;
             } else {
                 contentDiv.textContent = 'Tap to add meal';
             }
@@ -366,8 +385,14 @@ class MealPlannerApp {
             });
             slotsContainer.appendChild(slotDiv);
         }
-        document.getElementById('consumed-calories').textContent = `${consumedTotal} kcal`;
-        document.getElementById('planned-calories').textContent = `${plannedTotal} kcal`;
+
+        document.getElementById('consumed-calories').textContent = `${consumedCalories} kcal`;
+        document.getElementById('planned-calories').textContent = `${plannedCalories} kcal`;
+
+        document.getElementById('macro-summary').innerHTML = `
+            <div class="macro-entry"><span>Consumed:</span> F:${consumedFat.toFixed(0)}g P:${consumedProtein.toFixed(0)}g C:${consumedCarbs.toFixed(1)}g</div>
+            <div class="macro-entry"><span>Planned:</span> F:${plannedFat.toFixed(0)}g P:${plannedProtein.toFixed(0)}g C:${plannedCarbs.toFixed(1)}g</div>
+        `;
     }
 
     markMealAsEaten(dayIdx, slotIdx, mealId) {
@@ -375,14 +400,12 @@ class MealPlannerApp {
         if (this.dataStore.isMealConsumed(dayIdx, slotIdx)) { this.showToast("Already eaten."); return; }
         const meal = this.dataStore.getMeal(mealId);
         if (!meal) return;
-        
-        // Snapshot current quantities for possible undo
+
         const ingredientSnapshots = meal.ingredients.map(ing => {
             const item = this.dataStore.getItem(ing.itemId);
             return item ? { itemId: ing.itemId, oldQty: item.quantity } : null;
         }).filter(s => s);
 
-        // Deduct
         let insufficient = false;
         for (const ing of meal.ingredients) {
             const item = this.dataStore.getItem(ing.itemId);
@@ -398,7 +421,6 @@ class MealPlannerApp {
         this.renderInventory();
 
         const undoCallback = () => {
-            // Restore inventory
             ingredientSnapshots.forEach(snap => {
                 this.dataStore.updateItem(snap.itemId, { quantity: snap.oldQty });
             });
@@ -429,7 +451,7 @@ class MealPlannerApp {
         }
     }
 
-    // ---- Meal Slot Modal ----
+    // ---- Meal Slot Modal (no remove button) ----
     openMealSlot(dayIdx, slotIdx, existingMealId = null) {
         if (this.dataStore.isMealConsumed(dayIdx, slotIdx)) {
             this.showToast("Cannot edit a meal that has already been eaten. Reset it first.");
@@ -440,29 +462,18 @@ class MealPlannerApp {
         if (this.dataStore.getItems().length === 0) { this.showToast('Add some items to your inventory first!'); return; }
         const modal = document.getElementById('meal-modal');
         document.getElementById('meal-modal-title').textContent = existingMealId ? 'Edit Meal' : 'Add Meal';
-        const removeBtn = document.getElementById('remove-meal-slot');
         if (existingMealId) {
             const meal = this.dataStore.getMeal(existingMealId);
             document.getElementById('meal-name').value = meal.name || '';
             document.getElementById('meal-calories').value = meal.calories || '';
             document.getElementById('meal-notes').value = meal.notes || '';
-            removeBtn.style.display = 'inline-block';
         } else {
             document.getElementById('meal-name').value = '';
             document.getElementById('meal-calories').value = '';
             document.getElementById('meal-notes').value = '';
-            removeBtn.style.display = 'none';
         }
         this.renderMealIngredients();
         modal.classList.add('show');
-    }
-
-    removeMealFromSlot() {
-        if (!this.currentMealSlot) return;
-        this.dataStore.setPlanSlot(this.currentMealSlot.dayIndex, this.currentMealSlot.slotIndex, null);
-        this.closeMealModal();
-        this.renderPlan();
-        this.showToast('Meal removed from slot.');
     }
 
     renderMealIngredients() {
@@ -482,22 +493,29 @@ class MealPlannerApp {
     }
 
     closeMealModal() { document.getElementById('meal-modal').classList.remove('show'); this.currentMealSlot = null; this.editingMealId = null; }
+
     saveMeal() {
         if (!this.currentMealSlot) return;
         const inputs = document.querySelectorAll('#meal-ingredients input[data-item-id]');
         const ingredients = [];
+        let totalFat = 0, totalProtein = 0, totalCarbs = 0;
         inputs.forEach(inp => {
             const qty = parseFloat(inp.value) || 0;
             if (qty > 0) {
                 const item = this.dataStore.getItem(inp.dataset.itemId);
-                if (item) ingredients.push({ itemId: item.id, name: item.name, quantity: qty, unit: item.unit });
+                if (item) {
+                    ingredients.push({ itemId: item.id, name: item.name, quantity: qty, unit: item.unit });
+                    totalFat += (item.fat || 0) * qty;
+                    totalProtein += (item.protein || 0) * qty;
+                    totalCarbs += (item.carbs || 0) * qty;
+                }
             }
         });
         if (!ingredients.length) { this.showToast('Add at least one ingredient.'); return; }
         const mealName = document.getElementById('meal-name').value.trim() || ingredients.map(i=>i.name).slice(0,3).join(', ');
         const calories = parseInt(document.getElementById('meal-calories').value) || null;
         const notes = document.getElementById('meal-notes').value.trim();
-        const mealData = { name: mealName, ingredients, calories, notes };
+        const mealData = { name: mealName, ingredients, calories, notes, fat: totalFat, protein: totalProtein, carbs: totalCarbs };
         let mealId;
         if (this.editingMealId) { this.dataStore.updateMeal(this.editingMealId, mealData); mealId = this.editingMealId; }
         else { mealId = this.dataStore.addMeal(mealData).id; }
@@ -507,12 +525,69 @@ class MealPlannerApp {
         this.showToast('Meal saved!');
     }
 
-    // ---- Shopping list (with configurable low-stock threshold) ----
+    // ---- Use screen (ad‑hoc, single tap) ----
+    renderUseScreen() {
+        const items = this.dataStore.getItems();
+        const container = document.getElementById('use-items-list');
+        if (!items.length) {
+            container.innerHTML = '<div class="empty-state"><p>No items. Add some in Inventory first.</p></div>';
+            return;
+        }
+        container.innerHTML = items.map(item => {
+            const portion = item.portionAmount || 1;
+            const canUse = item.quantity >= portion;
+            return `
+                <div class="use-item-row" data-item-id="${item.id}">
+                    <div class="use-item-info">
+                        <div class="use-item-name">${item.name}</div>
+                        <div class="use-item-details">
+                            ${item.quantity} ${item.unit} left &nbsp;|&nbsp; Portion: ${portion} ${item.unit}
+                        </div>
+                    </div>
+                    <button class="use-btn" ${!canUse ? 'disabled' : ''}>+</button>
+                </div>
+            `;
+        }).join('');
+        container.querySelectorAll('.use-btn').forEach((btn) => {
+            const itemId = btn.closest('.use-item-row').dataset.itemId;
+            btn.addEventListener('click', () => {
+                const item = this.dataStore.getItem(itemId);
+                const portion = item?.portionAmount || 1;
+                if (this.dataStore.consumePortion(itemId)) {
+                    this.renderUseScreen();
+                    this.renderInventory();
+                    const undoCallback = () => {
+                        const item = this.dataStore.getItem(itemId);
+                        if (item) {
+                            this.dataStore.updateItem(itemId, { quantity: item.quantity + portion });
+                            this.renderUseScreen();
+                            this.renderInventory();
+                            this.showToast(`Undo: returned ${portion} ${item.unit} of ${item.name}.`);
+                        }
+                    };
+                    this.showToast(`Used 1 portion (${portion} ${item.unit}).`, 'Undo', undoCallback);
+                } else {
+                    this.showToast(`Not enough ${item?.name} left.`);
+                    this.renderUseScreen();
+                }
+            });
+        });
+    }
+
+    // ---- Shopping list with low‑stock threshold from localStorage ----
     getLowStockThreshold() {
         const stored = localStorage.getItem('lowStockThreshold');
         return stored !== null ? parseFloat(stored) : 10;
     }
-    saveLowStockThreshold() {
+
+    openThresholdModal() {
+        document.getElementById('threshold-input').value = this.getLowStockThreshold();
+        document.getElementById('threshold-modal').classList.add('show');
+    }
+    closeThresholdModal() {
+        document.getElementById('threshold-modal').classList.remove('show');
+    }
+    saveThreshold() {
         const input = document.getElementById('threshold-input');
         let val = parseFloat(input.value);
         if (isNaN(val) || val < 0 || val > 100) {
@@ -520,6 +595,8 @@ class MealPlannerApp {
             return;
         }
         localStorage.setItem('lowStockThreshold', val);
+        document.getElementById('threshold-display').textContent = val + '%';
+        this.closeThresholdModal();
         this.showToast(`Low‑stock threshold set to ${val}%.`);
     }
 
@@ -530,7 +607,6 @@ class MealPlannerApp {
         const neededMap = new Map();
         const thresholdPercent = this.getLowStockThreshold() / 100;
 
-        // 1. Planned meals – 5 days
         for (let offset = 0; offset < 5; offset++) {
             const dayIdx = (todayIdx + offset) % plan.length;
             const dayPlan = plan[dayIdx];
@@ -560,7 +636,6 @@ class MealPlannerApp {
             }
         }
 
-        // 2. Low‑stock items (≤ threshold * pack size, configurable)
         this.dataStore.getItems().forEach(item => {
             const pack = PACK_SIZES[item.id];
             if (!pack) return;
@@ -679,62 +754,6 @@ class MealPlannerApp {
         container.innerHTML = html;
     }
 
-    // ---- Use (ad‑hoc consumption with multiplier) ----
-    renderUseScreen() {
-        const items = this.dataStore.getItems();
-        const container = document.getElementById('use-items-list');
-        if (!items.length) {
-            container.innerHTML = '<div class="empty-state"><p>No items. Add some in Inventory first.</p></div>';
-            return;
-        }
-        container.innerHTML = items.map(item => {
-            const portion = item.portionAmount || 1;
-            const canUse = item.quantity >= portion;
-            return `
-                <div class="use-item-row" data-item-id="${item.id}">
-                    <div class="use-item-info">
-                        <div class="use-item-name">${item.name}</div>
-                        <div class="use-item-details">
-                            ${item.quantity} ${item.unit} left &nbsp;|&nbsp;
-                            Portion: ${portion} ${item.unit}
-                        </div>
-                    </div>
-                    <div class="use-controls">
-                        <input type="number" class="use-multiplier" value="1" min="1" step="1" aria-label="Multiplier">
-                        <button class="use-btn" ${!canUse ? 'disabled' : ''}>+</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        container.querySelectorAll('.use-item-row').forEach(row => {
-            const itemId = row.dataset.itemId;
-            const btn = row.querySelector('.use-btn');
-            const multiplierInput = row.querySelector('.use-multiplier');
-            btn.addEventListener('click', () => {
-                const mult = parseInt(multiplierInput.value) || 1;
-                const actualAmount = (this.dataStore.getItem(itemId)?.portionAmount || 1) * mult;
-                if (this.dataStore.consumePortion(itemId, mult)) {
-                    this.renderUseScreen();
-                    this.renderInventory();
-                    const undoCallback = () => {
-                        const item = this.dataStore.getItem(itemId);
-                        if (item) {
-                            this.dataStore.updateItem(itemId, { quantity: item.quantity + actualAmount });
-                            this.renderUseScreen();
-                            this.renderInventory();
-                            this.showToast(`Undo: returned ${actualAmount} ${item.unit} of ${item.name}.`);
-                        }
-                    };
-                    this.showToast(`Used ${mult} × portion.`, 'Undo', undoCallback);
-                } else {
-                    this.showToast(`Not enough ${this.dataStore.getItem(itemId)?.name} left.`);
-                    this.renderUseScreen();
-                }
-                multiplierInput.value = 1; // reset after use
-            });
-        });
-    }
-
     // ---- Item modal ----
     openItemModal(itemId = null) {
         this.editingItemId = itemId;
@@ -750,11 +769,17 @@ class MealPlannerApp {
             document.getElementById('item-unit').value = item.unit;
             document.getElementById('item-quantity').value = item.quantity;
             document.getElementById('item-portion').value = item.portionAmount || 1;
+            document.getElementById('item-carbs').value = item.carbs || 0;
+            document.getElementById('item-fat').value = item.fat || 0;
+            document.getElementById('item-protein').value = item.protein || 0;
         } else {
             title.textContent = 'Add Item';
             delBtn.style.display = 'none';
             document.getElementById('item-form').reset();
             document.getElementById('item-portion').value = 1;
+            document.getElementById('item-carbs').value = 0;
+            document.getElementById('item-fat').value = 0;
+            document.getElementById('item-protein').value = 0;
         }
         modal.classList.add('show');
     }
@@ -766,7 +791,10 @@ class MealPlannerApp {
             category: document.getElementById('item-category').value,
             unit: document.getElementById('item-unit').value,
             quantity: parseFloat(document.getElementById('item-quantity').value),
-            portionAmount: parseFloat(document.getElementById('item-portion').value) || 1
+            portionAmount: parseFloat(document.getElementById('item-portion').value) || 1,
+            carbs: parseFloat(document.getElementById('item-carbs').value) || 0,
+            fat: parseFloat(document.getElementById('item-fat').value) || 0,
+            protein: parseFloat(document.getElementById('item-protein').value) || 0
         };
         if (this.editingItemId) this.dataStore.updateItem(this.editingItemId, itemData);
         else this.dataStore.addItem(itemData);
