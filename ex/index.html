@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>Expenses</title>
+    <style>
+        :root {
+            --bg: #000;
+            --text: #fff;
+            --muted: #888;
+            --border: #333;
+            --danger: #ff4444;
+            --accent: #fff;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            font-size: 17px;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-font-smoothing: antialiased;
+        }
+        .app {
+            width: 100%;
+            height: 100%;
+            padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 24px max(16px, env(safe-area-inset-left));
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 44px;
+            padding: 4px 0;
+            flex-shrink: 0;
+        }
+        .expenses-label {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .expenses-label:active {
+            opacity: 0.6;
+        }
+        .budget-display {
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--text);
+            cursor: pointer;
+            letter-spacing: -0.3px;
+            transition: opacity 0.2s;
+        }
+        .budget-display:active {
+            opacity: 0.6;
+        }
+        .budget-input {
+            font-size: 22px;
+            font-weight: 400;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 6px 12px;
+            width: 140px;
+            outline: none;
+            letter-spacing: -0.3px;
+            caret-color: var(--text);
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .budget-input::placeholder {
+            color: #555;
+        }
+        .content-area {
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .content-area.active {
+            display: flex;
+        }
+        .sub-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 36px;
+            padding: 6px 0;
+            cursor: pointer;
+            border-bottom: 1px solid #1a1a1a;
+            transition: opacity 0.2s;
+        }
+        .sub-header-row:active {
+            opacity: 0.6;
+        }
+        .sub-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .sub-label.right {
+            text-align: right;
+        }
+        .sub-input-wrap {
+            display: none;
+            gap: 10px;
+            width: 100%;
+            align-items: center;
+        }
+        .sub-input-wrap.active {
+            display: flex;
+        }
+        .sub-input {
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 10px;
+            outline: none;
+            caret-color: var(--text);
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .sub-input.name-input {
+            flex: 1;
+            min-width: 0;
+        }
+        .sub-input.amount-input {
+            width: 110px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .sub-input::placeholder {
+            color: #444;
+        }
+        .sub-labels-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .sub-labels-row.hidden {
+            display: none;
+        }
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            flex-shrink: 0;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 38px;
+            padding: 6px 0;
+            position: relative;
+            transition: transform 0.15s ease;
+            cursor: default;
+        }
+        .item-name {
+            font-size: 15px;
+            color: var(--text);
+            cursor: pointer;
+            flex: 1;
+            min-width: 0;
+            padding: 4px 0;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .item-name:active {
+            opacity: 0.5;
+        }
+        .item-amount {
+            font-size: 15px;
+            color: var(--text);
+            cursor: pointer;
+            text-align: right;
+            flex-shrink: 0;
+            margin-left: 16px;
+            padding: 4px 0;
+            transition: opacity 0.15s;
+            min-width: 60px;
+        }
+        .item-amount:active {
+            opacity: 0.5;
+        }
+        .item-delete {
+            font-size: 16px;
+            color: #555;
+            cursor: pointer;
+            padding: 6px 8px;
+            margin-left: 4px;
+            flex-shrink: 0;
+            opacity: 0.35;
+            transition: opacity 0.2s, color 0.2s;
+            z-index: 2;
+            -webkit-tap-highlight-color: rgba(255, 68, 68, 0.2);
+        }
+        .item-delete:active {
+            opacity: 1;
+            color: var(--danger);
+        }
+        .item-edit-input {
+            font-size: 15px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 5px 8px;
+            outline: none;
+            caret-color: var(--text);
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .item-edit-input.name-edit {
+            flex: 1;
+            min-width: 0;
+            margin-right: 8px;
+        }
+        .item-edit-input.amount-edit {
+            width: 100px;
+            text-align: right;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+        .separator-row {
+            display: flex;
+            justify-content: flex-end;
+            padding: 2px 0;
+            flex-shrink: 0;
+        }
+        .separator-line {
+            color: #444;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-align: right;
+            min-width: 60px;
+        }
+        .remaining-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            flex-shrink: 0;
+        }
+        .remaining-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .remaining-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            text-align: right;
+            transition: color 0.3s;
+        }
+        .remaining-value.negative {
+            color: var(--danger);
+        }
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1c1c1e;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 100;
+            letter-spacing: 0.2px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .flash {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 200;
+            transition: opacity 0.08s;
+        }
+        .flash.active {
+            opacity: 0.25;
+        }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <div class="header-row" id="headerRow">
+            <span class="expenses-label" id="expensesLabel">Expenses</span>
+            <span class="budget-display" id="budgetDisplay"></span>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="budget-input" id="budgetInput" placeholder="0" style="display:none;">
+        </div>
+        <div class="content-area" id="contentArea">
+            <div class="sub-header-row" id="subHeaderRow">
+                <div class="sub-labels-row" id="subLabelsRow">
+                    <span class="sub-label">Item expense</span>
+                    <span class="sub-label right">Amount</span>
+                </div>
+                <div class="sub-input-wrap" id="subInputWrap">
+                    <input type="text" class="sub-input name-input" id="subNameInput" placeholder="Item name">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="sub-input amount-input" id="subAmountInput" placeholder="0">
+                </div>
+            </div>
+            <div class="items-list" id="itemsList"></div>
+            <div class="separator-row" id="separatorRow" style="display:none;">
+                <span class="separator-line">__________</span>
+            </div>
+            <div class="remaining-row" id="remainingRow" style="display:none;">
+                <span class="remaining-label">Remaining:</span>
+                <span class="remaining-value" id="remainingValue">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="flash" id="flash"></div>
+
+    <script>
+        (function() {
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+
+            const app = $('#app');
+            const expensesLabel = $('#expensesLabel');
+            const budgetDisplay = $('#budgetDisplay');
+            const budgetInput = $('#budgetInput');
+            const contentArea = $('#contentArea');
+            const subHeaderRow = $('#subHeaderRow');
+            const subLabelsRow = $('#subLabelsRow');
+            const subInputWrap = $('#subInputWrap');
+            const subNameInput = $('#subNameInput');
+            const subAmountInput = $('#subAmountInput');
+            const itemsList = $('#itemsList');
+            const separatorRow = $('#separatorRow');
+            const remainingRow = $('#remainingRow');
+            const remainingValue = $('#remainingValue');
+            const toast = $('#toast');
+            const flash = $('#flash');
+
+            let budget = null;
+            let items = [];
+            let isAddingItem = false;
+            let pendingSaveTimeout = null;
+            let editingItemIndex = null;
+            let editingField = null;
+
+            function fmt(n) {
+                if (n === null || n === undefined || isNaN(n)) return '0';
+                return Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+            }
+
+            function parseWholeNumber(v) {
+                const cleaned = v.replace(/[^0-9]/g, '');
+                if (cleaned === '') return NaN;
+                return parseInt(cleaned, 10);
+            }
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+
+            function saveToStorage() {
+                try {
+                    localStorage.setItem('exp_budget', budget !== null ? budget : '');
+                    localStorage.setItem('exp_items', JSON.stringify(items));
+                } catch (e) {}
+            }
+
+            function loadFromStorage() {
+                try {
+                    const b = localStorage.getItem('exp_budget');
+                    if (b !== null && b !== '') {
+                        budget = parseWholeNumber(b);
+                        if (isNaN(budget) || budget < 0) budget = null;
+                    }
+                    const it = localStorage.getItem('exp_items');
+                    if (it) {
+                        items = JSON.parse(it);
+                        if (!Array.isArray(items)) items = [];
+                        items = items.filter(i => i && typeof i.name === 'string' && typeof i.amount ===
+                            'number' && i.amount >= 0);
+                    }
+                } catch (e) {
+                    budget = null;
+                    items = [];
+                }
+            }
+
+            function getRemaining() {
+                if (budget === null) return 0;
+                const total = items.reduce((s, i) => s + (i.amount || 0), 0);
+                return budget - total;
+            }
+
+            function renderAll() {
+                const hasBudget = budget !== null && !isNaN(budget) && budget >= 0;
+                if (hasBudget) {
+                    expensesLabel.textContent = 'Expenses';
+                    budgetDisplay.textContent = ' ' + fmt(budget);
+                    budgetDisplay.style.display = 'inline';
+                    budgetInput.style.display = 'none';
+                    budgetInput.value = '';
+                    contentArea.classList.add('active');
+                } else {
+                    expensesLabel.textContent = 'Expenses';
+                    budgetDisplay.textContent = '';
+                    budgetDisplay.style.display = 'none';
+                    contentArea.classList.remove('active');
+                    budgetInput.style.display = 'none';
+                    budgetInput.value = '';
+                    isAddingItem = false;
+                    subLabelsRow.classList.remove('hidden');
+                    subInputWrap.classList.remove('active');
+                    subNameInput.value = '';
+                    subAmountInput.value = '';
+                    itemsList.innerHTML = '';
+                    separatorRow.style.display = 'none';
+                    remainingRow.style.display = 'none';
+                    editingItemIndex = null;
+                    editingField = null;
+                    clearTimeout(pendingSaveTimeout);
+                    pendingSaveTimeout = null;
+                    return;
+                }
+                budgetInput.style.display = 'none';
+                budgetInput.value = '';
+                budgetDisplay.style.display = 'inline';
+                budgetDisplay.textContent = ' ' + fmt(budget);
+                contentArea.classList.add('active');
+
+                if (isAddingItem) {
+                    subLabelsRow.classList.add('hidden');
+                    subInputWrap.classList.add('active');
+                } else {
+                    subLabelsRow.classList.remove('hidden');
+                    subInputWrap.classList.remove('active');
+                }
+
+                renderItemsList();
+                const rem = getRemaining();
+                const hasItems = items.length > 0;
+                separatorRow.style.display = hasItems ? 'flex' : 'none';
+                remainingRow.style.display = hasItems || (budget !== null && budget >= 0) ? 'flex' : 'none';
+                remainingValue.textContent = fmt(rem);
+                remainingValue.classList.toggle('negative', rem < 0);
+            }
+
+            function renderItemsList() {
+                if (editingItemIndex !== null && editingField !== null) {
+                    return;
+                }
+                itemsList.innerHTML = items.map((item, idx) => {
+                    const n = (item.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    return `
+                <div class="item-row" data-index="${idx}">
+                  <span class="item-name" data-index="${idx}" data-field="name">${n || '&nbsp;'}</span>
+                  <span class="item-amount" data-index="${idx}" data-field="amount">${fmt(item.amount)}</span>
+                  <span class="item-delete" data-index="${idx}" data-action="delete">×</span>
+                </div>`;
+                }).join('');
+            }
+
+            function renderItemEditInline(idx, field) {
+                const row = itemsList.querySelector(`.item-row[data-index="${idx}"]`);
+                if (!row) return;
+                const item = items[idx];
+                if (!item) return;
+                if (field === 'name') {
+                    const nameEl = row.querySelector('.item-name');
+                    if (!nameEl) return;
+                    const currentVal = item.name || '';
+                    nameEl.innerHTML =
+                        `<input class="item-edit-input name-edit" data-index="${idx}" data-field="name" value="${currentVal.replace(/"/g,'&quot;')}" placeholder="Item name">`;
+                    const inp = nameEl.querySelector('input');
+                    if (inp) {
+                        inp.focus();
+                        inp.setSelectionRange(inp.value.length, inp.value.length);
+                    }
+                } else if (field === 'amount') {
+                    const amountEl = row.querySelector('.item-amount');
+                    if (!amountEl) return;
+                    const currentVal = item.amount || 0;
+                    amountEl.innerHTML =
+                        `<input class="item-edit-input amount-edit" data-index="${idx}" data-field="amount" value="${currentVal}" inputmode="numeric" pattern="[0-9]*" placeholder="0">`;
+                    const inp = amountEl.querySelector('input');
+                    if (inp) {
+                        inp.focus();
+                        inp.setSelectionRange(inp.value.length, inp.value.length);
+                    }
+                }
+            }
+
+            function commitItemEdit(idx, field, newValue) {
+                if (idx < 0 || idx >= items.length) return;
+                if (field === 'name') {
+                    const trimmed = newValue.trim();
+                    if (!trimmed) {
+                        showToast('Item name cannot be empty');
+                        renderAll();
+                        return;
+                    }
+                    items[idx].name = trimmed;
+                } else if (field === 'amount') {
+                    const val = parseWholeNumber(newValue);
+                    if (isNaN(val) || val < 0) {
+                        showToast('Please enter a valid whole number');
+                        renderAll();
+                        return;
+                    }
+                    items[idx].amount = val;
+                }
+                editingItemIndex = null;
+                editingField = null;
+                saveToStorage();
+                renderAll();
+            }
+
+            function commitAddItem() {
+                const nameVal = subNameInput.value.trim();
+                const amountRaw = subAmountInput.value;
+                const amountVal = parseWholeNumber(amountRaw);
+                if (!nameVal) {
+                    showToast('Please enter an item name');
+                    subNameInput.focus();
+                    return false;
+                }
+                if (isNaN(amountVal) || amountVal < 0) {
+                    showToast('Please enter a valid whole number amount');
+                    subAmountInput.focus();
+                    return false;
+                }
+                items.push({ name: nameVal, amount: amountVal });
+                subNameInput.value = '';
+                subAmountInput.value = '';
+                isAddingItem = false;
+                subLabelsRow.classList.remove('hidden');
+                subInputWrap.classList.remove('active');
+                editingItemIndex = null;
+                editingField = null;
+                clearTimeout(pendingSaveTimeout);
+                pendingSaveTimeout = null;
+                saveToStorage();
+                renderAll();
+                return true;
+            }
+
+            function cancelAddItem() {
+                if (!isAddingItem) return;
+                if (subNameInput.value.trim() === '' && subAmountInput.value.trim() === '') {
+                    isAddingItem = false;
+                    subLabelsRow.classList.remove('hidden');
+                    subInputWrap.classList.remove('active');
+                    subNameInput.value = '';
+                    subAmountInput.value = '';
+                    clearTimeout(pendingSaveTimeout);
+                    pendingSaveTimeout = null;
+                    renderAll();
+                    return;
+                }
+                commitAddItem();
+            }
+
+            function startAddItem() {
+                if (isAddingItem) return;
+                if (editingItemIndex !== null) {
+                    commitCurrentEdit();
+                }
+                isAddingItem = true;
+                subLabelsRow.classList.add('hidden');
+                subInputWrap.classList.add('active');
+                subNameInput.value = '';
+                subAmountInput.value = '';
+                renderAll();
+                setTimeout(() => subNameInput.focus(), 100);
+            }
+
+            function commitCurrentEdit() {
+                if (editingItemIndex === null || editingField === null) return;
+                const row = itemsList.querySelector(`.item-row[data-index="${editingItemIndex}"]`);
+                if (!row) {
+                    editingItemIndex = null;
+                    editingField = null;
+                    renderAll();
+                    return;
+                }
+                const inp = row.querySelector('input');
+                if (!inp) {
+                    editingItemIndex = null;
+                    editingField = null;
+                    renderAll();
+                    return;
+                }
+                const val = inp.value;
+                commitItemEdit(editingItemIndex, editingField, val);
+            }
+
+            function deleteItem(idx) {
+                if (idx < 0 || idx >= items.length) return;
+                items.splice(idx, 1);
+                editingItemIndex = null;
+                editingField = null;
+                clearTimeout(pendingSaveTimeout);
+                pendingSaveTimeout = null;
+                saveToStorage();
+                renderAll();
+            }
+
+            // Event: Tap "Expenses" label to edit budget
+            expensesLabel.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (budgetInput.style.display === 'block') return;
+                if (isAddingItem) {
+                    if (!commitAddItem()) return;
+                }
+                if (editingItemIndex !== null) {
+                    commitCurrentEdit();
+                }
+                budgetDisplay.style.display = 'none';
+                budgetInput.style.display = 'block';
+                budgetInput.value = budget !== null && !isNaN(budget) ? String(budget) : '';
+                budgetInput.focus();
+                budgetInput.setSelectionRange(budgetInput.value.length, budgetInput.value.length);
+            });
+
+            budgetDisplay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (budgetInput.style.display === 'block') return;
+                if (isAddingItem) {
+                    if (!commitAddItem()) return;
+                }
+                if (editingItemIndex !== null) {
+                    commitCurrentEdit();
+                }
+                budgetDisplay.style.display = 'none';
+                budgetInput.style.display = 'block';
+                budgetInput.value = budget !== null && !isNaN(budget) ? String(budget) : '';
+                budgetInput.focus();
+                budgetInput.setSelectionRange(budgetInput.value.length, budgetInput.value.length);
+            });
+
+            budgetInput.addEventListener('blur', function() {
+                setTimeout(() => {
+                    if (budgetInput.style.display !== 'block') return;
+                    const raw = budgetInput.value;
+                    const val = parseWholeNumber(raw);
+                    if (isNaN(val) || val < 0) {
+                        if (raw.trim() === '') {
+                            budget = null;
+                        } else {
+                            showToast('Please enter a valid whole number');
+                            budgetInput.focus();
+                            return;
+                        }
+                    } else {
+                        budget = val;
+                    }
+                    budgetInput.style.display = 'none';
+                    budgetInput.value = '';
+                    budgetDisplay.style.display = 'inline';
+                    saveToStorage();
+                    renderAll();
+                }, 150);
+            });
+
+            budgetInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    budgetInput.blur();
+                }
+            });
+
+            budgetInput.addEventListener('input', function() {
+                let v = budgetInput.value;
+                v = v.replace(/[^0-9]/g, '');
+                budgetInput.value = v;
+            });
+
+            // Sub-header tap to add
+            subHeaderRow.addEventListener('click', function(e) {
+                if (isAddingItem) return;
+                if (budgetInput.style.display === 'block') return;
+                if (editingItemIndex !== null) {
+                    commitCurrentEdit();
+                }
+                const target = e.target;
+                if (target.closest('.sub-input-wrap') && isAddingItem) return;
+                if (target.closest('input')) return;
+                startAddItem();
+            });
+
+            // Sub inputs
+            subNameInput.addEventListener('focus', function() {
+                clearTimeout(pendingSaveTimeout);
+                pendingSaveTimeout = null;
+            });
+            subAmountInput.addEventListener('focus', function() {
+                clearTimeout(pendingSaveTimeout);
+                pendingSaveTimeout = null;
+            });
+            subNameInput.addEventListener('blur', function() {
+                pendingSaveTimeout = setTimeout(() => {
+                    if (document.activeElement !== subAmountInput && document.activeElement !==
+                        subNameInput) {
+                        if (isAddingItem) {
+                            if (subNameInput.value.trim() === '' && subAmountInput.value.trim() === '') {
+                                isAddingItem = false;
+                                subLabelsRow.classList.remove('hidden');
+                                subInputWrap.classList.remove('active');
+                                subNameInput.value = '';
+                                subAmountInput.value = '';
+                                renderAll();
+                            } else {
+                                commitAddItem();
+                            }
+                        }
+                    }
+                }, 200);
+            });
+            subAmountInput.addEventListener('blur', function() {
+                pendingSaveTimeout = setTimeout(() => {
+                    if (document.activeElement !== subAmountInput && document.activeElement !==
+                        subNameInput) {
+                        if (isAddingItem) {
+                            if (subNameInput.value.trim() === '' && subAmountInput.value.trim() === '') {
+                                isAddingItem = false;
+                                subLabelsRow.classList.remove('hidden');
+                                subInputWrap.classList.remove('active');
+                                subNameInput.value = '';
+                                subAmountInput.value = '';
+                                renderAll();
+                            } else {
+                                commitAddItem();
+                            }
+                        }
+                    }
+                }, 200);
+            });
+            subAmountInput.addEventListener('input', function() {
+                let v = subAmountInput.value;
+                v = v.replace(/[^0-9]/g, '');
+                subAmountInput.value = v;
+            });
+            subNameInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (subNameInput.value.trim() !== '') {
+                        subAmountInput.focus();
+                    }
+                }
+            });
+            subAmountInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    commitAddItem();
+                }
+            });
+
+            // Items list delegation
+            itemsList.addEventListener('click', function(e) {
+                const target = e.target;
+                const deleteBtn = target.closest('.item-delete');
+                if (deleteBtn) {
+                    e.stopPropagation();
+                    const idx = parseInt(deleteBtn.getAttribute('data-index'), 10);
+                    if (!isNaN(idx)) {
+                        if (isAddingItem) {
+                            if (!commitAddItem()) return;
+                        }
+                        if (editingItemIndex !== null) {
+                            commitCurrentEdit();
+                        }
+                        deleteItem(idx);
+                    }
+                    return;
+                }
+                const nameEl = target.closest('.item-name');
+                const amountEl = target.closest('.item-amount');
+                if (nameEl && !target.closest('input')) {
+                    e.stopPropagation();
+                    if (isAddingItem) {
+                        if (!commitAddItem()) return;
+                    }
+                    if (editingItemIndex !== null && editingField !== 'name') {
+                        commitCurrentEdit();
+                    }
+                    const idx = parseInt(nameEl.getAttribute('data-index'), 10);
+                    if (!isNaN(idx) && idx >= 0 && idx < items.length) {
+                        editingItemIndex = idx;
+                        editingField = 'name';
+                        renderAll();
+                        renderItemEditInline(idx, 'name');
+                    }
+                    return;
+                }
+                if (amountEl && !target.closest('input')) {
+                    e.stopPropagation();
+                    if (isAddingItem) {
+                        if (!commitAddItem()) return;
+                    }
+                    if (editingItemIndex !== null && editingField !== 'amount') {
+                        commitCurrentEdit();
+                    }
+                    const idx = parseInt(amountEl.getAttribute('data-index'), 10);
+                    if (!isNaN(idx) && idx >= 0 && idx < items.length) {
+                        editingItemIndex = idx;
+                        editingField = 'amount';
+                        renderAll();
+                        renderItemEditInline(idx, 'amount');
+                    }
+                    return;
+                }
+                const editInput = target.closest('.item-edit-input');
+                if (editInput) {
+                    e.stopPropagation();
+                    return;
+                }
+                if (isAddingItem) {
+                    cancelAddItem();
+                }
+                if (editingItemIndex !== null && !target.closest('.item-row')) {
+                    commitCurrentEdit();
+                }
+            });
+
+            itemsList.addEventListener('blur', function(e) {
+                const inp = e.target;
+                if (!inp || !inp.classList.contains('item-edit-input')) return;
+                setTimeout(() => {
+                    if (document.activeElement === inp) return;
+                    const idx = parseInt(inp.getAttribute('data-index'), 10);
+                    const field = inp.getAttribute('data-field');
+                    if (!isNaN(idx) && field) {
+                        commitItemEdit(idx, field, inp.value);
+                    }
+                }, 200);
+            }, true);
+
+            itemsList.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.classList.contains('item-edit-input')) {
+                    e.preventDefault();
+                    const inp = e.target;
+                    const idx = parseInt(inp.getAttribute('data-index'), 10);
+                    const field = inp.getAttribute('data-field');
+                    if (!isNaN(idx) && field) {
+                        commitItemEdit(idx, field, inp.value);
+                    }
+                }
+            });
+
+            // Global click for tapping away
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (target.closest('#headerRow') || target.closest('#subHeaderRow') || target.closest(
+                        '.item-row') || target.closest('#toast') || target.closest('#flash')) {
+                    return;
+                }
+                if (budgetInput.style.display === 'block' && !target.closest('#budgetInput')) {
+                    budgetInput.blur();
+                    return;
+                }
+                if (isAddingItem) {
+                    cancelAddItem();
+                }
+                if (editingItemIndex !== null) {
+                    commitCurrentEdit();
+                }
+            });
+
+            // Double-tap screenshot
+            let lastTapTime = 0;
+            let lastTapX = 0;
+            let lastTapY = 0;
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+                const now = Date.now();
+                const tx = e.touches[0].clientX;
+                const ty = e.touches[0].clientY;
+                const dist = Math.abs(tx - lastTapX) + Math.abs(ty - lastTapY);
+                if (now - lastTapTime < 350 && dist < 40) {
+                    e.preventDefault();
+                    triggerScreenshot();
+                    lastTapTime = 0;
+                } else {
+                    lastTapTime = now;
+                    lastTapX = tx;
+                    lastTapY = ty;
+                }
+            }, { passive: false });
+
+            function triggerScreenshot() {
+                flash.classList.add('active');
+                setTimeout(() => flash.classList.remove('active'), 100);
+                const canvas = document.createElement('canvas');
+                const scale = 2;
+                const w = Math.min(window.innerWidth, 500);
+                const h = Math.min(window.innerHeight, 900);
+                canvas.width = w * scale;
+                canvas.height = h * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(scale, scale);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, sans-serif';
+                const budgetText = budget !== null ? 'Expenses ' + fmt(budget) : 'Expenses';
+                ctx.fillText(budgetText, 16, 40);
+                let y = 75;
+                ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.fillStyle = '#888';
+                ctx.fillText('Item expense', 16, y);
+                ctx.textAlign = 'right';
+                ctx.fillText('Amount', w - 16, y);
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#fff';
+                ctx.font = '15px -apple-system, BlinkMacSystemFont, sans-serif';
+                y += 28;
+                items.forEach(item => {
+                    ctx.fillText(item.name || '', 16, y);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(fmt(item.amount), w - 16, y);
+                    ctx.textAlign = 'left';
+                    y += 26;
+                });
+                if (items.length > 0) {
+                    y += 4;
+                    ctx.strokeStyle = '#444';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(w - 120, y);
+                    ctx.lineTo(w - 16, y);
+                    ctx.stroke();
+                    y += 20;
+                    ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, sans-serif';
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText('Remaining:', 16, y);
+                    const rem = getRemaining();
+                    ctx.fillStyle = rem < 0 ? '#ff4444' : '#fff';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(fmt(rem), w - 16, y);
+                    ctx.textAlign = 'left';
+                }
+                canvas.toBlob(function(blob) {
+                    if (!blob) return;
+                    const file = new File([blob], 'expenses.png', { type: 'image/png' });
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: 'My Expenses',
+                        }).catch(() => {});
+                    } else if (navigator.share) {
+                        const textSummary =
+                            'Expenses: ' + (budget !== null ? fmt(budget) : 'N/A') + '\n' +
+                            items.map(i => (i.name || 'Item') + ': ' + fmt(i.amount)).join('\n') +
+                            '\nRemaining: ' + fmt(getRemaining());
+                        navigator.share({ text: textSummary, title: 'My Expenses' }).catch(() => {});
+                    } else {
+                        const a = document.createElement('a');
+                        a.download = 'expenses.png';
+                        a.href = URL.createObjectURL(blob);
+                        a.click();
+                        URL.revokeObjectURL(a.href);
+                    }
+                }, 'image/png');
+                showToast('Screenshot captured!');
+            }
+
+            // Swipe-to-delete on item rows (basic)
+            let swipeStartX = null;
+            let swipeRow = null;
+            itemsList.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+                const row = e.target.closest('.item-row');
+                if (!row) return;
+                swipeStartX = e.touches[0].clientX;
+                swipeRow = row;
+            }, { passive: true });
+            itemsList.addEventListener('touchmove', function(e) {
+                if (swipeStartX === null || !swipeRow) return;
+                const dx = e.touches[0].clientX - swipeStartX;
+                if (dx < -30) {
+                    swipeRow.style.transform = 'translateX(-50px)';
+                } else {
+                    swipeRow.style.transform = '';
+                }
+            }, { passive: true });
+            itemsList.addEventListener('touchend', function(e) {
+                if (swipeStartX === null || !swipeRow) return;
+                const dx = (e.changedTouches[0]?.clientX || swipeStartX) - swipeStartX;
+                if (dx < -60) {
+                    const idx = parseInt(swipeRow.getAttribute('data-index'), 10);
+                    if (!isNaN(idx)) {
+                        swipeRow.style.transform = 'translateX(-100%)';
+                        swipeRow.style.opacity = '0';
+                        swipeRow.style.transition = 'transform 0.2s, opacity 0.2s';
+                        setTimeout(() => {
+                            deleteItem(idx);
+                            const rows = itemsList.querySelectorAll('.item-row');
+                            rows.forEach(r => {
+                                r.style.transform = '';
+                                r.style.opacity = '';
+                                r.style.transition = '';
+                            });
+                        }, 200);
+                    }
+                } else {
+                    swipeRow.style.transform = '';
+                    swipeRow.style.transition = 'transform 0.2s';
+                    setTimeout(() => {
+                        if (swipeRow) {
+                            swipeRow.style.transition = '';
+                            swipeRow.style.transform = '';
+                        }
+                    }, 200);
+                }
+                swipeStartX = null;
+                swipeRow = null;
+            });
+
+            // Initialize
+            loadFromStorage();
+            if (budget === null && items.length === 0) {
+                budget = null;
+            }
+            renderAll();
+            if (budget !== null && !isNaN(budget) && budget >= 0) {
+                budgetDisplay.style.display = 'inline';
+                budgetDisplay.textContent = ' ' + fmt(budget);
+                contentArea.classList.add('active');
+            }
+        })();
+    </script>
+</body>
+</html>
