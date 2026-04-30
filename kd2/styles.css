@@ -113,6 +113,10 @@ body {
 .btn:hover { background: var(--accent-hover); }
 .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-medium); }
 .btn-small { padding: 0.5rem 1rem; font-size: 0.75rem; width: auto; }
+.btn-text {
+    background: none; border: none; color: var(--text-muted); font-size: 0.75rem;
+    text-decoration: underline; cursor: pointer;
+}
 
 .form-group { margin-bottom: 1rem; }
 .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); }
@@ -134,6 +138,8 @@ body {
 .item-details { font-size: 0.875rem; color: var(--text-secondary); }
 .item-quantity { font-weight: 600; color: var(--accent-primary); }
 .category-badge { display: inline-block; padding: 0.25rem 0.5rem; background: var(--bg-tertiary); border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
+
+.reset-data-container { text-align: center; margin-top: 2rem; }
 
 .fab {
     position: fixed; bottom: 100px; right: 1rem;
@@ -204,6 +210,11 @@ body {
 }
 .meal-notes { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
 
+.extra-item {
+    font-size: 0.85rem; color: var(--text-secondary);
+    padding: 0.25rem 0; border-bottom: 1px solid var(--border-light);
+}
+
 #daily-totals { text-align: center; }
 .calorie-row { display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.9rem; }
 .calorie-label { font-weight: 500; color: var(--text-secondary); }
@@ -241,11 +252,6 @@ body {
 .low-stock { color: var(--warning); }
 .out-of-stock { color: var(--danger); }
 
-/* Toast */
-@keyframes slideDown {
-    from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-    to { transform: translateX(-50%) translateY(0); opacity: 1; }
-}
 .toast {
     position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
     background: var(--accent-primary); color: white;
@@ -260,7 +266,11 @@ body {
     font-weight: 600; cursor: pointer; font-size: 0.8rem; white-space: nowrap;
 }
 
-/* Use screen */
+@keyframes slideDown {
+    from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
 .use-items-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .use-item-row {
     display: flex; justify-content: space-between; align-items: center;

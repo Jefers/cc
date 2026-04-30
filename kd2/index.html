@@ -21,12 +21,16 @@
         <!-- Inventory Screen -->
         <div class="screen active" id="inventory-screen">
             <div class="item-list" id="inventory-list"><div class="empty-state"><p>Loading inventory...</p></div></div>
+            <div class="reset-data-container">
+                <button class="btn-text" id="reset-all-data">Reset App Data</button>
+            </div>
         </div>
 
-        <!-- Plan Screen (macros now shown) -->
+        <!-- Plan Screen -->
         <div class="screen" id="plan-screen">
             <div class="date-tabs" id="date-tabs-container"></div>
             <div class="meal-slots" id="meal-slots-container"></div>
+            <div id="extra-consumption-container"></div>
             <div class="card" id="daily-totals">
                 <h3>Daily Totals</h3>
                 <div class="calorie-row">
@@ -42,16 +46,16 @@
             <button class="btn btn-secondary" id="reset-consumed-btn">⟳ Reset All Eaten Meals</button>
         </div>
 
-        <!-- Use Screen (ad‑hoc consumption, no multiplier) -->
+        <!-- Use Screen -->
         <div class="screen" id="use-screen">
             <div class="card">
                 <h3>➕ Use an Item (by portion)</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Tap ➕ to consume one portion. Undo toast appears.</p>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Tap ➕ to consume one portion.</p>
                 <div id="use-items-list" class="use-items-list"></div>
             </div>
         </div>
 
-        <!-- Shopping Screen (threshold behind cog) -->
+        <!-- Shopping Screen -->
         <div class="screen" id="shopping-screen">
             <div class="shopping-settings">
                 <span>Low‑stock threshold: <strong id="threshold-display">10%</strong></span>
@@ -71,7 +75,7 @@
         </div>
     </div>
 
-    <!-- Bottom nav reordered: Inventory, Plan, Use, Shopping, Supplements -->
+    <!-- Bottom nav -->
     <div class="bottom-nav">
         <div class="nav-item active" data-screen="inventory">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
@@ -97,7 +101,7 @@
 
     <button class="fab" id="add-item-fab">+</button>
 
-    <!-- Item Modal (unchanged) -->
+    <!-- Item Modal -->
     <div class="modal" id="item-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -136,7 +140,7 @@
         </div>
     </div>
 
-    <!-- Meal Modal (no remove slot button) -->
+    <!-- Meal Modal -->
     <div class="modal" id="meal-modal">
         <div class="modal-content modal-large">
             <div class="modal-header">
@@ -153,7 +157,7 @@
         </div>
     </div>
 
-    <!-- Threshold settings modal (small) -->
+    <!-- Threshold settings modal -->
     <div class="modal" id="threshold-modal">
         <div class="modal-content threshold-modal-content">
             <div class="modal-header">

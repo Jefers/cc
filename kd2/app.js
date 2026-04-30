@@ -46,7 +46,7 @@ class DataStore {
     constructor() {
         this.data = this.loadData();
         if (!this.data.consumedMeals) this.data.consumedMeals = [];
-        // Ensure every item has macros & portionAmount
+        if (!this.data.adhocConsumptions) this.data.adhocConsumptions = [];
         this.data.items.forEach(item => {
             item.carbs = item.carbs ?? 0;
             item.fat = item.fat ?? 0;
@@ -56,16 +56,17 @@ class DataStore {
         this.saveData();
     }
     loadData() {
-        const stored = localStorage.getItem('mealPlannerDatakd2f');
+        const stored = localStorage.getItem('mealPlannerData_v2');
         if (stored) return JSON.parse(stored);
         if (typeof DEFAULT_DATA !== 'undefined') {
             const defaultData = JSON.parse(JSON.stringify(DEFAULT_DATA));
             defaultData.consumedMeals = [];
+            defaultData.adhocConsumptions = [];
             return defaultData;
         }
-        return { items: [], meals: [], plan: [], supplements: [], notes: {}, consumedMeals: [] };
+        return { items: [], meals: [], plan: [], supplements: [], notes: {}, consumedMeals: [], adhocConsumptions: [] };
     }
-    saveData() { localStorage.setItem('mealPlannerDatakd2f', JSON.stringify(this.data)); }
+    saveData() { localStorage.setItem('mealPlannerData_v2', JSON.stringify(this.data)); }
     generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
     addItem(item) {
         item.carbs = item.carbs ?? 0;
@@ -120,12 +121,9 @@ class DataStore {
         this.data.consumedMeals = this.data.consumedMeals.filter(k => k !== key);
         this.saveData();
     }
-    resetAllConsumed() {
-        this.data.consumedMeals = [];
-        this.saveData();
-    }
+    resetAllConsumed() { this.data.consumedMeals = []; this.saveData(); }
 
-    // Ad‑hoc consumption: single portion
+    // Ad‑hoc consumption
     consumePortion(itemId) {
         const item = this.getItem(itemId);
         if (!item) return false;
@@ -134,6 +132,11 @@ class DataStore {
         this.updateItem(itemId, { quantity: item.quantity - portion });
         return true;
     }
+    recordAdhoc(date, itemId, name, quantity, portion, fat, protein, carbs, calories) {
+        this.data.adhocConsumptions.push({ date, itemId, name, quantity, portion, fat, protein, carbs, calories });
+        this.saveData();
+    }
+    clearAllAdhoc() { this.data.adhocConsumptions = []; this.saveData(); }
 }
 
 // ---------- App Controller ----------
@@ -182,12 +185,10 @@ class MealPlannerApp {
         document.getElementById('save-meal').addEventListener('click', () => this.saveMeal());
         document.getElementById('generate-shopping-list').addEventListener('click', () => this.generateShoppingList());
         document.getElementById('reset-consumed-btn').addEventListener('click', () => this.resetAllConsumedMeals());
-
-        // Threshold modal
+        document.getElementById('reset-all-data').addEventListener('click', () => this.resetAllData());
         document.getElementById('edit-threshold').addEventListener('click', () => this.openThresholdModal());
         document.getElementById('close-threshold-modal').addEventListener('click', () => this.closeThresholdModal());
         document.getElementById('save-threshold-btn').addEventListener('click', () => this.saveThreshold());
-
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
         });
@@ -204,7 +205,6 @@ class MealPlannerApp {
         localStorage.setItem('theme', next);
     }
 
-    // ----- Undo infrastructure -----
     showToast(msg, undoLabel = null, undoCallback = null) {
         if (this.lastToast) this.lastToast.remove();
         this.lastAction = undoCallback ? { label: undoLabel, fn: undoCallback } : null;
@@ -243,7 +243,7 @@ class MealPlannerApp {
         });
     }
 
-    // ----- Tab generation (sorted Sunday first) -----
+    // ----- Tabs -----
     generateDateTabs() {
         const plan = this.dataStore.getPlan();
         const container = document.getElementById('date-tabs-container');
@@ -301,7 +301,7 @@ class MealPlannerApp {
         const items = this.dataStore.getItems();
         const container = document.getElementById('inventory-list');
         if (!items.length) {
-            container.innerHTML = `<div class="empty-state"><p>📦 No items yet</p><p>Tap the + button to add your first!</p></div>`;
+            container.innerHTML = '<div class="empty-state"><p>📦 No items yet</p><p>Tap the + button to add your first!</p></div>';
             return;
         }
         container.innerHTML = items.map(item => {
@@ -316,31 +316,49 @@ class MealPlannerApp {
         });
     }
 
-    // ---- Plan (with macros) ----
+    // ---- Plan (macros calculated on the fly) ----
+    calcMealMacros(meal) {
+        let fat = 0, protein = 0, carbs = 0;
+        if (!meal || !meal.ingredients) return { fat, protein, carbs };
+        meal.ingredients.forEach(ing => {
+            const item = this.dataStore.getItem(ing.itemId);
+            if (item) {
+                const qty = ing.quantity;
+                fat += (item.fat || 0) * qty;
+                protein += (item.protein || 0) * qty;
+                carbs += (item.carbs || 0) * qty;
+            }
+        });
+        return { fat, protein, carbs };
+    }
+
     renderPlan() {
         const plan = this.dataStore.getPlan();
         if (!plan.length) return;
         const currentPlan = plan[this.currentDay];
         const slotsContainer = document.getElementById('meal-slots-container');
+        const extraContainer = document.getElementById('extra-consumption-container');
         const mealNames = ['Breakfast', 'Lunch', 'Dinner', 'Protein Bridge'];
-        let plannedCalories = 0, plannedFat = 0, plannedProtein = 0, plannedCarbs = 0;
-        let consumedCalories = 0, consumedFat = 0, consumedProtein = 0, consumedCarbs = 0;
+        let plannedCal = 0, plannedFat = 0, plannedProtein = 0, plannedCarbs = 0;
+        let consumedCal = 0, consumedFat = 0, consumedProtein = 0, consumedCarbs = 0;
 
+        // Meal slots
         slotsContainer.innerHTML = '';
         for (let i = 0; i < 4; i++) {
             const mealId = currentPlan.slots[i];
             const mealData = mealId ? this.dataStore.getMeal(mealId) : null;
             const consumed = this.dataStore.isMealConsumed(this.currentDay, i);
             if (mealData) {
-                plannedCalories += mealData.calories || 0;
-                plannedFat += mealData.fat || 0;
-                plannedProtein += mealData.protein || 0;
-                plannedCarbs += mealData.carbs || 0;
+                const macros = this.calcMealMacros(mealData);
+                plannedCal += mealData.calories || 0;
+                plannedFat += macros.fat;
+                plannedProtein += macros.protein;
+                plannedCarbs += macros.carbs;
                 if (consumed) {
-                    consumedCalories += mealData.calories || 0;
-                    consumedFat += mealData.fat || 0;
-                    consumedProtein += mealData.protein || 0;
-                    consumedCarbs += mealData.carbs || 0;
+                    consumedCal += mealData.calories || 0;
+                    consumedFat += macros.fat;
+                    consumedProtein += macros.protein;
+                    consumedCarbs += macros.carbs;
                 }
             }
             const slotDiv = document.createElement('div');
@@ -353,16 +371,15 @@ class MealPlannerApp {
             `;
             const contentDiv = slotDiv.querySelector('.meal-content');
             if (mealData) {
-                const ingredientsList = mealData.ingredients.map(ing => `${ing.quantity}${ing.unit} ${ing.name}`).join(', ');
+                const ingList = mealData.ingredients.map(ing => `${ing.quantity}${ing.unit} ${ing.name}`).join(', ');
                 const cals = mealData.calories ? `<div class="meal-calories">${mealData.calories} kcal</div>` : '';
                 const notes = mealData.notes ? `<div class="meal-notes">${mealData.notes}</div>` : '';
-                const macros = (mealData.fat || mealData.protein || mealData.carbs) ?
-                    `<div class="meal-macros">F:${mealData.fat || 0}g P:${mealData.protein || 0}g C:${mealData.carbs || 0}g</div>` : '';
-                contentDiv.innerHTML = `<div class="meal-details">${mealData.name}</div><div class="meal-ingredients">${ingredientsList}</div>${cals}${macros}${notes}`;
+                const macros = this.calcMealMacros(mealData);
+                const macroStr = `F:${macros.fat.toFixed(0)}g P:${macros.protein.toFixed(0)}g C:${macros.carbs.toFixed(1)}g`;
+                contentDiv.innerHTML = `<div class="meal-details">${mealData.name}</div><div class="meal-ingredients">${ingList}</div>${cals}<div class="meal-macros">${macroStr}</div>${notes}`;
             } else {
                 contentDiv.textContent = 'Tap to add meal';
             }
-
             const eatBtn = slotDiv.querySelector('.eat-btn');
             if (eatBtn) {
                 eatBtn.addEventListener('click', (e) => {
@@ -370,7 +387,6 @@ class MealPlannerApp {
                     if (!consumed) this.markMealAsEaten(this.currentDay, i, mealId);
                 });
             }
-
             const resetBtn = slotDiv.querySelector('.reset-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', (e) => {
@@ -378,7 +394,6 @@ class MealPlannerApp {
                     this.resetSingleMeal(this.currentDay, i);
                 });
             }
-
             slotDiv.addEventListener('click', (e) => {
                 if (e.target === eatBtn || e.target === resetBtn) return;
                 if (!consumed) this.openMealSlot(this.currentDay, i, mealId);
@@ -386,9 +401,30 @@ class MealPlannerApp {
             slotsContainer.appendChild(slotDiv);
         }
 
-        document.getElementById('consumed-calories').textContent = `${consumedCalories} kcal`;
-        document.getElementById('planned-calories').textContent = `${plannedCalories} kcal`;
+        // Extra consumption (ad‑hoc) for this day
+        const dayDate = currentPlan.date;
+        const adhocs = this.dataStore.data.adhocConsumptions.filter(a => a.date === dayDate);
+        let extraCal = 0, extraFat = 0, extraProtein = 0, extraCarbs = 0;
+        let extraHtml = '';
+        if (adhocs.length) {
+            extraHtml = '<div class="card" style="margin-top:1rem;"><h4 style="margin-bottom:0.5rem;">Extra consumption</h4>';
+            adhocs.forEach(a => {
+                extraCal += a.calories || 0;
+                extraFat += a.fat || 0;
+                extraProtein += a.protein || 0;
+                extraCarbs += a.carbs || 0;
+                extraHtml += `<div class="extra-item">${a.name} (${a.quantity} ${a.portion ? this.dataStore.getItem(a.itemId)?.unit : ''}) – ${a.calories || 0} kcal</div>`;
+            });
+            extraHtml += '</div>';
+        }
+        extraContainer.innerHTML = extraHtml;
+        consumedCal += extraCal;
+        consumedFat += extraFat;
+        consumedProtein += extraProtein;
+        consumedCarbs += extraCarbs;
 
+        document.getElementById('consumed-calories').textContent = `${consumedCal} kcal`;
+        document.getElementById('planned-calories').textContent = `${plannedCal} kcal`;
         document.getElementById('macro-summary').innerHTML = `
             <div class="macro-entry"><span>Consumed:</span> F:${consumedFat.toFixed(0)}g P:${consumedProtein.toFixed(0)}g C:${consumedCarbs.toFixed(1)}g</div>
             <div class="macro-entry"><span>Planned:</span> F:${plannedFat.toFixed(0)}g P:${plannedProtein.toFixed(0)}g C:${plannedCarbs.toFixed(1)}g</div>
@@ -444,17 +480,25 @@ class MealPlannerApp {
     }
 
     resetAllConsumedMeals() {
-        if (confirm("Reset all eaten meals? This will NOT restore inventory – only re‑enable meals.")) {
+        if (confirm("Reset all eaten meals AND extra consumption? This will NOT restore inventory.")) {
             this.dataStore.resetAllConsumed();
+            this.dataStore.clearAllAdhoc();
             this.renderPlan();
-            this.showToast("All meals reactivated.");
+            this.showToast("All meals and extra consumption cleared.");
         }
     }
 
-    // ---- Meal Slot Modal (no remove button) ----
+    resetAllData() {
+        if (confirm("Delete ALL data and reload defaults? This cannot be undone.")) {
+            localStorage.removeItem('mealPlannerData_v2');
+            location.reload();
+        }
+    }
+
+    // ---- Meal slot modal ----
     openMealSlot(dayIdx, slotIdx, existingMealId = null) {
         if (this.dataStore.isMealConsumed(dayIdx, slotIdx)) {
-            this.showToast("Cannot edit a meal that has already been eaten. Reset it first.");
+            this.showToast("Cannot edit a meal that has already been eaten.");
             return;
         }
         this.currentMealSlot = { dayIndex: dayIdx, slotIndex: slotIdx };
@@ -486,7 +530,7 @@ class MealPlannerApp {
             if (meal && meal.ingredients) meal.ingredients.forEach(ing => { existing[ing.itemId] = ing.quantity; });
         }
         container.innerHTML = items.map(item => `<div class="ingredient-row">
-            <div class="item-info" style="flex:1;"><div class="item-name">${item.name}</div><div class="item-details" style="font-size:0.75rem;">Available: ${item.quantity} ${item.unit}</div></div>
+            <div class="item-info" style="flex:1;"><div class="item-name">${item.name}</div><div class="item-details" style="font-size:0.75rem;">Avail: ${item.quantity} ${item.unit}</div></div>
             <input type="number" class="ingredient-input" placeholder="0" value="${existing[item.id] || ''}" min="0" step="0.1" data-item-id="${item.id}">
             <span style="font-size:0.875rem;color:var(--text-secondary);width:35px;">${item.unit}</span>
         </div>`).join('');
@@ -525,7 +569,7 @@ class MealPlannerApp {
         this.showToast('Meal saved!');
     }
 
-    // ---- Use screen (ad‑hoc, single tap) ----
+    // ---- Use screen (records ad‑hoc) ----
     renderUseScreen() {
         const items = this.dataStore.getItems();
         const container = document.getElementById('use-items-list');
@@ -554,27 +598,50 @@ class MealPlannerApp {
                 const item = this.dataStore.getItem(itemId);
                 const portion = item?.portionAmount || 1;
                 if (this.dataStore.consumePortion(itemId)) {
+                    // Record consumption for today
+                    const todayStr = new Date().toISOString().slice(0, 10);
+                    const cals = Math.round(((item.fat || 0) * 9 + (item.protein || 0) * 4 + (item.carbs || 0) * 4) * portion);
+                    this.dataStore.recordAdhoc(
+                        todayStr,
+                        item.id,
+                        item.name,
+                        portion,
+                        item.unit,
+                        (item.fat || 0) * portion,
+                        (item.protein || 0) * portion,
+                        (item.carbs || 0) * portion,
+                        cals
+                    );
                     this.renderUseScreen();
                     this.renderInventory();
                     const undoCallback = () => {
-                        const item = this.dataStore.getItem(itemId);
-                        if (item) {
-                            this.dataStore.updateItem(itemId, { quantity: item.quantity + portion });
+                        const it = this.dataStore.getItem(itemId);
+                        if (it) {
+                            this.dataStore.updateItem(itemId, { quantity: it.quantity + portion });
+                            // Also remove last adhoc entry (simplistic: pop last matching item)
+                            const arr = this.dataStore.data.adhocConsumptions;
+                            for (let i = arr.length - 1; i >= 0; i--) {
+                                if (arr[i].itemId === itemId && arr[i].date === todayStr) {
+                                    arr.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            this.dataStore.saveData();
                             this.renderUseScreen();
                             this.renderInventory();
-                            this.showToast(`Undo: returned ${portion} ${item.unit} of ${item.name}.`);
+                            this.showToast(`Undo: returned ${portion} ${it.unit} of ${it.name}.`);
                         }
                     };
-                    this.showToast(`Used 1 portion (${portion} ${item.unit}).`, 'Undo', undoCallback);
+                    this.showToast(`Used ${portion} ${item.unit} of ${item.name}.`, 'Undo', undoCallback);
                 } else {
-                    this.showToast(`Not enough ${item?.name} left.`);
+                    this.showToast(`Not enough ${item?.name || ''} left.`);
                     this.renderUseScreen();
                 }
             });
         });
     }
 
-    // ---- Shopping list with low‑stock threshold from localStorage ----
+    // ---- Shopping (zero‑stock fix) ----
     getLowStockThreshold() {
         const stored = localStorage.getItem('lowStockThreshold');
         return stored !== null ? parseFloat(stored) : 10;
@@ -584,9 +651,7 @@ class MealPlannerApp {
         document.getElementById('threshold-input').value = this.getLowStockThreshold();
         document.getElementById('threshold-modal').classList.add('show');
     }
-    closeThresholdModal() {
-        document.getElementById('threshold-modal').classList.remove('show');
-    }
+    closeThresholdModal() { document.getElementById('threshold-modal').classList.remove('show'); }
     saveThreshold() {
         const input = document.getElementById('threshold-input');
         let val = parseFloat(input.value);
@@ -636,11 +701,12 @@ class MealPlannerApp {
             }
         }
 
+        // Low‑stock (now includes zero)
         this.dataStore.getItems().forEach(item => {
             const pack = PACK_SIZES[item.id];
             if (!pack) return;
             const threshold = pack * thresholdPercent;
-            if (item.quantity <= threshold && item.quantity > 0) {
+            if (item.quantity <= threshold) {  // removed >0
                 const key = item.id;
                 const existing = neededMap.get(key);
                 if (existing) {
