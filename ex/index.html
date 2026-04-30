@@ -11,7 +11,6 @@
             --muted: #888;
             --border: #333;
             --danger: #ff4444;
-            --accent: #fff;
         }
         * {
             margin: 0;
@@ -113,6 +112,14 @@
         .sub-header-row:active {
             opacity: 0.6;
         }
+        .sub-labels-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .sub-labels-row.hidden {
+            display: none;
+        }
         .sub-label {
             font-size: 13px;
             font-weight: 500;
@@ -156,14 +163,6 @@
         .sub-input::placeholder {
             color: #444;
         }
-        .sub-labels-row {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
-        .sub-labels-row.hidden {
-            display: none;
-        }
         .items-list {
             display: flex;
             flex-direction: column;
@@ -176,9 +175,13 @@
             align-items: center;
             min-height: 38px;
             padding: 6px 0;
-            position: relative;
-            transition: transform 0.15s ease;
+            transition: transform 0.15s ease, opacity 0.2s;
             cursor: default;
+        }
+        .item-row.removing {
+            transform: translateX(-40px);
+            opacity: 0.3;
+            pointer-events: none;
         }
         .item-name {
             font-size: 15px;
@@ -195,35 +198,34 @@
         .item-name:active {
             opacity: 0.5;
         }
+        .item-delete {
+            font-size: 15px;
+            color: #555;
+            cursor: pointer;
+            padding: 6px 6px;
+            flex-shrink: 0;
+            opacity: 0.3;
+            transition: opacity 0.2s, color 0.2s;
+            z-index: 2;
+            text-align: center;
+            min-width: 26px;
+        }
+        .item-delete:active {
+            opacity: 1;
+            color: var(--danger);
+        }
         .item-amount {
             font-size: 15px;
             color: var(--text);
             cursor: pointer;
             text-align: right;
             flex-shrink: 0;
-            margin-left: 16px;
             padding: 4px 0;
             transition: opacity 0.15s;
             min-width: 60px;
         }
         .item-amount:active {
             opacity: 0.5;
-        }
-        .item-delete {
-            font-size: 16px;
-            color: #555;
-            cursor: pointer;
-            padding: 6px 8px;
-            margin-left: 4px;
-            flex-shrink: 0;
-            opacity: 0.35;
-            transition: opacity 0.2s, color 0.2s;
-            z-index: 2;
-            -webkit-tap-highlight-color: rgba(255, 68, 68, 0.2);
-        }
-        .item-delete:active {
-            opacity: 1;
-            color: var(--danger);
         }
         .item-edit-input {
             font-size: 15px;
@@ -246,7 +248,6 @@
             width: 100px;
             text-align: right;
             flex-shrink: 0;
-            margin-left: 16px;
         }
         .separator-row {
             display: flex;
@@ -304,6 +305,67 @@
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        .undo-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1c1c1e;
+            color: #fff;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s, transform 0.35s;
+            z-index: 101;
+            letter-spacing: 0.2px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            overflow: hidden;
+        }
+        .undo-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        .undo-toast-text {
+            white-space: nowrap;
+        }
+        .undo-toast-btn {
+            font-weight: 600;
+            color: #64b5f6;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .undo-toast-btn:active {
+            background: rgba(100, 181, 246, 0.2);
+        }
+        .undo-toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 0 0 16px 16px;
+            width: 100%;
+            transform-origin: left;
+        }
+        .undo-toast-progress.shrinking {
+            animation: shrinkBar 4s linear forwards;
+        }
+        @keyframes shrinkBar {
+            to {
+                transform: scaleX(0);
+            }
         }
         .flash {
             position: fixed;
@@ -348,6 +410,11 @@
         </div>
     </div>
     <div class="toast" id="toast"></div>
+    <div class="undo-toast" id="undoToast">
+        <span class="undo-toast-text">Item deleted</span>
+        <span class="undo-toast-btn" id="undoBtn">Undo</span>
+        <div class="undo-toast-progress" id="undoProgress"></div>
+    </div>
     <div class="flash" id="flash"></div>
 
     <script>
@@ -370,6 +437,9 @@
             const remainingRow = $('#remainingRow');
             const remainingValue = $('#remainingValue');
             const toast = $('#toast');
+            const undoToast = $('#undoToast');
+            const undoBtn = $('#undoBtn');
+            const undoProgress = $('#undoProgress');
             const flash = $('#flash');
 
             let budget = null;
@@ -378,6 +448,10 @@
             let pendingSaveTimeout = null;
             let editingItemIndex = null;
             let editingField = null;
+
+            let pendingDeleteItem = null;
+            let pendingDeleteIndex = -1;
+            let undoTimeout = null;
 
             function fmt(n) {
                 if (n === null || n === undefined || isNaN(n)) return '0';
@@ -394,12 +468,71 @@
                 toast.textContent = msg;
                 toast.classList.add('show');
                 clearTimeout(toast._timeout);
-                toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), 2200);
             }
+
+            function finalizePendingDelete() {
+                if (pendingDeleteItem === null) return;
+                clearTimeout(undoTimeout);
+                undoTimeout = null;
+                pendingDeleteItem = null;
+                pendingDeleteIndex = -1;
+                undoToast.classList.remove('show');
+                undoProgress.classList.remove('shrinking');
+                saveToStorage();
+            }
+
+            function showUndoToast(item, index) {
+                finalizePendingDelete();
+                pendingDeleteItem = item;
+                pendingDeleteIndex = index;
+                undoToast.classList.add('show');
+                undoProgress.classList.remove('shrinking');
+                void undoProgress.offsetWidth;
+                undoProgress.classList.add('shrinking');
+                undoTimeout = setTimeout(() => {
+                    finalizePendingDelete();
+                    renderAll();
+                }, 4000);
+            }
+
+            function performSoftDelete(index) {
+                if (index < 0 || index >= items.length) return;
+                if (isAddingItem) {
+                    if (!commitAddItem()) return;
+                }
+                if (editingItemIndex !== null) {
+                    commitCurrentEdit();
+                }
+                const item = items[index];
+                items.splice(index, 1);
+                saveToStorage();
+                renderAll();
+                showUndoToast(item, index);
+            }
+
+            undoBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                if (pendingDeleteItem === null) return;
+                clearTimeout(undoTimeout);
+                undoTimeout = null;
+                const item = pendingDeleteItem;
+                const idx = pendingDeleteIndex;
+                const insertAt = Math.min(idx, items.length);
+                items.splice(insertAt, 0, item);
+                pendingDeleteItem = null;
+                pendingDeleteIndex = -1;
+                undoToast.classList.remove('show');
+                undoProgress.classList.remove('shrinking');
+                saveToStorage();
+                renderAll();
+                showToast('Item restored');
+            });
 
             function saveToStorage() {
                 try {
-                    localStorage.setItem('exp_budget', budget !== null ? budget : '');
+                    localStorage.setItem('exp_budget', budget !== null && !isNaN(budget) && budget >= 0 ? budget : '');
                     localStorage.setItem('exp_items', JSON.stringify(items));
                 } catch (e) {}
             }
@@ -431,6 +564,7 @@
             }
 
             function renderAll() {
+                finalizePendingDelete();
                 const hasBudget = budget !== null && !isNaN(budget) && budget >= 0;
                 if (hasBudget) {
                     expensesLabel.textContent = 'Expenses';
@@ -492,8 +626,8 @@
                     return `
                 <div class="item-row" data-index="${idx}">
                   <span class="item-name" data-index="${idx}" data-field="name">${n || '&nbsp;'}</span>
-                  <span class="item-amount" data-index="${idx}" data-field="amount">${fmt(item.amount)}</span>
                   <span class="item-delete" data-index="${idx}" data-action="delete">×</span>
+                  <span class="item-amount" data-index="${idx}" data-field="amount">${fmt(item.amount)}</span>
                 </div>`;
                 }).join('');
             }
@@ -632,9 +766,9 @@
                 commitItemEdit(editingItemIndex, editingField, val);
             }
 
-            function deleteItem(idx) {
-                if (idx < 0 || idx >= items.length) return;
-                items.splice(idx, 1);
+            function deleteItemHard(index) {
+                if (index < 0 || index >= items.length) return;
+                items.splice(index, 1);
                 editingItemIndex = null;
                 editingField = null;
                 clearTimeout(pendingSaveTimeout);
@@ -644,7 +778,7 @@
             }
 
             // Event: Tap "Expenses" label to edit budget
-            expensesLabel.addEventListener('click', (e) => {
+            expensesLabel.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (budgetInput.style.display === 'block') return;
                 if (isAddingItem) {
@@ -653,6 +787,7 @@
                 if (editingItemIndex !== null) {
                     commitCurrentEdit();
                 }
+                finalizePendingDelete();
                 budgetDisplay.style.display = 'none';
                 budgetInput.style.display = 'block';
                 budgetInput.value = budget !== null && !isNaN(budget) ? String(budget) : '';
@@ -660,7 +795,7 @@
                 budgetInput.setSelectionRange(budgetInput.value.length, budgetInput.value.length);
             });
 
-            budgetDisplay.addEventListener('click', (e) => {
+            budgetDisplay.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (budgetInput.style.display === 'block') return;
                 if (isAddingItem) {
@@ -669,6 +804,7 @@
                 if (editingItemIndex !== null) {
                     commitCurrentEdit();
                 }
+                finalizePendingDelete();
                 budgetDisplay.style.display = 'none';
                 budgetInput.style.display = 'block';
                 budgetInput.value = budget !== null && !isNaN(budget) ? String(budget) : '';
@@ -720,6 +856,7 @@
                 if (editingItemIndex !== null) {
                     commitCurrentEdit();
                 }
+                finalizePendingDelete();
                 const target = e.target;
                 if (target.closest('.sub-input-wrap') && isAddingItem) return;
                 if (target.closest('input')) return;
@@ -801,13 +938,7 @@
                     e.stopPropagation();
                     const idx = parseInt(deleteBtn.getAttribute('data-index'), 10);
                     if (!isNaN(idx)) {
-                        if (isAddingItem) {
-                            if (!commitAddItem()) return;
-                        }
-                        if (editingItemIndex !== null) {
-                            commitCurrentEdit();
-                        }
-                        deleteItem(idx);
+                        performSoftDelete(idx);
                     }
                     return;
                 }
@@ -818,6 +949,7 @@
                     if (isAddingItem) {
                         if (!commitAddItem()) return;
                     }
+                    finalizePendingDelete();
                     if (editingItemIndex !== null && editingField !== 'name') {
                         commitCurrentEdit();
                     }
@@ -835,6 +967,7 @@
                     if (isAddingItem) {
                         if (!commitAddItem()) return;
                     }
+                    finalizePendingDelete();
                     if (editingItemIndex !== null && editingField !== 'amount') {
                         commitCurrentEdit();
                     }
@@ -889,7 +1022,8 @@
             document.addEventListener('click', function(e) {
                 const target = e.target;
                 if (target.closest('#headerRow') || target.closest('#subHeaderRow') || target.closest(
-                        '.item-row') || target.closest('#toast') || target.closest('#flash')) {
+                        '.item-row') || target.closest('#toast') || target.closest('#undoToast') || target
+                    .closest('#flash')) {
                     return;
                 }
                 if (budgetInput.style.display === 'block' && !target.closest('#budgetInput')) {
@@ -1002,7 +1136,7 @@
                 showToast('Screenshot captured!');
             }
 
-            // Swipe-to-delete on item rows (basic)
+            // Swipe-to-delete with undo support
             let swipeStartX = null;
             let swipeRow = null;
             itemsList.addEventListener('touchstart', function(e) {
@@ -1027,18 +1161,18 @@
                 if (dx < -60) {
                     const idx = parseInt(swipeRow.getAttribute('data-index'), 10);
                     if (!isNaN(idx)) {
-                        swipeRow.style.transform = 'translateX(-100%)';
-                        swipeRow.style.opacity = '0';
+                        swipeRow.style.transform = 'translateX(-40px)';
+                        swipeRow.style.opacity = '0.3';
                         swipeRow.style.transition = 'transform 0.2s, opacity 0.2s';
+                        const rowRef = swipeRow;
                         setTimeout(() => {
-                            deleteItem(idx);
-                            const rows = itemsList.querySelectorAll('.item-row');
-                            rows.forEach(r => {
-                                r.style.transform = '';
-                                r.style.opacity = '';
-                                r.style.transition = '';
-                            });
-                        }, 200);
+                            if (rowRef) {
+                                rowRef.style.transform = '';
+                                rowRef.style.opacity = '';
+                                rowRef.style.transition = '';
+                            }
+                        }, 300);
+                        performSoftDelete(idx);
                     }
                 } else {
                     swipeRow.style.transform = '';
