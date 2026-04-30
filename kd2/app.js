@@ -56,7 +56,7 @@ class DataStore {
         this.saveData();
     }
     loadData() {
-        const stored = localStorage.getItem('mealPlannerDatakd2e');
+        const stored = localStorage.getItem('mealPlannerDatakd2f');
         if (stored) return JSON.parse(stored);
         if (typeof DEFAULT_DATA !== 'undefined') {
             const defaultData = JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -65,7 +65,7 @@ class DataStore {
         }
         return { items: [], meals: [], plan: [], supplements: [], notes: {}, consumedMeals: [] };
     }
-    saveData() { localStorage.setItem('mealPlannerDatakd2e', JSON.stringify(this.data)); }
+    saveData() { localStorage.setItem('mealPlannerDatakd2f', JSON.stringify(this.data)); }
     generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
     addItem(item) {
         item.carbs = item.carbs ?? 0;
