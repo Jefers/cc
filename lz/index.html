@@ -8,23 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap');
-        
-        body {
-            font-family: 'SF Pro Display', system-ui, sans-serif;
-        }
+        body { font-family: 'SF Pro Display', system-ui, sans-serif; }
         .glass {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
         }
-        .dark .glass {
-            background: rgba(30, 30, 30, 0.85);
-        }
-        .pie-chart {
-            width: 230px;
-            height: 230px;
-            border-radius: 9999px;
-            position: relative;
-        }
+        .dark .glass { background: rgba(30, 30, 30, 0.85); }
+        .pie-chart { width: 230px; height: 230px; border-radius: 9999px; position: relative; }
     </style>
 </head>
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen pb-12">
@@ -35,7 +25,6 @@
                 <div class="w-9 h-9 bg-yellow-400 rounded-2xl flex items-center justify-center text-zinc-900 font-bold text-2xl">L</div>
                 <span class="font-semibold tracking-tighter text-3xl">Loanly</span>
             </div>
-            
             <div class="flex items-center gap-x-2">
                 <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-3xl bg-white dark:bg-zinc-800 shadow-md">
                     <i id="theme-icon" class="fa-solid fa-moon"></i>
@@ -46,14 +35,14 @@
             </div>
         </div>
 
-        <!-- Input Card -->
+        <!-- Input -->
         <div id="input-card" class="mx-5 glass rounded-3xl shadow-xl p-6 mb-8 border border-zinc-200 dark:border-zinc-800">
             <h1 class="text-2xl font-semibold mb-6 text-center">New Loan</h1>
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">LOAN AMOUNT</label>
                     <div class="relative">
-                        <span id="sym1" class="absolute left-5 top-1/2 -translate-y-1/2 text-3xl text-zinc-400 currency-sym">$</span>
+                        <span class="currency-sym absolute left-5 top-1/2 -translate-y-1/2 text-3xl text-zinc-400">$</span>
                         <input id="loan-amount" type="number" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-2xl pl-12 pr-6 py-5 text-3xl font-light focus:outline-none focus:border-yellow-400" placeholder="12000">
                     </div>
                 </div>
@@ -61,7 +50,7 @@
                 <div>
                     <label class="block text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">MONTHLY REPAYMENT</label>
                     <div class="relative">
-                        <span id="sym2" class="absolute left-5 top-1/2 -translate-y-1/2 text-3xl text-zinc-400 currency-sym">$</span>
+                        <span class="currency-sym absolute left-5 top-1/2 -translate-y-1/2 text-3xl text-zinc-400">$</span>
                         <input id="monthly-pay" type="number" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-2xl pl-12 pr-6 py-5 text-3xl font-light focus:outline-none focus:border-yellow-400" placeholder="1000">
                     </div>
                 </div>
@@ -132,21 +121,18 @@
         </div>
     </div>
 
-    <!-- Menu -->
+    <!-- Menu + Schedule Modal + Toast (same as before) -->
     <div id="menu" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end">
         <div class="bg-white dark:bg-zinc-900 w-full rounded-t-3xl p-6">
             <div class="flex justify-between mb-6">
                 <span class="font-semibold text-lg">Settings</span>
                 <button onclick="hideMenu()" class="text-3xl">×</button>
             </div>
-            <div>
-                <label class="block text-sm mb-3 text-zinc-500">Currency Symbol</label>
-                <div class="grid grid-cols-5 gap-3" id="currency-options"></div>
-            </div>
+            <label class="block text-sm mb-3 text-zinc-500">Currency Symbol</label>
+            <div class="grid grid-cols-5 gap-3" id="currency-options"></div>
         </div>
     </div>
 
-    <!-- Schedule Modal -->
     <div id="schedule-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end">
         <div class="bg-white dark:bg-zinc-900 w-full max-w-lg mx-auto rounded-t-3xl max-h-[85vh] flex flex-col">
             <div class="p-5 border-b flex justify-between">
@@ -157,24 +143,20 @@
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-5 py-3 rounded-3xl shadow-2xl">
         <span id="toast-text"></span>
     </div>
 
     <script>
-        // ==================== CONFIG & STATE ====================
+        // ==================== STATE ====================
         let currencySymbol = '$';
-        let currentLoan = null;        // Full loan object with schedule
+        let currentLoan = null;
         let currentMonthIndex = 0;
 
         const POPULAR_CURRENCIES = ['$', '£', '€', '¥', '₱', '₹', '₽', 'R', 'CHF', 'A$'];
 
         // ==================== UTILITIES ====================
-        function saveCurrency() {
-            localStorage.setItem('loanly_currency', currencySymbol);
-        }
-
+        function saveCurrency() { localStorage.setItem('loanly_currency', currencySymbol); }
         function loadCurrency() {
             const saved = localStorage.getItem('loanly_currency');
             if (saved) currencySymbol = saved;
@@ -191,12 +173,12 @@
             document.querySelectorAll('.currency-sym').forEach(el => el.textContent = currencySymbol);
         }
 
-        // ==================== THEME ====================
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-            document.getElementById('theme-icon').classList.toggle('fa-moon', !document.documentElement.classList.contains('dark'));
-            document.getElementById('theme-icon').classList.toggle('fa-sun', document.documentElement.classList.contains('dark'));
+            const icon = document.getElementById('theme-icon');
+            icon.classList.toggle('fa-moon', !document.documentElement.classList.contains('dark'));
+            icon.classList.toggle('fa-sun', document.documentElement.classList.contains('dark'));
         }
 
         // ==================== MENU ====================
@@ -204,17 +186,14 @@
             populateCurrencyMenu();
             document.getElementById('menu').classList.remove('hidden');
         }
-
-        function hideMenu() {
-            document.getElementById('menu').classList.add('hidden');
-        }
+        function hideMenu() { document.getElementById('menu').classList.add('hidden'); }
 
         function populateCurrencyMenu() {
             const container = document.getElementById('currency-options');
             container.innerHTML = '';
             POPULAR_CURRENCIES.forEach(sym => {
                 const btn = document.createElement('button');
-                btn.className = `py-4 text-3xl rounded-2xl transition-all ${sym === currencySymbol ? 'bg-yellow-400 text-zinc-900 scale-110' : 'bg-zinc-100 dark:bg-zinc-800'}`;
+                btn.className = `py-4 text-3xl rounded-2xl transition-all ${sym === currencySymbol ? 'bg-yellow-400 text-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800'}`;
                 btn.textContent = sym;
                 btn.onclick = () => {
                     currencySymbol = sym;
@@ -227,19 +206,27 @@
             });
         }
 
-        // ==================== CALCULATION LOGIC ====================
-        /**
-         * Builds the full schedule including any skipped months.
-         * Every skip adds one extra month and pushes all subsequent payments + final interest.
-         */
-        function buildSchedule(principal, monthlyPayment, annualRate) {
+        // ==================== CORE CALCULATION (Month-by-Month with Skips) ====================
+        function calculateLoan() {
+            const principal = parseFloat(document.getElementById('loan-amount').value);
+            const monthlyPayment = parseFloat(document.getElementById('monthly-pay').value);
+            const annualRate = parseFloat(document.getElementById('interest-rate').value) || 0;
+
+            if (!principal || !monthlyPayment || principal <= 0 || monthlyPayment <= 0) {
+                showToast("Please enter valid amounts");
+                return;
+            }
+
             const monthlyRate = annualRate / 100 / 12;
+
             let balance = principal;
             let totalInterest = 0;
             let schedule = [];
             let month = 1;
+            let principalPaymentsMade = 0;
+            const requiredPayments = Math.ceil(principal / monthlyPayment);
 
-            // Month 1: Loan disbursed
+            // Month 1: Loan given
             schedule.push({
                 month: 1,
                 type: 'disbursement',
@@ -250,38 +237,43 @@
                 balanceEnd: balance
             });
 
-            const requiredPrincipalPayments = Math.ceil(principal / monthlyPayment);
-
-            let paymentsMade = 0;
-
-            while (paymentsMade < requiredPrincipalPayments && month < 240) { // safety
+            while (principalPaymentsMade < requiredPayments && month < 300) {
                 month++;
+
+                // Interest accrues every month regardless of skip
                 const interestThisMonth = Math.round(balance * monthlyRate);
                 totalInterest += interestThisMonth;
 
-                const isSkip = false; // we insert skips manually later
-
                 let principalPaid = 0;
-                if (paymentsMade < requiredPrincipalPayments) {
-                    principalPaid = Math.min(monthlyPayment, balance);
-                    balance = Math.max(0, balance - principalPaid);
-                    paymentsMade++;
+                let isSkipped = false;
+
+                // Decide if this should be a payment month
+                if (principalPaymentsMade < requiredPayments) {
+                    // Check if user has marked this month as skipped
+                    if (currentLoan && currentLoan.skips && currentLoan.skips.includes(month)) {
+                        isSkipped = true;
+                    } else {
+                        principalPaid = Math.min(monthlyPayment, balance);
+                        balance = Math.max(0, balance - principalPaid);
+                        principalPaymentsMade++;
+                    }
                 }
 
                 schedule.push({
                     month: month,
-                    type: 'payment',
+                    type: isSkipped ? 'skip' : 'payment',
                     balanceStart: balance + principalPaid,
                     interest: interestThisMonth,
                     principalPaid: principalPaid,
-                    totalPaid: principalPaid,
-                    balanceEnd: balance
+                    totalPaid: isSkipped ? 0 : principalPaid,
+                    balanceEnd: balance,
+                    skipped: isSkipped
                 });
 
                 if (balance <= 0) break;
             }
 
-            // Final interest payment month
+            // Final interest payment
             if (totalInterest > 0) {
                 month++;
                 schedule.push({
@@ -295,92 +287,39 @@
                 });
             }
 
-            return { schedule, totalInterest: Math.round(totalInterest), monthlyRate };
-        }
-
-        function calculateLoan() {
-            const principal = parseFloat(document.getElementById('loan-amount').value);
-            const monthly = parseFloat(document.getElementById('monthly-pay').value);
-            const rate = parseFloat(document.getElementById('interest-rate').value) || 0;
-
-            if (!principal || !monthly || principal <= 0 || monthly <= 0) {
-                showToast("Please enter valid loan amount and monthly repayment");
-                return;
-            }
-
-            const result = buildSchedule(principal, monthly, rate);
-
             currentLoan = {
                 principal: Math.round(principal),
-                monthlyPayment: Math.round(monthly),
-                annualRate: rate,
-                ...result,
-                skips: []          // array of month numbers that were skipped
+                monthlyPayment: Math.round(monthlyPayment),
+                annualRate,
+                monthlyRate,
+                schedule,
+                totalInterest: Math.round(totalInterest),
+                skips: currentLoan ? currentLoan.skips || [] : []
             };
 
             currentMonthIndex = 0;
-
             document.getElementById('input-card').classList.add('hidden');
             document.getElementById('results').classList.remove('hidden');
-
             renderCurrentMonth();
-            showToast("Loan schedule created");
+            showToast("Loan calculated with skip penalties");
         }
 
-        // ==================== SKIP LOGIC ====================
         function skipCurrentMonth() {
             if (!currentLoan) return;
-            const currentMonth = currentLoan.schedule[currentMonthIndex].month;
-
-            // Cannot skip disbursement or final interest month
-            if (currentMonth === 1 || currentLoan.schedule[currentMonthIndex].type === 'final_interest') {
+            const entry = currentLoan.schedule[currentMonthIndex];
+            if (entry.type === 'disbursement' || entry.type === 'final_interest' || entry.skipped) {
                 showToast("Cannot skip this month");
                 return;
             }
 
-            // Add skip
-            if (!currentLoan.skips.includes(currentMonth)) {
-                currentLoan.skips.push(currentMonth);
-                currentLoan.skips.sort((a,b) => a - b);
-            }
+            currentLoan.skips.push(entry.month);
+            currentLoan.skips.sort((a,b)=>a-b);
 
-            // Rebuild schedule with skips inserted
-            rebuildScheduleWithSkips();
+            // Rebuild entire schedule with new skip
+            calculateLoan(); // This re-runs full simulation
+            // Restore view position
+            currentMonthIndex = Math.min(currentMonthIndex, currentLoan.schedule.length - 1);
             renderCurrentMonth();
-            showToast(`Month ${currentMonth} skipped`);
-        }
-
-        function rebuildScheduleWithSkips() {
-            if (!currentLoan) return;
-
-            const base = buildSchedule(currentLoan.principal, currentLoan.monthlyPayment, currentLoan.annualRate);
-            let newSchedule = [];
-            let shift = 0;
-
-            base.schedule.forEach(entry => {
-                let newEntry = {...entry};
-                newEntry.month = entry.month + shift;
-
-                // If this month was marked as skipped, insert a skip entry BEFORE the real payment
-                if (currentLoan.skips.includes(newEntry.month)) {
-                    newSchedule.push({
-                        month: newEntry.month,
-                        type: 'skip',
-                        balanceStart: newEntry.balanceStart,
-                        interest: 0,
-                        principalPaid: 0,
-                        totalPaid: 0,
-                        balanceEnd: newEntry.balanceStart,
-                        skipped: true
-                    });
-                    shift++;                     // everything after is pushed one month
-                    newEntry.month = entry.month + shift;
-                }
-
-                newSchedule.push(newEntry);
-            });
-
-            currentLoan.schedule = newSchedule;
         }
 
         // ==================== RENDERING ====================
@@ -392,20 +331,18 @@
             document.getElementById('month-display').textContent = entry.month;
 
             document.getElementById('current-balance').innerHTML = `${currencySymbol}${entry.balanceEnd.toLocaleString()}`;
-
-            const totalInterest = currentLoan.totalInterest;
-            document.getElementById('total-interest').innerHTML = `${currencySymbol}${totalInterest.toLocaleString()}`;
+            document.getElementById('total-interest').innerHTML = `${currencySymbol}${currentLoan.totalInterest.toLocaleString()}`;
 
             const actionEl = document.getElementById('this-month-action');
             if (entry.type === 'skip') {
-                actionEl.innerHTML = `<span class="text-red-400">Skipped</span>`;
+                actionEl.innerHTML = `<span class="text-red-400">Skipped (interest accrued)</span>`;
             } else if (entry.type === 'final_interest') {
                 actionEl.innerHTML = `${currencySymbol}${entry.totalPaid.toLocaleString()} <span class="text-amber-400 text-base">(all interest)</span>`;
             } else {
                 actionEl.textContent = `${currencySymbol}${entry.totalPaid.toLocaleString()}`;
             }
 
-            // Pie chart - remaining principal payments
+            // Remaining principal payments
             const remaining = currentLoan.schedule.slice(currentMonthIndex)
                 .filter(e => e.type === 'payment' && e.principalPaid > 0).length;
             document.getElementById('pie-remaining').textContent = remaining;
@@ -429,22 +366,16 @@
             }
         }
 
-        // ==================== RESET ====================
         function resetAll() {
-            if (!confirm("Clear everything and start a new loan?")) return;
-
+            if (!confirm("Start a completely new loan?")) return;
             currentLoan = null;
             currentMonthIndex = 0;
-
             document.getElementById('input-card').classList.remove('hidden');
             document.getElementById('results').classList.add('hidden');
-
             document.getElementById('loan-amount').value = "12000";
             document.getElementById('monthly-pay').value = "1000";
-            showToast("Reset complete");
         }
 
-        // ==================== SCHEDULE MODAL ====================
         function showSchedule() {
             if (!currentLoan) return;
             const container = document.getElementById('schedule-list');
@@ -452,20 +383,19 @@
 
             currentLoan.schedule.forEach(entry => {
                 const div = document.createElement('div');
-                div.className = `p-4 rounded-2xl flex justify-between items-center ${entry.type === 'skip' ? 'bg-red-50 dark:bg-red-900/20' : 'bg-zinc-100 dark:bg-zinc-800'}`;
+                div.className = `p-4 rounded-2xl flex justify-between ${entry.type === 'skip' ? 'bg-red-50 dark:bg-red-900/20' : 'bg-zinc-100 dark:bg-zinc-800'}`;
                 div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="font-mono text-xl w-8">${entry.month}</span>
-                        ${entry.type === 'skip' ? `<span class="text-red-500 text-xs font-medium">SKIPPED</span>` : ''}
+                    <div>
+                        <span class="font-mono text-xl">${entry.month}</span>
+                        ${entry.type === 'skip' ? '<span class="ml-3 text-red-500 text-xs font-medium">SKIPPED</span>' : ''}
                     </div>
                     <div class="text-right">
-                        <div class="font-medium">${currencySymbol}${entry.totalPaid.toLocaleString()}</div>
-                        <div class="text-xs text-zinc-400">Balance ${currencySymbol}${entry.balanceEnd.toLocaleString()}</div>
+                        <div>${currencySymbol}${entry.totalPaid.toLocaleString()}</div>
+                        <div class="text-xs text-zinc-400">Balance: ${currencySymbol}${entry.balanceEnd.toLocaleString()}</div>
                     </div>
                 `;
                 container.appendChild(div);
             });
-
             document.getElementById('schedule-modal').classList.remove('hidden');
         }
 
@@ -479,12 +409,12 @@
             updateCurrencySymbols();
 
             if (localStorage.getItem('theme') === 'dark' || 
-                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.classList.add('dark');
             }
-            document.getElementById('theme-icon').classList.toggle('fa-sun', document.documentElement.classList.contains('dark'));
+            const icon = document.getElementById('theme-icon');
+            icon.classList.toggle('fa-sun', document.documentElement.classList.contains('dark'));
 
-            // Demo values
             document.getElementById('loan-amount').value = "12000";
             document.getElementById('monthly-pay').value = "1000";
         }
