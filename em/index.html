@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Human Emotion Catalogue</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --card-2: #1f2937;
+      --accent: #60a5fa;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --border: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.4rem;
+    }
+
+    .search {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    main {
+      padding: 14px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    details {
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--card);
+    }
+
+    summary {
+      list-style: none;
+      padding: 16px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      background: var(--card-2);
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .emotion-grid {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .emotion-card {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .emotion-header {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .emotion-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+
+    .emotion-body {
+      padding: 14px;
+    }
+
+    .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .photo-placeholder {
+      height: 180px;
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      margin-top: 12px;
+      text-align: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      background: rgba(96,165,250,0.15);
+      border: 1px solid rgba(96,165,250,0.25);
+      color: #bfdbfe;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+
+    footer {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: 700px) {
+      .emotion-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Human Emotion Catalogue</h1>
+    <input class="search" id="searchBox" type="text" placeholder="Search emotions, characteristics, or categories..." />
+  </header>
+
+  <main id="catalogue"></main>
+
+  <footer>
+    Expand categories → open emotions → add photos and notes as you build your visual emotional reference archive.
+  </footer>
+
+  <script>
+    const emotions = [
+      {
+        category: "Core Emotions",
+        items: [
+          {
+            name: "Joy",
+            spotting: "Raised cheeks, genuine smile, crow's feet around the eyes, relaxed forehead, brightened eyes.",
+            characteristics: ["Positive", "High-energy", "Universal"]
+          },
+          {
+            name: "Sadness",
+            spotting: "Drooping eyelids, lowered gaze, downturned mouth corners, slack facial muscles.",
+            characteristics: ["Low-energy", "Loss", "Withdrawal"]
+          },
+          {
+            name: "Fear",
+            spotting: "Eyes widen, brows raise and pull together, lips tense or part slightly, neck tension.",
+            characteristics: ["Threat response", "Alertness", "Survival"]
+          },
+          {
+            name: "Anger",
+            spotting: "Tight jaw, lowered brows, narrowed eyes, flared nostrils, compressed lips.",
+            characteristics: ["Confrontation", "Tension", "Intensity"]
+          },
+          {
+            name: "Disgust",
+            spotting: "Wrinkled nose, raised upper lip, narrowed eyes, facial recoil.",
+            characteristics: ["Rejection", "Aversion", "Protective"]
+          },
+          {
+            name: "Surprise",
+            spotting: "Raised eyebrows, widened eyes, open mouth, frozen attention.",
+            characteristics: ["Sudden", "Brief", "Reactive"]
+          },
+          {
+            name: "Contempt",
+            spotting: "One-sided mouth raise or smirk, asymmetrical expression, dismissive eyes.",
+            characteristics: ["Superiority", "Dismissal", "Social"]
+          }
+        ]
+      },
+      {
+        category: "Positive Emotions",
+        items: [
+          {
+            name: "Admiration",
+            spotting: "Soft eyes, attentive focus, slight smile, lifted brows.",
+            characteristics: ["Respect", "Attention", "Warmth"]
+          },
+          {
+            name: "Awe",
+            spotting: "Widened eyes, relaxed jaw, stillness, upward gaze.",
+            characteristics: ["Wonder", "Scale", "Transcendence"]
+          },
+          {
+            name: "Relief",
+            spotting: "Exhalation, facial softening, released jaw tension, relaxed brow.",
+            characteristics: ["Release", "Calm", "Recovery"]
+          },
+          {
+            name: "Pride",
+            spotting: "Lifted chin, subtle smile, expanded posture, direct gaze.",
+            characteristics: ["Achievement", "Status", "Confidence"]
+          },
+          {
+            name: "Affection",
+            spotting: "Warm eyes, softened face, relaxed smile, sustained eye contact.",
+            characteristics: ["Connection", "Attachment", "Care"]
+          },
+          {
+            name: "Curiosity",
+            spotting: "Raised brows, focused eyes, tilted head, attentive stillness.",
+            characteristics: ["Interest", "Exploration", "Attention"]
+          }
+        ]
+      },
+      {
+        category: "Negative and Defensive States",
+        items: [
+          {
+            name: "Jealousy",
+            spotting: "Tightened lips, forced smile, narrowed eyes, tension around the jaw.",
+            characteristics: ["Comparison", "Threat", "Possessiveness"]
+          },
+          {
+            name: "Shame",
+            spotting: "Avoided eye contact, lowered head, facial collapse, tension in mouth.",
+            characteristics: ["Self-conscious", "Exposure", "Withdrawal"]
+          },
+          {
+            name: "Embarrassment",
+            spotting: "Half-smile, blushing, face touching, darting eyes, nervous laughter.",
+            characteristics: ["Social", "Awkward", "Transient"]
+          },
+          {
+            name: "Resentment",
+            spotting: "Cold stare, compressed lips, restrained tension, subtle hostility.",
+            characteristics: ["Lingering", "Suppressed", "Interpersonal"]
+          },
+          {
+            name: "Anxiety",
+            spotting: "Rapid blinking, tense forehead, lip biting, scanning eyes.",
+            characteristics: ["Anticipatory", "Stress", "Uncertainty"]
+          },
+          {
+            name: "Hopelessness",
+            spotting: "Flat affect, lowered gaze, lack of responsiveness, collapsed facial energy.",
+            characteristics: ["Defeat", "Low-energy", "Emotional exhaustion"]
+          }
+        ]
+      },
+      {
+        category: "Social and Interpersonal Emotions",
+        items: [
+          {
+            name: "Flirtation",
+            spotting: "Quick glances, playful smile, eyebrow flashes, softened eyes.",
+            characteristics: ["Playful", "Attraction", "Interactive"]
+          },
+          {
+            name: "Coyness",
+            spotting: "Looking away while smiling, hidden face gestures, lowered chin.",
+            characteristics: ["Shy", "Playful", "Reserved"]
+          },
+          {
+            name: "Mockery",
+            spotting: "Smirk, raised brow, exaggerated expressions, amused contempt.",
+            characteristics: ["Social dominance", "Humor", "Dismissive"]
+          },
+          {
+            name: "Suspicion",
+            spotting: "Narrowed eyes, asymmetrical brows, tense lips, prolonged stare.",
+            characteristics: ["Distrust", "Evaluation", "Guarded"]
+          },
+          {
+            name: "Compassion",
+            spotting: "Softened eyes, concerned brows, sympathetic mouth tension.",
+            characteristics: ["Empathy", "Concern", "Support"]
+          },
+          {
+            name: "Deception",
+            spotting: "Forced smile, delayed reactions, mismatched eye engagement, asymmetry.",
+            characteristics: ["Masking", "Control", "Social manipulation"]
+          }
+        ]
+      },
+      {
+        category: "Rare and Difficult-to-Spot States",
+        items: [
+          {
+            name: "Micro-Contempt",
+            spotting: "A split-second one-sided lip raise, often quickly suppressed.",
+            characteristics: ["Brief", "Hidden", "Judgmental"]
+          },
+          {
+            name: "Dissociated Calm",
+            spotting: "Emotionally flat face during stressful situations, distant gaze.",
+            characteristics: ["Trauma-linked", "Detached", "Protective"]
+          },
+          {
+            name: "Existential Dread",
+            spotting: "Vacant focus, emotional heaviness, distant reflective stare.",
+            characteristics: ["Philosophical", "Fear", "Meaning crisis"]
+          },
+          {
+            name: "Bittersweet Nostalgia",
+            spotting: "Small sad smile, softened eyes, emotional distance.",
+            characteristics: ["Mixed emotion", "Memory", "Tender sadness"]
+          },
+          {
+            name: "Predatory Focus",
+            spotting: "Stillness, reduced blinking, fixed gaze, emotionally narrowed expression.",
+            characteristics: ["Intense", "Targeted", "Controlled"]
+          },
+          {
+            name: "Suppressed Amusement",
+            spotting: "Lip pressing, hidden smile tension, eyes briefly brighten.",
+            characteristics: ["Controlled", "Social masking", "Humor"]
+          }
+        ]
+      },
+      {
+        category: "Romance and Attachment",
+        items: [
+          {
+            name: "Longing",
+            spotting: "Distant focus, softened sadness, emotionally engaged gaze.",
+            characteristics: ["Desire", "Absence", "Emotional pull"]
+          },
+          {
+            name: "Infatuation",
+            spotting: "Persistent eye contact, widened pupils, energized expressions.",
+            characteristics: ["Intense attraction", "Excitement", "Fixation"]
+          },
+          {
+            name: "Heartbreak",
+            spotting: "Collapsed expression, pained eyes, trembling mouth tension.",
+            characteristics: ["Loss", "Attachment", "Grief"]
+          },
+          {
+            name: "Tender Love",
+            spotting: "Gentle smile, relaxed eyes, calm facial warmth.",
+            characteristics: ["Security", "Affection", "Connection"]
+          }
+        ]
+      },
+      {
+        category: "Cognitive and Mental States",
+        items: [
+          {
+            name: "Deep Concentration",
+            spotting: "Stillness, focused eyes, furrowed brow, reduced emotional movement.",
+            characteristics: ["Thinking", "Effort", "Attention"]
+          },
+          {
+            name: "Confusion",
+            spotting: "Knitted brows, tilted head, squinting, delayed reactions.",
+            characteristics: ["Uncertainty", "Processing", "Mismatch"]
+          },
+          {
+            name: "Realization",
+            spotting: "Sudden widening of eyes, lifted brows, facial shift of understanding.",
+            characteristics: ["Insight", "Recognition", "Mental transition"]
+          },
+          {
+            name: "Skepticism",
+            spotting: "One raised eyebrow, lip tightening, partial squint.",
+            characteristics: ["Doubt", "Evaluation", "Questioning"]
+          }
+        ]
+      }
+    ];
+
+    const catalogue = document.getElementById('catalogue');
+
+    function render(data) {
+      catalogue.innerHTML = '';
+
+      data.forEach(section => {
+        const details = document.createElement('details');
+        details.open = false;
+
+        const summary = document.createElement('summary');
+        summary.textContent = `${section.category} (${section.items.length})`;
+        details.appendChild(summary);
+
+        const grid = document.createElement('div');
+        grid.className = 'emotion-grid';
+
+        section.items.forEach(emotion => {
+          const card = document.createElement('div');
+          card.className = 'emotion-card';
+
+          card.innerHTML = `
+            <div class="emotion-header">
+              <div class="emotion-title">${emotion.name}</div>
+              <div class="label">How to Spot It</div>
+              <div>${emotion.spotting}</div>
+            </div>
+            <div class="emotion-body">
+              <div class="label">Characteristics</div>
+              <div class="tags">
+                ${emotion.characteristics.map(tag => `<span class="tag">${tag}</span>`).join('')}
+              </div>
+
+              <div class="photo-placeholder">
+                Add or drag a reference photo here<br>
+                (future personal archive placeholder)
+              </div>
+            </div>
+          `;
+
+          grid.appendChild(card);
+        });
+
+        details.appendChild(grid);
+        catalogue.appendChild(details);
+      });
+    }
+
+    render(emotions);
+
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+
+      const filtered = emotions
+        .map(section => ({
+          ...section,
+          items: section.items.filter(item =>
+            item.name.toLowerCase().includes(term) ||
+            item.spotting.toLowerCase().includes(term) ||
+            item.characteristics.join(' ').toLowerCase().includes(term)
+          )
+        }))
+        .filter(section => section.items.length > 0);
+
+      render(filtered);
+    });
+  </script>
+</body>
+</html>
