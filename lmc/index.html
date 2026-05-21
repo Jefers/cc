@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgagely • Reckoner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+  --text-primary: #111110;
+  --text-secondary: #6b6a65;
+  --text-tertiary: #9b9a95;
+  --accent: #16a34a;
+  --accent-light: #dcfce7;
+  --accent-text: #14532d;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --amber-text: #78350f;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+}
+[data-theme="dark"] {
+  --bg: #0f0f0e;
+  --surface: #1a1a18;
+  --surface2: #222220;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.12);
+  --text-primary: #f0efe9;
+  --text-secondary: #9b9a95;
+  --text-tertiary: #6b6a65;
+  --accent: #22c55e;
+  --accent-light: #052e16;
+  --accent-text: #86efac;
+  --amber: #f59e0b;
+  --amber-light: #1c1400;
+  --amber-text: #fcd34d;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding-bottom: 3rem;
+  transition: background 0.25s, color 0.25s;
+}
+.app { max-width: 460px; margin: 0 auto; padding: 0 1.25rem; }
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 2.5rem 0 1.75rem;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 38px; height: 38px;
+  background: var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.logo-name {
+  font-size: 1.5rem; font-weight: 600; letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+.header-actions { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1rem; color: var(--text-secondary);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.icon-btn:hover { background: var(--surface2); color: var(--text-primary); border-color: var(--border-strong); }
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-size: 1.3rem; font-weight: 600; letter-spacing: -0.025em;
+  text-align: center; margin-bottom: 1.75rem;
+  color: var(--text-primary);
+}
+
+/* Form fields */
+.field { margin-bottom: 1.25rem; }
+.field-label {
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.08em;
+  color: var(--text-tertiary); text-transform: uppercase;
+  margin-bottom: 0.5rem; display: block;
+}
+.input-wrap { position: relative; }
+.prefix {
+  position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  font-size: 1.25rem; color: var(--text-tertiary);
+  font-family: 'DM Mono', monospace; pointer-events: none;
+  transition: color 0.15s;
+}
+.suffix {
+  position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+  font-size: 1.25rem; color: var(--text-tertiary);
+  font-family: 'DM Mono', monospace; pointer-events: none;
+}
+input[type=number] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  font-size: 1.5rem; font-weight: 300;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  -moz-appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type=number]:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+input[type=number].has-prefix { padding-left: 2.25rem; }
+input[type=number].has-suffix { padding-right: 2.25rem; }
+input[type=number][readonly] {
+  color: var(--text-secondary);
+  background: var(--bg);
+  border-color: var(--border);
+  cursor: default;
+}
+input[type=number].accent-field {
+  background: var(--accent-light);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--accent-text);
+}
+[data-theme="dark"] input[type=number].accent-field { color: var(--accent-text); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+/* Calculate button */
+.calc-btn {
+  width: 100%; padding: 1.1rem;
+  background: var(--accent);
+  color: #fff; border: none; border-radius: var(--radius-lg);
+  font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  margin-top: 0.5rem;
+}
+.calc-btn:hover { opacity: 0.88; }
+.calc-btn:active { transform: scale(0.98); }
+
+/* Results */
+#results { display: none; }
+
+/* Month nav */
+.month-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1.5rem; margin-bottom: 1.5rem;
+}
+.nav-btn {
+  width: 44px; height: 44px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; font-size: 1.5rem; color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.nav-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.nav-btn:active { transform: scale(0.94); }
+.month-center { text-align: center; }
+.month-num {
+  font-size: 3.5rem; font-weight: 300; letter-spacing: -0.04em;
+  font-family: 'DM Mono', monospace; color: var(--text-primary);
+  line-height: 1;
+}
+.month-label {
+  font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-top: 4px;
+}
+
+/* Pie chart */
+.pie-wrap { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+.pie-outer {
+  width: 200px; height: 200px; border-radius: 50%;
+  position: relative;
+  border: 1px solid var(--border);
+}
+.pie-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  transition: background 0.4s ease;
+}
+.pie-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.pie-num {
+  font-size: 2.75rem; font-weight: 300; letter-spacing: -0.04em;
+  font-family: 'DM Mono', monospace; color: var(--text-primary); line-height: 1;
+}
+.pie-sub { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 4px; }
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+}
+.stat-label {
+  font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 1.75rem; font-weight: 300; letter-spacing: -0.03em;
+  font-family: 'DM Mono', monospace;
+}
+.stat-value.green { color: var(--accent); }
+.stat-value.amber { color: var(--amber); }
+
+/* Breakdown card */
+.breakdown-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.breakdown-left .label { font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 4px; }
+.breakdown-left .total {
+  font-size: 2rem; font-weight: 300; letter-spacing: -0.03em;
+  font-family: 'DM Mono', monospace; color: var(--text-primary);
+}
+.breakdown-right { text-align: right; font-size: 0.8rem; line-height: 1.8; }
+.breakdown-right .brow { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.brow-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.brow-dot.green { background: var(--accent); }
+.brow-dot.amber { background: var(--amber); }
+.brow-val { font-family: 'DM Mono', monospace; font-size: 0.85rem; }
+.brow-val.green { color: var(--accent); }
+.brow-val.amber { color: var(--amber); }
+.brow-name { color: var(--text-tertiary); font-size: 0.75rem; }
+
+/* Progress bar */
+.progress-wrap { margin: 0.75rem 0 1.25rem; }
+.progress-track {
+  height: 6px; background: var(--surface2);
+  border-radius: 999px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 999px; transition: width 0.4s ease;
+}
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 0.7rem; color: var(--text-tertiary);
+  margin-top: 5px; font-family: 'DM Mono', monospace;
+}
+
+/* Action row */
+.action-row { display: flex; gap: 0.625rem; margin-bottom: 1.5rem; }
+.action-btn {
+  flex: 1; padding: 0.875rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s;
+}
+.action-btn:hover { background: var(--surface2); border-color: var(--border-strong); color: var(--text-primary); }
+
+/* Summary */
+.summary {
+  font-size: 0.8rem; color: var(--text-tertiary);
+  line-height: 1.8; padding: 0 0.25rem;
+}
+.summary b { color: var(--text-secondary); font-weight: 500; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+  background: var(--text-primary); color: var(--bg);
+  padding: 0.65rem 1.25rem; border-radius: 999px;
+  font-size: 0.8rem; font-weight: 500;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  white-space: nowrap; z-index: 100;
+}
+.toast.show { opacity: 1; }
+
+/* Menu overlay */
+.overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 50; align-items: flex-end;
+}
+.overlay.show { display: flex; }
+.sheet {
+  background: var(--surface); width: 100%;
+  max-width: 460px; margin: 0 auto;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 1.5rem;
+}
+.sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+.sheet-title { font-size: 1rem; font-weight: 600; }
+.sheet-close { font-size: 1.5rem; cursor: pointer; color: var(--text-tertiary); line-height: 1; padding: 4px; }
+.currency-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.currency-btn {
+  padding: 0.75rem 0;
+  background: var(--surface2); border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem; cursor: pointer; color: var(--text-primary);
+  transition: all 0.15s;
+}
+.currency-btn:hover { border-color: var(--border-strong); }
+.currency-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* Schedule modal */
+#schedule-modal { overflow: hidden; }
+#schedule-modal.show { display: flex; }
+.schedule-sheet {
+  background: var(--surface); width: 100%; max-width: 460px; margin: 0 auto;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  max-height: 82vh; display: flex; flex-direction: column;
+}
+.schedule-header {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+.schedule-header span { font-size: 0.875rem; font-weight: 600; letter-spacing: 0.02em; }
+#schedule-list { overflow-y: auto; padding: 1rem; flex: 1; }
+.schedule-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  margin-bottom: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+}
+.srow-month { color: var(--text-tertiary); font-size: 0.7rem; }
+.srow-pay { font-weight: 500; color: var(--text-primary); font-size: 0.9rem; }
+.srow-detail { font-size: 0.7rem; color: var(--text-tertiary); margin-top: 2px; }
+.srow-balance { color: var(--accent); text-align: right; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🏠</div>
+      <span class="logo-name">Mortgagely</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">☀</button>
+      <button class="icon-btn" onclick="showMenu()" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <!-- Input card -->
+  <div id="input-card" class="card">
+    <div class="card-title">Mortgage Reckoner</div>
+    <div class="field">
+      <label class="field-label">Property Price</label>
+      <div class="input-wrap">
+        <span class="prefix currency-sym">$</span>
+        <input id="property-price" type="number" class="has-prefix" value="450000">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Deposit %</label>
+        <div class="input-wrap">
+          <input id="deposit-percent" type="number" class="has-suffix" value="20" step="0.1">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Deposit Amount</label>
+        <div class="input-wrap">
+          <span class="prefix currency-sym">$</span>
+          <input id="deposit-amount" type="number" class="has-prefix" readonly>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Loan Principal</label>
+      <div class="input-wrap">
+        <span class="prefix currency-sym">$</span>
+        <input id="loan-amount" type="number" class="has-prefix accent-field" readonly>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Term (Years)</label>
+        <input id="term-years" type="number" value="25">
+      </div>
+      <div class="field">
+        <label class="field-label">Term (Months)</label>
+        <input id="term-months" type="number" readonly>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Annual Interest Rate</label>
+      <div class="input-wrap">
+        <input id="interest-rate" type="number" step="0.01" value="4.5" class="has-suffix">
+        <span class="suffix">%</span>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calculateMortgage()">Calculate Mortgage</button>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="month-nav">
+      <button class="nav-btn" onclick="prevMonth()">‹</button>
+      <div class="month-center">
+        <div class="month-num" id="month-display">1</div>
+        <div class="month-label">Month</div>
+      </div>
+      <button class="nav-btn" onclick="nextMonth()">›</button>
+    </div>
+
+    <div class="pie-wrap">
+      <div class="pie-outer">
+        <div class="pie-inner" id="pie"></div>
+        <div class="pie-center">
+          <div class="pie-num" id="pie-remaining">300</div>
+          <div class="pie-sub">months left</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Monthly Payment</div>
+        <div class="stat-value green" id="monthly-payment">1,234</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Interest</div>
+        <div class="stat-value amber" id="total-interest">89,456</div>
+      </div>
+    </div>
+
+    <div class="breakdown-card">
+      <div class="breakdown-left">
+        <div class="label">This month</div>
+        <div class="total" id="this-month-breakdown">—</div>
+      </div>
+      <div class="breakdown-right">
+        <div class="brow">
+          <span class="brow-dot amber"></span>
+          <span class="brow-name">Interest</span>
+          <span class="brow-val amber" id="month-interest">—</span>
+        </div>
+        <div class="brow">
+          <span class="brow-dot green"></span>
+          <span class="brow-name">Principal</span>
+          <span class="brow-val green" id="month-principal">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-labels">
+        <span id="progress-label-left">Month 1</span>
+        <span id="progress-label-right">300 months</span>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="action-btn" onclick="resetAll()">New Loan</button>
+      <button class="action-btn" onclick="showSchedule()">Full Schedule</button>
+    </div>
+
+    <div class="summary" id="summary"></div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="overlay" id="menu">
+  <div class="sheet">
+    <div class="sheet-header">
+      <span class="sheet-title">Settings</span>
+      <span class="sheet-close" onclick="hideMenu()">×</span>
+    </div>
+    <label class="field-label" style="margin-bottom:0.6rem">Currency Symbol</label>
+    <div class="currency-grid" id="currency-options"></div>
+  </div>
+</div>
+
+<!-- Schedule modal -->
+<div class="overlay" id="schedule-modal">
+  <div class="schedule-sheet">
+    <div class="schedule-header">
+      <span>Amortisation Schedule</span>
+      <span class="sheet-close" onclick="hideSchedule()">×</span>
+    </div>
+    <div id="schedule-list"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+let currencySymbol = '$';
+let currentMortgage = null;
+let currentMonthIndex = 0;
+const CURRENCIES = ['$', '£', '€', '¥', '₹', '₽', 'R', 'CHF', 'A$', 'C$'];
+
+function saveCurrency() { try { localStorage.setItem('mg_cur', currencySymbol); } catch(e){} }
+function loadCurrency() { try { const s = localStorage.getItem('mg_cur'); if(s) currencySymbol = s; } catch(e){} }
+function loadTheme() {
+  try {
+    const saved = localStorage.getItem('mg_theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  } catch(e) {}
+}
+function toggleTheme() {
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? '' : 'dark';
+  document.getElementById('theme-btn').textContent = isDark ? '☀' : '☽';
+  try { localStorage.setItem('mg_theme', isDark ? 'light' : 'dark'); } catch(e) {}
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+function updateCurrencySymbols() {
+  document.querySelectorAll('.currency-sym').forEach(el => el.textContent = currencySymbol);
+}
+function fmt(n) { return Math.round(n).toLocaleString(); }
+
+function showMenu() {
+  const c = document.getElementById('currency-options');
+  c.innerHTML = '';
+  CURRENCIES.forEach(sym => {
+    const btn = document.createElement('button');
+    btn.className = 'currency-btn' + (sym === currencySymbol ? ' active' : '');
+    btn.textContent = sym;
+    btn.onclick = () => {
+      currencySymbol = sym; saveCurrency(); updateCurrencySymbols();
+      if (currentMortgage) renderCurrentMonth();
+      showMenu();
+    };
+    c.appendChild(btn);
+  });
+  document.getElementById('menu').classList.add('show');
+}
+function hideMenu() { document.getElementById('menu').classList.remove('show'); }
+function showSchedule() {
+  if (!currentMortgage) return;
+  const list = document.getElementById('schedule-list');
+  list.innerHTML = '';
+  currentMortgage.schedule.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'schedule-row';
+    div.innerHTML = `
+      <div>
+        <div class="srow-month">Month</div>
+        <div class="srow-pay">${String(entry.month).padStart(3,'0')}</div>
+      </div>
+      <div>
+        <div class="srow-pay">${currencySymbol}${fmt(entry.payment)}</div>
+        <div class="srow-detail">Int ${currencySymbol}${fmt(entry.interest)} · Pri ${currencySymbol}${fmt(entry.principal)}</div>
+      </div>
+      <div class="srow-balance">${currencySymbol}${fmt(entry.balance)}</div>
+    `;
+    list.appendChild(div);
+  });
+  document.getElementById('schedule-modal').classList.add('show');
+}
+function hideSchedule() { document.getElementById('schedule-modal').classList.remove('show'); }
+
+function calculateMortgage() {
+  const propertyPrice = parseFloat(document.getElementById('property-price').value) || 0;
+  const depositPercent = parseFloat(document.getElementById('deposit-percent').value) || 0;
+  const annualRate = parseFloat(document.getElementById('interest-rate').value) || 0;
+  const termYears = parseFloat(document.getElementById('term-years').value) || 0;
+
+  if (propertyPrice <= 0 || depositPercent < 0 || depositPercent > 100 || annualRate < 0 || termYears <= 0) {
+    showToast('Please enter valid values'); return;
+  }
+
+  const depositAmount = Math.round(propertyPrice * (depositPercent / 100));
+  const principal = Math.round(propertyPrice - depositAmount);
+  const termMonths = Math.round(termYears * 12);
+  const monthlyRate = annualRate / 100 / 12;
+  const n = termMonths;
+
+  let monthlyPayment = monthlyRate > 0
+    ? principal * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)
+    : principal / n;
+  monthlyPayment = Math.round(monthlyPayment);
+
+  let balance = principal, totalInterest = 0, schedule = [];
+  for (let month = 1; month <= n; month++) {
+    const interestThisMonth = Math.round(balance * monthlyRate);
+    const principalThisMonth = monthlyPayment - interestThisMonth;
+    balance = Math.max(0, balance - principalThisMonth);
+    totalInterest += interestThisMonth;
+    schedule.push({ month, payment: monthlyPayment, interest: interestThisMonth, principal: principalThisMonth, balance });
+    if (balance <= 0) break;
+  }
+  if (schedule.length) { const l = schedule[schedule.length-1]; l.payment = l.interest + l.principal; }
+
+  currentMortgage = { propertyPrice, depositPercent, depositAmount, principal, termMonths, termYears, annualRate, monthlyPayment, totalInterest: Math.round(totalInterest), schedule };
+  currentMonthIndex = 0;
+  document.getElementById('input-card').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  renderCurrentMonth();
+}
+
+function renderCurrentMonth() {
+  if (!currentMortgage) return;
+  const entry = currentMortgage.schedule[currentMonthIndex];
+  if (!entry) return;
+
+  document.getElementById('month-display').textContent = entry.month;
+  document.getElementById('monthly-payment').textContent = fmt(currentMortgage.monthlyPayment);
+  document.getElementById('total-interest').textContent = fmt(currentMortgage.totalInterest);
+  document.getElementById('this-month-breakdown').textContent = currencySymbol + fmt(entry.payment);
+  document.getElementById('month-interest').textContent = currencySymbol + fmt(entry.interest);
+  document.getElementById('month-principal').textContent = currencySymbol + fmt(entry.principal);
+
+  const total = currentMortgage.schedule.length;
+  const remaining = total - currentMonthIndex;
+  document.getElementById('pie-remaining').textContent = remaining;
+
+  const progress = currentMonthIndex / total;
+  const deg = Math.round(progress * 360);
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const trackColor = isDark ? '#2a2a28' : '#e8e7e2';
+  document.getElementById('pie').style.background =
+    `conic-gradient(var(--accent) 0deg ${deg}deg, ${trackColor} ${deg}deg 360deg)`;
+
+  const pct = Math.round(progress * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label-left').textContent = 'Month ' + entry.month;
+  document.getElementById('progress-label-right').textContent = total + ' months';
+
+  updateSummary();
+}
+
+function updateSummary() {
+  if (!currentMortgage) return;
+  const end = new Date();
+  end.setMonth(end.getMonth() + currentMortgage.termMonths);
+  const endStr = end.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  const m = currentMortgage;
+  document.getElementById('summary').innerHTML =
+    `Based on a property price of <b>${currencySymbol}${Math.round(m.propertyPrice).toLocaleString()}</b> with a <b>${m.depositPercent}% deposit</b> (${currencySymbol}${Math.round(m.depositAmount).toLocaleString()}), ` +
+    `over <b>${m.termYears} years</b> at <b>${m.annualRate}% interest</b>. ` +
+    `Starting this month, you'd fully own the property by <b>${endStr}</b>.`;
+}
+
+function nextMonth() {
+  if (currentMortgage && currentMonthIndex < currentMortgage.schedule.length - 1) {
+    currentMonthIndex++; renderCurrentMonth();
+  }
+}
+function prevMonth() {
+  if (currentMonthIndex > 0) { currentMonthIndex--; renderCurrentMonth(); }
+}
+function resetAll() {
+  if (!confirm('Start a new calculation?')) return;
+  currentMortgage = null; currentMonthIndex = 0;
+  document.getElementById('input-card').style.display = '';
+  document.getElementById('results').style.display = 'none';
+}
+
+function syncDeposit() {
+  const price = parseFloat(document.getElementById('property-price').value) || 0;
+  const pct = parseFloat(document.getElementById('deposit-percent').value) || 0;
+  const dep = Math.round(price * pct / 100);
+  document.getElementById('deposit-amount').value = dep;
+  document.getElementById('loan-amount').value = Math.round(price - dep);
+}
+function syncTerm() {
+  document.getElementById('term-months').value = Math.round((parseFloat(document.getElementById('term-years').value) || 0) * 12);
+}
+
+loadTheme();
+loadCurrency();
+updateCurrencySymbols();
+const themeBtn = document.getElementById('theme-btn');
+themeBtn.textContent = document.documentElement.dataset.theme === 'dark' ? '☽' : '☀';
+
+document.getElementById('property-price').addEventListener('input', syncDeposit);
+document.getElementById('deposit-percent').addEventListener('input', syncDeposit);
+document.getElementById('term-years').addEventListener('input', syncTerm);
+syncDeposit(); syncTerm();
+</script>
+</body>
+</html>
