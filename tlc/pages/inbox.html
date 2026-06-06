@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLC Inbox · Tagalog Learning Course</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('tlcTheme');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/lab.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <nav class="topbar" aria-label="Site">
+      <div class="brand"><span class="brand-mark"></span><span>Tagalog Learning Course</span></div>
+      <div class="navlinks">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pages/curriculum.html">Curriculum</a>
+        <a href="../pages/progress.html">Progress</a>
+        <a href="../pages/inbox.html">Inbox</a>
+        <a href="../index.html#help">Help</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch colour theme" aria-pressed="false"><span aria-hidden="true">🌙</span><span data-theme-label>Dark</span></button>
+      </div>
+    </nav>
+    
+<section class="reader-layout">
+  <article class="document">
+    <header class="document-header">
+      <div class="eyebrow">Course page · rendered from inbox.md</div>
+      <h1>TLC Inbox</h1>
+      <p class="muted"><a href="../inbox.md">Open raw Markdown</a></p>
+    </header>
+    <h1 id="tlc-inbox">TLC Inbox</h1>
+<p>Use this for messy notes, real phrases you hear, things you want to say, or situations you want lessons for.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>How do I greet Filipino friends casually without sounding like a textbook?</li>
+<li>Which phrases are safe for text messaging with people in their twenties?</li>
+</ul>
+<h2 id="phrases-i-heard">Phrases I heard</h2>
+<p>_Add real phrases here when you hear them._</p>
+<h2 id="situations-i-want-to-handle">Situations I want to handle</h2>
+<ul>
+<li>Saying hello and checking in.</li>
+<li>Replying naturally in chat.</li>
+<li>Inviting someone to eat or hang out.</li>
+</ul>
+  </article>
+  <aside class="sidebar"><h2>On this page</h2><ul><li><a href="#open-questions">Open questions</a></li>
+<li><a href="#phrases-i-heard">Phrases I heard</a></li>
+<li><a href="#situations-i-want-to-handle">Situations I want to handle</a></li></ul></aside>
+</section>
+
+    <p class="footer-note">Rendered from local Markdown in <code>~/TagalogLearningCourse</code>. The Markdown files remain the source of truth.</p>
+  </main>
+  <script>
+    (function () {
+      var button = document.querySelector('[data-theme-toggle]');
+      var label = document.querySelector('[data-theme-label]');
+      if (!button || !label) return;
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tlcTheme', theme);
+        var dark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(dark));
+        button.querySelector('span[aria-hidden="true"]').textContent = dark ? '☀️' : '🌙';
+        label.textContent = dark ? 'Light' : 'Dark';
+      }
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+      button.addEventListener('click', function () {
+        setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+
+      function status(id, message, kind) {
+        var box = document.getElementById(id);
+        if (!box) return;
+        box.className = 'status-box ' + (kind || '');
+        box.textContent = message;
+      }
+      async function postJson(url, payload) {
+        var response = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload || {})
+        });
+        var data = await response.json().catch(function () { return {ok:false, message:'Invalid JSON response'}; });
+        if (!response.ok || data.ok === false) throw data;
+        return data;
+      }
+      var inboxForm = document.getElementById('inbox-form');
+      if (inboxForm) {
+        inboxForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          if (location.protocol === 'file:') {
+            status('inbox-status', 'Interactive saving needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          var button = inboxForm.querySelector('button[type="submit"]');
+          button.disabled = true;
+          status('inbox-status', 'Saving your note to inbox.md and refreshing pages…', '');
+          try {
+            var data = await postJson('/api/inbox', {section: inboxForm.section.value, text: inboxForm.text.value});
+            inboxForm.text.value = '';
+            status('inbox-status', 'Saved to inbox.md and refreshed the styled pages.', 'ok');
+          } catch (err) {
+            status('inbox-status', 'Could not save inbox note: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            button.disabled = false;
+          }
+        });
+      }
+      async function bindAction(buttonId, statusId, url, waiting) {
+        var actionButton = document.getElementById(buttonId);
+        if (!actionButton) return;
+        actionButton.addEventListener('click', async function () {
+          if (location.protocol === 'file:') {
+            status(statusId, 'This action needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          actionButton.disabled = true;
+          status(statusId, waiting, '');
+          try {
+            var data = await postJson(url, {});
+            var output = data.result ? (data.result.stdout || data.result.stderr || data.message) : (data.message || 'Done.');
+            status(statusId, output || 'Done.', 'ok');
+          } catch (err) {
+            status(statusId, 'Action failed: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            actionButton.disabled = false;
+          }
+        });
+      }
+      bindAction('run-lesson-button', 'lesson-run-status', '/api/run-lesson', 'Requesting a manual run of the daily lesson cron job…');
+      bindAction('render-button', 'lesson-run-status', '/api/render', 'Refreshing the styled HTML pages…');
+      bindAction('run-curriculum-button', 'curriculum-run-status', '/api/run-curriculum-plan', 'Requesting a manual run of the monthly curriculum planning job…');
+    })();
+  </script>
+</body>
+</html>

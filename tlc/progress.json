@@ -1,0 +1,23 @@
+{
+  "started_at": "2026-06-06T15:11:14+01:00",
+  "schedule": "manual/static GitHub Pages app; optional daily habit at 18:00",
+  "timezone_observed": "BST",
+  "streak": 0,
+  "completed_lessons": 0,
+  "current_level": "complete beginner",
+  "current_focus": "greetings and friendly beginner chat",
+  "next_suggested_topic": "Day 1 — warm greetings",
+  "confidence": {
+    "greetings": 0,
+    "quick_chat_replies": 0,
+    "food_phrases": 0,
+    "friendly_slang": 0,
+    "texting_tone": 0
+  },
+  "topics_seen": [],
+  "open_questions": [
+    "How do I greet Filipino friends casually without sounding like a textbook?"
+  ],
+  "last_lesson_date": null,
+  "latest_journal_entry": "journal/2026-06-06-day-1-warm-greetings.md"
+}

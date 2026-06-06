@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tagalog Learning Course (TLC) · Tagalog Learning Course</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('tlcTheme');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/lab.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <nav class="topbar" aria-label="Site">
+      <div class="brand"><span class="brand-mark"></span><span>Tagalog Learning Course</span></div>
+      <div class="navlinks">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pages/curriculum.html">Curriculum</a>
+        <a href="../pages/progress.html">Progress</a>
+        <a href="../pages/inbox.html">Inbox</a>
+        <a href="../index.html#help">Help</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch colour theme" aria-pressed="false"><span aria-hidden="true">🌙</span><span data-theme-label>Dark</span></button>
+      </div>
+    </nav>
+    
+<section class="reader-layout">
+  <article class="document">
+    <header class="document-header">
+      <div class="eyebrow">Course page · rendered from README.md</div>
+      <h1>Tagalog Learning Course (TLC)</h1>
+      <p class="muted"><a href="../README.md">Open raw Markdown</a></p>
+    </header>
+    <h1 id="tagalog-learning-course-tlc">Tagalog Learning Course (TLC)</h1>
+<p>A beginner-friendly Tagalog learning app for building a daily habit with useful, friendly, informal phrases for conversation and text messaging with Filipino friends.</p>
+<h2 id="how-to-use-tlc">How to use TLC</h2>
+<ul>
+<li><strong>Daily lesson</strong>: study one compact 10-minute phrase set each day.</li>
+<li><strong>Journal</strong>: lesson notes live in <code>journal/</code> as Markdown.</li>
+<li><strong>Styled browser reading</strong>: Markdown files are rendered into polished HTML under <code>pages/</code>.</li>
+<li><strong>Theme switch</strong>: use the Dark/Light button for comfortable night reading.</li>
+<li><strong>Progress tracking</strong>: <code>progress.md</code> and <code>progress.json</code> track phrases, confidence, streaks, and next steps.</li>
+<li><strong>Dashboard</strong>: open <code>index.html</code> from this folder, or visit the GitHub Pages path once pushed.</li>
+<li><strong>Inbox</strong>: add phrases you hear, text-message screenshots you want explained, or situations you want to handle in <code>inbox.md</code>.</li>
+<li><strong>Curriculum</strong>: <code>curriculum.md</code> contains a 30-day roadmap aimed at casual, friendly conversation — not business Tagalog.</li>
+</ul>
+<h2 id="important-language-notes">Important language notes</h2>
+<ul>
+<li>Tagalog/Filipino is context-heavy. Tone, relationship, age, and comfort matter.</li>
+<li>TLC starts with safe, natural beginner phrases. Slang is introduced gradually and labelled so you know when not to overuse it.</li>
+<li><code>po</code> and <code>opo</code> are respectful/polite markers. They are useful culturally, but this course focuses mainly on casual peer-to-peer conversation.</li>
+<li>Spelling in casual chat may vary. TLC gives a clear base phrase first, then informal variants where helpful.</li>
+</ul>
+<h2 id="folder-map">Folder map</h2>
+<pre><code class="language-text">tlc/
+├── index.html              # Browser dashboard
+├── README.md               # This file
+├── curriculum.md           # 30-day learning path
+├── inbox.md                # Drop random phrase requests here
+├── progress.md             # Human-readable progress log
+├── progress.json           # Machine-readable progress state
+├── assets/lab.css          # Shared styling and dark/light theme
+├── scripts/render_lab.py   # Markdown-to-HTML renderer
+├── scripts/lab_server.py   # Optional local-only interactive dashboard server
+├── start_lab_server.sh     # Convenience launcher
+├── pages/                  # Styled HTML generated from Markdown
+└── journal/                # Daily lesson Markdown notes</code></pre>
+<h2 id="refresh-the-html-after-editing-markdown">Refresh the HTML after editing Markdown</h2>
+<pre><code class="language-bash">python3 scripts/render_lab.py</code></pre>
+<h2 id="optional-local-interactive-dashboard">Optional local interactive dashboard</h2>
+<p>GitHub Pages can display TLC but cannot write to files. For local inbox saving and manual buttons, run:</p>
+<pre><code class="language-bash">./start_lab_server.sh</code></pre>
+<p>Then open:</p>
+<pre><code class="language-text">http://127.0.0.1:8776/</code></pre>
+  </article>
+  <aside class="sidebar"><h2>On this page</h2><ul><li><a href="#how-to-use-tlc">How to use TLC</a></li>
+<li><a href="#important-language-notes">Important language notes</a></li>
+<li><a href="#folder-map">Folder map</a></li>
+<li><a href="#refresh-the-html-after-editing-markdown">Refresh the HTML after editing Markdown</a></li>
+<li><a href="#optional-local-interactive-dashboard">Optional local interactive dashboard</a></li></ul></aside>
+</section>
+
+    <p class="footer-note">Rendered from local Markdown in <code>~/TagalogLearningCourse</code>. The Markdown files remain the source of truth.</p>
+  </main>
+  <script>
+    (function () {
+      var button = document.querySelector('[data-theme-toggle]');
+      var label = document.querySelector('[data-theme-label]');
+      if (!button || !label) return;
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tlcTheme', theme);
+        var dark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(dark));
+        button.querySelector('span[aria-hidden="true"]').textContent = dark ? '☀️' : '🌙';
+        label.textContent = dark ? 'Light' : 'Dark';
+      }
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+      button.addEventListener('click', function () {
+        setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+
+      function status(id, message, kind) {
+        var box = document.getElementById(id);
+        if (!box) return;
+        box.className = 'status-box ' + (kind || '');
+        box.textContent = message;
+      }
+      async function postJson(url, payload) {
+        var response = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload || {})
+        });
+        var data = await response.json().catch(function () { return {ok:false, message:'Invalid JSON response'}; });
+        if (!response.ok || data.ok === false) throw data;
+        return data;
+      }
+      var inboxForm = document.getElementById('inbox-form');
+      if (inboxForm) {
+        inboxForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          if (location.protocol === 'file:') {
+            status('inbox-status', 'Interactive saving needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          var button = inboxForm.querySelector('button[type="submit"]');
+          button.disabled = true;
+          status('inbox-status', 'Saving your note to inbox.md and refreshing pages…', '');
+          try {
+            var data = await postJson('/api/inbox', {section: inboxForm.section.value, text: inboxForm.text.value});
+            inboxForm.text.value = '';
+            status('inbox-status', 'Saved to inbox.md and refreshed the styled pages.', 'ok');
+          } catch (err) {
+            status('inbox-status', 'Could not save inbox note: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            button.disabled = false;
+          }
+        });
+      }
+      async function bindAction(buttonId, statusId, url, waiting) {
+        var actionButton = document.getElementById(buttonId);
+        if (!actionButton) return;
+        actionButton.addEventListener('click', async function () {
+          if (location.protocol === 'file:') {
+            status(statusId, 'This action needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          actionButton.disabled = true;
+          status(statusId, waiting, '');
+          try {
+            var data = await postJson(url, {});
+            var output = data.result ? (data.result.stdout || data.result.stderr || data.message) : (data.message || 'Done.');
+            status(statusId, output || 'Done.', 'ok');
+          } catch (err) {
+            status(statusId, 'Action failed: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            actionButton.disabled = false;
+          }
+        });
+      }
+      bindAction('run-lesson-button', 'lesson-run-status', '/api/run-lesson', 'Requesting a manual run of the daily lesson cron job…');
+      bindAction('render-button', 'lesson-run-status', '/api/render', 'Refreshing the styled HTML pages…');
+      bindAction('run-curriculum-button', 'curriculum-run-status', '/api/run-curriculum-plan', 'Requesting a manual run of the monthly curriculum planning job…');
+    })();
+  </script>
+</body>
+</html>

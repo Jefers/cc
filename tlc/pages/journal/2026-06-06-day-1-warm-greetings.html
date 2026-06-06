@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Day 1 — Warm greetings · Tagalog Learning Course</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('tlcTheme');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/lab.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <nav class="topbar" aria-label="Site">
+      <div class="brand"><span class="brand-mark"></span><span>Tagalog Learning Course</span></div>
+      <div class="navlinks">
+        <a href="../../index.html">Dashboard</a>
+        <a href="../../pages/curriculum.html">Curriculum</a>
+        <a href="../../pages/progress.html">Progress</a>
+        <a href="../../pages/inbox.html">Inbox</a>
+        <a href="../../index.html#help">Help</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch colour theme" aria-pressed="false"><span aria-hidden="true">🌙</span><span data-theme-label>Dark</span></button>
+      </div>
+    </nav>
+    
+<section class="reader-layout">
+  <article class="document">
+    <header class="document-header">
+      <div class="eyebrow">Journal lesson · rendered from journal/2026-06-06-day-1-warm-greetings.md</div>
+      <h1>Day 1 — Warm greetings</h1>
+      <p class="muted"><a href="../../journal/2026-06-06-day-1-warm-greetings.md">Open raw Markdown</a></p>
+    </header>
+    <h1 id="day-1-warm-greetings">Day 1 — Warm greetings</h1>
+<h2 id="learning-objective">Learning objective</h2>
+<p>Start a friendly Tagalog chat without sounding formal or stiff. Today is about a few safe, common greeting chunks you can actually use.</p>
+<h2 id="phrase-set">Phrase set</h2>
+<table>
+<thead><tr>
+<th>Tagalog / Filipino</th>
+<th>Meaning</th>
+<th>Tone</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Kumusta?</td>
+<td>How are you? / What’s up?</td>
+<td>Safe, common</td>
+</tr>
+<tr>
+<td>Musta?</td>
+<td>How are you? / What’s up?</td>
+<td>More casual chat spelling</td>
+</tr>
+<tr>
+<td>Uy!</td>
+<td>Hey!</td>
+<td>Friendly attention-getter</td>
+</tr>
+<tr>
+<td>Anong balita?</td>
+<td>What’s new?</td>
+<td>Casual check-in</td>
+</tr>
+<tr>
+<td>Okay ka lang?</td>
+<td>Are you okay?</td>
+<td>Caring check-in</td>
+</tr>
+<tr>
+<td>Ayos lang.</td>
+<td>I’m okay / all good.</td>
+<td>Casual reply</td>
+</tr>
+<tr>
+<td>Salamat!</td>
+<td>Thanks!</td>
+<td>Always useful</td>
+</tr>
+</tbody></table>
+<h2 id="tone-notes">Tone notes</h2>
+<ul>
+<li><strong>Kumusta?</strong> is the clear beginner-safe version.</li>
+<li><strong>Musta?</strong> is shorter and common in casual messages.</li>
+<li><strong>Uy!</strong> is like “hey!” Use it with people you are already friendly with.</li>
+<li><strong>Anong balita?</strong> literally asks “what news?” but works like “what’s up / what’s new?”</li>
+<li>Avoid trying to sound too slangy on day one. Friendly and simple beats forced slang.</li>
+</ul>
+<h2 id="mini-chat-examples">Mini chat examples</h2>
+<pre><code class="language-text">You: Uy, musta?
+Friend: Okay lang. Ikaw?
+You: Ayos lang, salamat!</code></pre>
+<pre><code class="language-text">You: Kumusta? Anong balita?
+Friend: Wala naman haha.
+You: Ayos lang 😄</code></pre>
+<h2 id="2-minute-practice">2-minute practice</h2>
+<ol>
+<li>Say these aloud three times: <code>Kumusta?</code>, <code>Musta?</code>, <code>Anong balita?</code>, <code>Ayos lang.</code></li>
+<li>Write one message you would actually send to a Filipino friend using <strong>Uy</strong> or <strong>Musta</strong>.</li>
+<li>Keep it short. Example: <code>Uy, musta? Anong balita?</code></li>
+</ol>
+<h2 id="reflection-question">Reflection question</h2>
+<p>Which greeting feels most natural for you to send today: <strong>Kumusta?</strong>, <strong>Musta?</strong>, or <strong>Uy, musta?</strong> Why?</p>
+  </article>
+  <aside class="sidebar"><h2>On this page</h2><ul><li><a href="#learning-objective">Learning objective</a></li>
+<li><a href="#phrase-set">Phrase set</a></li>
+<li><a href="#tone-notes">Tone notes</a></li>
+<li><a href="#mini-chat-examples">Mini chat examples</a></li>
+<li><a href="#2-minute-practice">2-minute practice</a></li>
+<li><a href="#reflection-question">Reflection question</a></li></ul></aside>
+</section>
+
+    <p class="footer-note">Rendered from local Markdown in <code>~/TagalogLearningCourse</code>. The Markdown files remain the source of truth.</p>
+  </main>
+  <script>
+    (function () {
+      var button = document.querySelector('[data-theme-toggle]');
+      var label = document.querySelector('[data-theme-label]');
+      if (!button || !label) return;
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tlcTheme', theme);
+        var dark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(dark));
+        button.querySelector('span[aria-hidden="true"]').textContent = dark ? '☀️' : '🌙';
+        label.textContent = dark ? 'Light' : 'Dark';
+      }
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+      button.addEventListener('click', function () {
+        setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+
+      function status(id, message, kind) {
+        var box = document.getElementById(id);
+        if (!box) return;
+        box.className = 'status-box ' + (kind || '');
+        box.textContent = message;
+      }
+      async function postJson(url, payload) {
+        var response = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload || {})
+        });
+        var data = await response.json().catch(function () { return {ok:false, message:'Invalid JSON response'}; });
+        if (!response.ok || data.ok === false) throw data;
+        return data;
+      }
+      var inboxForm = document.getElementById('inbox-form');
+      if (inboxForm) {
+        inboxForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          if (location.protocol === 'file:') {
+            status('inbox-status', 'Interactive saving needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          var button = inboxForm.querySelector('button[type="submit"]');
+          button.disabled = true;
+          status('inbox-status', 'Saving your note to inbox.md and refreshing pages…', '');
+          try {
+            var data = await postJson('/api/inbox', {section: inboxForm.section.value, text: inboxForm.text.value});
+            inboxForm.text.value = '';
+            status('inbox-status', 'Saved to inbox.md and refreshed the styled pages.', 'ok');
+          } catch (err) {
+            status('inbox-status', 'Could not save inbox note: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            button.disabled = false;
+          }
+        });
+      }
+      async function bindAction(buttonId, statusId, url, waiting) {
+        var actionButton = document.getElementById(buttonId);
+        if (!actionButton) return;
+        actionButton.addEventListener('click', async function () {
+          if (location.protocol === 'file:') {
+            status(statusId, 'This action needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          actionButton.disabled = true;
+          status(statusId, waiting, '');
+          try {
+            var data = await postJson(url, {});
+            var output = data.result ? (data.result.stdout || data.result.stderr || data.message) : (data.message || 'Done.');
+            status(statusId, output || 'Done.', 'ok');
+          } catch (err) {
+            status(statusId, 'Action failed: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            actionButton.disabled = false;
+          }
+        });
+      }
+      bindAction('run-lesson-button', 'lesson-run-status', '/api/run-lesson', 'Requesting a manual run of the daily lesson cron job…');
+      bindAction('render-button', 'lesson-run-status', '/api/render', 'Refreshing the styled HTML pages…');
+      bindAction('run-curriculum-button', 'curriculum-run-status', '/api/run-curriculum-plan', 'Requesting a manual run of the monthly curriculum planning job…');
+    })();
+  </script>
+</body>
+</html>

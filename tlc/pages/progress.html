@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLC Progress · Tagalog Learning Course</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('tlcTheme');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/lab.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <nav class="topbar" aria-label="Site">
+      <div class="brand"><span class="brand-mark"></span><span>Tagalog Learning Course</span></div>
+      <div class="navlinks">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pages/curriculum.html">Curriculum</a>
+        <a href="../pages/progress.html">Progress</a>
+        <a href="../pages/inbox.html">Inbox</a>
+        <a href="../index.html#help">Help</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch colour theme" aria-pressed="false"><span aria-hidden="true">🌙</span><span data-theme-label>Dark</span></button>
+      </div>
+    </nav>
+    
+<section class="reader-layout">
+  <article class="document">
+    <header class="document-header">
+      <div class="eyebrow">Course page · rendered from progress.md</div>
+      <h1>TLC Progress</h1>
+      <p class="muted"><a href="../progress.md">Open raw Markdown</a></p>
+    </header>
+    <h1 id="tlc-progress">TLC Progress</h1>
+<h2 id="snapshot">Snapshot</h2>
+<ul>
+<li>Started: 2026-06-06</li>
+<li>Current level: complete beginner</li>
+<li>Current focus: greetings and friendly beginner chat</li>
+<li>Streak: 0</li>
+<li>Completed lessons: 0</li>
+<li>Next suggested topic: Day 1 — warm greetings</li>
+</ul>
+<h2 id="phrase-confidence">Phrase confidence</h2>
+<table>
+<thead><tr>
+<th>Phrase area</th>
+<th>Confidence</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Greetings</td>
+<td>0/5</td>
+<td>Starting from zero</td>
+</tr>
+<tr>
+<td>Quick chat replies</td>
+<td>0/5</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Food/eating phrases</td>
+<td>0/5</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Friendly slang</td>
+<td>0/5</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Texting tone</td>
+<td>0/5</td>
+<td>Not started</td>
+</tr>
+</tbody></table>
+<h2 id="practice-log">Practice log</h2>
+<p>No completed practice yet. Start with Day 1 and mark only what you actually practiced.</p>
+<h2 id="next-action">Next action</h2>
+<p>Read the first lesson, say the phrases aloud, then write one casual greeting message you would actually send.</p>
+  </article>
+  <aside class="sidebar"><h2>On this page</h2><ul><li><a href="#snapshot">Snapshot</a></li>
+<li><a href="#phrase-confidence">Phrase confidence</a></li>
+<li><a href="#practice-log">Practice log</a></li>
+<li><a href="#next-action">Next action</a></li></ul></aside>
+</section>
+
+    <p class="footer-note">Rendered from local Markdown in <code>~/TagalogLearningCourse</code>. The Markdown files remain the source of truth.</p>
+  </main>
+  <script>
+    (function () {
+      var button = document.querySelector('[data-theme-toggle]');
+      var label = document.querySelector('[data-theme-label]');
+      if (!button || !label) return;
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tlcTheme', theme);
+        var dark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(dark));
+        button.querySelector('span[aria-hidden="true"]').textContent = dark ? '☀️' : '🌙';
+        label.textContent = dark ? 'Light' : 'Dark';
+      }
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+      button.addEventListener('click', function () {
+        setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+
+      function status(id, message, kind) {
+        var box = document.getElementById(id);
+        if (!box) return;
+        box.className = 'status-box ' + (kind || '');
+        box.textContent = message;
+      }
+      async function postJson(url, payload) {
+        var response = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload || {})
+        });
+        var data = await response.json().catch(function () { return {ok:false, message:'Invalid JSON response'}; });
+        if (!response.ok || data.ok === false) throw data;
+        return data;
+      }
+      var inboxForm = document.getElementById('inbox-form');
+      if (inboxForm) {
+        inboxForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          if (location.protocol === 'file:') {
+            status('inbox-status', 'Interactive saving needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          var button = inboxForm.querySelector('button[type="submit"]');
+          button.disabled = true;
+          status('inbox-status', 'Saving your note to inbox.md and refreshing pages…', '');
+          try {
+            var data = await postJson('/api/inbox', {section: inboxForm.section.value, text: inboxForm.text.value});
+            inboxForm.text.value = '';
+            status('inbox-status', 'Saved to inbox.md and refreshed the styled pages.', 'ok');
+          } catch (err) {
+            status('inbox-status', 'Could not save inbox note: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            button.disabled = false;
+          }
+        });
+      }
+      async function bindAction(buttonId, statusId, url, waiting) {
+        var actionButton = document.getElementById(buttonId);
+        if (!actionButton) return;
+        actionButton.addEventListener('click', async function () {
+          if (location.protocol === 'file:') {
+            status(statusId, 'This action needs the local lab server. Start it with: ~/TagalogLearningCourse/start_lab_server.sh, then open http://127.0.0.1:8776/', 'err');
+            return;
+          }
+          actionButton.disabled = true;
+          status(statusId, waiting, '');
+          try {
+            var data = await postJson(url, {});
+            var output = data.result ? (data.result.stdout || data.result.stderr || data.message) : (data.message || 'Done.');
+            status(statusId, output || 'Done.', 'ok');
+          } catch (err) {
+            status(statusId, 'Action failed: ' + (err.message || JSON.stringify(err)), 'err');
+          } finally {
+            actionButton.disabled = false;
+          }
+        });
+      }
+      bindAction('run-lesson-button', 'lesson-run-status', '/api/run-lesson', 'Requesting a manual run of the daily lesson cron job…');
+      bindAction('render-button', 'lesson-run-status', '/api/render', 'Refreshing the styled HTML pages…');
+      bindAction('run-curriculum-button', 'curriculum-run-status', '/api/run-curriculum-plan', 'Requesting a manual run of the monthly curriculum planning job…');
+    })();
+  </script>
+</body>
+</html>
