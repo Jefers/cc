@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KD3 — Keto+ Carb Cycle Planner</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ═══ STICKY TODAY HEADER ═══ -->
+  <div id="today-header">
+    <div id="today-date"></div>
+    <div id="today-target">REST</div>
+    <div id="today-bar">
+      <span id="today-ate">0</span> / <span id="today-goal">1250</span> kcal
+      <div id="today-progress"><div id="today-fill"></div></div>
+    </div>
+    <div id="today-daytype">
+      <button id="daytype-rest" class="daytype-btn active">Rest</button>
+      <button id="daytype-training" class="daytype-btn">Training</button>
+    </div>
+  </div>
+
+  <!-- ═══ SCREENS ═══ -->
+  <div id="screens">
+
+    <!-- ── Screen 1: Inventory ── -->
+    <div class="screen" id="screen-inventory">
+      <h2>Inventory</h2>
+      <div id="inv-stats">
+        <span id="inv-count">0</span> items in kitchen
+      </div>
+      <div id="inv-categories"></div>
+      <button id="inv-add-item" class="btn-secondary">+ Add Item</button>
+    </div>
+
+    <!-- ── Screen 2: Plan ── -->
+    <div class="screen" id="screen-plan">
+      <h2>Weekly Plan</h2>
+      <div id="plan-date-tabs"></div>
+      <div id="plan-daytype-label"></div>
+      <div id="plan-meals"></div>
+    </div>
+
+    <!-- ── Screen 3: Use (ad-hoc consumption) ── -->
+    <div class="screen" id="screen-use">
+      <h2>Use Items</h2>
+      <p class="screen-subtitle">Manually subtract items from inventory. Tap a portion to consume it.</p>
+      <div id="use-list"></div>
+    </div>
+
+    <!-- ── Screen 4: Shopping List ── -->
+    <div class="screen" id="screen-shopping">
+      <h2>Shopping List</h2>
+      <div id="shopping-list"></div>
+    </div>
+
+    <!-- ── Screen 5: Supplements ── -->
+    <div class="screen" id="screen-supplements">
+      <h2>Supplements &amp; Notes</h2>
+      <div id="supplement-list"></div>
+      <div id="protocol-notes">
+        <h3>Protocol Reminders</h3>
+        <ul id="notes-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BOTTOM NAVIGATION ═══ -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-screen="inventory">📦 Inventory</button>
+    <button class="nav-btn" data-screen="plan">📅 Plan</button>
+    <button class="nav-btn" data-screen="use">✂️ Use</button>
+    <button class="nav-btn" data-screen="shopping">🛒 Shopping</button>
+    <button class="nav-btn" data-screen="supplements">💊 Supplements</button>
+  </nav>
+
+  <div id="add-item-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h3>Add Inventory Item</h3>
+      <input type="text" id="new-item-name" placeholder="Item name"><br>
+      <input type="text" id="new-item-category" placeholder="Category (e.g. protein, dairy, pantry)"><br>
+      <input type="text" id="new-item-unit" placeholder="Unit (g, ml, pcs)"><br>
+      <input type="number" id="new-item-qty" placeholder="Quantity"><br>
+      <input type="number" id="new-item-carbs" placeholder="Carbs per unit">
+      <input type="number" id="new-item-fat" placeholder="Fat per unit">
+      <input type="number" id="new-item-protein" placeholder="Protein per unit"><br>
+      <button id="save-new-item" class="btn-primary">Add to Inventory</button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

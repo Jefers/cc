@@ -1,0 +1,437 @@
+/* ═══════════════════════════════════
+   KD3 — Keto+ Carb Cycle Planner
+   Dark theme, mobile-first
+   ═══════════════════════════════════ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: #0d1117;
+  color: #c9d1d9;
+  font-size: 15px;
+  line-height: 1.5;
+}
+ul { list-style: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+input { font: inherit; }
+
+/* ── Sticky Today Header ── */
+#today-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #30363d;
+  padding: 8px 12px 10px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 4px 8px;
+  align-items: center;
+}
+#today-date {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 13px;
+  color: #8b949e;
+}
+#today-target {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #58a6ff;
+  background: #1f2937;
+  border-radius: 4px;
+  padding: 1px 10px;
+}
+#today-bar {
+  grid-column: 1 / 4;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f6fc;
+}
+#today-goal { color: #8b949e; }
+#today-progress {
+  flex: 1;
+  height: 6px;
+  background: #21262d;
+  border-radius: 3px;
+  overflow: hidden;
+}
+#today-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #238636, #2ea043);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+#today-fill.warning { background: linear-gradient(90deg, #d29922, #e3b341); }
+#today-fill.danger  { background: linear-gradient(90deg, #da3633, #f85149); }
+#today-daytype {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  gap: 2px;
+  justify-self: end;
+}
+.daytype-btn {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 3px;
+  background: #21262d;
+  color: #8b949e;
+  border: 1px solid #30363d;
+}
+.daytype-btn.active {
+  background: #1f6feb;
+  color: #fff;
+  border-color: #1f6feb;
+}
+
+/* ── Screens area (scrollable, offset for header + nav) ── */
+#screens {
+  position: fixed;
+  top: 72px;
+  bottom: 52px;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.screen {
+  display: none;
+  padding: 12px;
+}
+.screen.active { display: block; }
+.screen h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #f0f6fc;
+}
+.screen-subtitle {
+  font-size: 13px;
+  color: #8b949e;
+  margin-bottom: 12px;
+}
+
+/* ── Bottom Navigation ── */
+#bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: #161b22;
+  border-top: 1px solid #30363d;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+.nav-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  padding: 6px 0;
+  color: #8b949e;
+  transition: color 0.15s;
+  line-height: 1.3;
+}
+.nav-btn.active { color: #58a6ff; }
+.nav-btn:hover { color: #c9d1d9; }
+
+/* ── Buttons ── */
+.btn-primary {
+  background: #238636;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-block;
+}
+.btn-secondary {
+  background: #21262d;
+  color: #c9d1d9;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  border: 1px solid #30363d;
+  display: inline-block;
+  margin-top: 10px;
+}
+.btn-sm {
+  background: #21262d;
+  color: #c9d1d9;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid #30363d;
+}
+
+/* ── Inventory ── */
+#inv-stats {
+  font-size: 13px;
+  color: #8b949e;
+  margin-bottom: 10px;
+}
+.inv-category {
+  margin-bottom: 12px;
+}
+.inv-category h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 4px;
+  text-transform: capitalize;
+}
+.inv-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid #21262d;
+}
+.inv-item-name { font-size: 13px; }
+.inv-item-qty {
+  font-size: 12px;
+  color: #8b949e;
+  font-weight: 600;
+  min-width: 48px;
+  text-align: right;
+}
+
+/* ── Plan ── */
+#plan-date-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.plan-date-tab {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+.plan-date-tab.active {
+  background: #1f6feb;
+  color: #fff;
+  border-color: #1f6feb;
+}
+.plan-date-tab.today {
+  border-color: #58a6ff;
+}
+#plan-daytype-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.meal-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.meal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.meal-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #f0f6fc;
+}
+.meal-card-cal {
+  font-size: 13px;
+  color: #d29922;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.meal-card-notes {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 2px 0 4px;
+}
+.meal-card-ingredients {
+  font-size: 11px;
+  color: #484f58;
+}
+.meal-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.meal-card.eaten {
+  opacity: 0.5;
+  border-color: #238636;
+}
+.meal-card.eaten .meal-card-name::after {
+  content: " ✓";
+  color: #3fb950;
+}
+
+/* ── Use screen ── */
+.use-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #21262d;
+}
+.use-item-info { flex: 1; }
+.use-item-name { font-size: 14px; font-weight: 500; }
+.use-item-macro {
+  font-size: 11px;
+  color: #8b949e;
+}
+.use-item-qty {
+  font-size: 13px;
+  color: #8b949e;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.use-item-consume {
+  background: #238636;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.use-item-consume.small-portion {
+  background: #1f6feb;
+  font-size: 12px;
+  padding: 3px 8px;
+}
+.use-item-consume.half-portion {
+  background: #d29922;
+  font-size: 12px;
+  padding: 3px 8px;
+}
+
+/* ── Shopping ── */
+.shopping-category { margin-bottom: 10px; }
+.shopping-category h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 4px;
+  text-transform: capitalize;
+}
+.shopping-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #21262d;
+}
+.shopping-item.qty { color: #8b949e; font-weight: 600; }
+
+/* ── Supplements ── */
+.supplement-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.supplement-card.essential { border-left: 3px solid #238636; }
+.supplement-card.optional { border-left: 3px solid #d29922; }
+.supplement-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #f0f6fc;
+}
+.supplement-dosage {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 2px 0;
+}
+.supplement-reason {
+  font-size: 12px;
+  color: #58a6ff;
+}
+#protocol-notes {
+  margin-top: 16px;
+}
+#protocol-notes h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f6fc;
+  margin-bottom: 6px;
+}
+#notes-list li {
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid #21262d;
+  color: #8b949e;
+}
+
+/* ── Modal ── */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 380px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-content h3 { margin-bottom: 12px; font-size: 16px; }
+.modal-content input {
+  width: 100%;
+  background: #0d1117;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.modal-close {
+  float: right;
+  font-size: 24px;
+  color: #8b949e;
+  cursor: pointer;
+}
+.modal-close:hover { color: #f0f6fc; }
+
+/* ── Misc ── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #484f58;
+}
+.empty-state p { font-size: 14px; margin-top: 8px; }
