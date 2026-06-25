@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Stripchat + OBS Clean Audio Setup</title>
+  <style>
+    :root {
+      --bg: #fff8f3;
+      --card: #ffffff;
+      --ink: #182033;
+      --muted: #5f6676;
+      --line: #e8dcd3;
+      --gold: #f5b931;
+      --gold-dark: #8b5e00;
+      --red: #e53935;
+      --red-soft: #fff0ef;
+      --green: #1f9d55;
+      --green-soft: #effaf3;
+      --blue: #2563eb;
+      --blue-soft: #eef4ff;
+      --purple: #8b5cf6;
+      --shadow: 0 14px 38px rgba(24,32,51,.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(245,185,49,.20), transparent 28rem),
+        radial-gradient(circle at 100% 15%, rgba(37,99,235,.12), transparent 26rem),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    a { color: var(--blue); }
+    .wrap { width: min(1120px, calc(100% - 28px)); margin: 0 auto; }
+
+    header.hero {
+      padding: 38px 0 20px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid var(--line);
+      color: var(--gold-dark);
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-size: .78rem;
+      box-shadow: 0 8px 20px rgba(24,32,51,.06);
+    }
+
+    h1 {
+      margin: 16px auto 10px;
+      max-width: 980px;
+      font-size: clamp(2.15rem, 8vw, 5.35rem);
+      line-height: .95;
+      letter-spacing: -.055em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 0 auto;
+      font-size: clamp(1.05rem, 2.3vw, 1.45rem);
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .profit-bar {
+      margin: 24px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .profit-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+      text-align: left;
+    }
+    .profit-card.bad { border-color: rgba(229,57,53,.35); background: linear-gradient(180deg, #fff, var(--red-soft)); }
+    .profit-card.good { border-color: rgba(31,157,85,.35); background: linear-gradient(180deg, #fff, var(--green-soft)); }
+    .profit-card h2 { margin: 0 0 12px; font-size: clamp(1.1rem, 3vw, 1.75rem); line-height: 1.05; }
+    .profit-card.bad h2 { color: #b42318; }
+    .profit-card.good h2 { color: #12723c; }
+
+    .big-result {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 13px;
+      font-weight: 900;
+      font-size: clamp(1rem, 2.4vw, 1.35rem);
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.68);
+      margin-bottom: 12px;
+    }
+    .icon-bubble {
+      width: 50px; height: 50px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.55rem;
+      font-weight: 900;
+      flex: none;
+    }
+    .bad .icon-bubble { background: var(--red); }
+    .good .icon-bubble { background: var(--green); }
+
+    .clean-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+    .clean-list li { display: grid; grid-template-columns: 26px 1fr; gap: 9px; align-items: start; font-weight: 720; }
+    .bad .mark { color: var(--red); }
+    .good .mark { color: var(--green); }
+    .mark { font-size: 1.1rem; line-height: 1.2; font-weight: 900; }
+
+    nav.jump {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(255,248,243,.88);
+      border-top: 1px solid rgba(232,220,211,.7);
+      border-bottom: 1px solid rgba(232,220,211,.9);
+      margin: 22px 0 0;
+    }
+    nav.jump .wrap {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    nav.jump a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-weight: 800;
+      font-size: .9rem;
+      white-space: nowrap;
+    }
+
+    main { padding: 26px 0 56px; }
+    section { margin: 26px 0; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 14px;
+    }
+    .section-title .num {
+      width: 46px; height: 46px;
+      border-radius: 16px;
+      display: grid; place-items: center;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 950;
+      box-shadow: 0 10px 22px rgba(24,32,51,.14);
+    }
+    h2.section-heading {
+      margin: 0;
+      font-size: clamp(1.55rem, 4vw, 2.55rem);
+      line-height: 1.02;
+      letter-spacing: -.035em;
+    }
+    .section-note {
+      margin: -4px 0 18px 58px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 860px;
+    }
+
+    .card {
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-pad { padding: 18px; }
+
+    .money-message {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .message-box {
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 2px solid rgba(245,185,49,.55);
+      background: linear-gradient(135deg, #201708, #422b05 58%, #111827);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+    .message-box h2 {
+      margin: 0 0 10px;
+      color: #ffd76b;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      line-height: 1.02;
+      letter-spacing: -.04em;
+      text-transform: uppercase;
+    }
+    .message-box p { margin: 9px 0; font-size: 1.08rem; font-weight: 650; }
+    .money-pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); font-weight: 850; }
+
+    .hero-visual {
+      min-height: 250px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.72)),
+        radial-gradient(circle at 50% 30%, rgba(245,185,49,.35), transparent 8rem),
+        linear-gradient(145deg, #fce8df, #eaf2ff);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .visual-stack { display: grid; gap: 13px; width: 100%; }
+    .visual-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; background: white; border: 1px solid var(--line); padding: 12px; border-radius: 18px; font-weight: 900; }
+    .visual-row .emoji { font-size: 1.55rem; }
+    .arrow { color: var(--blue); font-size: 1.6rem; }
+
+    .setup-diagram {
+      display: grid;
+      grid-template-columns: repeat(5, auto);
+      gap: 10px;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 3px;
+    }
+    .diagram-node {
+      min-width: 128px;
+      text-align: center;
+      padding: 13px 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(24,32,51,.06);
+    }
+    .diagram-node.obs { background: #111827; color: #fff; border-color: #111827; }
+    .diagram-node.off { background: var(--red-soft); color: #b42318; border-color: rgba(229,57,53,.3); }
+    .diagram-node.good { background: var(--green-soft); color: #12723c; border-color: rgba(31,157,85,.28); }
+    .diagram-icon { display: block; font-size: 1.8rem; margin-bottom: 4px; }
+    .diagram-arrow { font-weight: 950; color: var(--blue); font-size: 1.75rem; }
+    .diagram-arrow.green { color: var(--green); }
+    .diagram-arrow.red { color: var(--red); }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 17px;
+      box-shadow: 0 8px 22px rgba(24,32,51,.07);
+      display: grid;
+      gap: 11px;
+      align-content: start;
+    }
+    .step-top { display: flex; gap: 10px; align-items: center; }
+    .step-number {
+      width: 43px; height: 43px; border-radius: 15px;
+      display: grid; place-items: center;
+      background: var(--blue);
+      color: #fff; font-weight: 950; font-size: 1.2rem;
+      flex: none;
+    }
+    .step h3 { margin: 0; font-size: 1.14rem; line-height: 1.12; }
+    .step p { margin: 0; color: var(--muted); font-weight: 650; }
+    .tap-path {
+      display: inline-block;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: var(--blue-soft);
+      color: #153e9b;
+      font-weight: 850;
+      margin: 4px 0;
+    }
+    .warning {
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--red-soft);
+      border: 1px solid rgba(229,57,53,.25);
+      color: #991b1b;
+      font-weight: 760;
+    }
+    .success {
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--green-soft);
+      border: 1px solid rgba(31,157,85,.25);
+      color: #146c43;
+      font-weight: 760;
+    }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    details {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 22px rgba(24,32,51,.06);
+      overflow: hidden;
+    }
+    summary {
+      cursor: pointer;
+      padding: 17px;
+      font-weight: 950;
+      font-size: 1.08rem;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "＋"; float: right; color: var(--blue); font-weight: 950; }
+    details[open] summary::after { content: "−"; }
+    details .inside { padding: 0 17px 17px; color: var(--muted); font-weight: 630; }
+    details .inside ol, details .inside ul { margin: 8px 0 0 20px; padding: 0; }
+    details .inside li { margin: 7px 0; }
+
+    .checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      font-weight: 800;
+    }
+    .check input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--green);
+      flex: none;
+      margin-top: 2px;
+    }
+
+    .troubleshoot { display: grid; gap: 12px; }
+    .fix {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 15px;
+      box-shadow: 0 8px 18px rgba(24,32,51,.05);
+    }
+    .fix .badge {
+      width: 42px; height: 42px; border-radius: 14px;
+      display: grid; place-items: center;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 1.2rem;
+      font-weight: 950;
+    }
+    .fix h3 { margin: 0 0 5px; font-size: 1.05rem; }
+    .fix p { margin: 0; color: var(--muted); font-weight: 650; }
+
+    .print-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 17px;
+      font-weight: 950;
+      color: #fff;
+      background: var(--ink);
+      box-shadow: 0 10px 22px rgba(24,32,51,.15);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn.gold { background: linear-gradient(135deg, #f5b931, #b97700); }
+    .btn.green { background: var(--green); }
+
+    footer {
+      padding: 24px 0 38px;
+      color: var(--muted);
+      font-size: .92rem;
+      text-align: center;
+    }
+    footer .sources {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    footer a { font-weight: 800; }
+
+    @media (max-width: 780px) {
+      .wrap { width: min(100% - 22px, 1120px); }
+      header.hero { padding-top: 28px; }
+      .profit-bar, .money-message, .detail-grid, .checklist { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .section-title { align-items: flex-start; }
+      .section-note { margin-left: 0; }
+      .hero-visual { min-height: 0; }
+      .setup-diagram {
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
+      .diagram-arrow { transform: rotate(90deg); text-align: center; }
+      .diagram-arrow.red { transform: none; }
+      .diagram-node { min-width: 0; }
+      .visual-row { grid-template-columns: auto 1fr; }
+      .visual-row .arrow { display: none; }
+      nav.jump .wrap { width: 100%; padding-left: 11px; padding-right: 11px; }
+      .card-pad { padding: 15px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      nav.jump, .print-row { display: none; }
+      .card, .step, .profit-card, .message-box, .hero-visual, details, .fix { box-shadow: none; }
+      details { break-inside: avoid; }
+      details:not([open]) .inside { display: block; }
+      details summary::after { content: ""; }
+      a { color: #000; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">✨ Clean audio setup for Stripchat + OBS</div>
+      <h1>More money starts with better audio</h1>
+      <p class="subtitle">Bad audio makes customers leave. Clean voice, good music, and quick mic muting make the stream feel professional.</p>
+      <div class="print-row">
+        <button class="btn gold" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <a class="btn green" href="#go-live">✅ Go-live checklist</a>
+      </div>
+
+      <div class="profit-bar" aria-label="Bad audio versus good audio">
+        <div class="profit-card bad">
+          <h2>Bad audio = customers leave = less money</h2>
+          <div class="big-result"><span class="icon-bubble">×</span><span>Feedback, echo, robot voice</span></div>
+          <ul class="clean-list">
+            <li><span class="mark">×</span><span>Music plays out loud in the room.</span></li>
+            <li><span class="mark">×</span><span>Webcam mic hears music, voice, and echo together.</span></li>
+            <li><span class="mark">×</span><span>Noise suppression fights the room sound.</span></li>
+            <li><span class="mark">×</span><span>Customers click away.</span></li>
+          </ul>
+        </div>
+        <div class="profit-card good">
+          <h2>Good audio = customers stay = more money</h2>
+          <div class="big-result"><span class="icon-bubble">✓</span><span>Clean voice, good music</span></div>
+          <ul class="clean-list">
+            <li><span class="mark">✓</span><span>Music plays on the PC and goes direct to the stream.</span></li>
+            <li><span class="mark">✓</span><span>You hear the music in one earbud.</span></li>
+            <li><span class="mark">✓</span><span>Webcam mic hears only your voice.</span></li>
+            <li><span class="mark">✓</span><span>Customers stay longer.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="jump" aria-label="Page sections">
+    <div class="wrap">
+      <a href="#winning">Winning setup</a>
+      <a href="#before">Before starting</a>
+      <a href="#stripchat">Stripchat key</a>
+      <a href="#obs">OBS setup</a>
+      <a href="#audio">Audio test</a>
+      <a href="#go-live">Checklist</a>
+      <a href="#fixes">Fix problems</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="money-message" id="winning">
+      <div class="message-box">
+        <h2>The rule that fixes everything</h2>
+        <p><strong>Do not play music out loud in the room.</strong></p>
+        <p>Use OBS as the mixer. OBS sends two clean sounds to customers: your webcam mic and music from the PC.</p>
+        <div class="money-pill-row">
+          <span class="pill">🎤 Voice = webcam mic</span>
+          <span class="pill">🎵 Music = PC audio</span>
+          <span class="pill">🎧 You hear music in 1 earbud</span>
+          <span class="pill">🔇 Mic muted when not speaking</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Simple signal diagram">
+        <div class="visual-stack">
+          <div class="visual-row"><span class="emoji">🎤</span><span>Webcam mic hears your voice</span><span class="arrow">→</span></div>
+          <div class="visual-row"><span class="emoji">🎵</span><span>PC music goes direct to viewers</span><span class="arrow">→</span></div>
+          <div class="visual-row"><span class="emoji">🎧</span><span>PC music also goes to 1 earbud</span><span class="arrow">→</span></div>
+          <div class="visual-row"><span class="emoji">🔇</span><span>Room speakers stay OFF</span><span class="arrow">✓</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <span class="num">1</span>
+        <h2 class="section-heading">The easy winning setup</h2>
+      </div>
+      <p class="section-note">This is the whole idea. OBS mixes the webcam mic and PC music before sending the stream to Stripchat.</p>
+      <div class="card card-pad">
+        <div class="setup-diagram" aria-label="OBS audio routing diagram">
+          <div class="diagram-node"><span class="diagram-icon">🎤</span>Webcam mic<br><small>your voice</small></div>
+          <div class="diagram-arrow green">→</div>
+          <div class="diagram-node obs"><span class="diagram-icon">⬢</span>OBS Studio<br><small>mixes sound</small></div>
+          <div class="diagram-arrow green">→</div>
+          <div class="diagram-node good"><span class="diagram-icon">😊</span>Viewers<br><small>clean voice</small></div>
+
+          <div class="diagram-node"><span class="diagram-icon">🎵</span>PC music<br><small>not phone</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node obs"><span class="diagram-icon">⬢</span>OBS Studio<br><small>sends music</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node good"><span class="diagram-icon">🎶</span>Viewers<br><small>hear music</small></div>
+
+          <div class="diagram-node"><span class="diagram-icon">🎵</span>PC music<br><small>same music</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node"><span class="diagram-icon">🎧</span>1 earbud<br><small>you hear it</small></div>
+          <div class="diagram-arrow green">→</div>
+          <div class="diagram-node good"><span class="diagram-icon">✅</span>No room echo</div>
+
+          <div class="diagram-node off"><span class="diagram-icon">🔈</span>Room speakers</div>
+          <div class="diagram-arrow red">→</div>
+          <div class="diagram-node off"><span class="diagram-icon">OFF</span>Always off</div>
+          <div class="diagram-arrow red">✕</div>
+          <div class="diagram-node off"><span class="diagram-icon">📱</span>No phone music</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="before">
+      <div class="section-title">
+        <span class="num">2</span>
+        <h2 class="section-heading">Before starting</h2>
+      </div>
+      <p class="section-note">Do these first. This avoids most problems.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-top"><span class="step-number">A</span><h3>Use one earbud</h3></div>
+          <p>Plug in one earbud or one headphone. Use a wired earbud if possible. Bluetooth can work, but wired is usually easier.</p>
+          <div class="success">You hear PC music and alerts. The room does not hear them.</div>
+        </div>
+        <div class="step">
+          <div class="step-top"><span class="step-number">B</span><h3>Turn speakers off</h3></div>
+          <p>Turn down or unplug room speakers. Do not let music come out loud in the room.</p>
+          <div class="warning">If the webcam mic hears speakers, echo and feedback can return.</div>
+        </div>
+        <div class="step">
+          <div class="step-top"><span class="step-number">C</span><h3>Play music on the PC</h3></div>
+          <p>Use Spotify, YouTube, or another music app on the PC.</p>
+          <div class="warning">Do not use phone music. Phone music becomes room sound.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="section-title">
+        <span class="num">3</span>
+        <h2 class="section-heading">Download OBS Studio</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-top"><span class="step-number">1</span><h3>Open the OBS website</h3></div>
+          <p>Go to:</p>
+          <div class="tap-path">obsproject.com</div>
+          <p>Choose <strong>Windows</strong>.</p>
+        </div>
+        <div class="step">
+          <div class="step-top"><span class="step-number">2</span><h3>Install OBS</h3></div>
+          <p>Open the downloaded installer. Keep the normal default options. Finish the install.</p>
+        </div>
+        <div class="step">
+          <div class="step-top"><span class="step-number">3</span><h3>Open OBS</h3></div>
+          <p>If OBS asks to auto-configure, choose streaming. Start simple: <strong>1280×720</strong> and <strong>30 FPS</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="stripchat">
+      <div class="section-title">
+        <span class="num">4</span>
+        <h2 class="section-heading">Get the Stripchat stream key</h2>
+      </div>
+      <p class="section-note">The stream key connects OBS to Stripchat. Treat it like a password.</p>
+      <div class="card card-pad">
+        <ol class="clean-steps">
+          <li><strong>Log in to Stripchat.</strong></li>
+          <li>Open the <strong>Broadcast Center</strong>.</li>
+          <li>Tap or click <span class="tap-path">Set Up Broadcast</span>.</li>
+          <li>Choose <span class="tap-path">External Broadcast Software</span> or <span class="tap-path">Switch to External Broadcast Software (OBS)</span>.</li>
+          <li>Tap or click <span class="tap-path">Show OBS Broadcasting Specification</span>.</li>
+          <li>Copy the <strong>Server / RTMP URL</strong>.</li>
+          <li>Copy the <strong>Stream Key / Token / Broadcast Token</strong>.</li>
+        </ol>
+        <div class="warning" style="margin-top:14px;">Never show the stream key on camera. Never send it to customers. It controls your live broadcast connection.</div>
+      </div>
+    </section>
+
+    <section id="obs">
+      <div class="section-title">
+        <span class="num">5</span>
+        <h2 class="section-heading">Set up OBS Studio</h2>
+      </div>
+      <p class="section-note">Do this once. After it works, the daily routine is much easier.</p>
+
+      <div class="detail-grid">
+        <details open>
+          <summary>Connect OBS to Stripchat</summary>
+          <div class="inside">
+            <ol>
+              <li>Open OBS.</li>
+              <li>Go to <strong>Settings → Stream</strong>.</li>
+              <li>For <strong>Service</strong>, choose <strong>Custom</strong>.</li>
+              <li>Paste the Stripchat <strong>Server / RTMP URL</strong> into the Server box.</li>
+              <li>Paste the Stripchat <strong>Stream Key / Token</strong> into the Stream Key box.</li>
+              <li>Click <strong>Apply</strong>, then <strong>OK</strong>.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Make one clean scene</summary>
+          <div class="inside">
+            <ol>
+              <li>Find the <strong>Scenes</strong> box in OBS.</li>
+              <li>Click the <strong>+</strong> button.</li>
+              <li>Name the scene: <strong>Stripchat Clean Audio</strong>.</li>
+              <li>Use this one scene until the audio is working perfectly.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Add webcam video</summary>
+          <div class="inside">
+            <ol>
+              <li>Find the <strong>Sources</strong> box.</li>
+              <li>Click <strong>+</strong>.</li>
+              <li>Choose <strong>Video Capture Device</strong>.</li>
+              <li>Name it: <strong>Webcam Video</strong>.</li>
+              <li>Select the Logitech webcam, for example <strong>Logitech C922</strong>.</li>
+              <li>Recommended start: <strong>1280×720</strong>, <strong>30 FPS</strong>.</li>
+              <li>If there is a webcam audio option here, leave it off. Add the mic separately in the next step.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Add webcam mic voice</summary>
+          <div class="inside">
+            <ol>
+              <li>In <strong>Sources</strong>, click <strong>+</strong>.</li>
+              <li>Choose <strong>Audio Input Capture</strong>.</li>
+              <li>Name it: <strong>Webcam Mic — Voice</strong>.</li>
+              <li>Select the Logitech webcam microphone.</li>
+              <li>Talk normally. The <strong>Webcam Mic — Voice</strong> meter should move.</li>
+              <li>Do not add another microphone unless needed.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Add PC music</summary>
+          <div class="inside">
+            <ol>
+              <li>In <strong>Sources</strong>, click <strong>+</strong>.</li>
+              <li>Choose <strong>Audio Output Capture</strong>.</li>
+              <li>Name it: <strong>PC Music — Desktop Audio</strong>.</li>
+              <li>Select the same output device used for the earbud/headphones. If unsure, choose <strong>Default</strong>.</li>
+              <li>Play music on the PC. The <strong>PC Music</strong> meter should move in OBS.</li>
+            </ol>
+            <p><strong>Important:</strong> This is how customers hear music without the music playing in the room.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Turn off duplicate audio</summary>
+          <div class="inside">
+            <ol>
+              <li>Go to <strong>Settings → Audio</strong>.</li>
+              <li>For <strong>Global Audio Devices</strong>, turn off anything not needed.</li>
+              <li>A simple setup should show only two useful meters in OBS: <strong>Webcam Mic — Voice</strong> and <strong>PC Music — Desktop Audio</strong>.</li>
+              <li>If the same sound appears twice, mute or remove the duplicate source.</li>
+            </ol>
+            <p>This prevents echo and doubled sound.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="audio">
+      <div class="section-title">
+        <span class="num">6</span>
+        <h2 class="section-heading">Set the sound levels</h2>
+      </div>
+      <p class="section-note">The meters in OBS tell you what viewers will hear.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-top"><span class="step-number">🎤</span><h3>Voice meter</h3></div>
+          <p>Talk normally. The <strong>Webcam Mic — Voice</strong> meter should move. It should not stay red.</p>
+          <div class="success">Goal: voice is clear and louder than the music.</div>
+        </div>
+        <div class="step">
+          <div class="step-top"><span class="step-number">🎵</span><h3>Music meter</h3></div>
+          <p>Play music on the PC. The <strong>PC Music</strong> meter should move. Lower it if it covers your voice.</p>
+          <div class="success">Goal: music is pleasant, not overpowering.</div>
+        </div>
+        <div class="step">
+          <div class="step-top"><span class="step-number">🔇</span><h3>Mute button</h3></div>
+          <p>In the OBS Audio Mixer, click the speaker icon beside <strong>Webcam Mic — Voice</strong>.</p>
+          <div class="success">Red X = muted. No red X = viewers can hear you.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <span class="num">7</span>
+        <h2 class="section-heading">Test before going live</h2>
+      </div>
+      <div class="card card-pad">
+        <div class="checklist">
+          <label class="check"><input type="checkbox"> <span>Room speakers are off.</span></label>
+          <label class="check"><input type="checkbox"> <span>One earbud is in.</span></label>
+          <label class="check"><input type="checkbox"> <span>Music is playing on the PC, not the phone.</span></label>
+          <label class="check"><input type="checkbox"> <span>Webcam Mic meter moves when you talk.</span></label>
+          <label class="check"><input type="checkbox"> <span>PC Music meter moves when music plays.</span></label>
+          <label class="check"><input type="checkbox"> <span>Make a short OBS recording and listen back.</span></label>
+        </div>
+        <div class="success" style="margin-top:14px;">Best test: click <strong>Start Recording</strong> in OBS, talk for 20 seconds, play music, stop recording, then listen. Do this before starting the show.</div>
+      </div>
+    </section>
+
+    <section id="go-live">
+      <div class="section-title">
+        <span class="num">8</span>
+        <h2 class="section-heading">Go live routine</h2>
+      </div>
+      <p class="section-note">Use the same order every time.</p>
+      <div class="steps">
+        <div class="step"><div class="step-top"><span class="step-number">1</span><h3>Open OBS</h3></div><p>Open the scene named <strong>Stripchat Clean Audio</strong>.</p></div>
+        <div class="step"><div class="step-top"><span class="step-number">2</span><h3>Check sound</h3></div><p>Room speakers off. One earbud in. Music on PC. Watch both OBS meters.</p></div>
+        <div class="step"><div class="step-top"><span class="step-number">3</span><h3>Open Stripchat</h3></div><p>Open Broadcast Center and use External Broadcast Software / OBS mode.</p></div>
+        <div class="step"><div class="step-top"><span class="step-number">4</span><h3>Start OBS</h3></div><p>Click <strong>Start Streaming</strong> in OBS.</p></div>
+        <div class="step"><div class="step-top"><span class="step-number">5</span><h3>Start Stripchat</h3></div><p>Return to Stripchat and click <strong>Start Show</strong> or <strong>Go Live</strong>.</p></div>
+        <div class="step"><div class="step-top"><span class="step-number">6</span><h3>Use mic mute</h3></div><p>When not speaking, mute <strong>Webcam Mic — Voice</strong>. Keep music playing.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <span class="num">9</span>
+        <h2 class="section-heading">The rules that make money</h2>
+      </div>
+      <div class="profit-bar">
+        <div class="profit-card good">
+          <h2>Always do this</h2>
+          <ul class="clean-list">
+            <li><span class="mark">✓</span><span>Use music from the PC.</span></li>
+            <li><span class="mark">✓</span><span>Wear one earbud.</span></li>
+            <li><span class="mark">✓</span><span>Keep voice clean and clear.</span></li>
+            <li><span class="mark">✓</span><span>Mute the mic when not speaking.</span></li>
+          </ul>
+        </div>
+        <div class="profit-card bad">
+          <h2>Never do this</h2>
+          <ul class="clean-list">
+            <li><span class="mark">×</span><span>Do not play phone music out loud.</span></li>
+            <li><span class="mark">×</span><span>Do not use room speakers during the stream.</span></li>
+            <li><span class="mark">×</span><span>Do not let viewers hear music through the webcam mic.</span></li>
+            <li><span class="mark">×</span><span>Do not ignore robot voice or feedback.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="fixes">
+      <div class="section-title">
+        <span class="num">10</span>
+        <h2 class="section-heading">If something goes wrong</h2>
+      </div>
+      <div class="troubleshoot">
+        <div class="fix"><div class="badge">🎵</div><div><h3>Viewers cannot hear music</h3><p>Make sure music is playing on the PC. In OBS, the <strong>PC Music — Desktop Audio</strong> meter must move. If it does not move, choose a different device in the Audio Output Capture source.</p></div></div>
+        <div class="fix"><div class="badge">🎤</div><div><h3>Viewers cannot hear your voice</h3><p>Make sure the <strong>Webcam Mic — Voice</strong> meter moves when you talk. Make sure the mic is not muted with a red X.</p></div></div>
+        <div class="fix"><div class="badge">🔁</div><div><h3>Echo or doubled sound</h3><p>There is probably more than one mic or more than one desktop-audio source active. Keep only <strong>Webcam Mic — Voice</strong> and <strong>PC Music — Desktop Audio</strong>.</p></div></div>
+        <div class="fix"><div class="badge">🤖</div><div><h3>Robot voice</h3><p>Turn room speakers off first. Then disable extra noise suppression or audio enhancements in Logitech software, Windows, or the browser if needed.</p></div></div>
+        <div class="fix"><div class="badge">📷</div><div><h3>Camera is black in OBS</h3><p>Close other apps that may be using the camera, including browser preview tabs or Logitech camera software. Reopen OBS after closing them.</p></div></div>
+        <div class="fix"><div class="badge">🔑</div><div><h3>OBS will not connect to Stripchat</h3><p>Check the RTMP URL and Stream Key/Token. Copy them again from Stripchat and paste them into <strong>OBS → Settings → Stream</strong>.</p></div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="message-box">
+        <h2>Final simple promise</h2>
+        <p>Clean audio makes the stream easier to watch. Easier to watch means customers stay longer.</p>
+        <p><strong>Talk into the webcam mic. Play music on the PC. Hear it in one earbud. Keep room speakers off. Mute the mic when not speaking.</strong></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Button names can change slightly. Look for similar words: External Broadcast Software, OBS, RTMP URL, Stream Key, Token, Start Show, or Go Live.</p>
+      <div class="sources">
+        <a href="https://obsproject.com/" target="_blank" rel="noopener">OBS Studio</a>
+        <a href="https://obsproject.com/kb/audio-mixer-guide" target="_blank" rel="noopener">OBS Audio Mixer Guide</a>
+        <a href="https://obsproject.com/kb/application-audio-capture-guide" target="_blank" rel="noopener">OBS Audio Capture Guide</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
