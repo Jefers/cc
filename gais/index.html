@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GS AI — Estate Agency Follow-Up Leak Audit</title>
+  <meta name="description" content="A private AI follow-up audit for estate agencies that want fewer missed vendor opportunities — without replacing their CRM or letting AI contact clients unsupervised.">
+  <meta name="robots" content="noindex,nofollow">
+  <style>
+    :root {
+      color-scheme: light;
+      --espresso: #241A0C;
+      --walnut: #49341A;
+      --coffee: #5D4D31;
+      --taupe: #726750;
+      --olive: #7F806D;
+      --clay: #845C3C;
+      --sand: #998971;
+      --greige: #ADA89D;
+      --linen: #C6C0B4;
+      --parchment: #EAE8E2;
+      --paper: #F6F1E8;
+      --cream: #FBF8F0;
+      --orange: #F97316;
+      --orange-deep: #C2410C;
+      --ink: #21170B;
+      --muted: #6D6251;
+      --line: rgba(36, 26, 12, .13);
+      --soft-line: rgba(36, 26, 12, .08);
+      --shadow: 0 28px 80px rgba(36,26,12,.16);
+      --max: 1180px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 3%, rgba(198,192,180,.95), transparent 26rem),
+        radial-gradient(circle at 88% 14%, rgba(132,92,60,.18), transparent 28rem),
+        linear-gradient(180deg, var(--parchment), var(--paper) 52%, #DED6C9 100%);
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(36,26,12,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36,26,12,.035) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.46), transparent 72%);
+      z-index: -1;
+    }
+
+    a { color: inherit; }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+    .preview {
+      background: rgba(73,52,26,.92);
+      color: #F4EBDD;
+      font-size: 12px;
+      letter-spacing: .02em;
+    }
+    .preview .wrap { display:flex; justify-content:space-between; gap: 16px; padding: 8px 0; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(234,232,226,.78);
+      border-bottom: 1px solid rgba(36,26,12,.09);
+      backdrop-filter: blur(22px);
+    }
+    .header-inner { height: 70px; display:flex; align-items:center; justify-content:space-between; gap: 18px; }
+    .brand { display:inline-flex; align-items:center; gap: 12px; text-decoration:none; min-width: 0; }
+    .logo-mark { width: 48px; height: 48px; filter: drop-shadow(0 12px 24px rgba(36,26,12,.12)); flex: 0 0 auto; }
+    .brand-text { display:grid; line-height: 1; }
+    .brand-text strong { font-size: 17px; letter-spacing: -.04em; }
+    .brand-text span { font-size: 10px; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); margin-top: 5px; }
+    .header-note { color: var(--muted); font-size: 13px; }
+
+    .cta {
+      --cta-shadow: 0 16px 38px rgba(249,115,22,.28);
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(194,65,12,.22);
+      background: linear-gradient(135deg, var(--orange), #FB923C 56%, #FDBA74);
+      color: #2B1306;
+      box-shadow: var(--cta-shadow);
+      font-weight: 950;
+      letter-spacing: -.02em;
+      text-decoration:none;
+      transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+    }
+    .cta:hover { transform: translateY(-2px); filter: saturate(1.06); box-shadow: 0 20px 46px rgba(249,115,22,.34); }
+
+    .hero { min-height: calc(100vh - 70px); display:grid; grid-template-columns: minmax(0, 1.04fr) minmax(320px, .96fr); gap: clamp(28px, 5vw, 72px); align-items:center; padding: clamp(42px, 8vw, 92px) 0; }
+    .eyebrow { display:inline-flex; align-items:center; gap: 9px; padding: 8px 11px; border:1px solid rgba(132,92,60,.18); background: rgba(255,255,255,.38); border-radius:999px; color: var(--coffee); text-transform:uppercase; letter-spacing:.13em; font-size: 12px; font-weight: 900; margin-bottom: 22px; }
+    .eyebrow i { width: 9px; height: 9px; border-radius:50%; background: var(--orange); box-shadow: 0 0 0 7px rgba(249,115,22,.13); }
+    h1 { font-size: clamp(50px, 8.4vw, 112px); line-height: .85; letter-spacing: -.088em; margin: 0 0 24px; max-width: 900px; }
+    .hero em { font-style: normal; color: var(--clay); }
+    .hero-copy { max-width: 650px; color: var(--muted); font-size: clamp(18px, 2.05vw, 24px); margin: 0 0 28px; }
+    .hero-copy strong { color: var(--ink); }
+    .trust-row { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 16px; }
+    .chip { color: var(--coffee); background: rgba(255,255,255,.44); border: 1px solid rgba(36,26,12,.1); padding: 8px 10px; border-radius: 999px; font-size: 13px; font-weight: 750; }
+
+    .hero-visual { position: relative; min-height: 560px; display:grid; place-items:center; }
+    .stack-card {
+      position:absolute;
+      width: min(92%, 430px);
+      border:1px solid rgba(36,26,12,.12);
+      border-radius: 32px;
+      background: rgba(251,248,240,.74);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: 22px;
+    }
+    .stack-card.main { transform: rotate(-2deg) translateY(-12px); z-index: 3; }
+    .stack-card.back-a { transform: rotate(5deg) translate(36px, 34px); z-index: 2; background: rgba(198,192,180,.55); }
+    .stack-card.back-b { transform: rotate(-8deg) translate(-28px, 70px); z-index: 1; background: rgba(153,137,113,.28); }
+    .stack-top { display:flex; justify-content:space-between; align-items:center; gap: 12px; margin-bottom: 18px; }
+    .pill { border-radius:999px; padding: 6px 9px; background: rgba(249,115,22,.13); color: var(--orange-deep); font-size: 12px; font-weight: 900; }
+    .leak-list { display:grid; gap: 10px; }
+    .leak-item { display:grid; grid-template-columns: 11px minmax(0,1fr) auto; align-items:center; gap: 10px; padding: 12px; border: 1px solid rgba(36,26,12,.08); border-radius: 18px; background: rgba(255,255,255,.43); }
+    .leak-dot { width: 11px; height: 11px; border-radius:50%; background: var(--orange); }
+    .leak-item strong { font-size: 14px; }
+    .leak-item span { color: var(--muted); font-size: 12px; }
+    .status { font-size: 12px; font-weight: 900; color: var(--coffee); background: rgba(173,168,157,.22); padding: 5px 8px; border-radius:999px; }
+    .approval { margin-top: 14px; border-radius: 22px; padding: 14px; background: linear-gradient(135deg, rgba(36,26,12,.9), rgba(73,52,26,.9)); color: #F9F4EA; }
+    .approval small { display:block; color: #CFC5B5; margin-bottom: 4px; }
+
+    section { padding: clamp(72px, 11vw, 136px) 0; }
+    .section-label { color: var(--clay); text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 950; margin-bottom: 12px; }
+    h2 { font-size: clamp(36px, 5.5vw, 78px); line-height: .9; letter-spacing: -.08em; margin: 0 0 18px; }
+    .intro { color: var(--muted); font-size: clamp(17px, 2vw, 22px); max-width: 720px; margin: 0; }
+
+    .journey { position: relative; }
+    .journey:before { content:""; position:absolute; left:50%; top: 170px; bottom: 150px; width: 1px; background: linear-gradient(to bottom, transparent, rgba(36,26,12,.22), transparent); }
+    .journey-row { min-height: min(72vh, 680px); display:grid; grid-template-columns: 1fr 1fr; gap: clamp(22px, 6vw, 82px); align-items:center; padding: 28px 0; }
+    .journey-row:nth-child(even) .journey-copy { order: 2; }
+    .journey-row:nth-child(even) .journey-mini { order: 1; }
+    .journey-copy { max-width: 510px; }
+    .journey-copy h3 { font-size: clamp(31px, 4.2vw, 58px); line-height: .94; letter-spacing: -.06em; margin: 0 0 14px; }
+    .journey-copy p { color: var(--muted); font-size: 18px; margin: 0; }
+    .step-badge { display:inline-grid; place-items:center; width: 44px; height: 44px; border-radius: 50%; background: var(--espresso); color: var(--parchment); font-weight: 950; margin-bottom: 18px; box-shadow: 0 12px 30px rgba(36,26,12,.18); }
+    .journey-mini { min-height: 290px; border-radius: 34px; border:1px solid rgba(36,26,12,.11); background: rgba(255,255,255,.38); box-shadow: var(--shadow); padding: clamp(20px, 3vw, 30px); display:grid; align-content:center; overflow:hidden; position:relative; }
+    .journey-mini:after { content:""; position:absolute; width: 180px; height: 180px; right:-66px; bottom:-66px; border-radius:50%; background: rgba(249,115,22,.13); }
+    .mini-line { display:flex; justify-content:space-between; align-items:center; gap: 12px; border-bottom:1px solid rgba(36,26,12,.09); padding: 13px 0; position:relative; z-index:1; }
+    .mini-line:last-child { border-bottom:0; }
+    .mini-line strong { font-size: 15px; }
+    .mini-line span { color: var(--muted); font-size: 13px; }
+
+    .cream-band { background: rgba(251,248,240,.56); border-block: 1px solid rgba(36,26,12,.07); }
+    .deliver-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-top: 34px; }
+    .deliver { min-height: 230px; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(36,26,12,.11); border-radius: 30px; background: rgba(255,255,255,.44); padding: 24px; box-shadow: 0 20px 58px rgba(36,26,12,.08); }
+    .deliver b { font-size: 25px; letter-spacing:-.04em; }
+    .deliver p { color: var(--muted); margin: 10px 0 0; }
+    .deliver .num { width: 38px; height: 38px; display:grid; place-items:center; border-radius: 50%; background: var(--orange); color: #2B1306; font-weight: 950; }
+
+    .phone-section { display:grid; grid-template-columns: .82fr 1.18fr; gap: clamp(24px, 5vw, 70px); align-items:center; }
+    .phone-card { border-radius: 42px; background: var(--espresso); color: var(--paper); padding: 18px; box-shadow: 0 30px 86px rgba(36,26,12,.25); max-width: 440px; justify-self:center; }
+    .phone-screen { border-radius: 30px; min-height: 520px; background: linear-gradient(180deg, #3A2915, #21170B); padding: 18px; display:grid; gap: 12px; align-content:start; }
+    .task { border:1px solid rgba(234,232,226,.12); background: rgba(234,232,226,.075); border-radius: 20px; padding: 14px; }
+    .task small { display:block; color: #C6C0B4; margin-bottom: 6px; }
+    .task strong { display:block; font-size: 15px; }
+    .orange-dot { color: #FDBA74; }
+
+    .safeguards { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 30px; }
+    .safe { border:1px solid rgba(36,26,12,.11); border-radius: 999px; background: rgba(255,255,255,.36); padding: 14px 16px; text-align:center; font-weight: 850; color: var(--coffee); }
+
+    .cta-panel { text-align:center; border:1px solid rgba(36,26,12,.11); border-radius: 44px; background: linear-gradient(135deg, rgba(251,248,240,.72), rgba(198,192,180,.32)); box-shadow: var(--shadow); padding: clamp(36px, 7vw, 84px); }
+    .cta-panel h2 { max-width: 920px; margin-inline:auto; }
+    .cta-panel p { color: var(--muted); max-width: 650px; margin: 0 auto 28px; font-size: 20px; }
+    .note { color: var(--muted); font-size: 13px !important; margin-top: 18px !important; }
+
+    .floating-cta { display:none; }
+    footer { padding: 34px 0 58px; color: var(--muted); border-top:1px solid var(--line); font-size: 13px; }
+
+    .reveal { opacity: 0; transform: translate3d(0, 46px, 0) scale(.985); transition: opacity .75s ease, transform .75s cubic-bezier(.2,.8,.2,1); will-change: transform, opacity; }
+    .reveal.slide-left { transform: translate3d(-70px, 22px, 0) rotate(-1.4deg); }
+    .reveal.slide-right { transform: translate3d(70px, 22px, 0) rotate(1.4deg); }
+    .reveal.pop { transform: translate3d(0, 34px, 0) scale(.92); }
+    .reveal.fan-a { transform: translate3d(-46px, 36px, 0) rotate(-5deg); }
+    .reveal.fan-b { transform: translate3d(46px, 36px, 0) rotate(5deg); }
+    .reveal.in-view { opacity: 1; transform: translate3d(0,0,0) scale(1) rotate(0); }
+    .delay-1 { transition-delay: .08s; } .delay-2 { transition-delay: .16s; } .delay-3 { transition-delay: .24s; } .delay-4 { transition-delay: .32s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal, .reveal.slide-left, .reveal.slide-right, .reveal.pop, .reveal.fan-a, .reveal.fan-b { opacity: 1; transform: none; transition: none; }
+      .cta:hover { transform:none; }
+    }
+
+    @media (max-width: 980px) {
+      .hero, .journey-row, .phone-section { grid-template-columns: 1fr; }
+      .journey:before { left: 24px; top: 120px; bottom: 120px; }
+      .journey-row, .journey-row:nth-child(even) .journey-copy, .journey-row:nth-child(even) .journey-mini { order: initial; }
+      .journey-row { min-height: auto; padding: 48px 0; }
+      .deliver-grid, .safeguards { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .hero-visual { min-height: 480px; }
+    }
+
+    @media (max-width: 700px) {
+      .wrap { width: min(100% - 28px, var(--max)); }
+      .preview .wrap { flex-direction:column; gap:2px; }
+      .header-inner { height: 64px; }
+      .header-note { display:none; }
+      .logo-mark { width: 42px; height: 42px; }
+      .brand-text strong { font-size: 16px; }
+      .brand-text span { font-size: 9px; }
+      .hero { min-height: auto; padding: 42px 0 72px; }
+      h1 { font-size: clamp(45px, 14vw, 72px); }
+      .hero-copy { font-size: 18px; }
+      .hero-visual { min-height: 430px; }
+      .stack-card { width: min(96%, 380px); }
+      .journey:before { display:none; }
+      .journey-row { gap: 18px; padding: 36px 0; }
+      .journey-copy h3 { font-size: clamp(34px, 11vw, 54px); }
+      .journey-mini { min-height: 250px; }
+      .deliver-grid, .safeguards { grid-template-columns: 1fr; }
+      .phone-screen { min-height: 450px; }
+      .cta { width: 100%; }
+      .floating-cta {
+        display:block;
+        position: fixed;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        z-index: 60;
+        transform: translateY(90px);
+        opacity: 0;
+        transition: .3s ease;
+      }
+      .floating-cta.show { transform: translateY(0); opacity: 1; }
+      .floating-cta .cta { min-height: 54px; box-shadow: 0 18px 48px rgba(249,115,22,.36); }
+      footer { padding-bottom: 92px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="preview">
+    <div class="wrap">
+      <span>Local design draft v0.5 — not published</span>
+      <span>No DNS • no deployment • no analytics/tracking • no live form</span>
+    </div>
+  </div>
+
+  <header class="site-header" aria-label="Gordon AI Services header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="Gordon AI Services home">
+        <svg class="logo-mark" viewBox="0 0 72 72" role="img" aria-label="GS AI logo concept">
+          <defs>
+            <linearGradient id="stoneGrad" x1="8" y1="8" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#EAE8E2"/>
+              <stop offset=".52" stop-color="#ADA89D"/>
+              <stop offset="1" stop-color="#726750"/>
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="64" height="64" rx="22" fill="#241A0C"/>
+          <path d="M31 25c-2.1-3.2-5.8-5.1-10.2-5.1-7.2 0-12 5.2-12 12.7 0 7.9 5.1 12.8 13.1 12.8 3.7 0 6.7-1 8.8-2.7v-6.1h-9.8v-6.4h17.3v15.6C34.7 49.4 29.4 52 21.7 52 9.4 52 1.8 44 1.8 32.6 1.8 21.5 9.4 13.4 20.9 13.4c7.1 0 12.8 2.9 16.2 7.8L31 25Z" transform="translate(8 4) scale(.78)" fill="url(#stoneGrad)"/>
+          <path d="M54.3 23.5c-1.5-2.6-4.2-4-7.8-4-3.9 0-6.1 1.6-6.1 4.1 0 2.9 3 3.7 8.2 4.8 7.4 1.5 12.2 4 12.2 11.1 0 6.3-5.1 10.8-13.8 10.8-7.1 0-12.1-2.3-15.6-7l5.7-4.1c2.1 2.8 4.9 4.5 9.7 4.5 4.6 0 6.7-1.5 6.7-3.9 0-2.7-2.2-3.6-8.7-5-7-1.5-11.6-4.8-11.6-11.3 0-6.1 4.8-10.7 13.2-10.7 6.1 0 10.9 2.1 13.7 6.5l-5.8 4.2Z" transform="translate(6 4) scale(.78)" fill="url(#stoneGrad)"/>
+          <circle cx="36" cy="36" r="14" fill="#F97316" stroke="#FBF8F0" stroke-width="2"/>
+          <text x="36" y="40" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="11" font-weight="950" fill="#2B1306">AI</text>
+        </svg>
+        <span class="brand-text"><strong>Gordon AI Services</strong><span>Estate agency follow-up systems</span></span>
+      </a>
+      <div class="header-note">Private audit · Human-approved AI · Small workflow first</div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero">
+      <div class="reveal slide-left">
+        <div class="eyebrow"><i></i> Estate Agency Follow-Up Leak Audit</div>
+        <h1>Your next instruction may be hiding in the <em>follow-up gaps.</em></h1>
+        <p class="hero-copy"><strong>GS AI</strong> maps where valuations, viewings, vendor updates and buyer requests go quiet — then designs a small, human-approved AI workflow to surface the next action.</p>
+        <a class="cta" href="mailto:jeff@gordonaiservices.com?subject=Private%20Estate%20Agency%20Follow-Up%20Leak%20Audit">Request the audit →</a>
+        <div class="trust-row">
+          <span class="chip">No CRM replacement</span>
+          <span class="chip">No AI messages sent alone</span>
+          <span class="chip">20-minute fit call first</span>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal slide-right delay-1" aria-label="Follow-up leak card stack">
+        <div class="stack-card back-b"></div>
+        <div class="stack-card back-a"></div>
+        <div class="stack-card main">
+          <div class="stack-top"><strong>Friday branch view</strong><span class="pill">4 leaks</span></div>
+          <div class="leak-list">
+            <div class="leak-item"><span class="leak-dot"></span><strong>Valuation lead</strong><span class="status">7 days quiet</span></div>
+            <div class="leak-item"><span class="leak-dot"></span><strong>Viewing feedback</strong><span class="status">vendor waiting</span></div>
+            <div class="leak-item"><span class="leak-dot"></span><strong>Buyer request</strong><span class="status">similar stock</span></div>
+            <div class="leak-item"><span class="leak-dot"></span><strong>Old appraisal</strong><span class="status">reactivate?</span></div>
+          </div>
+          <div class="approval"><small>AI-supported next action</small><strong>Draft only. Human approves before anything goes out.</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="journey wrap" aria-label="Follow-up leak audit journey">
+      <div class="reveal pop">
+        <div class="section-label">The journey</div>
+        <h2>Small steps. Clear next action.</h2>
+        <p class="intro">No long AI lecture. The prospect should recognise the problem, feel the value, and know exactly what to press.</p>
+      </div>
+
+      <article class="journey-row">
+        <div class="journey-copy reveal slide-left"><span class="step-badge">1</span><h3>Spot the quiet moments.</h3><p>Valuations, viewing feedback, buyer requests and old appraisals that started well, then drifted.</p></div>
+        <div class="journey-mini reveal slide-right"><div class="mini-line"><strong>Valuation booked</strong><span>no day-7 nurture</span></div><div class="mini-line"><strong>Vendor promised feedback</strong><span>not sent</span></div><div class="mini-line"><strong>Buyer asked for similar</strong><span>lost in notes</span></div></div>
+      </article>
+
+      <article class="journey-row">
+        <div class="journey-copy reveal slide-right"><span class="step-badge">2</span><h3>Map where the leak happens.</h3><p>The audit looks for the moments where follow-up depends on memory, habits, manual notes or unclear ownership.</p></div>
+        <div class="journey-mini reveal slide-left"><div class="mini-line"><strong>Where it enters</strong><span>portal / phone / viewing</span></div><div class="mini-line"><strong>Who owns it</strong><span>negotiator / manager</span></div><div class="mini-line"><strong>When it goes quiet</strong><span>day 3 / 7 / 30</span></div></div>
+      </article>
+
+      <article class="journey-row">
+        <div class="journey-copy reveal slide-left"><span class="step-badge">3</span><h3>Draft the next action.</h3><p>AI can suggest reminders, message drafts and weekly summaries — but client-facing contact remains human-approved.</p></div>
+        <div class="journey-mini reveal slide-right"><div class="mini-line"><strong>Draft vendor update</strong><span>human approves</span></div><div class="mini-line"><strong>Prepare check-in</strong><span>not auto-sent</span></div><div class="mini-line"><strong>Summarise stuck items</strong><span>manager review</span></div></div>
+      </article>
+
+      <article class="journey-row">
+        <div class="journey-copy reveal slide-right"><span class="step-badge">4</span><h3>Give the manager a weekly view.</h3><p>A short Friday list beats vague promises: ageing opportunities, unclear ownership and callbacks that need a decision.</p></div>
+        <div class="journey-mini reveal slide-left"><div class="mini-line"><strong>Ageing leads</strong><span>ranked</span></div><div class="mini-line"><strong>Promised callbacks</strong><span>owner shown</span></div><div class="mini-line"><strong>Next action</strong><span>ready to approve</span></div></div>
+      </article>
+    </section>
+
+    <section class="cream-band">
+      <div class="wrap">
+        <div class="reveal pop">
+          <div class="section-label">What the audit delivers</div>
+          <h2>A useful output, not a vague consultation.</h2>
+          <p class="intro">The audit should leave an agency with simple artefacts they can understand quickly.</p>
+        </div>
+        <div class="deliver-grid">
+          <article class="deliver reveal fan-a"><span class="num">1</span><div><b>Leak map</b><p>Where valuations, viewings, buyers, vendors, landlords and old appraisals stall.</p></div></article>
+          <article class="deliver reveal pop delay-1"><span class="num">2</span><div><b>Open-loop tracker</b><p>The weekly manager view of what is stuck and who owns it.</p></div></article>
+          <article class="deliver reveal fan-b delay-2"><span class="num">3</span><div><b>Draft pack</b><p>Follow-up messages for human approval, not automatic sending.</p></div></article>
+          <article class="deliver reveal fan-a"><span class="num">4</span><div><b>Manager summary</b><p>A concise Friday list of ageing opportunities and unclear ownership.</p></div></article>
+          <article class="deliver reveal pop delay-1"><span class="num">5</span><div><b>Pilot recommendation</b><p>One workflow to test first before a bigger commitment.</p></div></article>
+          <article class="deliver reveal fan-b delay-2"><span class="num">6</span><div><b>Fit-call route</b><p>Start with 20 minutes. If there is no clear fit, we say so.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap phone-section">
+      <div class="reveal slide-left">
+        <div class="section-label">Make it feel real</div>
+        <h2>A Friday list is easier to buy than “AI transformation”.</h2>
+        <p class="intro">Show the agency something concrete: stuck items, proposed next actions, and a clear approval boundary.</p>
+      </div>
+      <div class="phone-card reveal slide-right">
+        <div class="phone-screen">
+          <div class="task"><small><span class="orange-dot">●</span> VAL-1042 · 7 days quiet</small><strong>Draft a check-in before the vendor chooses another agent.</strong></div>
+          <div class="task"><small><span class="orange-dot">●</span> VIEWING · Feedback missing</small><strong>Prepare a vendor update while the viewing is still fresh.</strong></div>
+          <div class="task"><small><span class="orange-dot">●</span> BUYER · Similar homes requested</small><strong>Surface when a matching property comes in.</strong></div>
+          <div class="task"><small><span class="orange-dot">●</span> APPRAISAL · 45 days old</small><strong>Schedule a reactivation reminder for review.</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cream-band">
+      <div class="wrap">
+        <div class="reveal pop">
+          <div class="section-label">Confidence</div>
+          <h2>Built for cautious agencies.</h2>
+          <p class="intro">Small workflow first. Human approval always. No client-facing message sent by AI on its own.</p>
+        </div>
+        <div class="safeguards">
+          <div class="safe reveal fan-a">Not a chatbot</div>
+          <div class="safe reveal pop delay-1">Not a CRM replacement</div>
+          <div class="safe reveal fan-b delay-2">Not unsupervised messaging</div>
+          <div class="safe reveal fan-a">No guaranteed listings claim</div>
+          <div class="safe reveal pop delay-1">No regulated advice</div>
+          <div class="safe reveal fan-b delay-2">No big IT project first</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="cta-panel reveal pop">
+        <div class="section-label">Next step</div>
+        <h2>Find the vendor opportunities your branch may be missing before they go cold.</h2>
+        <p>Request a private Estate Agency Follow-Up Leak Audit. The first conversation is about where follow-up stalls and whether one small, human-approved AI workflow is worth testing.</p>
+        <a class="cta" href="mailto:jeff@gordonaiservices.com?subject=Private%20Estate%20Agency%20Follow-Up%20Leak%20Audit">Request the audit →</a>
+        <p class="note">Local draft: Hostinger mailbox must be verified before publication. No contact form, analytics/tracking, DNS, VPS deployment, outreach, or public launch has been approved.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="floating-cta" id="floatingCta">
+    <a class="cta" href="mailto:jeff@gordonaiservices.com?subject=Private%20Estate%20Agency%20Follow-Up%20Leak%20Audit">Request the audit →</a>
+  </div>
+
+  <footer>
+    <div class="wrap">© Gordon AI Services — local draft v0.5. Private, human-approved AI workflows for estate-agency follow-up.</div>
+  </footer>
+
+  <script>
+    // Local-only presentation animation. No analytics, tracking, network calls, form submission, or data collection.
+    const revealObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+
+    document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+    const floating = document.getElementById('floatingCta');
+    const updateFloating = () => {
+      if (!floating) return;
+      const shouldShow = window.innerWidth <= 700 && window.scrollY > 560;
+      floating.classList.toggle('show', shouldShow);
+    };
+    updateFloating();
+    window.addEventListener('scroll', updateFloating, { passive: true });
+    window.addEventListener('resize', updateFloating);
+  </script>
+</body>
+</html>
