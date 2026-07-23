@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="color-scheme" content="dark light"/>
+<title>Terra Clock — 3D World Clock Globe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================ THEME / BASE ============================ */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+:root{
+  --bg:#04060d; --text:#e9effc; --muted:#94a5c7; --accent:#4da3ff;
+  --panel:rgba(11,17,32,.82); --panel-solid:#0d1424; --card:rgba(255,255,255,.055);
+  --border:rgba(255,255,255,.10);
+}
+[data-theme="light"]{
+  --text:#101a2c; --muted:#4b5b76; --accent:#0b6bcb;
+  --panel:rgba(247,250,254,.88); --panel-solid:#f6f9fd; --card:rgba(12,25,50,.05);
+  --border:rgba(12,25,50,.14);
+}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg); color:var(--text); overflow:hidden; overscroll-behavior:none;
+}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.muted{color:var(--muted)}
+.spacer{flex:1}
+
+/* ============================ SCENE / LABELS ============================ */
+#scene{position:fixed;inset:0;z-index:0}
+#scene canvas{display:block;outline-offset:-2px}
+#labels{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.marker{position:absolute;left:0;top:0}
+.marker-dot{
+  position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;
+  background:var(--accent);border:2px solid #fff;cursor:pointer;pointer-events:auto;
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.45),0 0 8px rgba(77,163,255,.75);transition:transform .15s;
+}
+.marker-dot:hover{transform:scale(1.3)}
+.marker.selected .marker-dot{background:#ffd166;box-shadow:0 0 0 4px rgba(255,209,102,.25),0 0 12px rgba(255,209,102,.85)}
+.marker.selected .marker-dot::after{
+  content:'';position:absolute;inset:-7px;border:2px solid rgba(255,209,102,.75);border-radius:50%;
+  animation:ring 1.8s ease-out infinite;
+}
+@keyframes ring{from{transform:scale(.55);opacity:1}to{transform:scale(1.5);opacity:0}}
+.marker-label{
+  position:absolute;left:11px;top:-27px;display:flex;gap:6px;align-items:baseline;white-space:nowrap;
+  font-size:12px;font-weight:600;color:#fff;background:rgba(6,10,22,.66);border:1px solid rgba(255,255,255,.22);
+  padding:3px 8px;border-radius:8px;text-shadow:0 1px 2px rgba(0,0,0,.85);pointer-events:auto;cursor:pointer;
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);transition:opacity .2s;
+}
+.marker-label .ml-time{font-weight:700;color:#bcd7ff;font-variant-numeric:tabular-nums}
+.label-hidden{opacity:0;pointer-events:none}
+
+/* ============================ TOP BAR ============================ */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:linear-gradient(180deg,rgba(3,6,14,.88),rgba(3,6,14,.45) 75%,transparent);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);flex-wrap:wrap;
+}
+[data-theme="light"] #topbar{background:linear-gradient(180deg,rgba(244,248,253,.92),rgba(244,248,253,.5) 75%,transparent)}
+.brand{font-weight:800;font-size:16px;letter-spacing:.2px;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.utc-wrap{display:flex;flex-direction:column;line-height:1.2;margin-left:4px}
+#utc-clock{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+#utc-date{font-size:11px;color:var(--muted)}
+.chip{
+  font-size:11.5px;padding:6px 10px;border-radius:999px;border:1px solid rgba(245,158,11,.45);
+  background:rgba(245,158,11,.12);color:#fbbf24;cursor:pointer;font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.icon-btn{
+  min-width:36px;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--border);
+  color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:16px;padding:0 8px;
+}
+.icon-btn:hover{border-color:var(--accent)}
+.icon-btn[aria-pressed="true"]{background:rgba(77,163,255,.22);border-color:var(--accent)}
+.icon-btn.sm{min-width:28px;height:28px;font-size:13px}
+
+/* ============================ SIDE PANEL ============================ */
+#panel{
+  position:fixed;top:62px;right:10px;bottom:96px;width:min(362px,calc(100vw - 20px));z-index:5;
+  display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 14px 44px rgba(0,0,0,.45);
+  transition:transform .35s cubic-bezier(.2,.7,.2,1),opacity .3s;
+}
+#panel.collapsed{transform:translateX(calc(100% + 24px));opacity:0;pointer-events:none}
+.panel-head{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.panel-title{font-size:15px;font-weight:800;margin:0}
+#city-count{font-size:11.5px;color:var(--muted)}
+.search-wrap{position:relative;padding:10px 12px;border-bottom:1px solid var(--border)}
+.search-ico{position:absolute;left:22px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:15px}
+#search{
+  width:100%;padding:9px 12px 9px 32px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:13.5px;
+}
+#results{
+  position:absolute;top:calc(100% - 2px);left:12px;right:12px;background:var(--panel-solid);
+  border:1px solid var(--border);border-radius:12px;max-height:264px;overflow:auto;z-index:8;
+  box-shadow:0 16px 40px rgba(0,0,0,.5);
+}
+.result{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;cursor:pointer;font-size:13px}
+.result .tz{font-size:10.5px;color:var(--muted);align-self:center}
+.result:hover,.result.active{background:rgba(77,163,255,.16)}
+.result.none{color:var(--muted);cursor:default}
+#city-list{list-style:none;margin:0;padding:8px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin}
+.city-card{
+  display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:9px 8px 9px 11px;transition:border-color .2s,background .2s;
+}
+.city-card.selected{border-color:var(--accent);background:rgba(77,163,255,.12)}
+.city-card.flash{animation:flash 1s ease-out}
+@keyframes flash{0%{background:rgba(77,163,255,.4)}100%{}}
+.city-card.hidden-city{opacity:.55}
+.city-main{flex:1;display:flex;gap:10px;align-items:center;cursor:pointer;min-width:0}
+.status-icon{font-size:21px;flex:none}
+.city-info{min-width:0}
+.city-name{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.city-country{color:var(--muted);font-weight:500;font-size:11.5px}
+.city-time{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.4px;line-height:1.25}
+.city-sub{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-day{color:#fbbf24}.st-night{color:#93c5fd}.st-sunrise{color:#fb923c}.st-sunset{color:#f472b6}
+.city-actions{display:flex;flex-direction:column;gap:1px;flex:none}
+.mini-btn{
+  width:26px;height:22px;border:none;background:transparent;color:var(--muted);cursor:pointer;
+  border-radius:6px;font-size:11px;line-height:1;
+}
+.mini-btn:hover{background:rgba(128,150,190,.2);color:var(--text)}
+.mini-btn.danger:hover{background:rgba(239,68,68,.2);color:#f87171}
+.panel-foot{padding:8px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--muted)}
+.link-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:11.5px;text-decoration:underline;padding:2px}
+
+/* ============================ TIME BAR ============================ */
+#timebar{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:10px;z-index:6;display:flex;align-items:center;
+  gap:10px;flex-wrap:wrap;justify-content:center;background:var(--panel);border:1px solid var(--border);
+  border-radius:16px;padding:10px 14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  max-width:calc(100vw - 16px);box-shadow:0 14px 44px rgba(0,0,0,.45);
+}
+.tbtn{
+  width:38px;height:38px;border-radius:11px;background:var(--card);border:1px solid var(--border);
+  color:var(--text);cursor:pointer;display:grid;place-items:center;
+}
+.tbtn:hover{border-color:var(--accent)}
+.tbtn.primary{background:var(--accent);color:#fff;border-color:transparent;width:44px;height:44px}
+#btn-live{
+  display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:999px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);cursor:pointer;font-weight:800;font-size:11.5px;letter-spacing:.6px;
+}
+#btn-live .dot{width:8px;height:8px;border-radius:50%;background:#6b7a99}
+#btn-live.active{border-color:#22c55e;color:#4ade80}
+#btn-live.active .dot{background:#4ade80;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+#speeds{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+#speeds button{padding:8px 10px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700}
+#speeds button + button{border-left:1px solid var(--border)}
+#speeds button.active{background:var(--accent);color:#fff}
+.slider-wrap{display:flex;flex-direction:column;gap:3px;min-width:200px;flex:1 1 230px;max-width:430px}
+#slider{width:100%;accent-color:var(--accent);margin:0}
+#sim-readout{font-size:11px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.dt-wrap{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+#dt-input{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 8px;font-size:12px;color-scheme:dark}
+[data-theme="light"] #dt-input{color-scheme:light}
+
+/* ============================ LEGEND / TOAST / MODAL / LOADER ============================ */
+#legend{
+  position:fixed;left:10px;bottom:96px;z-index:5;background:var(--panel);border:1px solid var(--border);
+  border-radius:14px;padding:10px 13px;font-size:12px;max-width:238px;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+#legend summary{cursor:pointer;font-weight:800;font-size:12.5px}
+.legend-bar{height:10px;border-radius:5px;margin:9px 0 4px;background:linear-gradient(90deg,#0b1026 0%,#1e2a5a 32%,#b45309 47%,#fbbf24 53%,#7dd3fc 63%,#38bdf8 100%)}
+.legend-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:10.5px}
+#legend ul{margin:9px 0 0;padding:0;list-style:none;display:grid;gap:3px;color:var(--muted);font-size:11.5px}
+#toast{
+  position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(16px);opacity:0;z-index:20;
+  background:rgba(13,20,36,.95);color:#fff;border:1px solid rgba(255,255,255,.18);padding:10px 16px;
+  border-radius:12px;transition:.3s;pointer-events:none;font-size:13px;max-width:88vw;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(2,4,10,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.modal[hidden]{display:none}
+.modal-card{
+  width:min(580px,92vw);max-height:84vh;overflow:auto;background:var(--panel-solid);
+  border:1px solid var(--border);border-radius:16px;padding:20px 22px;
+}
+.modal-card h2{margin:0 0 10px;font-size:18px}
+.modal-card table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 14px}
+.modal-card td{padding:5px 4px;border-bottom:1px solid var(--border)}
+kbd{background:var(--card);border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:1px 7px;font-size:11px;font-family:inherit}
+.credits{font-size:11.5px;color:var(--muted);line-height:1.55}
+#loader{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#04060d;color:#a9bcdf;transition:opacity .7s;text-align:center}
+#loader.hide{opacity:0;pointer-events:none}
+.spinner{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,.14);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:760px){
+  #panel{top:auto;left:8px;right:8px;width:auto;bottom:130px;max-height:44vh}
+  #panel.collapsed{transform:translateY(calc(100% + 160px))}
+  #legend{max-width:190px;font-size:11px}
+  .city-time{font-size:19px}
+  .utc-wrap{display:none}
+  .brand span{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="scene" aria-hidden="true"></div>
+<div id="labels"></div>
+
+<!-- ================= TOP BAR ================= -->
+<header id="topbar">
+  <div class="brand">🌍<span>Terra Clock</span></div>
+  <div class="utc-wrap">
+    <div id="utc-clock" aria-label="Current UTC time">--:--:-- UTC</div>
+    <div id="utc-date"></div>
+  </div>
+  <button id="sim-chip" class="chip" hidden title="Click to return to live time"></button>
+  <div class="spacer"></div>
+  <button id="btn-sun"    class="icon-btn" aria-pressed="true"  title="Toggle Sun indicator"        aria-label="Toggle Sun indicator">☀️</button>
+  <button id="btn-rotate" class="icon-btn" aria-pressed="true"  title="Toggle auto-rotate"          aria-label="Toggle auto-rotate">⟳</button>
+  <button id="btn-theme"  class="icon-btn"                      title="Toggle light / dark UI"      aria-label="Toggle light or dark interface">🌙</button>
+  <button id="btn-help"   class="icon-btn"                      title="Help & keyboard shortcuts"   aria-label="Help and keyboard shortcuts">?</button>
+  <button id="btn-panel"  class="icon-btn" aria-pressed="true" aria-expanded="true" title="Toggle city panel" aria-label="Toggle city panel">🕐</button>
+</header>
+
+<!-- ================= CITY PANEL ================= -->
+<aside id="panel" aria-label="Saved city clocks">
+  <div class="panel-head">
+    <h1 class="panel-title">World Clocks</h1>
+    <span id="city-count"></span>
+    <div class="spacer"></div>
+    <button id="panel-close" class="icon-btn sm" aria-label="Collapse panel">⟩</button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-ico" aria-hidden="true">⌕</span>
+    <input id="search" type="text" placeholder="Search & add a city…" autocomplete="off"
+           role="combobox" aria-expanded="false" aria-controls="results" aria-autocomplete="list"
+           aria-label="Search for a city to add">
+    <div id="results" role="listbox" aria-label="Search results" hidden></div>
+  </div>
+  <ul id="city-list" aria-label="City clock cards"></ul>
+  <div class="panel-foot">
+    <span>Click a card to fly there</span>
+    <button id="btn-reset" class="link-btn">Restore defaults</button>
+  </div>
+</aside>
+
+<!-- ================= TIME CONTROLS ================= -->
+<div id="timebar" role="group" aria-label="Time controls">
+  <button id="btn-prev" class="tbtn" title="Previous hour  [  (or [)" aria-label="Previous hour"></button>
+  <button id="btn-play" class="tbtn primary" title="Play / pause  (Space)" aria-label="Play or pause time"></button>
+  <button id="btn-next" class="tbtn" title="Next hour  ]  (or ])" aria-label="Next hour"></button>
+  <button id="btn-live" class="active" aria-pressed="true" title="Return to current date & time (L)"><span class="dot"></span>LIVE</button>
+  <div id="speeds" role="group" aria-label="Playback speed">
+    <button data-speed="1"     title="Real time">1×</button>
+    <button data-speed="60" class="active" title="1 second = 1 minute">60×</button>
+    <button data-speed="360"   title="1 second = 6 minutes">360×</button>
+    <button data-speed="86400" title="1 second = 1 day">1d/s</button>
+  </div>
+  <div class="slider-wrap">
+    <input id="slider" type="range" min="-4320" max="4320" step="5" value="0" aria-label="Time offset from now, in minutes (±3 days)">
+    <div id="sim-readout"></div>
+  </div>
+  <label class="dt-wrap">UTC <input id="dt-input" type="datetime-local" step="60" aria-label="Jump to specific UTC date and time"></label>
+</div>
+
+<!-- ================= LEGEND ================= -->
+<details id="legend" open>
+  <summary>Legend</summary>
+  <div class="legend-bar" aria-hidden="true"></div>
+  <div class="legend-scale"><span>Night</span><span>Twilight</span><span>Day</span></div>
+  <ul>
+    <li>☀️ <b>Day</b> — Sun above the horizon</li>
+    <li>🌅 <b>Sunrise</b> / 🌇 <b>Sunset</b> — civil twilight (Sun within 6° of horizon)</li>
+    <li>🌙 <b>Night</b> — city lights visible</li>
+  </ul>
+</details>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ================= HELP MODAL ================= -->
+<div id="help" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Help and shortcuts">
+    <h2>Help & shortcuts</h2>
+    <p style="font-size:13px" class="muted">Drag to rotate · scroll / pinch to zoom · click a marker for its clock · click a card to fly there.</p>
+    <table>
+      <tr><td><kbd>Space</kbd></td><td>Play / pause time</td></tr>
+      <tr><td><kbd>L</kbd></td><td>Return to live time</td></tr>
+      <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Previous / next hour</td></tr>
+      <tr><td><kbd>+</kbd> / <kbd>−</kbd></td><td>Zoom in / out</td></tr>
+      <tr><td><kbd>← ↑ → ↓</kbd></td><td>Rotate globe (when globe is focused)</td></tr>
+      <tr><td><kbd>?</kbd> / <kbd>Esc</kbd></td><td>Open / close this dialog</td></tr>
+    </table>
+    <p class="credits">
+      <b>Accuracy:</b> Sun position uses the NOAA low-precision solar algorithm (≈0.01°). Local times, time-zone
+      abbreviations, UTC offsets and daylight-saving rules come from the IANA time-zone database via your browser's
+      <code>Intl</code> API — never from longitude. Geocoding by Open-Meteo (no key) with an offline fallback database.
+      Imagery: NASA Blue Marble & Black Marble (via three-globe); borders: Natural Earth (world-atlas); 3D: three.js.
+    </p>
+    <button id="help-close" class="tbtn primary" style="width:auto;height:auto;padding:10px 18px;border-radius:10px;font-weight:700">Close</button>
+  </div>
+</div>
+
+<!-- ================= LOADER ================= -->
+<div id="loader">
+  <div>
+    <div class="spinner"></div>
+    <div style="font-weight:700;font-size:15px">Terra Clock</div>
+    <div id="loader-msg" style="font-size:12.5px;margin-top:6px;opacity:.85">Loading Earth imagery…</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script>
+/* Watchdog: if the ES-module app never starts (offline / no importmap support) tell the user. */
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    if (!window.__terraOk){
+      var m = document.getElementById('loader-msg');
+      if (m) m.innerHTML = 'Taking longer than usual…<br><span style="font-size:11.5px">This app loads 3D libraries & satellite imagery from CDNs.<br>Please check your internet connection and reload.</span>';
+    }
+  }, 10000);
+});
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+window.__terraOk = true;
+
+/* =====================================================================
+   1. ASTRONOMY — NOAA low-precision solar position (subsolar point)
+   ===================================================================== */
+const RAD = Math.PI / 180;
+const norm360 = a => ((a % 360) + 360) % 360;
+const norm180 = a => norm360(a + 180) - 180;
+
+function subsolarPoint(ms){
+  const d = ms / 86400000 + 2440587.5 - 2451545.0;          // days since J2000
+  const g = norm360(357.529 + 0.98560028 * d);              // mean anomaly
+  const q = norm360(280.459 + 0.98564736 * d);              // mean longitude
+  const L = q + 1.915 * Math.sin(g*RAD) + 0.020 * Math.sin(2*g*RAD); // ecliptic lon
+  const e = 23.439 - 0.00000036 * d;                        // obliquity
+  const lat = Math.asin(Math.sin(e*RAD) * Math.sin(L*RAD)) / RAD;    // declination
+  const RA  = Math.atan2(Math.cos(e*RAD) * Math.sin(L*RAD), Math.cos(L*RAD)) / RAD;
+  const GMST = norm360(280.46061837 + 360.98564736629 * d);
+  return { lat, lon: norm180(RA - GMST) };                  // subsolar latitude/longitude
+}
+function sunElevation(lat, lon, sub){
+  const s = Math.sin(lat*RAD)*Math.sin(sub.lat*RAD) +
+            Math.cos(lat*RAD)*Math.cos(sub.lat*RAD)*Math.cos((lon - sub.lon)*RAD);
+  return Math.asin(THREE.MathUtils.clamp(s, -1, 1)) / RAD;
+}
+function statusFor(city, ms, sub){
+  const el = sunElevation(city.lat, city.lon, sub);
+  if (el >  0.2) return 'day';
+  if (el < -6.0) return 'night';
+  const el2 = sunElevation(city.lat, city.lon, subsolarPoint(ms + 15*60000));
+  return el2 >= el ? 'sunrise' : 'sunset';
+}
+/* Equirectangular-texture lat/lon → three.js world position (Greenwich at +X). */
+function latLonToVec3(lat, lon, r = 1){
+  const phi = (90 - lat) * RAD, theta = (lon + 180) * RAD;
+  return new THREE.Vector3(
+    -r * Math.sin(phi) * Math.cos(theta),
+     r * Math.cos(phi),
+     r * Math.sin(phi) * Math.sin(theta));
+}
+
+/* =====================================================================
+   2. TIME ZONES — IANA via Intl (political zones + DST handled natively)
+   ===================================================================== */
+function buildFormatters(tz){
+  const o = { timeZone: tz, hourCycle: 'h23' };
+  return {
+    time:  new Intl.DateTimeFormat('en-GB', { ...o, hour:'2-digit', minute:'2-digit', second:'2-digit' }),
+    hm:    new Intl.DateTimeFormat('en-GB', { ...o, hour:'2-digit', minute:'2-digit' }),
+    date:  new Intl.DateTimeFormat('en-GB', { ...o, weekday:'short', day:'2-digit', month:'short', year:'numeric' }),
+    parts: new Intl.DateTimeFormat('en-US', { ...o, hour12:false, year:'numeric', month:'2-digit', day:'2-digit',
+                                              hour:'2-digit', minute:'2-digit', second:'2-digit' }),
+    abbr:  new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName:'short' }),
+  };
+}
+function offsetMinutes(fmt, ms){
+  const p = {};
+  for (const x of fmt.formatToParts(ms)) if (x.type !== 'literal') p[x.type] = x.value;
+  const asUTC = Date.UTC(+p.year, +p.month-1, +p.day, (+p.hour)%24, +p.minute, +p.second);
+  return Math.round((asUTC - ms) / 60000);
+}
+function fmtOffset(mins){
+  const s = mins < 0 ? '−' : '+'; mins = Math.abs(mins);
+  return `UTC${s}${String(Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;
+}
+function tzAbbr(fmt, ms){
+  for (const x of fmt.formatToParts(ms)) if (x.type === 'timeZoneName') return x.value;
+  return '';
+}
+const utcTimeFmt = new Intl.DateTimeFormat('en-GB', { timeZone:'UTC', hourCycle:'h23', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+const utcDateFmt = new Intl.DateTimeFormat('en-GB', { timeZone:'UTC', weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+
+/* =====================================================================
+   3. CITY DATA — defaults + offline fallback database [name,country,lat,lon,tz]
+   ===================================================================== */
+const DEFAULTS = [
+  { name:'London',   country:'United Kingdom', lat:51.5072, lon:-0.1276,  tz:'Europe/London'   },
+  { name:'Manila',   country:'Philippines',    lat:14.5995, lon:120.9842, tz:'Asia/Manila'     },
+  { name:'New York', country:'United States',  lat:40.7128, lon:-74.0060, tz:'America/New_York'},
+];
+const CITY_DB = [
+["New York","United States",40.7128,-74.0060,"America/New_York"],["Los Angeles","United States",34.0522,-118.2437,"America/Los_Angeles"],
+["Chicago","United States",41.8781,-87.6298,"America/Chicago"],["Houston","United States",29.7604,-95.3698,"America/Chicago"],
+["Phoenix","United States",33.4484,-112.0740,"America/Phoenix"],["Denver","United States",39.7392,-104.9903,"America/Denver"],
+["Seattle","United States",47.6062,-122.3321,"America/Los_Angeles"],["Miami","United States",25.7617,-80.1918,"America/New_York"],
+["Boston","United States",42.3601,-71.0589,"America/New_York"],["Atlanta","United States",33.7490,-84.3880,"America/New_York"],
+["Dallas","United States",32.7767,-96.7970,"America/Chicago"],["Washington","United States",38.9072,-77.0369,"America/New_York"],
+["Anchorage","United States",61.2181,-149.9003,"America/Anchorage"],["Honolulu","United States",21.3069,-157.8583,"Pacific/Honolulu"],
+["Toronto","Canada",43.6532,-79.3832,"America/Toronto"],["Vancouver","Canada",49.2827,-123.1207,"America/Vancouver"],
+["Montreal","Canada",45.5017,-73.5673,"America/Toronto"],["Mexico City","Mexico",19.4326,-99.1332,"America/Mexico_City"],
+["Guadalajara","Mexico",20.6597,-103.3496,"America/Mexico_City"],["Monterrey","Mexico",25.6866,-100.3161,"America/Monterrey"],
+["Guatemala City","Guatemala",14.6349,-90.5069,"America/Guatemala"],["San José","Costa Rica",9.9281,-84.0907,"America/Costa_Rica"],
+["Panama City","Panama",8.9824,-79.5199,"America/Panama"],["Havana","Cuba",23.1136,-82.3666,"America/Havana"],
+["Santo Domingo","Dominican Republic",18.4861,-69.9312,"America/Santo_Domingo"],["San Juan","Puerto Rico",18.4655,-66.1057,"America/Puerto_Rico"],
+["Bogotá","Colombia",4.7110,-74.0721,"America/Bogota"],["Lima","Peru",-12.0464,-77.0428,"America/Lima"],
+["Quito","Ecuador",-0.1807,-78.4678,"America/Guayaquil"],["Caracas","Venezuela",10.4806,-66.9036,"America/Caracas"],
+["La Paz","Bolivia",-16.4897,-68.1193,"America/La_Paz"],["Santiago","Chile",-33.4489,-70.6693,"America/Santiago"],
+["Buenos Aires","Argentina",-34.6037,-58.3816,"America/Argentina/Buenos_Aires"],["São Paulo","Brazil",-23.5505,-46.6333,"America/Sao_Paulo"],
+["Rio de Janeiro","Brazil",-22.9068,-43.1729,"America/Sao_Paulo"],["Brasília","Brazil",-15.7975,-47.8919,"America/Sao_Paulo"],
+["Montevideo","Uruguay",-34.9011,-56.1645,"America/Montevideo"],["Asunción","Paraguay",-25.2637,-57.5759,"America/Asuncion"],
+["London","United Kingdom",51.5072,-0.1276,"Europe/London"],["Paris","France",48.8566,2.3522,"Europe/Paris"],
+["Berlin","Germany",52.5200,13.4050,"Europe/Berlin"],["Madrid","Spain",40.4168,-3.7038,"Europe/Madrid"],
+["Lisbon","Portugal",38.7223,-9.1393,"Europe/Lisbon"],["Rome","Italy",41.9028,12.4964,"Europe/Rome"],
+["Milan","Italy",45.4642,9.1900,"Europe/Rome"],["Amsterdam","Netherlands",52.3676,4.9041,"Europe/Amsterdam"],
+["Brussels","Belgium",50.8503,4.3517,"Europe/Brussels"],["Zurich","Switzerland",47.3769,8.5417,"Europe/Zurich"],
+["Vienna","Austria",48.2082,16.3738,"Europe/Vienna"],["Copenhagen","Denmark",55.6761,12.5683,"Europe/Copenhagen"],
+["Stockholm","Sweden",59.3293,18.0686,"Europe/Stockholm"],["Oslo","Norway",59.9139,10.7522,"Europe/Oslo"],
+["Helsinki","Finland",60.1699,24.9384,"Europe/Helsinki"],["Warsaw","Poland",52.2297,21.0122,"Europe/Warsaw"],
+["Prague","Czechia",50.0755,14.4378,"Europe/Prague"],["Budapest","Hungary",47.4979,19.0402,"Europe/Budapest"],
+["Bucharest","Romania",44.4268,26.1025,"Europe/Bucharest"],["Athens","Greece",37.9838,23.7275,"Europe/Athens"],
+["Dublin","Ireland",53.3498,-6.2603,"Europe/Dublin"],["Edinburgh","United Kingdom",55.9533,-3.1883,"Europe/London"],
+["Manchester","United Kingdom",53.4808,-2.2426,"Europe/London"],["Reykjavík","Iceland",64.1466,-21.9426,"Atlantic/Reykjavik"],
+["Moscow","Russia",55.7558,37.6173,"Europe/Moscow"],["Istanbul","Türkiye",41.0082,28.9784,"Europe/Istanbul"],
+["Kyiv","Ukraine",50.4501,30.5234,"Europe/Kyiv"],["Minsk","Belarus",53.9006,27.5590,"Europe/Minsk"],
+["Belgrade","Serbia",44.7866,20.4484,"Europe/Belgrade"],["Sofia","Bulgaria",42.6977,23.3219,"Europe/Sofia"],
+["Cairo","Egypt",30.0444,31.2357,"Africa/Cairo"],["Alexandria","Egypt",31.2001,29.9187,"Africa/Cairo"],
+["Johannesburg","South Africa",-26.2041,28.0473,"Africa/Johannesburg"],["Cape Town","South Africa",-33.9249,18.4241,"Africa/Johannesburg"],
+["Lagos","Nigeria",6.5244,3.3792,"Africa/Lagos"],["Abuja","Nigeria",9.0765,7.3986,"Africa/Lagos"],
+["Accra","Ghana",5.6037,-0.1870,"Africa/Accra"],["Dakar","Senegal",14.7167,-17.4677,"Africa/Dakar"],
+["Casablanca","Morocco",33.5731,-7.5898,"Africa/Casablanca"],["Rabat","Morocco",34.0209,-6.8416,"Africa/Casablanca"],
+["Algiers","Algeria",36.7538,3.0588,"Africa/Algiers"],["Tunis","Tunisia",36.8065,10.1815,"Africa/Tunis"],
+["Tripoli","Libya",32.8872,13.1913,"Africa/Tripoli"],["Nairobi","Kenya",-1.2921,36.8219,"Africa/Nairobi"],
+["Addis Ababa","Ethiopia",8.9806,38.7578,"Africa/Addis_Ababa"],["Dar es Salaam","Tanzania",-6.7924,39.2083,"Africa/Dar_es_Salaam"],
+["Kampala","Uganda",0.3476,32.5825,"Africa/Kampala"],["Khartoum","Sudan",15.5007,32.5599,"Africa/Khartoum"],
+["Kinshasa","DR Congo",-4.4419,15.2663,"Africa/Kinshasa"],["Luanda","Angola",-8.8390,13.2894,"Africa/Luanda"],
+["Dubai","UAE",25.2048,55.2708,"Asia/Dubai"],["Abu Dhabi","UAE",24.4539,54.3773,"Asia/Dubai"],
+["Riyadh","Saudi Arabia",24.7136,46.6753,"Asia/Riyadh"],["Jeddah","Saudi Arabia",21.4858,39.1925,"Asia/Riyadh"],
+["Doha","Qatar",25.2854,51.5310,"Asia/Qatar"],["Kuwait City","Kuwait",29.3759,47.9774,"Asia/Kuwait"],
+["Manama","Bahrain",26.2285,50.5860,"Asia/Bahrain"],["Muscat","Oman",23.5880,58.3829,"Asia/Muscat"],
+["Baghdad","Iraq",33.3152,44.3661,"Asia/Baghdad"],["Tehran","Iran",35.6892,51.3890,"Asia/Tehran"],
+["Kabul","Afghanistan",34.5553,69.2075,"Asia/Kabul"],["Islamabad","Pakistan",33.6844,73.0479,"Asia/Karachi"],
+["Karachi","Pakistan",24.8607,67.0011,"Asia/Karachi"],["Lahore","Pakistan",31.5204,74.3587,"Asia/Lahore"],
+["Delhi","India",28.7041,77.1025,"Asia/Kolkata"],["Mumbai","India",19.0760,72.8777,"Asia/Kolkata"],
+["Bengaluru","India",12.9716,77.5946,"Asia/Kolkata"],["Chennai","India",13.0827,80.2707,"Asia/Kolkata"],
+["Kolkata","India",22.5726,88.3639,"Asia/Kolkata"],["Hyderabad","India",17.3850,78.4867,"Asia/Kolkata"],
+["Dhaka","Bangladesh",23.8103,90.4125,"Asia/Dhaka"],["Colombo","Sri Lanka",6.9271,79.8612,"Asia/Colombo"],
+["Kathmandu","Nepal",27.7172,85.3240,"Asia/Kathmandu"],["Tashkent","Uzbekistan",41.2995,69.2401,"Asia/Tashkent"],
+["Almaty","Kazakhstan",43.2220,76.8512,"Asia/Almaty"],["Beijing","China",39.9042,116.4074,"Asia/Shanghai"],
+["Shanghai","China",31.2304,121.4737,"Asia/Shanghai"],["Guangzhou","China",23.1291,113.2644,"Asia/Shanghai"],
+["Shenzhen","China",22.5431,114.0579,"Asia/Shanghai"],["Hong Kong","Hong Kong",22.3193,114.1694,"Asia/Hong_Kong"],
+["Taipei","Taiwan",25.0330,121.5654,"Asia/Taipei"],["Tokyo","Japan",35.6762,139.6503,"Asia/Tokyo"],
+["Osaka","Japan",34.6937,135.5023,"Asia/Tokyo"],["Seoul","South Korea",37.5665,126.9780,"Asia/Seoul"],
+["Bangkok","Thailand",13.7563,100.5018,"Asia/Bangkok"],["Hanoi","Vietnam",21.0278,105.8342,"Asia/Ho_Chi_Minh"],
+["Ho Chi Minh City","Vietnam",10.8231,106.6297,"Asia/Ho_Chi_Minh"],["Phnom Penh","Cambodia",11.5564,104.9282,"Asia/Phnom_Penh"],
+["Yangon","Myanmar",16.8661,96.1951,"Asia/Yangon"],["Singapore","Singapore",1.3521,103.8198,"Asia/Singapore"],
+["Kuala Lumpur","Malaysia",3.1390,101.6869,"Asia/Kuala_Lumpur"],["Jakarta","Indonesia",-6.2088,106.8456,"Asia/Jakarta"],
+["Surabaya","Indonesia",-7.2575,112.7521,"Asia/Jakarta"],["Denpasar","Indonesia",-8.6705,115.2126,"Asia/Makassar"],
+["Manila","Philippines",14.5995,120.9842,"Asia/Manila"],["Ulaanbaatar","Mongolia",47.8864,106.9057,"Asia/Ulaanbaatar"],
+["Vladivostok","Russia",43.1155,131.8855,"Asia/Vladivostok"],["Novosibirsk","Russia",55.0084,82.9357,"Asia/Novosibirsk"],
+["Irkutsk","Russia",52.2978,104.2964,"Asia/Irkutsk"],["Yekaterinburg","Russia",56.8389,60.6057,"Asia/Yekaterinburg"],
+["Sydney","Australia",-33.8688,151.2093,"Australia/Sydney"],["Melbourne","Australia",-37.8136,144.9631,"Australia/Melbourne"],
+["Brisbane","Australia",-27.4698,153.0251,"Australia/Brisbane"],["Perth","Australia",-31.9523,115.8613,"Australia/Perth"],
+["Adelaide","Australia",-34.9285,138.6007,"Australia/Adelaide"],["Darwin","Australia",-12.4634,130.8456,"Australia/Darwin"],
+["Auckland","New Zealand",-36.8485,174.7633,"Pacific/Auckland"],["Wellington","New Zealand",-41.2866,174.7756,"Pacific/Auckland"],
+["Christchurch","New Zealand",-43.5321,172.6362,"Pacific/Auckland"],["Port Moresby","Papua New Guinea",-9.4438,147.1802,"Pacific/Port_Moresby"],
+["Suva","Fiji",-18.1248,178.4501,"Pacific/Fiji"],["Nukuʻalofa","Tonga",-21.2087,-175.1982,"Pacific/Tongatapu"],
+["Apia","Samoa",-13.8506,-171.7513,"Pacific/Apia"],["Pago Pago","American Samoa",-14.2756,-170.7025,"Pacific/Pago_Pago"],
+["Kiritimati","Kiribati",1.8744,-157.3967,"Pacific/Kiritimati"],
+];
+
+/* =====================================================================
+   4. STATE
+   ===================================================================== */
+const STATUS = {
+  day:     { icon:'☀️', label:'Day'     },
+  night:   { icon:'🌙', label:'Night'   },
+  sunrise: { icon:'🌅', label:'Sunrise' },
+  sunset:  { icon:'🌇', label:'Sunset'  },
+};
+const state = {
+  cities: [], selectedId: null,
+  simMs: Date.now(), live: true, playing: false, speed: 60,
+  theme: 'dark', showSun: true, autoRotate: true,
+};
+let currentSub = subsolarPoint(Date.now());
+let _id = 0;
+function makeCity(src){
+  let tz = src.tz || 'UTC';
+  try { new Intl.DateTimeFormat('en-US', { timeZone: tz }); } catch { tz = 'UTC'; }
+  return {
+    id: 'c' + (++_id) + Math.random().toString(36).slice(2,6),
+    name: src.name, country: src.country || '', lat: +src.lat, lon: +src.lon,
+    tz, visible: src.visible !== false,
+    fmt: buildFormatters(tz), _c: {},
+  };
+}
+function save(){
+  try{
+    localStorage.setItem('terra.cities.v1', JSON.stringify(
+      state.cities.map(c => ({ name:c.name, country:c.country, lat:c.lat, lon:c.lon, tz:c.tz, visible:c.visible }))));
+  }catch{}
+}
+function loadState(){
+  try{
+    const raw = JSON.parse(localStorage.getItem('terra.cities.v1') || 'null');
+    if (Array.isArray(raw) && raw.length){
+      state.cities = raw.filter(c => c && c.name && isFinite(+c.lat) && isFinite(+c.lon)).map(makeCity);
+      if (state.cities.length) return;
+    }
+  }catch{}
+  state.cities = DEFAULTS.map(d => makeCity({ ...d }));
+}
+
+/* =====================================================================
+   5. THREE.JS SCENE — globe, day/night shader, atmosphere, stars, sun
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const container = $('scene'), labelsEl = $('labels');
+let renderer, scene, camera, controls, sunSprite, flyAnim = null;
+let viewW = innerWidth, viewH = innerHeight;
+const sunUniform = { value: new THREE.Vector3(1, 0, 0) };
+
+/* Procedural fallback textures (used until CDN imagery arrives / if it fails). */
+function fallbackDay(){
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128;
+  const x = c.getContext('2d');
+  x.fillStyle = '#12386e'; x.fillRect(0,0,256,128);
+  x.fillStyle = '#2e6b45';
+  for (let i=0;i<42;i++){ x.beginPath(); x.ellipse(Math.random()*256, 20+Math.random()*88, 6+Math.random()*22, 4+Math.random()*12, Math.random()*3, 0, 7); x.fill(); }
+  x.fillStyle = '#dfe9f2'; x.fillRect(0,0,256,7); x.fillRect(0,121,256,7);
+  return new THREE.CanvasTexture(c);
+}
+function fallbackNight(){
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128;
+  const x = c.getContext('2d');
+  x.fillStyle = '#02030a'; x.fillRect(0,0,256,128);
+  x.fillStyle = '#ffd98a';
+  for (let i=0;i<260;i++){ x.globalAlpha = .3+Math.random()*.7; x.fillRect(Math.random()*256, 14+Math.random()*100, 1, 1); }
+  return new THREE.CanvasTexture(c);
+}
+
+function initThree(){
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(viewW, viewH);
+  renderer.outputColorSpace = THREE.LinearSRGBColorSpace; // textures handled manually in shader
+  renderer.domElement.tabIndex = 0;
+  renderer.domElement.setAttribute('role', 'application');
+  renderer.domElement.setAttribute('aria-label', 'Interactive 3D Earth globe. Arrow keys rotate, plus and minus zoom.');
+  container.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x020409);
+  camera = new THREE.PerspectiveCamera(42, viewW/viewH, 0.01, 200);
+  camera.position.copy(latLonToVec3(18, 20, 3.1));
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.07;
+  controls.rotateSpeed = 0.5; controls.zoomSpeed = 0.8;
+  controls.enablePan = false;
+  controls.minDistance = 1.18; controls.maxDistance = 7;
+  controls.autoRotate = true; controls.autoRotateSpeed = 0.4;
+  controls.addEventListener('start', () => {
+    flyAnim = null;
+    if (state.autoRotate){ state.autoRotate = false; syncRotateBtn(); }
+  });
+
+  /* --- Globe with day/night terminator shader --- */
+  const globeMat = new THREE.ShaderMaterial({
+    uniforms: {
+      dayTex:   { value: fallbackDay()  },
+      nightTex: { value: fallbackNight() },
+      sunDir:   sunUniform,
+    },
+    vertexShader: `
+      varying vec2 vUv; varying vec3 vNormalW;
+      void main(){
+        vUv = uv;
+        vNormalW = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform sampler2D dayTex; uniform sampler2D nightTex; uniform vec3 sunDir;
+      varying vec2 vUv; varying vec3 vNormalW;
+      void main(){
+        vec3 n = normalize(vNormalW);
+        vec3 s = normalize(sunDir);
+        float d = dot(n, s);                       // sin(sun altitude)
+        vec3 day   = texture2D(dayTex, vUv).rgb;
+        vec3 night = texture2D(nightTex, vUv).rgb;
+        float dayMix = smoothstep(-0.11, 0.17, d); // soft twilight: -6° … +10° altitude
+        vec3 dayLit   = day * (0.42 + 0.68 * clamp(d * 1.6, 0.0, 1.0));
+        vec3 nightLit = night * 1.35 + vec3(0.006, 0.010, 0.028); // faint blue airglow + city lights
+        vec3 col = mix(nightLit, dayLit, dayMix);
+        float band = exp(-pow(d / 0.11, 2.0));     // warm sunrise/sunset band at terminator
+        col += vec3(0.62, 0.30, 0.10) * band * 0.30;
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+  });
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), globeMat));
+
+  /* --- Atmosphere halo --- */
+  const atmoMat = new THREE.ShaderMaterial({
+    uniforms: { sunDir: sunUniform },
+    vertexShader: `
+      varying vec3 vNormalV; varying vec3 vPosW;
+      void main(){
+        vNormalV = normalize(normalMatrix * normal);
+        vPosW = (modelMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform vec3 sunDir; varying vec3 vNormalV; varying vec3 vPosW;
+      void main(){
+        float intensity = pow(0.62 - dot(vNormalV, vec3(0.0, 0.0, 1.0)), 2.5);
+        float sf = 0.35 + 0.65 * clamp(dot(normalize(vPosW), normalize(sunDir)) * 0.5 + 0.5, 0.0, 1.0);
+        vec3 col = mix(vec3(0.10, 0.25, 0.65), vec3(0.35, 0.65, 1.0), sf);
+        gl_FragColor = vec4(col * intensity * 1.35, 1.0);
+      }`,
+    side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
+  });
+  const atmo = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), atmoMat);
+  atmo.scale.setScalar(1.15);
+  scene.add(atmo);
+
+  /* --- Stars --- */
+  {
+    const N = 3500, pos = new Float32Array(N*3), col = new Float32Array(N*3);
+    for (let i=0;i<N;i++){
+      const u = Math.random()*2-1, t = Math.random()*Math.PI*2, s = Math.sqrt(1-u*u), r = 55+Math.random()*30;
+      pos.set([s*Math.cos(t)*r, u*r, s*Math.sin(t)*r], i*3);
+      const b = 0.35 + Math.random()*0.65, warm = Math.random() > 0.85;
+      col.set([b*(warm?1:0.88), b*0.93, b*(warm?0.82:1)], i*3);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({
+      size: 1.6, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false })));
+  }
+
+  /* --- Sun sprite (toggleable) --- */
+  {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(64,64,0,64,64,64);
+    g.addColorStop(0,'rgba(255,255,242,1)'); g.addColorStop(0.18,'rgba(255,232,150,0.95)');
+    g.addColorStop(0.45,'rgba(255,185,70,0.28)'); g.addColorStop(1,'rgba(255,170,50,0)');
+    x.fillStyle = g; x.fillRect(0,0,128,128);
+    sunSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+    sunSprite.scale.setScalar(1.7);
+    scene.add(sunSprite);
+  }
+
+  /* --- Satellite imagery (with graceful fallback already in place) --- */
+  const hideLoader = () => { const l = $('loader'); l.classList.add('hide'); setTimeout(()=>l.remove(), 800); };
+  const manager = new THREE.LoadingManager();
+  manager.onLoad = hideLoader;
+  manager.onError = () => { showToast('Some imagery failed to load — using fallback textures.'); hideLoader(); };
+  const tl = new THREE.TextureLoader(manager);
+  const IMG = 'https://unpkg.com/three-globe@2.31.0/example/img/';
+  tl.load(IMG + 'earth-blue-marble.jpg', t => { t.anisotropy = renderer.capabilities.getMaxAnisotropy(); globeMat.uniforms.dayTex.value = t; });
+  tl.load(IMG + 'earth-night.jpg',       t => { globeMat.uniforms.nightTex.value = t; });
+  setTimeout(hideLoader, 12000); // safety net
+
+  /* --- Country borders (Natural Earth via world-atlas TopoJSON) --- */
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r => r.json())
+    .then(topo => {
+      const fc = window.topojson.feature(topo, topo.objects.countries);
+      const verts = [], prev = [new THREE.Vector3(), new THREE.Vector3()]; let pi = 0;
+      const addPt = (lon, lat, first) => {
+        const p = latLonToVec3(lat, lon, 1.002);
+        if (!first){ const q = prev[pi]; verts.push(q.x,q.y,q.z,p.x,p.y,p.z); }
+        prev[pi = 1-pi].copy(p);
+      };
+      for (const f of fc.features){
+        const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+        for (const poly of polys) for (const ring of poly){ ring.forEach(([lon,lat],i)=>addPt(lon,lat,i===0)); }
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+      scene.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({
+        color: 0x8fc4f0, transparent: true, opacity: 0.24, depthWrite: false })));
+    })
+    .catch(() => console.warn('Borders unavailable (offline).'));
+}
+
+function updateSun(ms){
+  currentSub = subsolarPoint(ms);
+  sunUniform.value.copy(latLonToVec3(currentSub.lat, currentSub.lon, 1));
+  sunSprite.position.copy(sunUniform.value).multiplyScalar(7);
+  sunSprite.visible = state.showSun;
+}
+function slerpV(a, b, t){
+  const an = a.clone().normalize(), bn = b.clone().normalize();
+  const omega = Math.acos(THREE.MathUtils.clamp(an.dot(bn), -1, 1)), sinO = Math.sin(omega);
+  if (sinO < 1e-5) return a.clone().lerp(b, t);
+  const r = a.length() + (b.length() - a.length()) * t;
+  return an.multiplyScalar(Math.sin((1-t)*omega)/sinO)
+         .add(bn.multiplyScalar(Math.sin(t*omega)/sinO)).multiplyScalar(r);
+}
+function flyTo(lat, lon){
+  const dist = THREE.MathUtils.clamp(camera.position.length(), 1.55, 2.6);
+  flyAnim = { start: camera.position.clone(), end: latLonToVec3(lat, lon, dist), t: 0, dur: 1.5 };
+  if (state.autoRotate){ state.autoRotate = false; syncRotateBtn(); }
+}
+function orbitBy(dTheta, dPhi){
+  flyAnim = null;
+  if (state.autoRotate){ state.autoRotate = false; syncRotateBtn(); }
+  const s = new THREE.Spherical().setFromVector3(camera.position);
+  s.theta += dTheta; s.phi = THREE.MathUtils.clamp(s.phi + dPhi, 0.04, Math.PI - 0.04);
+  camera.position.setFromSpherical(s); camera.lookAt(0,0,0);
+}
+function zoomBy(f){
+  camera.position.setLength(THREE.MathUtils.clamp(camera.position.length()*f, controls.minDistance, controls.maxDistance));
+}
+
+/* =====================================================================
+   6. MARKERS & LABELS (HTML overlay, occlusion + overlap prevention)
+   ===================================================================== */
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function createMarker(city){
+  const el = document.createElement('div');
+  el.className = 'marker' + (city.id === state.selectedId ? ' selected' : '');
+  el.innerHTML = `<div class="marker-dot" role="button" tabindex="0" aria-label="${esc(city.name)} — open clock card"></div>
+    <div class="marker-label"><span class="ml-name">${esc(city.name)}</span><span class="ml-time"></span></div>`;
+  const open = e => { e.stopPropagation(); selectCity(city.id, { scroll:true, flash:true }); };
+  el.querySelector('.marker-dot').addEventListener('click', open);
+  el.querySelector('.marker-dot').addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); open(e); }});
+  el.querySelector('.marker-label').addEventListener('click', open);
+  labelsEl.appendChild(el);
+  city.markerEl = el;
+  city.markerTimeEl = el.querySelector('.ml-time');
+  city._nw = el.querySelector('.ml-name').offsetWidth || city.name.length * 7;
+  city._c = {};
+}
+const _v1 = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3();
+const overlap = (a,b) => a.x < b.x+b.w+4 && a.x+a.w+4 > b.x && a.y < b.y+b.h+4 && a.y+a.h+4 > b.y;
+function updateLabels(){
+  const placed = [];
+  const ordered = [...state.cities].sort((a,b) => (b.id===state.selectedId) - (a.id===state.selectedId));
+  for (const city of ordered){
+    const el = city.markerEl; if (!el) continue;
+    if (!city.visible){ el.style.display = 'none'; continue; }
+    _v1.copy(latLonToVec3(city.lat, city.lon, 1.005));
+    const facing = _v2.copy(camera.position).sub(_v1).dot(_v3.copy(_v1).normalize());
+    if (facing <= 0.02){ el.style.display = 'none'; continue; }   // behind the horizon
+    const p = _v1.project(camera);
+    if (p.z > 1){ el.style.display = 'none'; continue; }
+    const x = ( p.x * 0.5 + 0.5) * viewW, y = (-p.y * 0.5 + 0.5) * viewH;
+    el.style.display = 'block';
+    el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+    const rect = { x: x + 10, y: y - 28, w: (city._nw || 90) + 58, h: 22 };
+    const hit = placed.some(r => overlap(r, rect));
+    el.querySelector('.marker-label').classList.toggle('label-hidden', hit);
+    if (!hit) placed.push(rect);
+  }
+}
+
+/* =====================================================================
+   7. CITY PANEL — cards, actions, selection
+   ===================================================================== */
+const cityList = $('city-list');
+function renderPanel(){
+  const scroll = cityList.scrollTop;
+  cityList.innerHTML = '';
+  state.cities.forEach((city, idx) => {
+    const li = document.createElement('li');
+    li.className = 'city-card' + (city.id===state.selectedId?' selected':'') + (city.visible?'':' hidden-city');
+    li.dataset.id = city.id;
+    li.innerHTML = `
+      <div class="city-main" role="button" tabindex="0" aria-label="Fly globe to ${esc(city.name)}">
+        <div class="status-icon" aria-hidden="true">☀️</div>
+        <div class="city-info">
+          <div class="city-name">${esc(city.name)}${city.country ? ` <span class="city-country">· ${esc(city.country)}</span>` : ''}</div>
+          <div class="city-time">--:--:--</div>
+          <div class="city-sub"><span class="city-date"></span> · <span class="city-tz"></span> · <span class="status-word"></span></div>
+        </div>
+      </div>
+      <div class="city-actions">
+        <button class="mini-btn act-vis"   aria-label="${city.visible?'Hide':'Show'} ${esc(city.name)} on globe" aria-pressed="${city.visible}">${city.visible?'◉':'◎'}</button>
+        <button class="mini-btn act-up"    aria-label="Move ${esc(city.name)} up"   ${idx===0?'disabled':''}>▲</button>
+        <button class="mini-btn act-down"  aria-label="Move ${esc(city.name)} down" ${idx===state.cities.length-1?'disabled':''}>▼</button>
+        <button class="mini-btn danger act-del" aria-label="Remove ${esc(city.name)}">✕</button>
+      </div>`;
+    const main = li.querySelector('.city-main');
+    main.addEventListener('click', () => { selectCity(city.id, { flash:true }); flyTo(city.lat, city.lon); });
+    main.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); main.click(); }});
+    li.querySelector('.act-vis').addEventListener('click', () => { city.visible = !city.visible; save(); renderPanel(); });
+    li.querySelector('.act-up').addEventListener('click',   () => moveCity(city.id, -1));
+    li.querySelector('.act-down').addEventListener('click', () => moveCity(city.id,  1));
+    li.querySelector('.act-del').addEventListener('click',  () => removeCity(city.id));
+    city.el = {
+      icon: li.querySelector('.status-icon'), time: li.querySelector('.city-time'),
+      date: li.querySelector('.city-date'),   tz:   li.querySelector('.city-tz'),
+      word: li.querySelector('.status-word'),
+    };
+    city._c = {};
+    cityList.appendChild(li);
+  });
+  cityList.scrollTop = scroll;
+  $('city-count').textContent = `${state.cities.length} cit${state.cities.length===1?'y':'ies'}`;
+}
+function moveCity(id, dir){
+  const i = state.cities.findIndex(c => c.id === id), j = i + dir;
+  if (i < 0 || j < 0 || j >= state.cities.length) return;
+  [state.cities[i], state.cities[j]] = [state.cities[j], state.cities[i]];
+  save(); renderPanel();
+}
+function removeCity(id){
+  const i = state.cities.findIndex(c => c.id === id);
+  if (i < 0) return;
+  state.cities[i].markerEl?.remove();
+  state.cities.splice(i, 1);
+  if (state.selectedId === id) state.selectedId = null;
+  save(); renderPanel();
+}
+function selectCity(id, opts = {}){
+  state.selectedId = id;
+  cityList.querySelectorAll('.city-card').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+  state.cities.forEach(c => c.markerEl?.classList.toggle('selected', c.id === id));
+  const card = cityList.querySelector(`[data-id="${id}"]`);
+  if (card && opts.scroll) card.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  if (card && opts.flash){ card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash'); }
+}
+function findDuplicate(c){
+  return state.cities.find(x =>
+    (x.name.toLowerCase() === c.name.toLowerCase() && x.tz === c.tz) ||
+    (Math.abs(x.lat - c.lat) < 0.4 && Math.abs(x.lon - c.lon) < 0.4));
+}
+function addCity(data, opts = {}){
+  const dup = findDuplicate(data);
+  if (dup){ showToast(`${dup.name} is already on your globe`); selectCity(dup.id, { scroll:true, flash:true }); flyTo(dup.lat, dup.lon); return; }
+  const city = makeCity(data);
+  state.cities.push(city);
+  save(); renderPanel(); createMarker(city); tickClocks();
+  selectCity(city.id, { scroll:true, flash:true });
+  if (opts.fly !== false) flyTo(city.lat, city.lon);
+  showToast(`Added ${city.name} (${city.tz})`);
+}
+function resetCities(){
+  state.cities.forEach(c => c.markerEl?.remove());
+  state.cities = DEFAULTS.map(d => makeCity({ ...d }));
+  state.selectedId = null;
+  save(); renderPanel(); state.cities.forEach(createMarker); tickClocks();
+  showToast('Restored default cities');
+}
+
+/* =====================================================================
+   8. LIVE CLOCK TICK (4 Hz) — cities, UTC, timeline readouts
+   ===================================================================== */
+const slider = $('slider'), dtInput = $('dt-input');
+let sliderDragging = false;
+const p2 = n => String(n).padStart(2, '0');
+const fmtISO = ms => { const d = new Date(ms);
+  return `${d.getUTCFullYear()}-${p2(d.getUTCMonth()+1)}-${p2(d.getUTCDate())} ${p2(d.getUTours ? 0 : d.getUTCHours())}:${p2(d.getUTCMinutes())}`; };
+function fmtDelta(ms){
+  const sgn = ms < 0 ? '−' : '+'; let m = Math.round(Math.abs(ms)/60000);
+  const d = Math.floor(m/1440); m %= 1440; const h = Math.floor(m/60); m %= 60;
+  if (d) return `${sgn}${d}d ${h}h`;
+  if (h) return `${sgn}${h}h ${p2(m)}m`;
+  return `${sgn}${m}m`;
+}
+function updateCityCard(city, ms){
+  const f = city.fmt, el = city.el; if (!el) return;
+  const time = f.time.format(ms);
+  if (city._c.time !== time){ el.time.textContent = time; city._c.time = time; }
+  const date = f.date.format(ms);
+  if (city._c.date !== date){ el.date.textContent = date; city._c.date = date; }
+  const tz = `${tzAbbr(f.abbr, ms)} · ${fmtOffset(offsetMinutes(f.parts, ms))}`;
+  if (city._c.tz !== tz){ el.tz.textContent = tz; city._c.tz = tz; }
+  const st = statusFor(city, ms, currentSub);
+  if (city._c.st !== st){
+    el.icon.textContent = STATUS[st].icon;
+    el.word.textContent = STATUS[st].label;
+    el.word.className = 'status-word st-' + st;
+    city._c.st = st;
+  }
+  const hm = f.hm.format(ms);
+  if (city._c.hm !== hm && city.markerTimeEl){ city.markerTimeEl.textContent = hm; city._c.hm = hm; }
+}
+function tickClocks(){
+  const ms = state.simMs, now = Date.now();
+  $('utc-clock').textContent = utcTimeFmt.format(ms) + ' UTC';
+  $('utc-date').textContent  = utcDateFmt.format(ms);
+  const chip = $('sim-chip');
+  if (state.live){ chip.hidden = true; }
+  else { chip.hidden = false; chip.textContent = `⏸ ${fmtISO(ms)} UTC (${fmtDelta(ms - now)}) — back to live`; }
+  if (!sliderDragging) slider.value = THREE.MathUtils.clamp(Math.round((ms - now)/60000), -4320, 4320);
+  slider.setAttribute('aria-valuetext', fmtISO(ms) + ' UTC');
+  if (document.activeElement !== dtInput){
+    const d = new Date(ms);
+    dtInput.value = `${d.getUTCFullYear()}-${p2(d.getUTCMonth()+1)}-${p2(d.getUTCDate())}T${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}`;
+  }
+  $('sim-readout').textContent = fmtISO(ms) + ' UTC' + (state.live ? ' · live' : state.playing ? ` · playing ${state.speed>=86400?'1d/s':state.speed+'×'}` : '');
+  for (const city of state.cities) updateCityCard(city, ms);
+}
+
+/* =====================================================================
+   9. TIME CONTROLS — live / play / step / speed / slider / datetime
+   ===================================================================== */
+const ICO_PLAY  = '<svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 2.5v11l9-5.5z"/></svg>';
+const ICO_PAUSE = '<svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="2.5" width="3.4" height="11" rx="1"/><rect x="9.6" y="2.5" width="3.4" height="11" rx="1"/></svg>';
+const ICO_PREV  = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.5 3 3 8l5.5 5zM14 3 8.5 8 14 13z"/></svg>';
+const ICO_NEXT  = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M7.5 3 13 8l-5.5 5zM2 3l5.5 5L2 13z"/></svg>';
+function updatePlayUI(){
+  $('btn-play').innerHTML = state.playing ? ICO_PAUSE : ICO_PLAY;
+  $('btn-play').setAttribute('aria-label', state.playing ? 'Pause time' : 'Play time');
+  $('btn-live').classList.toggle('active', state.live);
+  $('btn-live').setAttribute('aria-pressed', state.live);
+  document.querySelectorAll('#speeds button').forEach(b =>
+    b.classList.toggle('active', +b.dataset.speed === state.speed && (state.playing || !state.live)));
+}
+function goLive(){ state.live = true; state.playing = false; state.simMs = Date.now(); updatePlayUI(); }
+function togglePlay(){
+  if (state.playing){ state.playing = false; }
+  else { if (state.live){ state.simMs = Date.now(); state.live = false; } state.playing = true; }
+  updatePlayUI();
+}
+function stepHour(d){
+  if (state.live){ state.simMs = Date.now(); state.live = false; }
+  state.playing = false; state.simMs += d * 3600000; updatePlayUI();
+}
+function wireTimeControls(){
+  $('btn-play').innerHTML = ICO_PLAY; $('btn-prev').innerHTML = ICO_PREV; $('btn-next').innerHTML = ICO_NEXT;
+  $('btn-play').addEventListener('click', togglePlay);
+  $('btn-prev').addEventListener('click', () => stepHour(-1));
+  $('btn-next').addEventListener('click', () => stepHour( 1));
+  $('btn-live').addEventListener('click', goLive);
+  $('sim-chip').addEventListener('click', goLive);
+  document.querySelectorAll('#speeds button').forEach(b => b.addEventListener('click', () => {
+    state.speed = +b.dataset.speed;
+    if (state.live){ state.simMs = Date.now(); state.live = false; }
+    state.playing = true; updatePlayUI();
+  }));
+  slider.addEventListener('pointerdown', () => sliderDragging = true);
+  addEventListener('pointerup', () => sliderDragging = false);
+  slider.addEventListener('input', () => {
+    state.live = false; state.playing = false;
+    state.simMs = Date.now() + (+slider.value) * 60000; updatePlayUI();
+  });
+  dtInput.addEventListener('change', () => {
+    if (!dtInput.value) return;
+    const [d, t] = dtInput.value.split('T');
+    const [Y, M, D] = d.split('-').map(Number);
+    const [h, m] = (t || '0:0').split(':').map(Number);
+    state.simMs = Date.UTC(Y, M-1, D, h, m);
+    state.live = false; state.playing = false; updatePlayUI();
+  });
+}
+
+/* =====================================================================
+   10. SEARCH — Open-Meteo geocoding (IANA tz included) + offline fallback
+   ===================================================================== */
+const searchInput = $('search'), resultsEl = $('results');
+let searchTimer = null, searchSeq = 0, currentResults = [], activeIdx = -1;
+async function searchCities(q){
+  const ql = q.toLowerCase();
+  const local = CITY_DB
+    .filter(c => (c[0] + ' ' + c[1]).toLowerCase().includes(ql))
+    .slice(0, 6)
+    .map(c => ({ name:c[0], country:c[1], lat:c[2], lon:c[3], tz:c[4] }));
+  try{
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`);
+    const j = await r.json();
+    const remote = (j.results || [])
+      .filter(x => x.timezone)
+      .map(x => ({ name:x.name, country:x.country || x.country_code || '', lat:x.latitude, lon:x.longitude, tz:x.timezone }));
+    const seen = new Set(), merged = [];
+    for (const c of [...remote, ...local]){
+      const k = c.name.toLowerCase() + '|' + c.tz;
+      if (!seen.has(k)){ seen.add(k); merged.push(c); }
+    }
+    return merged.slice(0, 10);
+  }catch{ return local; }
+}
+function showResults(list){
+  currentResults = list; activeIdx = -1;
+  resultsEl.innerHTML = '';
+  if (!list.length){
+    resultsEl.innerHTML = '<div class="result none">No matches found</div>';
+  } else {
+    list.forEach((c, i) => {
+      const d = document.createElement('div');
+      d.className = 'result'; d.id = 'res-' + i; d.setAttribute('role', 'option');
+      d.innerHTML = `<span>${esc(c.name)} <span class="muted">${esc(c.country)}</span></span><span class="tz">${esc(c.tz)}</span>`;
+      d.addEventListener('pointerdown', e => { e.preventDefault(); pickResult(i); });
+      resultsEl.appendChild(d);
+    });
+  }
+  resultsEl.hidden = false;
+  searchInput.setAttribute('aria-expanded', 'true');
+}
+function hideResults(){
+  resultsEl.hidden = true; currentResults = []; activeIdx = -1;
+  searchInput.setAttribute('aria-expanded', 'false');
+  searchInput.removeAttribute('aria-activedescendant');
+}
+function pickResult(i){
+  const c = currentResults[i]; if (!c) return;
+  addCity(c); hideResults(); searchInput.value = '';
+}
+function setActive(i){
+  activeIdx = i;
+  resultsEl.querySelectorAll('.result').forEach((el, j) => el.classList.toggle('active', j === i));
+  if (i >= 0) searchInput.setAttribute('aria-activedescendant', 'res-' + i);
+}
+function wireSearch(){
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    const q = searchInput.value.trim();
+    if (q.length < 2){ hideResults(); return; }
+    searchTimer = setTimeout(async () => {
+      const seq = ++searchSeq;
+      const res = await searchCities(q);
+      if (seq === searchSeq) showResults(res);
+    }, 260);
+  });
+  searchInput.addEventListener('keydown', e => {
+    if (resultsEl.hidden) return;
+    if (e.key === 'ArrowDown'){ e.preventDefault(); setActive(Math.min(activeIdx + 1, currentResults.length - 1)); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+    else if (e.key === 'Enter'){ e.preventDefault(); pickResult(activeIdx >= 0 ? activeIdx : 0); }
+    else if (e.key === 'Escape'){ hideResults(); }
+  });
+  searchInput.addEventListener('blur', () => setTimeout(hideResults, 150));
+}
+
+/* =====================================================================
+   11. TOP BAR, THEME, HELP, TOAST, KEYBOARD
+   ===================================================================== */
+let toastTimer = null;
+function showToast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function syncRotateBtn(){ $('btn-rotate').setAttribute('aria-pressed', state.autoRotate); }
+function applyTheme(t){
+  state.theme = t;
+  document.documentElement.dataset.theme = t;
+  $('btn-theme').textContent = t === 'dark' ? '🌙' : '☀️';
+  try{ localStorage.setItem('terra.theme', t); }catch{}
+}
+let lastFocus = null;
+function openHelp(){ lastFocus = document.activeElement; $('help').hidden = false; $('help-close').focus(); }
+function closeHelp(){ if (!$('help').hidden){ $('help').hidden = true; lastFocus?.focus?.(); } }
+function wireTopbar(){
+  $('btn-sun').addEventListener('click', () => {
+    state.showSun = !state.showSun;
+    $('btn-sun').setAttribute('aria-pressed', state.showSun);
+  });
+  $('btn-rotate').addEventListener('click', () => { state.autoRotate = !state.autoRotate; syncRotateBtn(); });
+  $('btn-theme').addEventListener('click', () => applyTheme(state.theme === 'dark' ? 'light' : 'dark'));
+  $('btn-help').addEventListener('click', openHelp);
+  $('help-close').addEventListener('click', closeHelp);
+  $('help').addEventListener('click', e => { if (e.target === $('help')) closeHelp(); });
+  $('help').addEventListener('keydown', e => {           // simple focus trap
+    if (e.key !== 'Tab') return;
+    const f = $('help').querySelectorAll('button, [href], input');
+    const first = f[0], last = f[f.length-1];
+    if (e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+    else if (!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+  });
+  const togglePanel = () => {
+    const collapsed = $('panel').classList.toggle('collapsed');
+    $('btn-panel').setAttribute('aria-pressed', !collapsed);
+    $('btn-panel').setAttribute('aria-expanded', !collapsed);
+  };
+  $('btn-panel').addEventListener('click', togglePanel);
+  $('panel-close').addEventListener('click', togglePanel);
+  $('btn-reset').addEventListener('click', resetCities);
+}
+function wireKeyboard(){
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape'){ closeHelp(); hideResults(); return; }
+    const t = e.target;
+    if (t.matches?.('input, textarea, select') || t.isContentEditable) return;
+    switch (e.key){
+      case ' ': togglePlay(); e.preventDefault(); break;
+      case 'l': case 'L': goLive(); break;
+      case '[': stepHour(-1); break;
+      case ']': stepHour( 1); break;
+      case '+': case '=': zoomBy(0.84); break;
+      case '-': case '_': zoomBy(1/0.84); break;
+      case '?': $('help').hidden ? openHelp() : closeHelp(); break;
+    }
+  });
+  renderer.domElement.addEventListener('keydown', e => {
+    const map = { ArrowLeft:[-0.14,0], ArrowRight:[0.14,0], ArrowUp:[0,-0.10], ArrowDown:[0,0.10] };
+    if (map[e.key]){ orbitBy(...map[e.key]); e.preventDefault(); }
+  });
+}
+
+/* =====================================================================
+   12. LAYOUT / RESIZE / MAIN LOOP
+   ===================================================================== */
+function layoutChrome(){
+  const tbH = $('timebar').offsetHeight;
+  $('panel').style.bottom  = (tbH + 18) + 'px';
+  $('legend').style.bottom = (tbH + 18) + 'px';
+  $('toast').style.bottom  = (tbH + 26) + 'px';
+}
+function onResize(){
+  viewW = container.clientWidth; viewH = container.clientHeight;
+  renderer.setSize(viewW, viewH);
+  camera.aspect = viewW / viewH; camera.updateProjectionMatrix();
+  layoutChrome();
+}
+const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+let last = performance.now(), acc = 0;
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt = Math.min(now - last, 100); last = now;
+  if (state.live) state.simMs = Date.now();
+  else if (state.playing) state.simMs += dt * state.speed;
+  updateSun(state.simMs);
+  if (flyAnim){
+    flyAnim.t += dt / 1000 / flyAnim.dur;
+    const t = Math.min(flyAnim.t, 1);
+    camera.position.copy(slerpV(flyAnim.start, flyAnim.end, ease(t)));
+    camera.lookAt(0, 0, 0);
+    if (t >= 1) flyAnim = null;
+  } else {
+    controls.autoRotate = state.autoRotate;
+    controls.update();
+  }
+  renderer.render(scene, camera);
+  updateLabels();
+  acc += dt;
+  if (acc >= 250){ acc = 0; tickClocks(); }
+}
+
+/* =====================================================================
+   13. INIT
+   ===================================================================== */
+try{
+  initThree();
+  loadState();
+  renderPanel();
+  state.cities.forEach(createMarker);
+  wireTimeControls(); wireTopbar(); wireSearch(); wireKeyboard();
+  let theme = null; try{ theme = localStorage.getItem('terra.theme'); }catch{}
+  applyTheme(theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+  syncRotateBtn(); updatePlayUI();
+  updateSun(state.simMs); tickClocks();
+  addEventListener('resize', onResize);
+  addEventListener('load', layoutChrome);
+  layoutChrome();
+  requestAnimationFrame(frame);
+}catch (err){
+  console.error(err);
+  $('loader-msg').textContent = 'Failed to start 3D engine: ' + err.message;
+}
+</script>
+</body>
+</html>
