@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#2a0845">
+<title>🎡 Wheel of Fortune</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(160deg,#2a0845 0%,#6441A5 55%,#2a0845 100%) fixed;
+    color:#fff;min-height:100vh;overscroll-behavior:none;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  header{width:100%;max-width:520px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px 2px}
+  h1{font-size:clamp(1.3rem,6vw,1.7rem);margin:0;color:#ffd93d;text-shadow:0 2px 0 rgba(0,0,0,.3);letter-spacing:.5px}
+  .icon-btn{background:rgba(255,255,255,.14);border:none;color:#fff;font-size:1.25rem;width:44px;height:44px;border-radius:14px;cursor:pointer}
+  .icon-btn:active{transform:scale(.9)}
+  main{width:100%;max-width:520px;padding:8px 14px 34px;display:flex;flex-direction:column;gap:14px}
+
+  #wheelWrap{position:relative;width:min(92vw,430px);aspect-ratio:1;margin:6px auto 0;
+    touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+  #wheelWrap:active{cursor:grabbing}
+  #wheelWrap canvas{width:100%;height:100%;display:block;transition:filter .3s}
+  #wheelWrap.spinning canvas{filter:drop-shadow(0 0 18px rgba(255,217,61,.55))}
+  #pointer{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:0;height:0;
+    border-left:15px solid transparent;border-right:15px solid transparent;border-top:32px solid #ff2d55;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));transform-origin:50% 15%;z-index:3}
+  #pointer.wobble{animation:wob .12s ease}
+  @keyframes wob{0%{transform:translateX(-50%) rotate(0)}45%{transform:translateX(-50%) rotate(-26deg)}100%{transform:translateX(-50%) rotate(0)}}
+  #hint{text-align:center;font-weight:600;color:#ffe9a8;margin-top:10px;min-height:1.4em;transition:opacity .4s}
+  #hint.hide{opacity:0}
+
+  .panel{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:14px;backdrop-filter:blur(6px);transition:opacity .3s}
+  body.spinning .panel{pointer-events:none;opacity:.5}
+  .add-row{display:flex;gap:8px}
+  .add-row input{flex:1;min-width:0;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.25);
+    background:rgba(0,0,0,.25);color:#fff;font-size:1rem;outline:none}
+  .add-row input::placeholder{color:rgba(255,255,255,.5)}
+  .add-row input:focus{border-color:#ffd93d}
+  .options{display:flex;flex-direction:column;gap:6px;margin-top:12px;font-size:.9rem;font-weight:600;color:rgba(255,255,255,.9)}
+  .options input{accent-color:#ffd93d;width:17px;height:17px;margin-right:6px;vertical-align:-3px}
+  #nameList{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px;max-height:190px;overflow:auto}
+  .chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.13);padding:7px 8px 7px 11px;
+    border-radius:999px;font-weight:600;font-size:.92rem;animation:pop .18s ease}
+  .chip .dot{width:12px;height:12px;border-radius:50%;flex:none}
+  .chip-x{background:rgba(0,0,0,.28);color:#fff;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.72rem;line-height:1}
+  @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  .panel-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px}
+  #countLabel{font-size:.85rem;color:rgba(255,255,255,.75)}
+
+  .btn{border:none;border-radius:12px;padding:12px 16px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;
+    background:linear-gradient(135deg,#ff6fb5,#ff2d55);box-shadow:0 4px 12px rgba(255,45,85,.35)}
+  .btn:active{transform:scale(.95)}
+  .btn-gold{background:linear-gradient(135deg,#ffd93d,#ff9f45);color:#4a2b00;box-shadow:0 4px 14px rgba(255,159,69,.4)}
+  .btn-ghost{background:rgba(0,0,0,.07);color:#555;box-shadow:none}
+  .btn-sm{padding:9px 13px;font-size:.85rem;background:rgba(255,255,255,.14);box-shadow:none}
+  button,input{touch-action:manipulation}
+
+  #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(10,5,25,.62);backdrop-filter:blur(5px);z-index:50;padding:20px}
+  #overlay.show{display:flex}
+  #confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  #resultCard{position:relative;background:#fff;color:#333;border-radius:26px;padding:30px 26px;text-align:center;
+    max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:cardPop .45s cubic-bezier(.18,1.4,.4,1)}
+  @keyframes cardPop{from{transform:scale(.5) translateY(40px);opacity:0}}
+  #resEmoji{font-size:3.4rem;animation:bounce 1s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  #resLabel{font-size:1.6rem;font-weight:900;letter-spacing:2px;margin:6px 0 2px;
+    background:linear-gradient(90deg,#ff2d55,#ff9f45,#ffd93d);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #resLabel.gray{background:linear-gradient(90deg,#555,#999);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #resName{font-size:clamp(1.9rem,9vw,2.6rem);font-weight:900;margin:4px 0 18px;color:#2a0845;word-break:break-word}
+  #resName.sub{font-size:1.05rem;color:#777}
+  .result-btns{display:flex;flex-direction:column;gap:10px}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.85);
+    color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;transition:.3s;z-index:99;pointer-events:none;white-space:nowrap}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎡 Wheel of Fortune</h1>
+  <button id="soundBtn" class="icon-btn" title="Sound on/off">🔊</button>
+</header>
+
+<main>
+  <div id="wheelWrap">
+    <div id="pointer"></div>
+    <canvas id="wheel"></canvas>
+  </div>
+  <div id="hint">👆 Flick the wheel to spin!</div>
+
+  <section class="panel">
+    <div class="add-row">
+      <input id="nameInput" placeholder="Enter a name…" maxlength="24">
+      <button id="addBtn" class="btn">Add</button>
+    </div>
+    <div class="options">
+      <label><input type="checkbox" id="noWinnerToggle">💀 Add a “NO WINNER” segment</label>
+      <label><input type="checkbox" id="removeWinToggle">🧹 Remove winner after each win</label>
+    </div>
+    <ul id="nameList"></ul>
+    <div class="panel-actions">
+      <button id="clearBtn" class="btn btn-sm">🗑 Clear all</button>
+      <span id="countLabel"></span>
+    </div>
+  </section>
+</main>
+
+<div id="overlay">
+  <canvas id="confetti"></canvas>
+  <div id="resultCard">
+    <div id="resEmoji">🎉</div>
+    <div id="resLabel">WINNER!</div>
+    <div id="resName">Name</div>
+    <div class="result-btns">
+      <button id="spinAgainBtn" class="btn btn-gold">🔄 Spin Again</button>
+      <button id="removeWinnerBtn" class="btn">🗑 Remove Winner</button>
+      <button id="doneBtn" class="btn btn-ghost">Done</button>
+    </div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const norm=a=>{a%=TAU;return a<0?a+TAU:a;};
+const PALETTE=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF6FB5','#B980F0','#00C2A8','#FF9F45','#5BC0EB','#F45B69','#8AC926','#1982C4'];
+const NO_COLOR='#3f3f52';
+const MIN_FLICK=2.5; // rad/s
+
+const wrap=$('#wheelWrap'),canvas=$('#wheel'),ctx=canvas.getContext('2d'),pointerEl=$('#pointer');
+
+/* ---------- state ---------- */
+let entries=[],opts={noWinner:false,removeWinner:false,sound:true},hadSaved=false;
+let rotation=Math.random()*TAU,cssSize=0;
+let spinning=false,dragActive=false,spinSegs=null,spinOmega0=1;
+let omega=0,decelK=0,spinDir=1,rafId=0,lastFrame=0,lastTickIdx=-1;
+let samples=[],lastPointerAngle=0,lastWinner=null;
+
+/* ---------- storage ---------- */
+function save(){try{localStorage.setItem('wof_entries',JSON.stringify(entries));localStorage.setItem('wof_opts',JSON.stringify(opts));}catch(e){}}
+function load(){try{
+  const raw=localStorage.getItem('wof_entries');hadSaved=raw!==null;
+  const e=JSON.parse(raw);if(Array.isArray(e))entries=e.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim().slice(0,24));
+  const o=JSON.parse(localStorage.getItem('wof_opts'));if(o&&typeof o==='object')opts=Object.assign(opts,o);
+}catch(e){}}
+
+/* ---------- audio ---------- */
+let actx=null;
+function ensureAudio(){if(!opts.sound)return;try{
+  if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state==='suspended')actx.resume();
+}catch(e){}}
+function tone(f,dur,type,vol,delay,slideTo){
+  if(!opts.sound||!actx)return;
+  const t=actx.currentTime+(delay||0);
+  const o=actx.createOscillator(),g=actx.createGain();
+  o.type=type||'square';o.frequency.setValueAtTime(f,t);
+  if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,t+dur);
+  g.gain.setValueAtTime(vol||.12,t);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g).connect(actx.destination);o.start(t);o.stop(t+dur+.02);
+}
+function tickSound(r){tone(500+750*r,.03,'square',.05);tone(160,.025,'triangle',.045);}
+function fanfare(){
+  [523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(f,.18,'square',.12,i*.13));
+  [523.25,659.25,783.99,1046.5].forEach(f=>tone(f,.9,'triangle',.05,.55));
+  tone(1567.98,.5,'triangle',.05,.62);
+}
+function sadSound(){
+  [[349.23,329.63],[311.13,293.66],[277.18,261.63],[246.94,220]].forEach((p,i)=>tone(p[0],i===3?.8:.24,'sawtooth',.09,i*.27,p[1]));
+}
+function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
+
+/* ---------- segments ---------- */
+function getSegments(){
+  const segs=entries.map((n,i)=>({name:n,color:PALETTE[i%PALETTE.length],isNo:false}));
+  if(opts.noWinner)segs.push({name:'NO WINNER',color:NO_COLOR,isNo:true});
+  return segs;
+}
+function activeSegs(){return spinning&&spinSegs?spinSegs:getSegments();}
+function fitText(t,maxW){
+  if(ctx.measureText(t).width<=maxW)return t;
+  while(t.length>1&&ctx.measureText(t+'…').width>maxW)t=t.slice(0,-1);
+  return t+'…';
+}
+
+/* ---------- drawing ---------- */
+function sizeCanvas(){
+  const s=wrap.clientWidth,dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=s*dpr;canvas.height=s*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);cssSize=s;
+}
+function drawWheel(now){
+  const s=cssSize;if(!s)return;
+  const segs=activeSegs();
+  ctx.clearRect(0,0,s,s);
+  const cx=s/2,cy=s/2,R=s/2-s*.06,n=segs.length;
+  if(!n){
+    ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.fillStyle='rgba(255,255,255,.08)';ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='600 '+s*.045+'px system-ui';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Add names below ✏️',cx,cy);return;
+  }
+  const segA=TAU/n;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);
+  for(let i=0;i<n;i++){
+    const a0=i*segA,a1=a0+segA;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a0,a1);ctx.closePath();
+    ctx.fillStyle=segs[i].color;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=n>24?1:2;ctx.stroke();
+  }
+  const fs=clamp(s*.4/Math.max(n,7),8,s*.055);
+  ctx.font='700 '+fs+'px system-ui,sans-serif';ctx.textBaseline='middle';
+  ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=3;
+  for(let i=0;i<n;i++){
+    const mid=i*segA+segA/2,screenMid=norm(mid+rotation);
+    const label=fitText(segs[i].name,R*.66);
+    ctx.save();
+    if(Math.cos(screenMid)>=0){ctx.rotate(mid);ctx.textAlign='right';ctx.fillText(label,R*.88,0);}
+    else{ctx.rotate(mid+Math.PI);ctx.textAlign='left';ctx.fillText(label,-R*.88,0);}
+    ctx.restore();
+  }
+  ctx.shadowBlur=0;
+  // hub
+  const g=ctx.createRadialGradient(0,0,2,0,0,R*.15);
+  g.addColorStop(0,'#fff');g.addColorStop(1,'#cfd6e4');
+  ctx.beginPath();ctx.arc(0,0,R*.15,0,TAU);ctx.fillStyle=g;ctx.fill();
+  ctx.strokeStyle='#9aa4b8';ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,R*.045,0,TAU);ctx.fillStyle='#f6c445';ctx.fill();
+  ctx.restore();
+  // rim
+  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.strokeStyle='rgba(255,255,255,.85)';
+  ctx.lineWidth=Math.max(2,s*.008);ctx.stroke();
+  // lights
+  const nb=14,rb=R+s*.03,phase=Math.floor((now||0)/160);
+  for(let i=0;i<nb;i++){
+    const a=i*TAU/nb-Math.PI/2,x=cx+Math.cos(a)*rb,y=cy+Math.sin(a)*rb;
+    const on=spinning?((phase+i)%2===0):true;
+    ctx.beginPath();ctx.arc(x,y,Math.max(2.5,s*.011),0,TAU);
+    if(on){ctx.shadowColor='#ffd93d';ctx.shadowBlur=spinning?10:5;ctx.fillStyle='#ffe27a';}
+    else{ctx.shadowBlur=0;ctx.fillStyle='#5f546e';}
+    ctx.fill();ctx.shadowBlur=0;
+  }
+}
+
+/* ---------- spin physics ---------- */
+function pointerAngle(e){
+  const r=wrap.getBoundingClientRect();
+  return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2));
+}
+function wobble(){pointerEl.classList.remove('wobble');void pointerEl.offsetWidth;pointerEl.classList.add('wobble');}
+function onTick(){
+  const ratio=clamp(Math.abs(omega)/Math.abs(spinOmega0),0,1);
+  tickSound(ratio);wobble();vib(7);
+}
+function startSpin(v){
+  if(spinning)stopAnim();
+  const segs=getSegments();
+  if(segs.length<2){toast('Add at least 2 names first! ✏️');return;}
+  ensureAudio();
+  spinSegs=segs;spinning=true;spinDir=Math.sign(v)||1;
+  spinOmega0=v;
+  let total=clamp(Math.pow(Math.abs(v),1.35),1.25*TAU,8.5*TAU)*(0.85+Math.random()*0.3); // randomness!
+  decelK=(v*v)/(2*total);
+  omega=v;lastTickIdx=-1;
+  document.body.classList.add('spinning');wrap.classList.add('spinning');
+  $('#hint').classList.add('hide');
+  lastFrame=performance.now();
+  cancelAnimationFrame(rafId);rafId=requestAnimationFrame(frame);
+}
+function frame(now){
+  const dt=Math.min((now-lastFrame)/1000,.05);lastFrame=now;
+  rotation+=omega*dt;
+  omega-=spinDir*decelK*dt;
+  if(Math.sign(omega)!==spinDir||Math.abs(omega)<.02){drawWheel(now);finishSpin();return;}
+  const w=norm(-Math.PI/2-rotation),idx=Math.floor(w/(TAU/spinSegs.length))%spinSegs.length;
+  if(idx!==lastTickIdx){lastTickIdx=idx;onTick();}
+  drawWheel(now);
+  rafId=requestAnimationFrame(frame);
+}
+function stopAnim(){
+  cancelAnimationFrame(rafId);spinning=false;omega=0;spinSegs=null;
+  document.body.classList.remove('spinning');wrap.classList.remove('spinning');
+}
+function finishSpin(){
+  const segs=spinSegs||getSegments();
+  const w=norm(-Math.PI/2-rotation);
+  const seg=segs[Math.floor(w/(TAU/segs.length))%segs.length];
+  spinning=false;spinSegs=null;omega=0;rotation=norm(rotation);
+  document.body.classList.remove('spinning');wrap.classList.remove('spinning');
+  drawWheel(performance.now());
+  showResult(seg);
+}
+
+/* ---------- swipe handling ---------- */
+wrap.addEventListener('pointerdown',e=>{
+  ensureAudio();
+  if(spinning)stopAnim();              // grab the wheel to stop it!
+  dragActive=true;samples=[];
+  lastPointerAngle=pointerAngle(e);
+  samples.push({t:performance.now(),r:rotation});
+  try{wrap.setPointerCapture(e.pointerId);}catch(err){}
+  e.preventDefault();
+});
+wrap.addEventListener('pointermove',e=>{
+  if(!dragActive)return;
+  const a=pointerAngle(e);
+  let d=a-lastPointerAngle;
+  if(d>Math.PI)d-=TAU;if(d<-Math.PI)d+=TAU;
+  rotation+=d;lastPointerAngle=a;
+  const now=performance.now();
+  samples.push({t:now,r:rotation});
+  while(samples.length>2&&now-samples[0].t>140)samples.shift();
+  drawWheel(now);
+});
+function endDrag(){
+  if(!dragActive)return;dragActive=false;
+  const now=performance.now();let v=0;
+  if(samples.length>=2&&now-samples[samples.length-1].t<120){
+    const a=samples[0],b=samples[samples.length-1],dt=b.t-a.t;
+    if(dt>0)v=(b.r-a.r)/dt*1000;
+  }
+  rotation=norm(rotation);
+  if(Math.abs(v)<MIN_FLICK){if(Math.abs(v)>.6)toast('Swipe faster! 💨');drawWheel(now);return;}
+  startSpin(v);
+}
+wrap.addEventListener('pointerup',endDrag);
+wrap.addEventListener('pointercancel',endDrag);
+wrap.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------- results ---------- */
+function showResult(seg){
+  lastWinner=seg.isNo?null:seg.name;
+  const label=$('#resLabel'),name=$('#resName');
+  if(seg.isNo){
+    $('#resEmoji').textContent='😭';
+    label.textContent='NO WINNER!';label.classList.add('gray');
+    name.textContent='The wheel says nobody wins this round…';name.classList.add('sub');
+    $('#removeWinnerBtn').style.display='none';
+    sadSound();vib([80,60,140]);
+  }else{
+    $('#resEmoji').textContent='🎉';
+    label.textContent='WINNER!';label.classList.remove('gray');
+    name.textContent=seg.name;name.classList.remove('sub');
+    if(opts.removeWinner){
+      removeOne(seg.name);toast('Removed '+seg.name+' from the wheel 🗑');
+      $('#removeWinnerBtn').style.display='none';
+    }else $('#removeWinnerBtn').style.display='';
+    fanfare();confettiBurst();vib([40,30,40,30,140]);
+  }
+  $('#overlay').classList.add('show');
+}
+function removeOne(name){
+  const i=entries.indexOf(name);
+  if(i>-1){entries.splice(i,1);save();renderList();drawWheel(performance.now());updateCount();}
+}
+$('#spinAgainBtn').onclick=()=>{
+  $('#overlay').classList.remove('show');
+  setTimeout(()=>{
+    if(getSegments().length<2){toast('Add at least 2 names first! ✏️');return;}
+    startSpin((9+Math.random()*9)*(Math.random()<.5?-1:1));
+  },380);
+};
+$('#removeWinnerBtn').onclick=()=>{
+  if(lastWinner){removeOne(lastWinner);toast('Removed '+lastWinner+' 🗑');}
+  $('#overlay').classList.remove('show');
+};
+$('#doneBtn').onclick=()=>$('#overlay').classList.remove('show');
+
+/* ---------- confetti ---------- */
+const cC=$('#confetti');let cX=null,parts=[],cRaf=0;
+function confettiBurst(){
+  cC.width=innerWidth;cC.height=innerHeight;cX=cC.getContext('2d');
+  parts=[];
+  for(let i=0;i<160;i++)parts.push({
+    x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*.4,
+    w:6+Math.random()*7,h:8+Math.random()*10,
+    vx:(Math.random()-.5)*3.2,vy:2+Math.random()*4.2,
+    rot:Math.random()*TAU,vr:(Math.random()-.5)*.3,
+    color:PALETTE[i%PALETTE.length],circle:Math.random()<.4
+  });
+  cancelAnimationFrame(cRaf);
+  const t0=performance.now();
+  (function cf(now){
+    cX.clearRect(0,0,innerWidth,innerHeight);
+    let alive=false;
+    for(const p of parts){
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.rot+=p.vr;
+      if(p.y<innerHeight+30)alive=true;
+      cX.save();cX.translate(p.x,p.y);cX.rotate(p.rot);cX.fillStyle=p.color;
+      if(p.circle){cX.beginPath();cX.arc(0,0,p.w/2,0,TAU);cX.fill();}
+      else cX.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      cX.restore();
+    }
+    if(alive&&now-t0<6000)cRaf=requestAnimationFrame(cf);
+    else cX.clearRect(0,0,innerWidth,innerHeight);
+  })(t0);
+}
+
+/* ---------- UI ---------- */
+let toastTimer;
+function toast(msg){
+  const t=$('#toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1900);
+}
+function renderList(){
+  const ul=$('#nameList');ul.innerHTML='';
+  entries.forEach((n,i)=>{
+    const li=document.createElement('li');li.className='chip';
+    const dot=document.createElement('span');dot.className='dot';dot.style.background=PALETTE[i%PALETTE.length];
+    const tx=document.createElement('span');tx.textContent=n;
+    const x=document.createElement('button');x.className='chip-x';x.textContent='✕';x.setAttribute('aria-label','Remove '+n);
+    x.onclick=()=>{entries.splice(i,1);save();renderList();drawWheel(performance.now());updateCount();};
+    li.append(dot,tx,x);ul.appendChild(li);
+  });
+}
+function updateCount(){
+  const segs=getSegments();
+  $('#countLabel').textContent=entries.length+' name'+(entries.length===1?'':'s')+(opts.noWinner?' + 💀':'');
+  $('#hint').textContent=segs.length>=2?'👆 Flick the wheel to spin!':'Add at least 2 names to spin';
+}
+function addName(){
+  const inp=$('#nameInput'),v=inp.value.trim();
+  if(!v){inp.focus();return;}
+  entries.push(v.slice(0,24));save();renderList();drawWheel(performance.now());updateCount();
+  inp.value='';inp.focus();
+}
+$('#addBtn').onclick=addName;
+$('#nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')addName();});
+$('#noWinnerToggle').onchange=e=>{opts.noWinner=e.target.checked;save();drawWheel(performance.now());updateCount();};
+$('#removeWinToggle').onchange=e=>{opts.removeWinner=e.target.checked;save();};
+function syncSound(){$('#soundBtn').textContent=opts.sound?'🔊':'🔇';}
+$('#soundBtn').onclick=()=>{
+  opts.sound=!opts.sound;save();syncSound();
+  if(opts.sound){ensureAudio();tone(880,.1,'triangle',.1);}
+};
+let clearArm=0;
+$('#clearBtn').onclick=()=>{
+  if(!entries.length){toast('Nothing to clear');return;}
+  if(Date.now()-clearArm<2500){
+    entries=[];save();renderList();drawWheel(performance.now());updateCount();
+    $('#clearBtn').textContent='🗑 Clear all';clearArm=0;toast('Cleared!');
+  }else{
+    clearArm=Date.now();$('#clearBtn').textContent='Tap again to confirm';
+    setTimeout(()=>{if(Date.now()-clearArm>=2400)$('#clearBtn').textContent='🗑 Clear all';},2600);
+  }
+};
+
+/* ---------- init ---------- */
+load();
+if(!hadSaved&&!entries.length)entries=['Mia','Leo','Zoe','Kai','Ava','Max']; // demo names on first run
+$('#noWinnerToggle').checked=opts.noWinner;
+$('#removeWinToggle').checked=opts.removeWinner;
+syncSound();renderList();sizeCanvas();drawWheel(performance.now());updateCount();
+window.addEventListener('resize',()=>{sizeCanvas();drawWheel(performance.now());});
+document.addEventListener('pointerdown',ensureAudio,{once:true});
+document.addEventListener('gesturestart',e=>e.preventDefault());
+})();
+</script>
+</body>
+</html>
