@@ -145,13 +145,13 @@ button{font-family:inherit}
 }
 .tbtn:hover{border-color:var(--accent)}
 .tbtn.primary{background:var(--accent);color:#fff;border-color:transparent;width:44px;height:44px}
-#btn-live{
+.live-btn{
   display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:999px;border:1px solid var(--border);
   background:var(--card);color:var(--muted);cursor:pointer;font-weight:800;font-size:11.5px;letter-spacing:.6px;
 }
-#btn-live .dot{width:8px;height:8px;border-radius:50%;background:#6b7a99}
-#btn-live.active{border-color:#22c55e;color:#4ade80}
-#btn-live.active .dot{background:#4ade80;animation:pulse 1.6s infinite}
+.live-btn .dot{width:8px;height:8px;border-radius:50%;background:#6b7a99}
+.live-btn.active{border-color:#22c55e;color:#4ade80}
+.live-btn.active .dot{background:#4ade80;animation:pulse 1.6s infinite}
 @keyframes pulse{50%{opacity:.3}}
 #speeds{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 #speeds button{padding:8px 10px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700}
@@ -174,6 +174,7 @@ button{font-family:inherit}
 .legend-bar{height:10px;border-radius:5px;margin:9px 0 4px;background:linear-gradient(90deg,#0b1026 0%,#1e2a5a 32%,#b45309 47%,#fbbf24 53%,#7dd3fc 63%,#38bdf8 100%)}
 .legend-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:10.5px}
 #legend ul{margin:9px 0 0;padding:0;list-style:none;display:grid;gap:3px;color:var(--muted);font-size:11.5px}
+#legend[hidden],#timebar[hidden]{display:none}
 #toast{
   position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(16px);opacity:0;z-index:20;
   background:rgba(13,20,36,.95);color:#fff;border:1px solid rgba(255,255,255,.18);padding:10px 16px;
@@ -221,15 +222,18 @@ kbd{background:var(--card);border:1px solid var(--border);border-bottom-width:2p
   </div>
   <button id="sim-chip" class="chip" hidden title="Click to return to live time"></button>
   <div class="spacer"></div>
+  <button id="btn-live-top" class="live-btn active" aria-pressed="true" title="Return to current date & time (L)"><span class="dot"></span>LIVE</button>
   <button id="btn-sun"    class="icon-btn" aria-pressed="true"  title="Toggle Sun indicator"        aria-label="Toggle Sun indicator">☀️</button>
   <button id="btn-rotate" class="icon-btn" aria-pressed="true"  title="Toggle auto-rotate"          aria-label="Toggle auto-rotate">⟳</button>
+  <button id="btn-legend" class="icon-btn" aria-pressed="false" aria-expanded="false" title="Toggle legend" aria-label="Toggle legend">🗺️</button>
+  <button id="btn-timebar" class="icon-btn" aria-pressed="false" aria-expanded="false" title="Toggle time controls" aria-label="Toggle time controls">⏱️</button>
   <button id="btn-theme"  class="icon-btn"                      title="Toggle light / dark UI"      aria-label="Toggle light or dark interface">🌙</button>
   <button id="btn-help"   class="icon-btn"                      title="Help & keyboard shortcuts"   aria-label="Help and keyboard shortcuts">?</button>
-  <button id="btn-panel"  class="icon-btn" aria-pressed="true" aria-expanded="true" title="Toggle city panel" aria-label="Toggle city panel">🕐</button>
+  <button id="btn-panel"  class="icon-btn" aria-pressed="false" aria-expanded="false" title="Toggle city panel" aria-label="Toggle city panel">🕐</button>
 </header>
 
 <!-- ================= CITY PANEL ================= -->
-<aside id="panel" aria-label="Saved city clocks">
+<aside id="panel" class="collapsed" aria-label="Saved city clocks" aria-hidden="true" inert>
   <div class="panel-head">
     <h1 class="panel-title">World Clocks</h1>
     <span id="city-count"></span>
@@ -251,11 +255,11 @@ kbd{background:var(--card);border:1px solid var(--border);border-bottom-width:2p
 </aside>
 
 <!-- ================= TIME CONTROLS ================= -->
-<div id="timebar" role="group" aria-label="Time controls">
+<div id="timebar" role="group" aria-label="Time controls" hidden>
   <button id="btn-prev" class="tbtn" title="Previous hour  [  (or [)" aria-label="Previous hour"></button>
   <button id="btn-play" class="tbtn primary" title="Play / pause  (Space)" aria-label="Play or pause time"></button>
   <button id="btn-next" class="tbtn" title="Next hour  ]  (or ])" aria-label="Next hour"></button>
-  <button id="btn-live" class="active" aria-pressed="true" title="Return to current date & time (L)"><span class="dot"></span>LIVE</button>
+  <button id="btn-live" class="live-btn active" aria-pressed="true" title="Return to current date & time (L)"><span class="dot"></span>LIVE</button>
   <div id="speeds" role="group" aria-label="Playback speed">
     <button data-speed="1"     title="Real time">1×</button>
     <button data-speed="60" class="active" title="1 second = 1 minute">60×</button>
@@ -270,7 +274,7 @@ kbd{background:var(--card);border:1px solid var(--border);border-bottom-width:2p
 </div>
 
 <!-- ================= LEGEND ================= -->
-<details id="legend" open>
+<details id="legend" open hidden>
   <summary>Legend</summary>
   <div class="legend-bar" aria-hidden="true"></div>
   <div class="legend-scale"><span>Night</span><span>Twilight</span><span>Day</span></div>
@@ -936,8 +940,10 @@ const ICO_NEXT  = '<svg width="16" height="16" viewBox="0 0 16 16" fill="current
 function updatePlayUI(){
   $('btn-play').innerHTML = state.playing ? ICO_PAUSE : ICO_PLAY;
   $('btn-play').setAttribute('aria-label', state.playing ? 'Pause time' : 'Play time');
-  $('btn-live').classList.toggle('active', state.live);
-  $('btn-live').setAttribute('aria-pressed', state.live);
+  for (const id of ['btn-live', 'btn-live-top']){
+    $(id).classList.toggle('active', state.live);
+    $(id).setAttribute('aria-pressed', state.live);
+  }
   document.querySelectorAll('#speeds button').forEach(b =>
     b.classList.toggle('active', +b.dataset.speed === state.speed && (state.playing || !state.live)));
 }
@@ -957,6 +963,7 @@ function wireTimeControls(){
   $('btn-prev').addEventListener('click', () => stepHour(-1));
   $('btn-next').addEventListener('click', () => stepHour( 1));
   $('btn-live').addEventListener('click', goLive);
+  $('btn-live-top').addEventListener('click', goLive);
   $('sim-chip').addEventListener('click', goLive);
   document.querySelectorAll('#speeds button').forEach(b => b.addEventListener('click', () => {
     state.speed = +b.dataset.speed;
@@ -1081,6 +1088,20 @@ function wireTopbar(){
   });
   $('btn-rotate').addEventListener('click', () => { state.autoRotate = !state.autoRotate; syncRotateBtn(); });
   $('btn-theme').addEventListener('click', () => applyTheme(state.theme === 'dark' ? 'light' : 'dark'));
+  $('btn-legend').addEventListener('click', () => {
+    const visible = $('legend').hidden;
+    $('legend').hidden = !visible;
+    $('btn-legend').setAttribute('aria-pressed', visible);
+    $('btn-legend').setAttribute('aria-expanded', visible);
+    layoutChrome();
+  });
+  $('btn-timebar').addEventListener('click', () => {
+    const visible = $('timebar').hidden;
+    $('timebar').hidden = !visible;
+    $('btn-timebar').setAttribute('aria-pressed', visible);
+    $('btn-timebar').setAttribute('aria-expanded', visible);
+    layoutChrome();
+  });
   $('btn-help').addEventListener('click', openHelp);
   $('help-close').addEventListener('click', closeHelp);
   $('help').addEventListener('click', e => { if (e.target === $('help')) closeHelp(); });
@@ -1093,6 +1114,8 @@ function wireTopbar(){
   });
   const togglePanel = () => {
     const collapsed = $('panel').classList.toggle('collapsed');
+    $('panel').inert = collapsed;
+    $('panel').setAttribute('aria-hidden', collapsed);
     $('btn-panel').setAttribute('aria-pressed', !collapsed);
     $('btn-panel').setAttribute('aria-expanded', !collapsed);
   };
