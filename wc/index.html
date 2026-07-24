@@ -413,9 +413,8 @@ const utcDateFmt = new Intl.DateTimeFormat('en-GB', { timeZone:'UTC', weekday:'s
    3. CITY DATA — defaults + offline fallback database [name,country,lat,lon,tz]
    ===================================================================== */
 const DEFAULTS = [
-  { name:'London',   country:'United Kingdom', lat:51.5072, lon:-0.1276,  tz:'Europe/London'   },
-  { name:'Manila',   country:'Philippines',    lat:14.5995, lon:120.9842, tz:'Asia/Manila'     },
-  { name:'New York', country:'United States',  lat:40.7128, lon:-74.0060, tz:'America/New_York'},
+  { name:'Jeff', country:'United Kingdom', lat:54.5162, lon:-6.0580,  tz:'Europe/London' },
+  { name:'Francine',  country:'Philippines',    lat:14.5995, lon:120.9842, tz:'Asia/Manila'   },
 ];
 const CITY_DB = [
 ["New York","United States",40.7128,-74.0060,"America/New_York"],["Los Angeles","United States",34.0522,-118.2437,"America/Los_Angeles"],
@@ -525,13 +524,13 @@ function makeCity(src){
 }
 function save(){
   try{
-    localStorage.setItem('terra.cities.v1', JSON.stringify(
+    localStorage.setItem('terra.cities.v2', JSON.stringify(
       state.cities.map(c => ({ name:c.name, country:c.country, lat:c.lat, lon:c.lon, tz:c.tz, visible:c.visible }))));
   }catch{}
 }
 function loadState(){
   try{
-    const raw = JSON.parse(localStorage.getItem('terra.cities.v1') || 'null');
+    const raw = JSON.parse(localStorage.getItem('terra.cities.v2') || 'null');
     if (Array.isArray(raw) && raw.length){
       state.cities = raw.filter(c => c && c.name && isFinite(+c.lat) && isFinite(+c.lon)).map(makeCity);
       if (state.cities.length) return;
