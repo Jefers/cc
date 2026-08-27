@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emotional Stairs – Upstairs & Downstairs</title>
+<style>
+  :root {
+    --ink: #080717;
+    --ink-2: #100b2d;
+    --paper: #f8f3ff;
+    --white: #fffaff;
+    --muted: #bcb3d2;
+    --line: rgba(255,255,255,.16);
+
+    --pink: #ff4fd8;
+    --hotpink: #ff2d95;
+    --cyan: #20e8ff;
+    --blue: #4f73ff;
+    --violet: #9d68ff;
+    --lime: #b8ff3d;
+    --yellow: #ffe84a;
+    --orange: #ff8a3d;
+    --coral: #ff596e;
+
+    --up: var(--lime);
+    --down: var(--pink);
+
+    --shadow-hard: 7px 7px 0 rgba(0,0,0,.55);
+    --shadow-neon: 0 0 28px rgba(32,232,255,.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    color: var(--white);
+    line-height: 1.5;
+    background:
+      radial-gradient(circle at 12% 7%, rgba(255,79,216,.26), transparent 26rem),
+      radial-gradient(circle at 90% 12%, rgba(32,232,255,.20), transparent 30rem),
+      radial-gradient(circle at 77% 82%, rgba(157,104,255,.18), transparent 28rem),
+      linear-gradient(145deg, #070512 0%, #0b0920 42%, #060816 100%);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    pointer-events: none;
+    opacity: .42;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 38px 38px;
+    transform: perspective(600px) rotateX(55deg) scale(1.55) translateY(14%);
+    transform-origin: center bottom;
+    mask-image: linear-gradient(to top, #000 20%, transparent 78%);
+  }
+
+  body::after {
+    content: "東京・感情・夜";
+    position: fixed;
+    right: -28px;
+    top: 26%;
+    z-index: -2;
+    writing-mode: vertical-rl;
+    color: rgba(255,255,255,.025);
+    font-size: clamp(4rem, 10vw, 8rem);
+    font-weight: 900;
+    letter-spacing: .08em;
+    pointer-events: none;
+  }
+
+  button, .emotion-card { -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; }
+
+  .container {
+    position: relative;
+    width: min(100%, 940px);
+    margin: 0 auto;
+    padding: 28px 20px 58px;
+  }
+
+  .container::before {
+    content: "";
+    position: absolute;
+    top: 112px;
+    left: -58px;
+    width: 118px;
+    height: 118px;
+    border: 2px solid rgba(255,232,74,.45);
+    border-radius: 50%;
+    box-shadow: 0 0 0 12px rgba(255,232,74,.035), 0 0 34px rgba(255,232,74,.12);
+    pointer-events: none;
+  }
+
+  /* ---------- HERO ---------- */
+
+  header {
+    position: relative;
+    text-align: left;
+    margin: 0 0 26px;
+    padding: 8px 4px 0;
+  }
+
+  .signal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(8,7,23,.72);
+    color: var(--yellow);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: .66rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0 rgba(255,79,216,.34);
+  }
+
+  .signal::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pink);
+    box-shadow: 0 0 14px var(--pink);
+  }
+
+  .signal.jp {
+    color: var(--cyan);
+    box-shadow: 3px 3px 0 rgba(32,232,255,.24);
+  }
+
+  .signal.jp::before { background: var(--cyan); box-shadow: 0 0 14px var(--cyan); }
+
+  h1 {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    margin: 0;
+    line-height: .82;
+    letter-spacing: -.075em;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+
+  h1 .word-emotional {
+    color: var(--white);
+    font-size: clamp(2rem, 8.3vw, 4.5rem);
+    text-shadow: 4px 4px 0 rgba(79,115,255,.62);
+  }
+
+  h1 .word-stairs {
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+    color: var(--ink);
+    font-size: clamp(3.5rem, 14vw, 7.5rem);
+    -webkit-text-stroke: 1px rgba(255,255,255,.28);
+    background: linear-gradient(90deg, var(--pink), var(--orange) 26%, var(--yellow) 51%, var(--lime) 71%, var(--cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(5px 5px 0 rgba(157,104,255,.36));
+  }
+
+  h1::after {
+    content: "UP ↑ / DOWN ↓";
+    position: absolute;
+    right: -115px;
+    bottom: 10px;
+    padding: 5px 8px;
+    transform: rotate(-6deg);
+    border: 2px solid var(--white);
+    background: var(--hotpink);
+    color: white;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .68rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .subtitle {
+    max-width: 630px;
+    margin-top: 18px;
+    color: #c9c1da;
+    font-size: clamp(.95rem, 2.6vw, 1.05rem);
+    line-height: 1.65;
+  }
+
+  .subtitle strong { color: var(--white); }
+
+  /* ---------- SCREENS ---------- */
+
+  .screen { display: none; }
+
+  .screen.active {
+    display: block;
+    animation: screenPop .42s cubic-bezier(.18,.86,.32,1.18);
+  }
+
+  @keyframes screenPop {
+    from { opacity: 0; transform: translateY(14px) scale(.985); filter: saturate(.6); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
+  }
+
+  /* ---------- START POSTER ---------- */
+
+  #screen-start {
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+    padding: clamp(28px, 6vw, 50px);
+    border: 2px solid rgba(255,255,255,.72);
+    border-radius: 26px;
+    background:
+      linear-gradient(135deg, rgba(255,79,216,.10), transparent 34%),
+      linear-gradient(315deg, rgba(32,232,255,.10), transparent 36%),
+      rgba(12,9,31,.88);
+    box-shadow: 11px 11px 0 rgba(79,115,255,.34), -6px -6px 0 rgba(255,79,216,.15), 0 26px 70px rgba(0,0,0,.34);
+  }
+
+  #screen-start::before {
+    content: "MOOD CHECK";
+    position: absolute;
+    top: 18px;
+    right: -24px;
+    padding: 7px 34px;
+    transform: rotate(9deg);
+    background: var(--yellow);
+    color: #171014;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .7rem;
+    font-weight: 950;
+    letter-spacing: .13em;
+    box-shadow: 4px 4px 0 rgba(0,0,0,.6);
+  }
+
+  #screen-start::after {
+    content: "✦";
+    position: absolute;
+    left: 24px;
+    bottom: 20px;
+    color: var(--cyan);
+    font-size: 3.4rem;
+    line-height: 1;
+    text-shadow: 0 0 24px rgba(32,232,255,.7);
+    transform: rotate(14deg);
+  }
+
+  #screen-start > p:first-child {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 44px 0 12px !important;
+    color: var(--white);
+    font-size: clamp(1.6rem, 6vw, 2.7rem) !important;
+    line-height: 1.02;
+    letter-spacing: -.055em;
+    font-weight: 900;
+    text-align: left !important;
+  }
+
+  #screen-start > p:first-child::before {
+    content: "01 / CHECK-IN";
+    display: block;
+    margin-bottom: 8px;
+    color: var(--cyan);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .68rem;
+    letter-spacing: .16em;
+    font-weight: 900;
+  }
+
+  #screen-start > p:last-child {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+    margin: 14px 0 0 !important;
+    color: #bdb4cf !important;
+    font-size: .94rem;
+    line-height: 1.7;
+    text-align: left !important;
+  }
+
+  .big-buttons {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 18px;
+    width: min(100%, 680px);
+    margin: 34px 0 30px;
+  }
+
+  .btn {
+    position: relative;
+    min-width: 0;
+    min-height: 52px;
+    border: 2px solid rgba(255,255,255,.62);
+    border-radius: 13px;
+    padding: 13px 18px;
+    background: #171229;
+    color: var(--white);
+    box-shadow: 5px 5px 0 rgba(0,0,0,.5);
+    cursor: pointer;
+    font-size: .94rem;
+    font-weight: 800;
+    letter-spacing: -.015em;
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  }
+
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 rgba(0,0,0,.62); filter: brightness(1.05); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,.62); }
+
+  .big-buttons .btn {
+    min-height: 156px;
+    overflow: hidden;
+    padding: 24px 22px;
+    border-width: 2px;
+    border-radius: 20px;
+    text-align: left;
+    font-size: clamp(1.45rem, 4.5vw, 2rem);
+    font-weight: 950;
+    letter-spacing: -.05em;
+    text-transform: uppercase;
+  }
+
+  .big-buttons .btn::before {
+    display: block;
+    margin-bottom: 28px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .64rem;
+    letter-spacing: .16em;
+    font-weight: 900;
+  }
+
+  .big-buttons .btn::after {
+    position: absolute;
+    right: 18px;
+    bottom: 8px;
+    font-size: 4.8rem;
+    font-weight: 900;
+    line-height: 1;
+    opacity: .35;
+  }
+
+  .big-buttons .btn-up {
+    color: #101706;
+    border-color: #eaffbc;
+    background:
+      radial-gradient(circle at 82% 20%, rgba(255,255,255,.34), transparent 7rem),
+      linear-gradient(135deg, var(--lime), #57f3ae 62%, var(--cyan));
+    box-shadow: 8px 8px 0 #173ff1;
+    transform: rotate(-1deg);
+  }
+
+  .big-buttons .btn-up::before { content: "GO UPSTAIRS / 上へ"; color: #1b3d25; }
+  .big-buttons .btn-up::after { content: "↗"; color: #153a45; }
+
+  .big-buttons .btn-down {
+    color: #fff;
+    border-color: #ffc7f0;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(255,232,74,.24), transparent 7rem),
+      linear-gradient(135deg, #ff315e, var(--pink) 55%, var(--violet));
+    box-shadow: 8px 8px 0 #00bcd4;
+    transform: rotate(1deg);
+  }
+
+  .big-buttons .btn-down::before { content: "GO DOWNSTAIRS / 下へ"; color: #ffe6fa; }
+  .big-buttons .btn-down::after { content: "↘"; color: #fff; }
+
+  .big-buttons .btn-up:hover, .big-buttons .btn-down:hover { transform: rotate(0deg) translate(-3px,-3px); }
+
+  .btn-secondary {
+    color: #ddd6ea;
+    border-color: rgba(255,255,255,.26);
+    background: rgba(18,14,39,.9);
+    box-shadow: 4px 4px 0 rgba(79,115,255,.28);
+    font-size: .88rem;
+  }
+
+  /* ---------- LIST HEADINGS ---------- */
+
+  #screen-down-list, #screen-up-list { padding-top: 10px; }
+
+  #screen-down-list > h2,
+  #screen-up-list > h2,
+  .path-card h2 {
+    color: var(--white) !important;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    line-height: 1;
+    letter-spacing: -.055em;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+
+  #screen-down-list > h2,
+  #screen-up-list > h2 {
+    width: fit-content;
+    padding: 7px 12px 9px;
+    border: 2px solid #fff;
+    box-shadow: 6px 6px 0 rgba(0,0,0,.55);
+    transform: rotate(-1deg);
+  }
+
+  #screen-down-list > h2 { background: var(--hotpink); }
+  #screen-up-list > h2 { background: #2859ff; color: #fff !important; }
+
+  #screen-down-list > p,
+  #screen-up-list > p {
+    max-width: 600px;
+    color: #c0b7d0;
+    line-height: 1.6;
+    text-align: left !important;
+  }
+
+  /* ---------- EMOTION CARDS ---------- */
+
+  .emotion-grid {
+    display: grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap: 13px;
+    margin: 26px 0 30px;
+  }
+
+  .emotion-card {
+    --card-accent: var(--cyan);
+    position: relative;
+    min-height: 128px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 13px;
+    padding: 15px;
+    border: 2px solid rgba(255,255,255,.58);
+    border-radius: 14px;
+    background:
+      linear-gradient(155deg, color-mix(in srgb, var(--card-accent) 19%, #171129), #100c25 62%);
+    box-shadow: 5px 5px 0 color-mix(in srgb, var(--card-accent) 62%, #000);
+    cursor: pointer;
+    text-align: left;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+
+  .emotion-card:nth-child(3n+1) { transform: rotate(-.6deg); }
+  .emotion-card:nth-child(3n+2) { transform: rotate(.55deg); }
+
+  .emotion-card::before {
+    content: "";
+    position: absolute;
+    top: -24px;
+    right: -20px;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--card-accent) 0 3px, transparent 4px) 0 0 / 14px 14px;
+    opacity: .28;
+  }
+
+  .emotion-card::after {
+    content: "→";
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    color: var(--card-accent);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.15rem;
+    font-weight: 950;
+  }
+
+  .emotion-card:hover {
+    transform: translate(-3px,-4px) rotate(0deg);
+    border-color: #fff;
+    box-shadow: 9px 10px 0 color-mix(in srgb, var(--card-accent) 66%, #000), 0 0 28px color-mix(in srgb, var(--card-accent) 14%, transparent);
+  }
+
+  .emotion-card .emoji {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin: 0;
+    border: 2px solid rgba(255,255,255,.7);
+    border-radius: 12px;
+    background: rgba(255,255,255,.10);
+    font-size: 1.75rem;
+    line-height: 1;
+    box-shadow: 3px 3px 0 rgba(0,0,0,.35);
+  }
+
+  .emotion-card .label {
+    position: relative;
+    z-index: 1;
+    max-width: calc(100% - 18px);
+    color: var(--white);
+    font-size: .91rem;
+    line-height: 1.16;
+    font-weight: 850;
+    letter-spacing: -.025em;
+  }
+
+  /* ---------- PATH POSTER ---------- */
+
+  .path-card {
+    position: relative;
+    overflow: hidden;
+    margin: 12px 0 22px;
+    padding: clamp(25px,5vw,38px);
+    border: 2px solid rgba(255,255,255,.64);
+    border-radius: 24px;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.045), transparent 48%),
+      rgba(13,10,32,.91);
+    box-shadow: 10px 10px 0 rgba(79,115,255,.25), 0 28px 72px rgba(0,0,0,.34);
+  }
+
+  .path-card::before {
+    content: "EMOTION CHAIN // 感情経路";
+    display: inline-block;
+    margin-bottom: 19px;
+    padding: 5px 8px;
+    border: 1px solid rgba(255,255,255,.4);
+    background: #11102b;
+    color: var(--yellow);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .62rem;
+    font-weight: 900;
+    letter-spacing: .13em;
+  }
+
+  .path-card::after {
+    content: "";
+    position: absolute;
+    top: -85px;
+    right: -75px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--theme-accent) 0 3px, transparent 4px) 0 0 / 16px 16px;
+    opacity: .15;
+    pointer-events: none;
+  }
+
+  .down-theme { --theme-accent: var(--pink); --theme-ink: #ffedf9; }
+  .up-theme { --theme-accent: var(--lime); --theme-ink: #efffd3; }
+
+  .path-card > h2 {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 0 10px !important;
+    text-align: left !important;
+    text-shadow: 3px 3px 0 color-mix(in srgb, var(--theme-accent) 35%, #000);
+  }
+
+  #recovery-intro {
+    position: relative;
+    z-index: 1;
+    max-width: 650px;
+    margin: 0 0 21px !important;
+    color: #c6bdd5;
+    text-align: left !important;
+    line-height: 1.6;
+  }
+
+  /* ---------- ACTUAL STAIR FEEL ---------- */
+
+  .stairs {
+    counter-reset: moodstep;
+    position: relative;
+    z-index: 1;
+    max-width: 690px;
+    margin: 28px 0 0;
+  }
+
+  .step {
+    counter-increment: moodstep;
+    position: relative;
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    align-items: center;
+    gap: 13px;
+    min-height: 78px;
+    width: calc(100% - 66px);
+    margin: 0 0 11px;
+    padding: 12px 17px 12px 10px;
+    border: 2px solid rgba(255,255,255,.48) !important;
+    border-radius: 13px;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--theme-accent) 14%, #18112f), #100d25 62%) !important;
+    box-shadow: 6px 6px 0 color-mix(in srgb, var(--theme-accent) 35%, #000);
+    opacity: 0;
+    transform: translateY(12px);
+    animation: stairIn .44s cubic-bezier(.2,.85,.25,1.08) forwards;
+  }
+
+  .up-theme .step:nth-child(1) { margin-left: 0; }
+  .up-theme .step:nth-child(2) { margin-left: 30px; }
+  .up-theme .step:nth-child(3) { margin-left: 60px; }
+  .up-theme .step:nth-child(4) { margin-left: 90px; }
+
+  .down-theme .step:nth-child(1) { margin-left: 90px; }
+  .down-theme .step:nth-child(2) { margin-left: 60px; }
+  .down-theme .step:nth-child(3) { margin-left: 30px; }
+  .down-theme .step:nth-child(4) { margin-left: 0; }
+
+  .step:nth-child(1) { animation-delay: .08s; }
+  .step:nth-child(2) { animation-delay: .18s; }
+  .step:nth-child(3) { animation-delay: .28s; }
+  .step:nth-child(4) { animation-delay: .38s; }
+
+  @keyframes stairIn { to { opacity: 1; transform: translateY(0); } }
+
+  .step::before {
+    content: "0" counter(moodstep);
+    position: absolute;
+    top: -9px;
+    right: 10px;
+    padding: 2px 6px;
+    border: 1px solid rgba(255,255,255,.45);
+    background: var(--theme-accent);
+    color: #0d0a18;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .58rem;
+    font-weight: 950;
+    letter-spacing: .08em;
+    box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+  }
+
+  .step .emoji {
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    min-width: 43px;
+    margin: 0;
+    border: 2px solid rgba(255,255,255,.55);
+    border-radius: 11px;
+    background: rgba(255,255,255,.09);
+    font-size: 1.45rem;
+    line-height: 1;
+    box-shadow: 3px 3px 0 color-mix(in srgb, var(--theme-accent) 32%, #000);
+  }
+
+  .step .text {
+    color: #eee9f7;
+    font-size: clamp(.91rem,2.6vw,1rem);
+    line-height: 1.48;
+  }
+
+  /* ---------- OUTCOME ---------- */
+
+  .outcome {
+    position: relative;
+    z-index: 1;
+    max-width: 690px;
+    margin: 24px 0 0;
+    padding: 18px 20px;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    text-align: left;
+    font-size: .97rem;
+    line-height: 1.55;
+    font-weight: 800;
+    transform: rotate(-.45deg);
+    box-shadow: 7px 7px 0 rgba(0,0,0,.52);
+  }
+
+  .down-theme .outcome {
+    color: #fff !important;
+    background: linear-gradient(100deg, #ff315e, var(--pink), var(--violet)) !important;
+  }
+
+  .up-theme .outcome {
+    color: #131806 !important;
+    background: linear-gradient(100deg, var(--lime), #6ff1a9, var(--cyan)) !important;
+  }
+
+  .outcome::before {
+    display: block;
+    margin-bottom: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .61rem;
+    font-weight: 950;
+    letter-spacing: .14em;
+    opacity: .78;
+  }
+
+  .down-theme .outcome::before { content: "⚡ POSSIBLE OUTCOME"; }
+  .up-theme .outcome::before { content: "✦ UPWARD EFFECT"; }
+
+  .note {
+    position: relative;
+    z-index: 1;
+    max-width: 690px;
+    margin: 16px 0 0;
+    padding-left: 13px;
+    border-left: 3px solid var(--theme-accent);
+    color: #9f95b5 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .76rem;
+    line-height: 1.6;
+    font-style: normal;
+  }
+
+  /* ---------- NAV ---------- */
+
+  .nav-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .nav-buttons .btn { min-height: 48px; }
+
+  footer {
+    max-width: 670px;
+    margin: 46px 0 0;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(255,255,255,.18);
+    color: #766d8d;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .68rem;
+    line-height: 1.7;
+    text-align: left;
+    letter-spacing: .03em;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 4px;
+  }
+
+  /* ---------- MOBILE ---------- */
+
+  @media (max-width: 780px) {
+    .emotion-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    h1::after { right: -78px; bottom: -2px; }
+  }
+
+  @media (max-width: 620px) {
+    .container { padding: 19px 12px 38px; }
+    .container::before { display: none; }
+    .signal-row { align-items: flex-start; }
+    .signal { font-size: .56rem; padding: 5px 7px; }
+    h1 .word-emotional { font-size: clamp(2rem, 13vw, 3.8rem); }
+    h1 .word-stairs { font-size: clamp(3.7rem, 21vw, 6rem); }
+    h1::after { display: none; }
+    .subtitle { max-width: 390px; }
+
+    #screen-start {
+      min-height: 0;
+      padding: 24px 15px 30px;
+      border-radius: 19px;
+      box-shadow: 7px 7px 0 rgba(79,115,255,.3);
+    }
+
+    #screen-start::before { top: 12px; right: -34px; font-size: .58rem; }
+    #screen-start > p:first-child { margin-top: 42px !important; }
+
+    .big-buttons { grid-template-columns: 1fr; gap: 15px; margin: 28px 0 27px; }
+    .big-buttons .btn { min-height: 124px; }
+    .big-buttons .btn::before { margin-bottom: 16px; }
+
+    .emotion-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .emotion-card { min-height: 116px; padding: 13px; }
+
+    .path-card { padding: 22px 13px 24px; border-radius: 19px; box-shadow: 7px 7px 0 rgba(79,115,255,.25); }
+    .path-card > h2 { font-size: clamp(1.65rem,9vw,2.4rem); }
+
+    .step { width: calc(100% - 20px); min-height: 72px; grid-template-columns: 49px 1fr; gap: 9px; padding-right: 11px; }
+    .up-theme .step:nth-child(1) { margin-left: 0; }
+    .up-theme .step:nth-child(2) { margin-left: 10px; }
+    .up-theme .step:nth-child(3) { margin-left: 20px; }
+    .up-theme .step:nth-child(4) { margin-left: 20px; }
+    .down-theme .step:nth-child(1) { margin-left: 20px; }
+    .down-theme .step:nth-child(2) { margin-left: 10px; }
+    .down-theme .step:nth-child(3) { margin-left: 0; }
+    .down-theme .step:nth-child(4) { margin-left: 0; }
+
+    .nav-buttons { display: grid; grid-template-columns: 1fr; width: 100%; }
+    .nav-buttons .btn { width: 100%; }
+    footer { margin-top: 36px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="signal-row">
+      <span class="signal">Tokyo Mood Map // 01</span>
+      <span class="signal jp">感情の階段</span>
+    </div>
+    <h1 aria-label="Emotional Stairs">
+      <span class="word-emotional">Emotional</span>
+      <span class="word-stairs">Stairs</span>
+    </h1>
+    <p class="subtitle">Upstairs & Downstairs — follow the chain, spot the pattern, and see where a feeling might take you.</p>
+  </header>
+
+  <!-- SCREEN 1: Choice -->
+  <div id="screen-start" class="screen active">
+    <p style="text-align:center; font-size:1.2rem; margin:30px 0 10px;">
+      How are you feeling right now?
+    </p>
+    <div class="big-buttons">
+      <button class="btn btn-up" onclick="showUp()"> Up 😊</button>
+      <button class="btn btn-down" onclick="showDown()"> Down 😔</button>
+    </div>
+    <p style="text-align:center; color:#777; margin-top:20px;">
+      Emotions often move in chains.<br>Let’s explore where they can lead.
+    </p>
+  </div>
+
+  <!-- SCREEN 2: Down list -->
+  <div id="screen-down-list" class="screen">
+    <h2 style="text-align:center; color:var(--accent-down);">Downstairs Paths</h2>
+    <p style="text-align:center; margin:12px 0 20px;">Choose how you’re feeling (or closest):</p>
+    <div class="emotion-grid" id="down-grid" role="list" aria-label="Downstairs feelings"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goStart()">← Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Down path reveal -->
+  <div id="screen-down-path" class="screen">
+    <div class="path-card down-theme">
+      <h2 id="down-title" style="text-align:center; margin-bottom:8px;"></h2>
+      <div class="stairs" id="down-stairs"></div>
+      <div class="outcome" id="down-outcome"></div>
+      <p class="note">This is one common pattern — not a fixed destiny. Awareness is the first step out.</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-up" onclick="showRecovery()"> Climb back up </button>
+      <button class="btn btn-secondary" onclick="showDown()">Other feelings</button>
+      <button class="btn btn-secondary" onclick="goStart()">Start over</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: Recovery (way up) -->
+  <div id="screen-recovery" class="screen">
+    <div class="path-card up-theme">
+      <h2 style="text-align:center; color:var(--accent-up);"> A way back upstairs</h2>
+      <p style="text-align:center; margin-bottom:16px;" id="recovery-intro"></p>
+      <div class="stairs" id="recovery-stairs"></div>
+      <div class="outcome" id="recovery-outcome"></div>
+      <p class="note">Small steps repeated create real change. Be patient and kind with yourself.</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-up" onclick="showUp()">Explore more Upstairs paths</button>
+      <button class="btn btn-secondary" onclick="goStart()">Start over</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: Up list -->
+  <div id="screen-up-list" class="screen">
+    <h2 style="text-align:center; color:var(--accent-up);">Upstairs Paths</h2>
+    <p style="text-align:center; margin:12px 0 20px;">Choose a starting feeling (or just explore):</p>
+    <div class="emotion-grid" id="up-grid" role="list" aria-label="Upstairs feelings"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goStart()">← Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: Up path reveal -->
+  <div id="screen-up-path" class="screen">
+    <div class="path-card up-theme">
+      <h2 id="up-title" style="text-align:center; margin-bottom:8px;"></h2>
+      <div class="stairs" id="up-stairs"></div>
+      <div class="outcome" id="up-outcome"></div>
+      <p class="note">Positive chains also compound. Celebrate small wins along the way!</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="showUp()">More Upstairs paths</button>
+      <button class="btn btn-secondary" onclick="goStart()">Start over</button>
+    </div>
+  </div>
+
+  <footer>
+    EMOTIONAL STAIRS // REFLECTION + EDUCATION // NOT A SUBSTITUTE FOR PROFESSIONAL SUPPORT
+  </footer>
+</div>
+
+<script>
+// ========== DATA ==========
+const downPaths = [
+  {
+    id: "desperate",
+    label: "Desperate",
+    emoji: "😣",
+    steps: [
+      {emoji:"😣", text:"People who feel desperate → get frightened"},
+      {emoji:"😨", text:"People who are frightened → get angry"},
+      {emoji:"😠", text:"People who are angry → make rushed decisions"}
+    ],
+    outcome: "This can lead to regret, conflict, or bigger problems.",
+    recovery: {
+      intro: "From desperation, a gentler climb is possible:",
+      steps: [
+        {emoji:"🛑", text:"Pause and name the fear out loud or on paper"},
+        {emoji:"🤲", text:"Ask for one small piece of support or information"},
+        {emoji:"🌱", text:"Take one tiny controllable action"}
+      ],
+      outcome: "Small grounded steps rebuild a sense of agency."
+    }
+  },
+  {
+    id: "lonely",
+    label: "Lonely",
+    emoji: "🥺",
+    steps: [
+      {emoji:"🥺", text:"People who feel lonely → idealize connection"},
+      {emoji:"💭", text:"People who idealize connection → ignore red flags"},
+      {emoji:"💔", text:"People who ignore red flags → stay in unhealthy dynamics"}
+    ],
+    outcome: "This can deepen isolation and emotional pain.",
+    recovery: {
+      intro: "A healthier way toward connection:",
+      steps: [
+        {emoji:"🪞", text:"Start with self-companionship (kind self-talk)"},
+        {emoji:"👋", text:"Reach out for low-stakes, low-pressure contact"},
+        {emoji:"🛡️", text:"Practice noticing green flags and boundaries"}
+      ],
+      outcome: "Real connection grows from safety and authenticity."
+    }
+  },
+  {
+    id: "anxious",
+    label: "Anxious",
+    emoji: "😰",
+    steps: [
+      {emoji:"😰", text:"People who feel anxious → seek excessive control"},
+      {emoji:"🎛️", text:"People who over-control → create tension around them"},
+      {emoji:"🌀", text:"Tension often increases the original anxiety"}
+    ],
+    outcome: "A tightening spiral of worry and control.",
+    recovery: {
+      intro: "Loosen the grip gently:",
+      steps: [
+        {emoji:"🌬️", text:"Practice 4-7-8 or box breathing for 2 minutes"},
+        {emoji:"📝", text:"Write down what is actually within your control today"},
+        {emoji:"🎯", text:"Focus on one small next right action"}
+      ],
+      outcome: "Calm and clarity return step by step."
+    }
+  },
+  {
+    id: "ashamed",
+    label: "Ashamed",
+    emoji: "😳",
+    steps: [
+      {emoji:"😳", text:"People who feel ashamed → hide or withdraw"},
+      {emoji:"🫥", text:"People who hide → miss chances for repair or support"},
+      {emoji:"📉", text:"Isolation often intensifies the shame"}
+    ],
+    outcome: "Shame thrives in secrecy.",
+    recovery: {
+      intro: "Shame loses power when shared safely:",
+      steps: [
+        {emoji:"🗣️", text:"Tell one trusted person a small piece of the story"},
+        {emoji:"❤️", text:"Practice self-compassion phrases (“This is hard, and I’m human”)"},
+        {emoji:"🌅", text:"Take one action aligned with your values"}
+      ],
+      outcome: "Connection and self-kindness dissolve shame."
+    }
+  },
+  {
+    id: "resentful",
+    label: "Resentful",
+    emoji: "😒",
+    steps: [
+      {emoji:"😒", text:"People who feel resentful → become cynical"},
+      {emoji:"🙄", text:"People who are cynical → stop taking constructive risks"},
+      {emoji:"🚪", text:"They miss opportunities for change and joy"}
+    ],
+    outcome: "Resentment quietly closes doors.",
+    recovery: {
+      intro: "Release the weight:",
+      steps: [
+        {emoji:"✍️", text:"Write an unsent letter to express the feelings"},
+        {emoji:"🔓", text:"Identify one boundary or request you can make"},
+        {emoji:"🌿", text:"Redirect energy into something you can build"}
+      ],
+      outcome: "Energy returns when resentment is processed."
+    }
+  },
+  {
+    id: "overwhelmed",
+    label: "Overwhelmed",
+    emoji: "😩",
+    steps: [
+      {emoji:"😩", text:"People who feel overwhelmed → freeze or scatter"},
+      {emoji:"❄️", text:"Freezing leads to more unfinished tasks"},
+      {emoji:"📈", text:"The pile grows and the feeling intensifies"}
+    ],
+    outcome: "Overwhelm feeds on itself.",
+    recovery: {
+      intro: "Break it down:",
+      steps: [
+        {emoji:"🧩", text:"List everything, then circle only the next 3 tiny steps"},
+        {emoji:"⏱️", text:"Work in 15–25 minute focused bursts"},
+        {emoji:"✅", text:"Celebrate each small completion"}
+      ],
+      outcome: "Momentum returns one tiny win at a time."
+    }
+  },
+  {
+    id: "envious",
+    label: "Envious",
+    emoji: "😤",
+    steps: [
+      {emoji:"😤", text:"People who feel envious → compare constantly"},
+      {emoji:"📱", text:"Constant comparison → drains motivation"},
+      {emoji:"⬇️", text:"They lose sight of their own progress"}
+    ],
+    outcome: "Comparison steals joy and focus.",
+    recovery: {
+      intro: "Turn envy into fuel:",
+      steps: [
+        {emoji:"🔍", text:"Ask: What does this reveal about what I value?"},
+        {emoji:"🎯", text:"Set one personal goal inspired by that value"},
+        {emoji:"🙏", text:"Practice genuine appreciation for others’ success"}
+      ],
+      outcome: "Envy can become inspiration."
+    }
+  },
+  {
+    id: "guilty",
+    label: "Guilty",
+    emoji: "😣",
+    steps: [
+      {emoji:"😣", text:"People who feel guilty → overwork or over-apologize"},
+      {emoji:"🏃", text:"Overworking without repair → exhaustion"},
+      {emoji:"😔", text:"Exhaustion makes healthy repair harder"}
+    ],
+    outcome: "Unprocessed guilt becomes chronic burden.",
+    recovery: {
+      intro: "Healthy repair path:",
+      steps: [
+        {emoji:"🪞", text:"Distinguish helpful guilt from toxic shame"},
+        {emoji:"🤝", text:"Make a sincere, specific amends if needed"},
+        {emoji:"🔄", text:"Commit to one changed behavior going forward"}
+      ],
+      outcome: "Guilt resolved becomes wisdom."
+    }
+  },
+  {
+    id: "hopeless",
+    label: "Hopeless",
+    emoji: "😞",
+    steps: [
+      {emoji:"😞", text:"People who feel hopeless → stop trying"},
+      {emoji:"🛑", text:"Stopping effort → confirms the hopeless story"},
+      {emoji:"⚫", text:"The darkness deepens"}
+    ],
+    outcome: "Hopelessness is a story that can be revised.",
+    recovery: {
+      intro: "Tiny sparks of hope:",
+      steps: [
+        {emoji:"🕯️", text:"Do one thing that usually brings even slight relief"},
+        {emoji:"📅", text:"Schedule something small to look forward to"},
+        {emoji:"👥", text:"Reach out to one person or resource"}
+      ],
+      outcome: "Hope often returns through action, not waiting."
+    }
+  },
+  {
+    id: "irritated",
+    label: "Irritated",
+    emoji: "😠",
+    steps: [
+      {emoji:"😠", text:"People who stay irritated → snap at others"},
+      {emoji:"💥", text:"Snapping damages relationships"},
+      {emoji:"😔", text:"Damaged relationships increase isolation and more irritation"}
+    ],
+    outcome: "Irritation can become a lonely cycle.",
+    recovery: {
+      intro: "Cool the system:",
+      steps: [
+        {emoji:"🚶", text:"Take a short physical break or change of scene"},
+        {emoji:"🧠", text:"Name the underlying need (rest, respect, space…)"},
+        {emoji:"💬", text:"Communicate the need calmly when ready"}
+      ],
+      outcome: "Clarity and repair become possible."
+    }
+  },
+  {
+    id: "rejected",
+    label: "Rejected",
+    emoji: "😢",
+    steps: [
+      {emoji:"😢", text:"People who feel rejected → become defensive"},
+      {emoji:"🛡️", text:"Defensiveness → misreads neutral feedback as attack"},
+      {emoji:"📉", text:"They stop learning and growing"}
+    ],
+    outcome: "Defenses can block future connection.",
+    recovery: {
+      intro: "Softening after rejection:",
+      steps: [
+        {emoji:"❤️‍🩹", text:"Validate the hurt (“This stings, and that’s okay”)"},
+        {emoji:"🔎", text:"Look for any useful feedback without self-attack"},
+        {emoji:"🌱", text:"Reinvest energy in places that welcome you"}
+      ],
+      outcome: "Rejection becomes redirection."
+    }
+  },
+  {
+    id: "bored",
+    label: "Bored / Numb",
+    emoji: "😑",
+    steps: [
+      {emoji:"😑", text:"People who feel chronically bored → seek quick stimulation"},
+      {emoji:"📱", text:"Quick hits → further flatten real motivation"},
+      {emoji:"😴", text:"Life starts feeling grey and meaningless"}
+    ],
+    outcome: "Numbness can slowly expand.",
+    recovery: {
+      intro: "Re-awaken gently:",
+      steps: [
+        {emoji:"🎨", text:"Try something slightly novel or creative for 20 minutes"},
+        {emoji:"🌳", text:"Spend time in nature or with sensory richness"},
+        {emoji:"🎯", text:"Reconnect with one old interest or value"}
+      ],
+      outcome: "Aliveness returns through engagement."
+    }
+  },
+  {
+    id: "insecure",
+    label: "Insecure",
+    emoji: "😟",
+    steps: [
+      {emoji:"😟", text:"People who feel insecure → seek constant reassurance"},
+      {emoji:"🔄", text:"Reassurance seeking → temporarily soothes then fades"},
+      {emoji:"📉", text:"Self-trust erodes further"}
+    ],
+    outcome: "External validation becomes a shaky foundation.",
+    recovery: {
+      intro: "Build inner security:",
+      steps: [
+        {emoji:"📝", text:"Keep a small evidence journal of your strengths"},
+        {emoji:"🏋️", text:"Do something slightly challenging and note you survived"},
+        {emoji:"🪞", text:"Practice self-validation statements daily"}
+      ],
+      outcome: "Self-trust grows with evidence and practice."
+    }
+  },
+  {
+    id: "bitter",
+    label: "Bitter",
+    emoji: "😖",
+    steps: [
+      {emoji:"😖", text:"People who feel bitter → replay old wounds"},
+      {emoji:"🔁", text:"Replaying → keeps the nervous system activated"},
+      {emoji:"🚪", text:"They close off to new positive experiences"}
+    ],
+    outcome: "Bitterness can become a heavy identity.",
+    recovery: {
+      intro: "Loosen the grip of the past:",
+      steps: [
+        {emoji:"📜", text:"Write the story fully, then write a new chapter title"},
+        {emoji:"🕊️", text:"Practice a forgiveness or release ritual (for yourself)"},
+        {emoji:"🌞", text:"Intentionally notice and savor small present goods"}
+      ],
+      outcome: "The present becomes available again."
+    }
+  },
+  {
+    id: "exhausted",
+    label: "Exhausted",
+    emoji: "😫",
+    steps: [
+      {emoji:"😫", text:"People who are exhausted → feel guilty for resting"},
+      {emoji:"⚡", text:"Guilt pushes them to keep going"},
+      {emoji:"🔥", text:"They eventually burn out or make costly errors"}
+    ],
+    outcome: "Ignoring rest has compounding costs.",
+    recovery: {
+      intro: "Rest is productive:",
+      steps: [
+        {emoji:"🛏️", text:"Schedule real recovery (sleep, quiet, nature)"},
+        {emoji:"🚫", text:"Temporarily reduce non-essential demands"},
+        {emoji:"🔋", text:"Rebuild with gentle routines, not intensity"}
+      ],
+      outcome: "Energy and clarity return with true rest."
+    }
+  },
+  {
+    id: "jealous",
+    label: "Jealous",
+    emoji: "😠",
+    steps: [
+      {emoji:"😠", text:"People who feel jealous → monitor or control"},
+      {emoji:"👀", text:"Monitoring → erodes trust on both sides"},
+      {emoji:"💔", text:"Relationships become tense or break"}
+    ],
+    outcome: "Jealousy often creates the loss it fears.",
+    recovery: {
+      intro: "Transform jealousy:",
+      steps: [
+        {emoji:"🧠", text:"Identify the deeper fear (abandonment, not enough…)"},
+        {emoji:"💬", text:"Communicate needs vulnerably instead of accusing"},
+        {emoji:"🏋️", text:"Strengthen your own life and self-worth"}
+      ],
+      outcome: "Security grows from within and honest dialogue."
+    }
+  },
+  {
+    id: "disappointed",
+    label: "Disappointed",
+    emoji: "😔",
+    steps: [
+      {emoji:"😔", text:"People who feel deeply disappointed → lower expectations of everything"},
+      {emoji:"📉", text:"Chronically low expectations → reduce effort and joy"},
+      {emoji:"🌫️", text:"Life starts to feel flat"}
+    ],
+    outcome: "Protective pessimism can limit living.",
+    recovery: {
+      intro: "Reopen carefully:",
+      steps: [
+        {emoji:"🎯", text:"Set one small, realistic hope"},
+        {emoji:"🛡️", text:"Hold it lightly — outcome is not identity"},
+        {emoji:"🎉", text:"Celebrate effort regardless of result"}
+      ],
+      outcome: "Hope and engagement can return safely."
+    }
+  },
+  {
+    id: "frustrated",
+    label: "Frustrated",
+    emoji: "😤",
+    steps: [
+      {emoji:"😤", text:"People who stay frustrated → force solutions"},
+      {emoji:"🔨", text:"Forcing → creates new problems or resistance"},
+      {emoji:"😩", text:"More frustration follows"}
+    ],
+    outcome: "Force often backfires.",
+    recovery: {
+      intro: "Shift from force to flow:",
+      steps: [
+        {emoji:"⏸️", text:"Step away for a short reset"},
+        {emoji:"🔄", text:"Ask: What would make this 10% easier?"},
+        {emoji:"🤝", text:"Invite collaboration or a different angle"}
+      ],
+      outcome: "Creative solutions appear when pressure drops."
+    }
+  },
+  {
+    id: "invisible",
+    label: "Unseen / Invisible",
+    emoji: "👻",
+    steps: [
+      {emoji:"👻", text:"People who feel unseen → grow resentful or withdraw further"},
+      {emoji:"📉", text:"Withdrawal → reduces chances of being noticed"},
+      {emoji:"😔", text:"The feeling of invisibility strengthens"}
+    ],
+    outcome: "Invisibility becomes a self-reinforcing loop.",
+    recovery: {
+      intro: "Become visible again:",
+      steps: [
+        {emoji:"✨", text:"Share one authentic thought or creation"},
+        {emoji:"👥", text:"Join spaces where your interests are valued"},
+        {emoji:"🗣️", text:"Practice speaking up in small ways"}
+      ],
+      outcome: "Visibility grows through consistent authentic presence."
+    }
+  },
+  {
+    id: "afraid",
+    label: "Afraid",
+    emoji: "😨",
+    steps: [
+      {emoji:"😨", text:"People who stay afraid → avoid more and more"},
+      {emoji:"🚫", text:"Avoidance → shrinks their world"},
+      {emoji:"🏠", text:"Life becomes smaller and scarier"}
+    ],
+    outcome: "Fear grows when it is always obeyed.",
+    recovery: {
+      intro: "Expand gently:",
+      steps: [
+        {emoji:"🦶", text:"Take one tiny step toward the feared thing"},
+        {emoji:"📊", text:"Note the actual outcome vs the predicted catastrophe"},
+        {emoji:"🏆", text:"Collect evidence of your coping ability"}
+      ],
+      outcome: "Courage is built one small exposure at a time."
+    }
+  }
+];
+
+const upPaths = [
+  {
+    id: "grateful",
+    label: "Grateful",
+    emoji: "🙏",
+    steps: [
+      {emoji:"🙏", text:"People who feel grateful → grow more open"},
+      {emoji:"👀", text:"People who are open → notice more opportunities"},
+      {emoji:"🚀", text:"They take wise risks and expand their lives"}
+    ],
+    outcome: "Gratitude compounds into richer experiences."
+  },
+  {
+    id: "curious",
+    label: "Curious",
+    emoji: "🧐",
+    steps: [
+      {emoji:"🧐", text:"People who feel curious → listen more carefully"},
+      {emoji:"👂", text:"Careful listening → deeper understanding"},
+      {emoji:"🤝", text:"Understanding builds trust and better relationships"}
+    ],
+    outcome: "Curiosity opens doors others walk past."
+  },
+  {
+    id: "hopeful",
+    label: "Hopeful",
+    emoji: "🌟",
+    steps: [
+      {emoji:"🌟", text:"People who feel hopeful → take small consistent actions"},
+      {emoji:"📈", text:"Consistent actions → create visible progress"},
+      {emoji:"💪", text:"Progress fuels even more hope and energy"}
+    ],
+    outcome: "Hope becomes a self-fulfilling upward spiral."
+  },
+  {
+    id: "content",
+    label: "Content",
+    emoji: "😌",
+    steps: [
+      {emoji:"😌", text:"People who feel content → savor the present"},
+      {emoji:"🍵", text:"Savoring → increases overall life satisfaction"},
+      {emoji:"🌈", text:"They become more resilient when challenges arrive"}
+    ],
+    outcome: "Contentment is a quiet superpower."
+  },
+  {
+    id: "proud",
+    label: "Proud (healthy)",
+    emoji: "😊",
+    steps: [
+      {emoji:"😊", text:"People who feel healthy pride → acknowledge their effort"},
+      {emoji:"📝", text:"Acknowledging effort → strengthens self-trust"},
+      {emoji:"🎯", text:"Self-trust enables bigger aligned goals"}
+    ],
+    outcome: "Healthy pride fuels further growth."
+  },
+  {
+    id: "connected",
+    label: "Connected",
+    emoji: "🤗",
+    steps: [
+      {emoji:"🤗", text:"People who feel connected → become more generous"},
+      {emoji:"🎁", text:"Generosity → deepens bonds further"},
+      {emoji:"🛡️", text:"Strong bonds increase resilience in hard times"}
+    ],
+    outcome: "Connection is both the path and the destination."
+  },
+  {
+    id: "inspired",
+    label: "Inspired",
+    emoji: "✨",
+    steps: [
+      {emoji:"✨", text:"People who feel inspired → start creating or learning"},
+      {emoji:"🛠️", text:"Creating → produces tangible progress"},
+      {emoji:"🔥", text:"Progress keeps the inspiration alive"}
+    ],
+    outcome: "Inspiration turns into lasting contribution."
+  },
+  {
+    id: "calm",
+    label: "Calm",
+    emoji: "🧘",
+    steps: [
+      {emoji:"🧘", text:"People who feel calm → think more clearly"},
+      {emoji:"🧠", text:"Clear thinking → better decisions"},
+      {emoji:"🌱", text:"Better decisions create more calm conditions"}
+    ],
+    outcome: "Calm is both cause and effect of wisdom."
+  },
+  {
+    id: "playful",
+    label: "Playful",
+    emoji: "😄",
+    steps: [
+      {emoji:"😄", text:"People who feel playful → fear failure less"},
+      {emoji:"🧪", text:"Lower fear → more experimentation"},
+      {emoji:"💡", text:"Experimentation leads to better solutions and joy"}
+    ],
+    outcome: "Play unlocks creativity and resilience."
+  },
+  {
+    id: "determined",
+    label: "Determined",
+    emoji: "💪",
+    steps: [
+      {emoji:"💪", text:"People who feel determined → keep small daily promises"},
+      {emoji:"📅", text:"Daily promises → build unshakable self-trust"},
+      {emoji:"🏔️", text:"Self-trust enables ambitious yet sustainable goals"}
+    ],
+    outcome: "Determination compounds into extraordinary results."
+  },
+  {
+    id: "compassionate",
+    label: "Compassionate",
+    emoji: "💗",
+    steps: [
+      {emoji:"💗", text:"People who feel compassionate → respond with kindness"},
+      {emoji:"🕊️", text:"Kind responses → reduce conflict and suffering"},
+      {emoji:"🌍", text:"They create safer spaces for themselves and others"}
+    ],
+    outcome: "Compassion heals outward and inward."
+  },
+  {
+    id: "confident",
+    label: "Confident",
+    emoji: "😎",
+    steps: [
+      {emoji:"😎", text:"People who feel quietly confident → take measured initiative"},
+      {emoji:"🚀", text:"Initiative → creates momentum and attracts support"},
+      {emoji:"📈", text:"Momentum makes the next steps easier"}
+    ],
+    outcome: "Confidence grows through use."
+  },
+  {
+    id: "patient",
+    label: "Patient",
+    emoji: "⏳",
+    steps: [
+      {emoji:"⏳", text:"People who practice patience → stay consistent"},
+      {emoji:"📊", text:"Consistency → compounds small gains"},
+      {emoji:"🏆", text:"Compounded gains produce results that once seemed impossible"}
+    ],
+    outcome: "Patience is the ultimate long-term advantage."
+  },
+  {
+    id: "forgiving",
+    label: "Forgiving",
+    emoji: "🕊️",
+    steps: [
+      {emoji:"🕊️", text:"People who practice forgiveness → free up emotional energy"},
+      {emoji:"🔓", text:"Freed energy → available for present goals and joy"},
+      {emoji:"🌞", text:"They move forward lighter and clearer"}
+    ],
+    outcome: "Forgiveness is a gift you give yourself."
+  },
+  {
+    id: "adventurous",
+    label: "Adventurous",
+    emoji: "🧭",
+    steps: [
+      {emoji:"🧭", text:"People who feel adventurous → try new experiences"},
+      {emoji:"🌍", text:"New experiences → expand skills and perspective"},
+      {emoji:"🦋", text:"Expanded perspective makes life richer and more flexible"}
+    ],
+    outcome: "Adventure keeps the spirit young."
+  },
+  {
+    id: "appreciative",
+    label: "Appreciative",
+    emoji: "🥰",
+    steps: [
+      {emoji:"🥰", text:"People who express appreciation → strengthen relationships"},
+      {emoji:"💬", text:"Stronger relationships → create mutual support"},
+      {emoji:"🛡️", text:"Support makes bold creative risks safer"}
+    ],
+    outcome: "Appreciation multiplies good."
+  },
+  {
+    id: "focused",
+    label: "Focused",
+    emoji: "🎯",
+    steps: [
+      {emoji:"🎯", text:"People who feel focused → protect their attention"},
+      {emoji:"🛡️", text:"Protected attention → deeper work and learning"},
+      {emoji:"🏅", text:"Depth produces mastery and quiet satisfaction"}
+    ],
+    outcome: "Focus is a competitive advantage in a distracted world."
+  },
+  {
+    id: "generous",
+    label: "Generous",
+    emoji: "🎁",
+    steps: [
+      {emoji:"🎁", text:"People who act generously → experience more connection"},
+      {emoji:"🤗", text:"Connection → increases sense of meaning"},
+      {emoji:"✨", text:"Meaning fuels further generosity and joy"}
+    ],
+    outcome: "Generosity creates an upward spiral of meaning."
+  },
+  {
+    id: "peaceful",
+    label: "Peaceful",
+    emoji: "☮️",
+    steps: [
+      {emoji:"☮️", text:"People who cultivate peace → respond rather than react"},
+      {emoji:"🧠", text:"Responding wisely → improves every relationship and decision"},
+      {emoji:"🌳", text:"Life becomes less chaotic and more intentional"}
+    ],
+    outcome: "Inner peace radiates outward."
+  },
+  {
+    id: "excited",
+    label: "Excited",
+    emoji: "🤩",
+    steps: [
+      {emoji:"🤩", text:"People who feel excited → share their energy"},
+      {emoji:"📢", text:"Shared energy → attracts collaborators and resources"},
+      {emoji:"🚀", text:"Together they turn excitement into real projects"}
+    ],
+    outcome: "Excitement is contagious and productive."
+  },
+  {
+    id: "accepting",
+    label: "Accepting",
+    emoji: "🌊",
+    steps: [
+      {emoji:"🌊", text:"People who practice acceptance → reduce unnecessary struggle"},
+      {emoji:"🧘", text:"Less struggle → more energy for what can be changed"},
+      {emoji:"🌱", text:"They act effectively where it matters most"}
+    ],
+    outcome: "Acceptance is the foundation of powerful action."
+  },
+  {
+    id: "loving",
+    label: "Loving",
+    emoji: "❤️",
+    steps: [
+      {emoji:"❤️", text:"People who feel loving → act with care and presence"},
+      {emoji:"🌹", text:"Caring actions → deepen intimacy and trust"},
+      {emoji:"🏠", text:"Deep trust creates a secure base for everyone involved"}
+    ],
+    outcome: "Love expressed becomes a lasting foundation."
+  }
+];
+
+// ========== APP LOGIC ==========
+let currentDown = null;
+
+const neonPalette = [
+  '#ff4fd8', '#20e8ff', '#ffe84a', '#9d68ff',
+  '#b8ff3d', '#ff8a3d', '#4f73ff', '#ff596e'
+];
+
+function hideAll() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+}
+
+function goStart() {
+  hideAll();
+  document.getElementById('screen-start').classList.add('active');
+}
+
+function showDown() {
+  hideAll();
+  document.getElementById('screen-down-list').classList.add('active');
+  const grid = document.getElementById('down-grid');
+  grid.innerHTML = '';
+  downPaths.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'emotion-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `Explore ${p.label}`);
+    card.style.setProperty('--card-accent', neonPalette[(i + 0) % neonPalette.length]);
+    card.innerHTML = `<span class="emoji">${p.emoji}</span><span class="label">${p.label}</span>`;
+    card.onclick = () => revealDown(p);
+    card.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        revealDown(p);
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+function revealDown(path) {
+  currentDown = path;
+  hideAll();
+  document.getElementById('screen-down-path').classList.add('active');
+  document.getElementById('down-title').textContent = `${path.emoji} Starting from: ${path.label}`;
+  const stairs = document.getElementById('down-stairs');
+  stairs.innerHTML = '';
+  path.steps.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'step';
+    div.innerHTML = `<span class="emoji">${s.emoji}</span><span class="text">${s.text}</span>`;
+    stairs.appendChild(div);
+  });
+  document.getElementById('down-outcome').textContent = path.outcome;
+}
+
+function showRecovery() {
+  if (!currentDown) return;
+  hideAll();
+  document.getElementById('screen-recovery').classList.add('active');
+  const r = currentDown.recovery;
+  document.getElementById('recovery-intro').textContent = r.intro;
+  const stairs = document.getElementById('recovery-stairs');
+  stairs.innerHTML = '';
+  r.steps.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'step';
+    div.innerHTML = `<span class="emoji">${s.emoji}</span><span class="text">${s.text}</span>`;
+    stairs.appendChild(div);
+  });
+  document.getElementById('recovery-outcome').textContent = r.outcome;
+}
+
+function showUp() {
+  hideAll();
+  document.getElementById('screen-up-list').classList.add('active');
+  const grid = document.getElementById('up-grid');
+  grid.innerHTML = '';
+  upPaths.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'emotion-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `Explore ${p.label}`);
+    card.style.setProperty('--card-accent', neonPalette[(i + 2) % neonPalette.length]);
+    card.innerHTML = `<span class="emoji">${p.emoji}</span><span class="label">${p.label}</span>`;
+    card.onclick = () => revealUp(p);
+    card.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        revealUp(p);
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+function revealUp(path) {
+  hideAll();
+  document.getElementById('screen-up-path').classList.add('active');
+  document.getElementById('up-title').textContent = `${path.emoji} Starting from: ${path.label}`;
+  const stairs = document.getElementById('up-stairs');
+  stairs.innerHTML = '';
+  path.steps.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'step';
+    div.innerHTML = `<span class="emoji">${s.emoji}</span><span class="text">${s.text}</span>`;
+    stairs.appendChild(div);
+  });
+  document.getElementById('up-outcome').textContent = path.outcome;
+}
+
+// Start
+goStart();
+</script>
+</body>
+</html>
