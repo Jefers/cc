@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finder Keyboard Shortcuts – Practice</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --accent: #0071e3;
+      --border: #d2d2d7;
+      --success: #34c759;
+      --danger: #ff3b30;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --card: #1c1c1e;
+        --text: #f5f5f7;
+        --muted: #98989d;
+        --accent: #0a84ff;
+        --border: #38383a;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 24px 16px 60px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+      align-items: center;
+    }
+    button {
+      font: inherit;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    button:hover { background: var(--border); }
+    button.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    button.primary:hover { filter: brightness(1.1); }
+    button.danger {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    .stats {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+    .category {
+      margin-bottom: 28px;
+    }
+    .category h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .shortcut {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--card);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      border: 1px solid transparent;
+      transition: opacity 0.2s;
+    }
+    .shortcut.hidden {
+      display: none;
+    }
+    .shortcut:hover {
+      border-color: var(--border);
+    }
+    .keys {
+      font-family: "SF Mono", ui-monospace, Menlo, monospace;
+      font-size: 0.92rem;
+      font-weight: 500;
+      background: var(--bg);
+      padding: 4px 10px;
+      border-radius: 6px;
+      min-width: 140px;
+      text-align: center;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+    }
+    .action {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+    .hide-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .hide-btn:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+    .empty-msg {
+      text-align: center;
+      color: var(--muted);
+      padding: 40px 20px;
+      display: none;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Finder Keyboard Shortcuts</h1>
+  <p class="subtitle">Hide the ones you already know. Your choices are saved in this browser.</p>
+
+  <div class="controls">
+    <button class="primary" id="showAllBtn">Show all hidden</button>
+    <button class="danger" id="resetBtn">Reset everything</button>
+    <span class="stats" id="stats"></span>
+  </div>
+
+  <div id="list"></div>
+  <div class="empty-msg" id="emptyMsg">All shortcuts are currently hidden. Click “Show all hidden” to bring them back.</div>
+
+  <footer>
+    Open this file in Safari or any browser. Data stays on your Mac (localStorage).
+  </footer>
+
+  <script>
+    // Practical Finder shortcuts (macOS)
+    const shortcuts = [
+      // Navigation
+      { id: "nav-new-window", keys: "⌘ N", action: "New Finder window", cat: "Navigation & Windows" },
+      { id: "nav-new-tab", keys: "⌘ T", action: "New tab (or show/hide tab bar)", cat: "Navigation & Windows" },
+      { id: "nav-close", keys: "⌘ W", action: "Close window / tab", cat: "Navigation & Windows" },
+      { id: "nav-close-all", keys: "⌥ ⌘ W", action: "Close all Finder windows", cat: "Navigation & Windows" },
+      { id: "nav-back", keys: "⌘ [", action: "Go back", cat: "Navigation & Windows" },
+      { id: "nav-forward", keys: "⌘ ]", action: "Go forward", cat: "Navigation & Windows" },
+      { id: "nav-up", keys: "⌘ ↑", action: "Go to enclosing (parent) folder", cat: "Navigation & Windows" },
+      { id: "nav-up-new", keys: "⌃ ⌘ ↑", action: "Open parent folder in new window", cat: "Navigation & Windows" },
+      { id: "nav-open", keys: "⌘ ↓", action: "Open selected item", cat: "Navigation & Windows" },
+      { id: "nav-goto", keys: "⇧ ⌘ G", action: "Go to Folder…", cat: "Navigation & Windows" },
+
+      // Common locations
+      { id: "loc-home", keys: "⇧ ⌘ H", action: "Open Home folder", cat: "Common Locations" },
+      { id: "loc-desktop", keys: "⇧ ⌘ D", action: "Open Desktop folder", cat: "Common Locations" },
+      { id: "loc-documents", keys: "⇧ ⌘ O", action: "Open Documents folder", cat: "Common Locations" },
+      { id: "loc-downloads", keys: "⌥ ⌘ L", action: "Open Downloads folder", cat: "Common Locations" },
+      { id: "loc-apps", keys: "⇧ ⌘ A", action: "Open Applications folder", cat: "Common Locations" },
+      { id: "loc-utilities", keys: "⇧ ⌘ U", action: "Open Utilities folder", cat: "Common Locations" },
+      { id: "loc-icloud", keys: "⇧ ⌘ I", action: "Open iCloud Drive", cat: "Common Locations" },
+      { id: "loc-recents", keys: "⇧ ⌘ F", action: "Open Recents", cat: "Common Locations" },
+      { id: "loc-airdrop", keys: "⇧ ⌘ R", action: "Open AirDrop", cat: "Common Locations" },
+      { id: "loc-computer", keys: "⇧ ⌘ C", action: "Open Computer window", cat: "Common Locations" },
+      { id: "loc-network", keys: "⇧ ⌘ K", action: "Open Network window", cat: "Common Locations" },
+
+      // File operations
+      { id: "file-new-folder", keys: "⇧ ⌘ N", action: "New folder", cat: "File Operations" },
+      { id: "file-new-smart", keys: "⌥ ⌘ N", action: "New Smart Folder", cat: "File Operations" },
+      { id: "file-duplicate", keys: "⌘ D", action: "Duplicate selected items", cat: "File Operations" },
+      { id: "file-alias", keys: "⌃ ⌘ A", action: "Make alias of selected item", cat: "File Operations" },
+      { id: "file-getinfo", keys: "⌘ I", action: "Get Info", cat: "File Operations" },
+      { id: "file-inspector", keys: "⌥ ⌘ I", action: "Show Inspector (live Get Info)", cat: "File Operations" },
+      { id: "file-rename", keys: "Return", action: "Rename selected item", cat: "File Operations" },
+      { id: "file-copy", keys: "⌘ C", action: "Copy selected items", cat: "File Operations" },
+      { id: "file-paste", keys: "⌘ V", action: "Paste items", cat: "File Operations" },
+      { id: "file-move", keys: "⌥ ⌘ V", action: "Move items (paste & move)", cat: "File Operations" },
+      { id: "file-trash", keys: "⌘ ⌫", action: "Move to Trash", cat: "File Operations" },
+      { id: "file-empty", keys: "⇧ ⌘ ⌫", action: "Empty Trash", cat: "File Operations" },
+      { id: "file-empty-force", keys: "⌥ ⇧ ⌘ ⌫", action: "Empty Trash (no confirmation)", cat: "File Operations" },
+      { id: "file-eject", keys: "⌘ E", action: "Eject selected disk/volume", cat: "File Operations" },
+      { id: "file-undo", keys: "⌘ Z", action: "Undo last action", cat: "File Operations" },
+      { id: "file-selectall", keys: "⌘ A", action: "Select all", cat: "File Operations" },
+      { id: "file-find", keys: "⌘ F", action: "Find / search in Finder window", cat: "File Operations" },
+
+      // Viewing
+      { id: "view-icons", keys: "⌘ 1", action: "View as Icons", cat: "View & Display" },
+      { id: "view-list", keys: "⌘ 2", action: "View as List", cat: "View & Display" },
+      { id: "view-columns", keys: "⌘ 3", action: "View as Columns", cat: "View & Display" },
+      { id: "view-gallery", keys: "⌘ 4", action: "View as Gallery", cat: "View & Display" },
+      { id: "view-options", keys: "⌘ J", action: "Show View Options", cat: "View & Display" },
+      { id: "view-preview", keys: "⇧ ⌘ P", action: "Show/hide Preview pane", cat: "View & Display" },
+      { id: "view-path", keys: "⌥ ⌘ P", action: "Show/hide Path bar", cat: "View & Display" },
+      { id: "view-sidebar", keys: "⌥ ⌘ S", action: "Show/hide Sidebar", cat: "View & Display" },
+      { id: "view-status", keys: "⌘ /", action: "Show/hide Status bar", cat: "View & Display" },
+      { id: "view-toolbar", keys: "⌥ ⌘ T", action: "Show/hide Toolbar", cat: "View & Display" },
+      { id: "view-quicklook", keys: "Space", action: "Quick Look selected item", cat: "View & Display" },
+      { id: "view-slideshow", keys: "⌥ ⌘ Y", action: "Quick Look slideshow", cat: "View & Display" },
+      { id: "view-hidden", keys: "⇧ ⌘ .", action: "Show/hide hidden files", cat: "View & Display" },
+
+      // List view extras
+      { id: "list-expand", keys: "→", action: "Expand folder (List view)", cat: "List View" },
+      { id: "list-collapse", keys: "←", action: "Collapse folder (List view)", cat: "List View" },
+    ];
+
+    const STORAGE_KEY = "finderShortcutsHidden_v1";
+
+    function loadHidden() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHidden(ids) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    }
+
+    let hiddenIds = loadHidden();
+
+    function render() {
+      const container = document.getElementById("list");
+      const emptyMsg = document.getElementById("emptyMsg");
+      container.innerHTML = "";
+
+      const categories = [...new Set(shortcuts.map(s => s.cat))];
+      let visibleCount = 0;
+
+      categories.forEach(cat => {
+        const items = shortcuts.filter(s => s.cat === cat);
+        const visibleItems = items.filter(s => !hiddenIds.includes(s.id));
+        if (visibleItems.length === 0) return;
+
+        const section = document.createElement("div");
+        section.className = "category";
+        section.innerHTML = `<h2>${cat}</h2>`;
+
+        visibleItems.forEach(s => {
+          visibleCount++;
+          const row = document.createElement("div");
+          row.className = "shortcut";
+          row.dataset.id = s.id;
+          row.innerHTML = `
+            <span class="keys">${s.keys}</span>
+            <span class="action">${s.action}</span>
+            <button class="hide-btn" title="Hide this shortcut">Hide</button>
+          `;
+          row.querySelector(".hide-btn").addEventListener("click", () => {
+            hiddenIds.push(s.id);
+            saveHidden(hiddenIds);
+            render();
+          });
+          section.appendChild(row);
+        });
+
+        container.appendChild(section);
+      });
+
+      emptyMsg.style.display = visibleCount === 0 ? "block" : "none";
+      document.getElementById("stats").textContent =
+        `${visibleCount} visible · ${hiddenIds.length} hidden`;
+    }
+
+    document.getElementById("showAllBtn").addEventListener("click", () => {
+      // Reveal only currently hidden ones by clearing the list
+      hiddenIds = [];
+      saveHidden(hiddenIds);
+      render();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (confirm("Reset and show every shortcut again?")) {
+        hiddenIds = [];
+        saveHidden(hiddenIds);
+        render();
+      }
+    });
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
